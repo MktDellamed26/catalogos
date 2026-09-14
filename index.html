@@ -1336,21 +1336,40 @@
     R.tx -= e.deltaX; R.ty -= e.deltaY; clampPan(); applyTransform();
     clearTimeout(pan._t); pan._t = setTimeout(() => stage.classList.remove('dragging'), 120);
   }, { passive: false });
+  /* Som de papel couché virando, sintetizado (sem arquivo de áudio); cada virada varia um pouco */
+  const sndRnd = (a, b) => a + Math.random() * (b - a);
+  function sndBuf(ctx, dur, fill) {
+    const n = Math.max(1, Math.floor(ctx.sampleRate * dur)), buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    fill(buf.getChannelData(0), n, ctx.sampleRate);
+    return buf;
+  }
+  const sndNoise = (ctx, dur, env) => sndBuf(ctx, dur, (d, n) => { for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * env(i / n); });
+  const sndCrackle = (ctx, dur, perMs, env) => sndBuf(ctx, dur, (d, n, sr) => {
+    let a = 0;
+    for (let i = 0; i < n; i++) { if (Math.random() < perMs * env(i / n) * 1000 / sr) a = sndRnd(0.35, 1); d[i] = a * (Math.random() * 2 - 1); a *= 0.9; }
+  });
+  function sndLayer(ctx, t, buf, filters, gain) {
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    let node = src;
+    for (const f of filters) {
+      const b = ctx.createBiquadFilter(); b.type = f.type; b.Q.value = f.q || 0.7;
+      if (f.set) f.set(b.frequency, t); else b.frequency.value = f.f;
+      node.connect(b); node = b;
+    }
+    const g = ctx.createGain(); g.gain.value = gain; node.connect(g); g.connect(ctx.destination);
+    src.start(t);
+  }
   function playFlip() {
     if (!soundOn) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      const ctx = audioCtx, t = ctx.currentTime, dur = 0.42;
-      const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) { const k = i / d.length; d[i] = (Math.random() * 2 - 1) * Math.pow(1 - k, 1.6); }
-      const src = ctx.createBufferSource(); src.buffer = buf;
-      const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 0.8;
-      f.frequency.setValueAtTime(2400, t); f.frequency.exponentialRampToValueAtTime(700, t + dur);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.28, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      src.connect(f); f.connect(g); g.connect(ctx.destination);
-      src.start(t); src.stop(t + dur);
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const ctx = audioCtx, t = ctx.currentTime + 0.01, dur = sndRnd(0.4, 0.46), s = sndRnd(0.9, 1.1);
+      const env = (k) => (k < 0.35 ? Math.pow(k / 0.35, 1.2) : Math.pow((1 - k) / 0.65, 1.5));
+      const snap = (k) => (k < 0.04 ? k / 0.04 : Math.pow(1 - (k - 0.04) / 0.96, 3));
+      sndLayer(ctx, t, sndNoise(ctx, dur, env), [{ type: 'highpass', f: 1800 }, { type: 'bandpass', q: 0.9, set: (p, t0) => { p.setValueAtTime(3000 * s, t0); p.linearRampToValueAtTime(5200 * s, t0 + dur * 0.35); p.exponentialRampToValueAtTime(2600 * s, t0 + dur); } }], 0.185);
+      sndLayer(ctx, t, sndCrackle(ctx, dur, 2.5, env), [{ type: 'highpass', f: 3500 }], 0.05);
+      sndLayer(ctx, t + dur * 0.9, sndNoise(ctx, 0.03, snap), [{ type: 'bandpass', f: 1800 * s, q: 1.2 }], 0.33);
     } catch (e) { /* áudio indisponível */ }
   }
   btn.prev.addEventListener('click', flipPrev);
