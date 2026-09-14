@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-UH1WbNYKCAdX1aRsj+O5T5AZOTBE+iC6ymBWAzs8tmY=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-/bMIh2MZNVuO463fAmE68iZA2Y7O5l2jRhkL6x65dIw=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -377,9 +377,86 @@
     .grp { gap: 0; }
     #btnZoomOut, #btnZoomIn { display: none; }
   }
+
+  /* ---------- produtos no catálogo: "+" na página, ficha do produto e produtos de interesse ---------- */
+  /* A camada fica dentro de cada .page: acompanha folhear, zoom, tela cheia e orientação sem JavaScript */
+  .interactive-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .stage.flipping .interactive-layer { visibility: hidden; }
+  .hs-area { position: absolute; border-radius: 6px; outline: 1.5px dashed transparent; outline-offset: 2px; pointer-events: none; transition: outline-color .2s; }
+  .hs-area:focus-within, .hs-area.pulse { outline-color: rgba(30, 44, 79, .5); }
+  .product-hotspot { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; height: 26px; min-width: 26px; padding: 0 7px; border: 0; border-radius: 999px; background: var(--navy); color: var(--white); font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 6px 14px -4px rgba(20, 32, 60, .55); transform: translate(-50%, -50%) scale(calc(1 / var(--z, 1))); }
+  .product-hotspot::before { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; border-radius: 50%; transform: translate(-50%, -50%); } /* área de toque de 44px */
+  .product-hotspot > span { pointer-events: none; } /* o alvo do toque é sempre o próprio botão (o folheador ignora botões) */
+  .hs-plus { position: relative; width: 12px; height: 12px; flex: none; }
+  .hs-plus::before, .hs-plus::after { content: ""; position: absolute; left: 50%; top: 50%; border-radius: 1px; background: currentColor; transform: translate(-50%, -50%); }
+  .hs-plus::before { width: 12px; height: 2px; }
+  .hs-plus::after { width: 2px; height: 12px; }
+  .hs-txt { max-width: 0; overflow: hidden; opacity: 0; transition: max-width .2s ease, opacity .2s ease, margin-left .2s ease; }
+  .product-hotspot:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+  .product-hotspot:focus-visible .hs-txt { max-width: 110px; margin-left: 6px; opacity: 1; }
+  @media (hover: hover) {
+    .hs-area:hover { outline-color: rgba(30, 44, 79, .5); }
+    .product-hotspot:hover .hs-txt { max-width: 110px; margin-left: 6px; opacity: 1; }
+  }
+  .hs-area.pulse .product-hotspot { animation: hs-pulse 1.25s ease-out 2; }
+  @keyframes hs-pulse {
+    from { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 2px rgba(139, 184, 232, .95); }
+    to { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 18px rgba(139, 184, 232, 0); }
+  }
+  .int-btn { gap: 8px; }
+  .topbar .int-btn { height: 42px; border-color: rgba(255, 255, 255, .3); }
+  .int-n { min-width: 20px; height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .res-ph { width: 40px; height: 52px; display: grid; place-items: center; border-radius: 3px; background: var(--light); color: var(--navy); }
+  .res-ph svg, .pc-ph svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+  /* Diálogo em painel: lateral no computador, folha inferior no celular */
+  dialog.panel { width: min(400px, 100vw); max-width: 100vw; height: 100%; max-height: 100%; margin: 0 0 0 auto; border-radius: 18px 0 0 18px; box-shadow: -24px 0 60px -24px rgba(20, 32, 60, .55); animation: panel-in .28s cubic-bezier(.3, .7, .2, 1); }
+  dialog.panel[open] { display: flex; flex-direction: column; }
+  dialog.panel::backdrop { background: rgba(20, 32, 60, .3); }
+  dialog.panel .dlg-body { flex: 1; align-content: start; overflow-y: auto; overscroll-behavior: contain; padding: 26px 24px 24px; }
+  dialog.panel .dlg-body h2 { padding-right: 40px; font-size: 19px; line-height: 1.3; }
+  @keyframes panel-in { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dlg-x { position: absolute; top: 16px; right: 14px; z-index: 1; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
+  .dlg-x:hover { background: var(--light); }
+  .dlg-x svg, .int-rm svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .pc-media { height: 210px; display: grid; place-items: center; border-radius: 12px; background: var(--light); overflow: hidden; }
+  .pc-media.loading { background: linear-gradient(100deg, var(--light) 30%, var(--white) 50%, var(--light) 70%); background-size: 300% 100%; animation: shimmer 1.4s linear infinite; }
+  .pc-media img { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--white); }
+  .pc-ph { display: grid; justify-items: center; gap: 6px; color: var(--ink-2); font-size: 12px; }
+  .pc-benefit { font-family: var(--font-title); font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--navy); }
+  .pc-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px 16px; margin: 0; padding: 12px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .pc-facts dt { font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .pc-facts dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+  .pc-desc { font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+  .pc-actions { display: grid; gap: 8px; margin-top: 4px; }
+  .pc-actions .btn { font-family: var(--font-title); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .pc-actions .btn[aria-pressed="true"] { background: rgba(139, 184, 232, .2); }
+  .int-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .int-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px; border-bottom: 1px solid var(--hair); }
+  .int-open { display: grid; gap: 1px; padding: 10px 4px; border: 0; border-radius: 8px; background: none; color: inherit; text-align: left; cursor: pointer; }
+  .int-open b { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .int-open:hover b { text-decoration: underline; text-underline-offset: 3px; }
+  .int-open .where { font-size: 12px; color: var(--ink-2); }
+  .int-rm { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .int-rm:hover { background: var(--light); color: var(--navy); }
+  .int-empty { padding: 8px 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+  @media (max-width: 860px) {
+    .topbar .int-btn { height: 44px; margin-left: auto; padding: 0 12px; }
+    .topbar .int-btn:not([hidden]) + .user { margin-left: 0; }
+    .r-top .int-btn { padding: 0 12px; }
+    .int-rm { width: 44px; height: 44px; }
+  }
+  @media (max-width: 760px) {
+    dialog.panel { width: 100%; max-width: 100%; height: auto; max-height: 85vh; max-height: 85dvh; margin: auto 0 0; border-radius: 18px 18px 0 0; box-shadow: 0 -18px 50px -20px rgba(20, 32, 60, .55); animation-name: sheet-in; }
+    dialog.panel::before { content: ""; flex: none; width: 40px; height: 4px; margin: 10px auto 0; border-radius: 2px; background: var(--silver); }
+    dialog.panel .dlg-body { padding: 14px 18px max(20px, env(safe-area-inset-bottom)); }
+    .dlg-x { top: 10px; right: 8px; width: 44px; height: 44px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .holder, .cover { transition: none; }
     .page .ph, .r-loader .track i { animation: none; }
+    .hs-area.pulse .product-hotspot, dialog.panel, .pc-media.loading { animation: none; }
+    .hs-txt, .hs-area { transition: none; }
   }
 </style>
 
@@ -489,6 +566,7 @@
       <div class="results" id="results" role="listbox" aria-label="Resultados da busca" hidden></div>
       <span class="sr-only" id="qStatus" aria-live="polite"></span>
     </div>
+    <button class="pill-btn int-btn" id="intBtn" type="button" hidden aria-label="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
     <div class="user">
       <button class="user-btn" id="userBtn" type="button" aria-expanded="false" aria-controls="userMenu"><span class="avatar" id="uAvatar"></span><span class="u-text"><span class="u-name" id="uName"></span><span class="u-role" id="uRole"></span></span></button>
       <div class="menu" id="userMenu" hidden>
@@ -531,6 +609,7 @@
       <div class="results" id="rResults" role="listbox" aria-label="Resultados neste catálogo" hidden></div>
       <span class="sr-only" id="rqStatus" aria-live="polite"></span>
     </div>
+    <button class="pill-btn int-btn" id="rIntBtn" type="button" hidden aria-label="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
     <button class="pill-btn" id="rShare" type="button"><span class="ico" id="icoShare"></span><span class="txt" id="rShareTxt">Compartilhar</span></button>
   </header>
   <span class="medpro" aria-hidden="true"></span>
@@ -869,6 +948,19 @@
   const emailLike = (s) => /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(String(s || '').trim());
   const own = (o, k) => !!o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k);
   const store = (name) => { try { return window[name] || null; } catch (e) { return null; } };
+  // "150 kg" e "150kg" são a mesma busca: junta número e unidade (na consulta e nos textos já normalizados)
+  const UNIT_GAP = /(\d)\s+(?=(?:kg|g|mg|cm|mm|m|ml|l|lb|w|v|mah|un)(?![a-z0-9]))/g;
+  const joinUnits = (s) => String(s).replace(UNIT_GAP, '$1');
+  const safeUrl = (u) => (/^https?:\/\/[^\s]+$/i.test(String(u || '').trim()) ? String(u).trim() : '');
+  // Links de contato e endereços do catálogo: um só lugar para montar cada formato
+  const waUrl = (number, text) => `https://wa.me/${onlyDigits(number)}${text ? '?text=' + encodeURIComponent(text) : ''}`;
+  function mailtoUrl(to, subject, body) {
+    const q = [];
+    if (subject) q.push('subject=' + encodeURIComponent(subject));
+    if (body) q.push('body=' + encodeURIComponent(body));
+    return `mailto:${to || ''}${q.length ? '?' + q.join('&') : ''}`;
+  }
+  const catalogHash = (id, page, sku) => `#/catalogo/${encodeURIComponent(id)}/${page || 1}${sku ? '?produto=' + encodeURIComponent(sku) : ''}`;
 
   const I = {
     search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>',
@@ -879,13 +971,17 @@
     back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
     lock: '<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>',
     check: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-    warn: '<svg viewBox="0 0 24 24"><path d="M12 4.5L21 19.5H3z"/><path d="M12 10v4.5M12 17.3v.2"/></svg>'
+    warn: '<svg viewBox="0 0 24 24"><path d="M12 4.5L21 19.5H3z"/><path d="M12 10v4.5M12 17.3v.2"/></svg>',
+    heart: '<svg viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.6-7.5-10.1A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7.5 2.4c0 5.5-7.5 10.1-7.5 10.1z"/></svg>',
+    tag: '<svg viewBox="0 0 24 24"><path d="M3.5 12.3V4.5a1 1 0 0 1 1-1h7.8l8.2 8.2a1 1 0 0 1 0 1.4l-6.9 6.9a1 1 0 0 1-1.4 0z"/><circle cx="8" cy="8" r="1.5"/></svg>',
+    close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'
   };
   const WARN = `<span class="warn-ico" aria-hidden="true">${I.warn}</span>`;
   $('#icoSearch').innerHTML = I.search;
   $('#icoSearch2').innerHTML = I.search;
   $('#icoBack').innerHTML = I.back;
   $('#icoShare').innerHTML = I.share;
+  $$('[data-ico-heart]').forEach((s) => { s.innerHTML = I.heart; });
   $('#pwToggle').innerHTML = I.eye;
   $('#pwToggle2').innerHTML = I.eye;
   $('#netIco').innerHTML = I.warn;
@@ -905,9 +1001,45 @@
   const SEARCH_N = {};            // id → textos normalizados (preenchidos na primeira busca)
   const searchLoads = new Map();  // id → carregamento em andamento
   const searchFail = new Map();   // id → horário da última falha
-  let me = null, prefs = { favorites: [], progress: {} }, filter = 'todos', sortBy = 'ordem';
+  let me = null, prefs = { favorites: [], progress: {}, interests: [] }, filter = 'todos', sortBy = 'ordem';
   const cat = (id) => CATALOGS.find((c) => c.id === id) || null;
   const visibleCatalogs = () => CATALOGS.slice();
+  // produtos.bin (opcional): { comercial, bySku: skuKey → produto, spots: skuKey → [hotspot], byCatPage: catálogo → página → [hotspot] }
+  let PROD = null;
+
+  /* ================= métricas de uso (desligadas por padrão) =================
+     Para ligar GTM/GA4: a CSP do build.ps1 (script-src e connect-src) precisa liberar os domínios do Google,
+     e scripts de terceiros passariam a rodar na mesma página em que os catálogos são decifrados. Decisão do dono do site.
+     Nunca enviar nome, e-mail ou empresa: só o tipo de perfil (cliente, representante, interno). */
+  const ANALYTICS = { enabled: false, debug: false };
+  function trackCatalogEvent(name, params = {}) {
+    const c = R.cat;
+    const ev = { event: name, catalog_id: c ? c.id : null, catalog_title: c ? c.title : null, page_number: c ? curIndex() + 1 : null, user_role: me ? me.role : null, ...params, ts: new Date().toISOString() };
+    const log = window.__catalogEvents || (window.__catalogEvents = []); // últimos 50, para testes
+    log.push(ev);
+    if (log.length > 50) log.splice(0, log.length - 50);
+    let debug = ANALYTICS.debug;
+    try { debug = debug || localStorage.getItem('dm.analytics.debug') === '1'; } catch (e) { /* noop */ }
+    if (debug) console.info('[catálogo]', name, ev);
+    if (ANALYTICS.enabled) { window.dataLayer = window.dataLayer || []; window.dataLayer.push(ev); }
+  }
+  // Tempo por página: começa quando a página assenta e termina na troca, ao fechar ou ao esconder a aba (sem temporizador contínuo)
+  const pageTimer = {
+    cur: null, last: null,
+    start(key, info) {
+      if (this.cur && this.cur.key === key) return;
+      this.end('page_change');
+      this.cur = { key, info, t: performance.now() };
+      this.last = { key, info };
+    },
+    end(reason) {
+      const c = this.cur; this.cur = null;
+      if (!c) return;
+      const s = (performance.now() - c.t) / 1000;
+      if (s >= 1) trackCatalogEvent('catalog_page_time', { ...c.info, seconds: Math.round(s), reason });
+    },
+    resume() { const l = this.last; if (!this.cur && l && R.cat && R.cat.id === l.info.catalog_id && R.lastView === l.key) this.start(l.key, l.info); }
+  };
 
   /* ================= rede e erros ================= */
   class NetError extends Error { constructor() { super(MSG_OFFLINE); this.name = 'NetError'; } }
@@ -960,6 +1092,7 @@
 
   /* ================= dados.bin ================= */
   async function unlockData(rootKey) {
+    const prodJob = loadProdutos(rootKey); // em paralelo com dados.bin; nunca impede a entrada
     const buf = await getBuf('dados.bin?t=' + Date.now(), { cache: 'no-store' });
     const data = await P.openDados(rootKey, buf);
     if (Number(data.v) > 2) { const err = new Error('versão'); err.name = 'VersionError'; throw err; }
@@ -976,11 +1109,61 @@
     } else {
       for (const c of list) { keys.set(c.id, rootKey); c.aad = 0; c.th = 0; c.busca = false; }
     }
+    const prodData = await prodJob;
     ROOT = rootKey; CATALOGS = list; KEYS = keys; DATA_GEN++;
+    PROD = buildProd(prodData, list);
     for (const k of Object.keys(SEARCH)) delete SEARCH[k];
     for (const k of Object.keys(SEARCH_N)) delete SEARCH_N[k];
     searchLoads.clear(); searchFail.clear();
     if (!v2) for (const [id, v] of Object.entries(data.search || {})) SEARCH[id] = ((v && v.pages) || []).map((t) => String(t || ''));
+  }
+
+  /* ================= produtos.bin (produtos e hotspots; opcional) ================= */
+  // Ausente (404), antigo ou impossível de abrir: o site funciona normalmente, só sem produtos
+  async function loadProdutos(rootKey) {
+    try { return await P.openProdutos(rootKey, await getBuf('produtos.bin?t=' + Date.now(), { cache: 'no-store' })); }
+    catch (e) { return null; }
+  }
+  function buildProd(data, list) {
+    const out = { comercial: {}, bySku: new Map(), spots: new Map(), byCatPage: new Map() };
+    if (!data || typeof data !== 'object' || Number(data.v) > 1) return out;
+    if (data.comercial && typeof data.comercial === 'object') out.comercial = data.comercial;
+    for (const [k, p] of Object.entries(data.products || {})) {
+      if (!p || typeof p !== 'object' || typeof p.name !== 'string' || !p.name.trim()) continue;
+      const sku = String(p.sku || k), key = P.skuKey(sku);
+      if (!key) continue;
+      const txt = joinUnits(norm(`${sku} ${p.name} ${p.category || ''} ${p.benefit || ''} ${p.capacity || ''} ${p.description || ''}`));
+      out.bySku.set(key, { ...p, sku, _n: txt });
+    }
+    // Só hotspots válidos, de catálogos visíveis, dentro do número de páginas e de produtos existentes
+    const pages = new Map(list.map((c) => [c.id, Math.max(1, Number(c.pages) || 1)]));
+    for (const h of Array.isArray(data.hotspots) ? data.hotspots : []) {
+      if (!P.validHotspot(h) || !(h.page <= pages.get(h.catalogId))) continue;
+      const key = P.skuKey(h.product);
+      if (!out.bySku.has(key)) continue;
+      if (!out.byCatPage.has(h.catalogId)) out.byCatPage.set(h.catalogId, new Map());
+      const m = out.byCatPage.get(h.catalogId);
+      if (!m.has(h.page)) m.set(h.page, []);
+      m.get(h.page).push(h);
+      if (!out.spots.has(key)) out.spots.set(key, []);
+      out.spots.get(key).push(h);
+    }
+    return out;
+  }
+  const prodBySku = (sku) => (PROD && sku ? PROD.bySku.get(P.skuKey(sku)) || null : null);
+  const hotspotsOn = (cid, page) => (PROD && PROD.byCatPage.has(cid) && PROD.byCatPage.get(cid).get(page)) || [];
+  const catHasHotspots = (cid) => !!(PROD && PROD.byCatPage.has(cid));
+  // Onde o produto aparece: o catálogo preferido primeiro, depois a ordem da prateleira e a página
+  function productSpots(sku, preferCid) {
+    const list = (PROD && PROD.spots.get(P.skuKey(sku))) || [];
+    const ord = (h) => (h.catalogId === preferCid ? -1 : CATALOGS.findIndex((c) => c.id === h.catalogId));
+    return list.slice().sort((a, b) => ord(a) - ord(b) || a.page - b.page);
+  }
+  // Contato comercial (produtos.bin → comercial). O contactInfo() é do marketing (acesso e ativação) e não serve para vendas.
+  function commercialInfo() {
+    const a = (PROD && PROD.comercial) || {};
+    const wa = onlyDigits(a.whatsapp);
+    return { wa: wa.length >= 10 ? wa : '', mail: emailLike(a.email) ? String(a.email).trim() : '', msg: typeof a.mensagem === 'string' ? a.mensagem.trim() : '' };
   }
 
   /* ================= imagens criptografadas (LRU com revogação) ================= */
@@ -1079,12 +1262,14 @@
     img.dataset.fail = '1';
     if (isDecryptFail(e)) { keysRotated(e); return; }
     const host = img.closest('.cover');
-    if (host && !$('.img-err', host)) {
-      const d = document.createElement('div');
-      d.className = 'img-err';
-      d.innerHTML = '<span>Não foi possível carregar ·</span><button type="button" class="btn ghost sm" data-retry>Tentar de novo</button>';
-      host.appendChild(d);
-    }
+    if (host && !$('.img-err', host)) host.appendChild(errBox('data-retry'));
+  }
+  // Aviso "Não foi possível carregar" com o botão de tentar de novo (capas e páginas do leitor)
+  function errBox(retryAttr) {
+    const d = document.createElement('div');
+    d.className = 'img-err';
+    d.innerHTML = `<span>Não foi possível carregar ·</span><button type="button" class="btn ghost sm" ${retryAttr}>Tentar de novo</button>`;
+    return d;
   }
   function clearImgErr(img) { const host = img.closest('.cover'); const x = host && $('.img-err', host); if (x) x.remove(); }
   function retryImg(img) { if (!img) return; delete img.dataset.fail; clearImgErr(img); fillImg(img); }
@@ -1135,38 +1320,49 @@
   const prefsKey = () => 'dm.prefs.' + me.uid;
   let prefsT = null, prefsDirty = false;
   const favOps = new Map(); // favoritos alterados nesta aba e ainda não gravados
+  const interestOps = new Map(); // produtos de interesse alterados nesta aba: skuKey → item (ou null = removido)
   function readStoredPrefs() { try { const o = JSON.parse(localStorage.getItem(prefsKey())); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
   function normPrefs(o) {
     return {
       favorites: Array.isArray(o.favorites) ? o.favorites.filter((x) => typeof x === 'string') : [],
       progress: o.progress && typeof o.progress === 'object' ? o.progress : {},
-      sound: typeof o.sound === 'boolean' ? o.sound : undefined
+      sound: typeof o.sound === 'boolean' ? o.sound : undefined,
+      interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
+        .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : []
     };
   }
   function applyFavOps(list) { const s = new Set(list); for (const [id, on] of favOps) { if (on) s.add(id); else s.delete(id); } return [...s]; }
+  // Mesmo método dos favoritos, mas numa lista própria (produtos, não catálogos)
+  function applyInterestOps(list) {
+    const m = new Map(list.map((x) => [P.skuKey(x.sku), x]));
+    for (const [k, item] of interestOps) { if (item) m.set(k, item); else m.delete(k); }
+    return [...m.values()];
+  }
   function mergeProgress(a, b) {
     const out = { ...a };
     for (const [id, p] of Object.entries(b || {})) if (p && (!out[id] || String(p.at) > String(out[id].at))) out[id] = p;
     return out;
   }
-  function loadPrefs() { prefs = normPrefs(readStoredPrefs()); favOps.clear(); prefsDirty = false; }
+  function loadPrefs() { prefs = normPrefs(readStoredPrefs()); favOps.clear(); interestOps.clear(); prefsDirty = false; }
   function savePrefs() { prefsDirty = true; clearTimeout(prefsT); prefsT = setTimeout(flushPrefs, 600); }
   // Relê o que está gravado (outra aba pode ter mudado), mescla e grava
   function flushPrefs() {
     clearTimeout(prefsT); prefsT = null;
     if (!prefsDirty || !me) return;
     const raw = readStoredPrefs(), st = normPrefs(raw);
-    const out = { ...raw, favorites: applyFavOps(st.favorites), progress: mergeProgress(st.progress, prefs.progress) };
+    const out = { ...raw, favorites: applyFavOps(st.favorites), progress: mergeProgress(st.progress, prefs.progress), interests: applyInterestOps(st.interests) };
     if (typeof prefs.sound === 'boolean') out.sound = prefs.sound;
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
-    prefs.favorites = out.favorites; prefs.progress = out.progress;
-    favOps.clear(); prefsDirty = false;
+    prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests;
+    favOps.clear(); interestOps.clear(); prefsDirty = false;
   }
   window.addEventListener('storage', (e) => {
     if (!me || e.key !== prefsKey()) return;
     const st = normPrefs(readStoredPrefs());
     prefs.favorites = applyFavOps(st.favorites);
     prefs.progress = mergeProgress(st.progress, prefs.progress);
+    prefs.interests = applyInterestOps(st.interests);
+    updateInterestUI();
     if (typeof st.sound === 'boolean' && !prefsDirty) { prefs.sound = st.sound; setSound(st.sound, false); }
     if (view === 'shelf') {
       renderChips(visibleCatalogs());
@@ -1174,8 +1370,11 @@
       renderContinue();
     }
   });
-  window.addEventListener('pagehide', flushPrefs);
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushPrefs(); });
+  window.addEventListener('pagehide', () => { pageTimer.end('hidden'); flushPrefs(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { pageTimer.end('hidden'); flushPrefs(); }
+    else pageTimer.resume();
+  });
 
   /* ================= sessão: chave em IndexedDB (não exportável), perfil sem chave no Web Storage ================= */
   const IDB = (() => {
@@ -1291,13 +1490,18 @@
   function route(forced) {
     const h = forced || location.hash || lastRoute;
     if (!me) { closeReader(); showOnly('login'); return; }
-    const parts = h.replace(/^#\/?/, '').split('/');
+    // Endereço de produto: #/catalogo/<id>/<página>?produto=<SKU>
+    const qi = h.indexOf('?');
+    const parts = (qi >= 0 ? h.slice(0, qi) : h).replace(/^#\/?/, '').split('/');
+    const m = qi >= 0 ? /(?:^|&)produto=([^&]*)/.exec(h.slice(qi + 1)) : null;
+    let sku = '';
+    if (m) { try { sku = decodeURIComponent(m[1].replace(/\+/g, ' ')); } catch (e) { sku = m[1]; } }
     if (parts[0] === 'catalogo' && parts[1]) {
       let id = parts[1];
       try { id = decodeURIComponent(id); } catch (e) { /* mantém */ }
       // Veio da prateleira: o botão "Prateleira" do leitor pode simplesmente voltar no histórico
       if (!R.cat && view === 'shelf') { try { history.replaceState({ dmShelf: 1 }, ''); } catch (e) { /* noop */ } }
-      openReader(id, parseInt(parts[2], 10) || 1);
+      openReader(id, parseInt(parts[2], 10) || 1, sku);
       return;
     }
     const closed = closeReader();
@@ -1368,8 +1572,8 @@
     const { mail, wa } = contactInfo();
     $$('.contact[data-contact]').forEach((p) => {
       const links = [];
-      if (mail) links.push(`<a href="mailto:${esc(mail)}" aria-label="Enviar e-mail para o marketing (${esc(mail)})">E-mail</a>`);
-      if (wa) links.push(`<a href="https://wa.me/${wa}" target="_blank" rel="noopener noreferrer" aria-label="Falar com o marketing pelo WhatsApp (abre em outra aba)">WhatsApp</a>`);
+      if (mail) links.push(`<a href="${esc(mailtoUrl(mail))}" aria-label="Enviar e-mail para o marketing (${esc(mail)})">E-mail</a>`);
+      if (wa) links.push(`<a href="${esc(waUrl(wa))}" target="_blank" rel="noopener noreferrer" aria-label="Falar com o marketing pelo WhatsApp (abre em outra aba)">WhatsApp</a>`);
       p.hidden = !links.length;
       p.innerHTML = links.length ? `${esc(p.dataset.contact)} ${links.join(' · ')}` : '';
     });
@@ -1470,24 +1674,30 @@
     const msg = `Ativação da Prateleira de Catálogos Dellamed\nE-mail: ${setupState.email}\nNúmero de conferência: ${conf}\n\n${text}`;
     const am = $('#actMail'), aw = $('#actWhats');
     am.hidden = !mail;
-    if (mail) am.href = `mailto:${mail}?subject=${encodeURIComponent('Ativação da Prateleira de Catálogos')}&body=${encodeURIComponent(msg)}`;
+    if (mail) am.href = mailtoUrl(mail, 'Ativação da Prateleira de Catálogos', msg);
     aw.hidden = !wa;
-    if (wa) aw.href = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`;
+    if (wa) aw.href = waUrl(wa, msg);
     renderContacts();
     showLoginPart('activate');
     $('#actH').focus();
   }
   // Copiar: API da área de transferência; reserva com seleção (inclusive iOS)
-  async function copyFrom(ta, okMsg) {
-    try { await navigator.clipboard.writeText(ta.value); toast(okMsg); return true; }
+  // Sem campo na tela (ta ausente), a reserva usa um campo temporário invisível
+  async function copyText(text, okMsg, ta) {
+    try { await navigator.clipboard.writeText(text); toast(okMsg); return true; }
     catch (e) {
+      const tmp = !ta;
+      if (tmp) { ta = document.createElement('textarea'); ta.value = text; ta.className = 'sr-only'; (dlg.open ? dlg : document.body).appendChild(ta); }
       ta.focus(); ta.select();
       try { ta.setSelectionRange(0, 99999); } catch (_) { /* noop */ }
-      try { if (document.execCommand('copy')) { toast(okMsg); return true; } } catch (_) { /* noop */ }
-      toast('Selecione o texto e copie (Ctrl+C ou “Copiar” no celular).');
-      return false;
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) { /* noop */ }
+      if (tmp) ta.remove();
+      toast(ok ? okMsg : tmp ? 'Não foi possível copiar neste navegador.' : 'Selecione o texto e copie (Ctrl+C ou “Copiar” no celular).');
+      return ok;
     }
   }
+  const copyFrom = (ta, okMsg) => copyText(ta.value, okMsg, ta);
   $('#actCopy').addEventListener('click', () => copyFrom($('#actCode'), 'Código copiado.'));
   $('#setupBack').addEventListener('click', () => { showLoginPart('login'); $('#loginH').focus(); });
   $('#actBack').addEventListener('click', () => { $('#loginPass').value = ''; showLoginPart('login'); $('#loginH').focus(); });
@@ -1502,6 +1712,7 @@
     $('#mName').textContent = me.name;
     $('#mEmail').textContent = me.email;
     $('#rShareTxt').textContent = me.role === 'cliente' ? 'Compartilhar' : 'Enviar ao cliente';
+    updateInterestUI();
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
       lastRoute = '#/prateleira';
@@ -1666,7 +1877,7 @@
     const rt = e.target.closest('[data-retry]');
     if (rt) { const cv = rt.closest('.cover'); retryImg(cv && $('img', cv)); return; }
     const open = e.target.closest('[data-open]');
-    if (open) { navigate(`#/catalogo/${encodeURIComponent(open.dataset.open)}/${open.dataset.page || 1}`); return; }
+    if (open) { navigate(catalogHash(open.dataset.open, open.dataset.page || 1)); return; }
     const fav = e.target.closest('[data-fav]');
     if (fav) {
       const id = fav.dataset.fav, on = !prefs.favorites.includes(id);
@@ -1708,32 +1919,50 @@
     return jobs.length ? Promise.allSettled(jobs) : null;
   }
   const searchLoading = (ids) => ids.some((id) => searchLoads.has(id) && !SEARCH[id]);
-  function normPages(id) { if (!SEARCH_N[id] && SEARCH[id]) SEARCH_N[id] = SEARCH[id].map(norm); return SEARCH_N[id]; }
+  function normPages(id) { if (!SEARCH_N[id] && SEARCH[id]) SEARCH_N[id] = SEARCH[id].map((t) => joinUnits(norm(t))); return SEARCH_N[id]; }
   const wordRe = (t) => new RegExp('(^|[^a-z0-9])' + reEsc(t) + '(?=$|[^a-z0-9])');
   function search(q, onlyCat) {
-    const nq = norm(q.trim());
+    const nq = joinUnits(norm(q.trim()));
     if (nq.length < 2) return null;
     const terms = [...new Set(nq.split(/\s+/).filter(Boolean))];
     const res = terms.map(wordRe);
     const score = (txt) => res.reduce((a, r) => a + (r.test(txt) ? 1 : 0), 0);
     const cats = expiredLast(visibleCatalogs().filter((c) => !onlyCat || c.id === onlyCat));
     const catHits = onlyCat ? [] : cats
-      .map((c, ci) => { const t = norm(`${c.title} ${c.kind} ${(c.lines || []).join(' ')} ${c.desc || ''}`); return terms.every((x) => t.includes(x)) ? { c, ci, s: score(t) } : null; })
+      .map((c, ci) => { const t = joinUnits(norm(`${c.title} ${c.kind} ${(c.lines || []).join(' ')} ${c.desc || ''}`)); return terms.every((x) => t.includes(x)) ? { c, ci, s: score(t) } : null; })
       .filter(Boolean).sort((a, b) => b.s - a.s || a.ci - b.ci).map((x) => x.c);
+    // Produtos: código exato primeiro, depois início do código; senão todas as palavras (nome, categoria, benefício, capacidade, descrição)
+    const qk = P.skuKey(nq), prodAll = [];
+    if (PROD) for (const p of PROD.bySku.values()) {
+      const spot = productSpots(p.sku, onlyCat)[0] || null;
+      if (onlyCat && (!spot || spot.catalogId !== onlyCat)) continue; // busca do leitor: só produtos deste catálogo
+      const key = P.skuKey(p.sku);
+      const s = key === qk ? 1000 : qk.length >= 2 && key.startsWith(qk) ? 500 : terms.every((x) => p._n.includes(x)) ? score(p._n) : -1;
+      if (s >= 0) prodAll.push({ p, spot, s });
+    }
+    const prodHits = prodAll.sort((a, b) => b.s - a.s || a.p.name.localeCompare(b.p.name, 'pt-BR')).slice(0, 8);
+    // A página que já aparece como produto não se repete em "Nas páginas"
+    const taken = new Set(prodHits.filter((x) => x.spot).map((x) => x.spot.catalogId + ':' + x.spot.page));
     const pageHits = [];
     cats.forEach((c, ci) => {
       const arr = normPages(c.id); if (!arr) return;
-      arr.forEach((txt, i) => { if (terms.every((x) => txt.includes(x))) pageHits.push({ c, ci, page: i + 1, s: score(txt) }); });
+      arr.forEach((txt, i) => { if (!taken.has(c.id + ':' + (i + 1)) && terms.every((x) => txt.includes(x))) pageHits.push({ c, ci, page: i + 1, s: score(txt) }); });
     });
     // Palavra ou código exato primeiro; depois ocorrências parciais
     pageHits.sort((a, b) => b.s - a.s || a.ci - b.ci || a.page - b.page);
-    return { terms, catHits, pageHits: pageHits.slice(0, 40), total: pageHits.length };
+    return { terms, catHits, prodHits, pageHits: pageHits.slice(0, 40), total: pageHits.length };
   }
   // Normaliza caractere a caractere para achar a posição exata no texto original
   function normMap(s) {
     let out = ''; const map = [];
     for (let i = 0; i < s.length; i++) { const n = norm(s[i]); for (let j = 0; j < n.length; j++) { out += n[j]; map.push(i); } }
-    return { out, map };
+    // Mesma junção de número e unidade da busca ("150 kg" → "150kg"), mantendo o mapa de posições
+    const drop = new Set();
+    for (const m of out.matchAll(UNIT_GAP)) for (let k = m.index + 1; k < m.index + m[0].length; k++) drop.add(k);
+    if (!drop.size) return { out, map };
+    let o2 = ''; const m2 = [];
+    for (let k = 0; k < out.length; k++) if (!drop.has(k)) { o2 += out[k]; m2.push(map[k]); }
+    return { out: o2, map: m2 };
   }
   function snippetHTML(orig, terms) {
     if (!orig) return '';
@@ -1770,7 +1999,7 @@
     else input.removeAttribute('aria-activedescendant');
   }
   function renderResults(q, box, onlyCat, input, status) {
-    const tok = {}; input._tok = tok;
+    const tok = {}; input._tok = tok; input._count = 0;
     if (q.trim().length < 2) { setHTML(box, ''); closeBox(box, input); status.textContent = ''; return; }
     const ids = onlyCat ? [onlyCat] : visibleCatalogs().map((c) => c.id);
     const pending = ensureSearch(ids);
@@ -1779,7 +2008,14 @@
     if (!r) { setHTML(box, ''); closeBox(box, input); status.textContent = ''; return; }
     const loading = searchLoading(ids);
     let html = '', n = 0;
-    const opt = (inner, id, page) => `<button class="res" type="button" role="option" aria-selected="false" tabindex="-1" id="${box.id}-o${n++}" data-open="${esc(id)}" data-page="${page}">${inner}</button>`;
+    const opt = (inner, id, page, sku) => `<button class="res" type="button" role="option" aria-selected="false" tabindex="-1" id="${box.id}-o${n++}" data-open="${esc(id)}" data-page="${page}"${sku ? ` data-sku="${esc(sku)}"` : ''}>${inner}</button>`;
+    if (r.prodHits.length) {
+      html += `<p class="res-group" role="presentation">Produtos</p>` + r.prodHits.map(({ p, spot }) => {
+        const c = spot && cat(spot.catalogId);
+        const thumb = c ? resThumb(c, spot.page) : `<span class="res-ph" aria-hidden="true">${I.tag}</span>`;
+        return opt(`${thumb}<span><b>${esc(p.name)}</b><span class="where">Código ${esc(p.sku)}${c ? ` · ${esc(c.title)} · página ${spot.page}` : ''}</span></span>`, c ? c.id : '', c ? spot.page : 1, p.sku);
+      }).join('');
+    }
     if (r.catHits.length) {
       html += `<p class="res-group" role="presentation">Catálogos</p>` + r.catHits.map((c) =>
         opt(`<img data-cover="${esc(c.id)}" alt=""><span><b>${esc(c.title)}</b><span class="where">${plural(c.pages, 'página', 'páginas')} · ${esc((c.lines || []).join(' · '))}${isExpired(c) ? ' · vencido' : ''}</span></span>`, c.id, 1)).join('');
@@ -1794,13 +2030,22 @@
     showBox(box, input);
     setActive(box, input, -1);
     hydrate(box);
-    const total = r.catHits.length + r.total;
+    const total = r.catHits.length + r.prodHits.length + r.total;
+    input._count = total;
     status.textContent = total ? plural(total, 'resultado', 'resultados') : loading ? 'Carregando a busca…' : 'Nenhum resultado';
   }
   function wireSearch(input, box, status, onlyCatFn, onPick, onEscape) {
-    let t = null;
+    let t = null, st = null, lastTerm = '';
     const run = () => { clearTimeout(t); t = null; renderResults(input.value, box, onlyCatFn(), input, status); };
-    const choose = (b) => { closeBox(box, input); input.blur(); onPick(b.dataset.open, +b.dataset.page || 1); };
+    // Métrica: um evento por termo "assentado" (1,2 s depois da última tecla, ou ao escolher um resultado), nunca por tecla
+    const settle = () => {
+      clearTimeout(st); st = null;
+      const q = input.value.trim();
+      if (q.length < 2 || q === lastTerm) return;
+      lastTerm = q;
+      trackCatalogEvent('catalog_search', { search_term: q, results_count: input._count || 0, search_scope: onlyCatFn() ? 'catalogo' : 'prateleira' });
+    };
+    const choose = (b) => { settle(); closeBox(box, input); input.blur(); onPick(b.dataset.open, +b.dataset.page || 1, b.dataset.sku || ''); };
     input.addEventListener('focus', () => {
       if (!me) return;
       const oc = onlyCatFn();
@@ -1808,7 +2053,7 @@
       if (p) p.then(() => { if (document.activeElement === input && input.value.trim().length >= 2) run(); });
       if (input.value.trim().length >= 2) run();
     });
-    input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 140); });
+    input.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 140); clearTimeout(st); st = setTimeout(settle, 1200); });
     input.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') {
         if (t || box.hidden) run();
@@ -1832,19 +2077,37 @@
     box.addEventListener('mousedown', (e) => e.preventDefault()); // mantém o foco no campo
     box.addEventListener('click', (e) => { const b = e.target.closest('.res'); if (b) choose(b); });
   }
-  wireSearch($('#q'), $('#results'), $('#qStatus'), () => null, (id, p) => { $('#q').value = ''; navigate(`#/catalogo/${encodeURIComponent(id)}/${p}`); });
-  wireSearch($('#rq'), $('#rResults'), $('#rqStatus'), () => (R.cat ? R.cat.id : null), (id, p) => { $('#rq').value = ''; collapseRSearch(); goTo(p - 1); }, () => { collapseRSearch(true); });
+  wireSearch($('#q'), $('#results'), $('#qStatus'), () => null, (id, p, sku) => { $('#q').value = ''; if (sku) openProduct(sku, null); else navigate(catalogHash(id, p)); });
+  wireSearch($('#rq'), $('#rResults'), $('#rqStatus'), () => (R.cat ? R.cat.id : null), (id, p, sku) => { $('#rq').value = ''; collapseRSearch(); if (sku) openProduct(sku, R.cat && R.cat.id); else goTo(p - 1); }, () => { collapseRSearch(true); });
 
   /* ================= compartilhar ================= */
-  function share(c, page) {
+  // Catálogo, página ou produto (product = objeto do produtos.bin): o link leva à página e destaca o produto
+  function share(c, page, product) {
     if (!c) return;
     const rep = me.role !== 'cliente';
-    const link = `${location.origin}${location.pathname}#/catalogo/${encodeURIComponent(c.id)}/${page || 1}`;
-    const msg = `Olá! Segue o ${c.title} da Dellamed${page ? `, página ${page}` : ''}:\n${link}` + (rep ? `\n\nQualquer dúvida sobre os produtos, é só me chamar.\n${me.name}${me.company ? ' · ' + me.company : ''}` : '');
-    const exp = isExpired(c);
+    const link = `${location.origin}${location.pathname}${catalogHash(c.id, page, product && product.sku)}`;
+    const intro = product
+      ? `Veja o produto ${product.name} (${product.sku}) no catálogo ${c.title}, página ${page || 1}:`
+      : `Olá! Segue o ${c.title} da Dellamed${page ? `, página ${page}` : ''}:`;
+    shareDialog({
+      title: product ? (rep ? 'Enviar produto ao cliente' : 'Compartilhar produto') : rep ? 'Enviar ao cliente' : 'Compartilhar catálogo',
+      msg: `${intro}\n${link}${signature()}`,
+      name: product ? product.name : c.title,
+      subject: `${product ? product.name : c.title} · Dellamed`,
+      warn: isExpired(c) ? `Este catálogo venceu em ${fmtDate(c.validUntil)}. Confira se ainda é a versão que você quer enviar.` : '',
+      type: product ? 'product' : page ? 'page' : 'catalog',
+      params: { catalog_id: c.id, catalog_title: c.title, page_number: page || null, product_sku: product ? product.sku : undefined },
+      variant: product ? 'panel' : ''
+    });
+  }
+  // Assinatura de representante/equipe: só na mensagem, nunca nas métricas
+  const signature = () => (me.role !== 'cliente' ? `\n\nQualquer dúvida sobre os produtos, é só me chamar.\n${me.name}${me.company ? ' · ' + me.company : ''}` : '');
+  // Diálogo de envio (mensagem editável + WhatsApp, e-mail, compartilhar do sistema e copiar); a métrica sai só na ação real
+  function shareDialog({ title, msg, name, subject, warn, type, params, variant, note }) {
+    const sent = (method) => trackCatalogEvent('catalog_share', { ...params, content_type: type, method });
     openDialog({
-      title: rep ? 'Enviar ao cliente' : 'Compartilhar catálogo',
-      body: `${exp ? `<p class="warn-note">${WARN}<span>Este catálogo venceu em ${fmtDate(c.validUntil)}. Confira se ainda é a versão que você quer enviar.</span></p>` : ''}
+      title, variant,
+      body: `${warn ? `<p class="warn-note">${WARN}<span>${esc(warn)}</span></p>` : ''}
         <p class="dlg-sub">Mensagem pronta. Você pode editar antes de enviar.</p>
         <div class="field"><label class="field-label" for="shareText">Mensagem</label><textarea id="shareText" rows="6">${esc(msg)}</textarea></div>
         <div class="share-row">
@@ -1852,35 +2115,52 @@
           <a class="btn ghost sm" id="shareMail">E-mail</a>
           ${navigator.share ? '<button type="button" class="btn ghost sm" id="shareNative">Compartilhar…</button>' : ''}
         </div>
-        <p class="dlg-note">O link abre direto na página. Quem receber precisa ter acesso à Prateleira.</p>`,
-      actions: [{ label: 'Fechar', kind: 'ghost' }, { label: 'Copiar mensagem', kind: 'primary', onClick: () => copyFrom($('#shareText'), 'Mensagem copiada.') }]
+        <p class="dlg-note">${esc(note || 'O link abre direto na página. Quem receber precisa ter acesso à Prateleira.')}</p>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }, { label: 'Copiar mensagem', kind: 'primary', onClick: async () => { const ok = await copyFrom($('#shareText'), 'Mensagem copiada.'); if (ok) sent('copy'); return ok; } }]
     });
     const ta = $('#shareText');
     const upd = () => {
-      $('#shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(ta.value);
-      $('#shareMail').href = `mailto:?subject=${encodeURIComponent(c.title + ' · Dellamed')}&body=${encodeURIComponent(ta.value)}`;
+      $('#shareWa').href = waUrl('', ta.value);
+      $('#shareMail').href = mailtoUrl('', subject, ta.value);
     };
     upd();
     ta.addEventListener('input', upd);
+    $('#shareWa').addEventListener('click', () => sent('whatsapp'));
+    $('#shareMail').addEventListener('click', () => sent('email'));
     const nb = $('#shareNative');
     if (nb) nb.addEventListener('click', async () => {
-      try { await navigator.share({ title: c.title, text: ta.value }); closeDialog(); }
+      try { await navigator.share({ title: name, text: ta.value }); sent('native'); closeDialog(); }
       catch (e) { /* cancelado pela pessoa */ }
     });
   }
   const dlg = $('#dlg');
-  function openDialog({ title, body, actions }) {
-    dlg._ret = document.activeElement;
-    dlg.innerHTML = `<div class="dlg-body"><h2 id="dlgTitle">${esc(title)}</h2>${body}</div><div class="dlg-actions">${actions.map((a, i) => `<button type="button" class="btn ${a.kind || 'ghost'}" data-i="${i}">${esc(a.label)}</button>`).join('')}</div>`;
+  // variant 'panel': painel lateral no computador, folha inferior no celular (ficha do produto, interesses).
+  // onClose: limpeza ao fechar ou quando outro conteúdo substitui este (ex.: revogar o blob da imagem da ficha).
+  function openDialog({ title, body, actions = [], variant = '', onClose = null }) {
+    const wasOpen = dlg.open;
+    // Diálogo aberto a partir de outro (ex.: ficha → compartilhar): o foco volta ao ponto de origem, não ao botão que sumiu
+    if (!wasOpen) dlg._ret = document.activeElement;
+    if (dlg._onClose) { const f = dlg._onClose; dlg._onClose = null; f(); }
+    dlg._onClose = onClose;
+    dlg.className = variant;
+    const x = variant === 'panel' ? `<button type="button" class="dlg-x" data-dlg-close aria-label="Fechar">${I.close}</button>` : '';
+    dlg.innerHTML = `${x}<div class="dlg-body"><h2 id="dlgTitle">${esc(title)}</h2>${body}</div>${actions.length ? `<div class="dlg-actions">${actions.map((a, i) => `<button type="button" class="btn ${a.kind || 'ghost'}" data-i="${i}">${esc(a.label)}</button>`).join('')}</div>` : ''}`;
     $$('.dlg-actions button', dlg).forEach((b) => b.addEventListener('click', async () => {
       const a = actions[+b.dataset.i];
       const keep = a.onClick ? await a.onClick() : undefined;
       if (keep !== false) closeDialog();
     }));
+    const xb = $('[data-dlg-close]', dlg);
+    if (xb) xb.addEventListener('click', closeDialog);
+    if (wasOpen) { const f = $('button, a[href], textarea, input', dlg); if (f) f.focus(); return; }
     try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); }
   }
   function closeDialog() { try { dlg.close(); } catch (e) { dlg.removeAttribute('open'); dlg.dispatchEvent(new Event('close')); } }
-  dlg.addEventListener('close', () => { const r = dlg._ret; dlg._ret = null; if (r && r.isConnected && typeof r.focus === 'function') r.focus(); });
+  dlg.addEventListener('close', () => {
+    if (dlg.open) return; // o evento chega depois; se outro diálogo já abriu, ele não é desfeito
+    if (dlg._onClose) { const f = dlg._onClose; dlg._onClose = null; f(); }
+    const r = dlg._ret; dlg._ret = null; if (r && r.isConnected && typeof r.focus === 'function') r.focus();
+  });
   // Aviso curto: a região viva fica sempre no documento (só a aparência some)
   function toast(msg) {
     const t = $('#toast');
@@ -1888,6 +2168,210 @@
     t.textContent = msg;
     t.classList.add('show');
     t._t = setTimeout(() => { t.classList.remove('show'); t._t2 = setTimeout(() => { t.textContent = ''; }, 300); }, 3200);
+  }
+
+  /* ================= produtos: ficha, produtos de interesse e pedido de informações ================= */
+  const prodParams = (p, c, page) => ({ product_sku: p.sku, product_name: p.name, ...(c ? { catalog_id: c.id, catalog_title: c.title, page_number: page || null } : {}) });
+  const isInterest = (sku) => prefs.interests.some((x) => P.skuKey(x.sku) === P.skuKey(sku));
+  // Mesmo mecanismo dos favoritos (prefs + operações pendentes + savePrefs), numa lista própria
+  function setInterest(p, on, where) {
+    const k = P.skuKey(p.sku);
+    const item = on ? { sku: p.sku, catalogId: where.catalogId || '', page: where.page || 1, at: new Date().toISOString() } : null;
+    prefs.interests = prefs.interests.filter((x) => P.skuKey(x.sku) !== k);
+    if (item) prefs.interests.push(item);
+    interestOps.set(k, item);
+    savePrefs();
+    updateInterestUI();
+    trackCatalogEvent(on ? 'catalog_product_favorite' : 'catalog_product_remove', prodParams(p, cat(where.catalogId), where.page));
+  }
+  function updateInterestUI() {
+    const n = prefs.interests.length;
+    $$('[data-int-count]').forEach((s) => { s.textContent = fmtN(n); });
+    [$('#intBtn'), $('#rIntBtn')].forEach((b) => b.setAttribute('aria-label', `Produtos de interesse: ${plural(n, 'produto', 'produtos')}`));
+    $('#intBtn').hidden = n === 0;
+    $('#rIntBtn').hidden = !(n > 0 || (R.cat && catHasHotspots(R.cat.id)));
+  }
+  $('#intBtn').addEventListener('click', () => openInterests());
+  $('#rIntBtn').addEventListener('click', () => openInterests());
+
+  const quoteLine = (x) => {
+    const p = prodBySku(x.sku), c = cat(x.catalogId);
+    return `• ${p ? p.name : x.sku}\nCódigo: ${p ? p.sku : x.sku}${c ? `\nCatálogo: ${c.title}, página ${x.page}` : ''}`;
+  };
+  // Mensagem do pedido: texto padrão do comercial (produtos.bin) + lista; limit corta a lista em "e mais N produtos"
+  function quoteText(items, limit) {
+    const shown = limit == null ? items : items.slice(0, limit), more = items.length - shown.length;
+    const head = commercialInfo().msg || `Olá! Gostaria de receber mais informações sobre ${items.length === 1 ? 'este produto' : 'estes produtos'} Dellamed:`;
+    const foot = me && ROLE[me.role] ? `\n\nEnviado por: ${ROLE[me.role]} (Prateleira de Catálogos Dellamed)` : '';
+    return `${head}\n\n${shown.map(quoteLine).join('\n\n')}${more ? `\n\n…e mais ${plural(more, 'produto', 'produtos')}` : ''}${foot}`;
+  }
+  // WhatsApp: o endereço fica abaixo de ~1900 caracteres; o que não couber vira "e mais N produtos"
+  function quoteFit(items, wa) {
+    let n = items.length;
+    while (n > 1 && waUrl(wa, quoteText(items, n)).length > 1900) n--;
+    return { text: quoteText(items, n), cut: items.length - n };
+  }
+  // Pedido de informações: ponto ÚNICO de integração com o comercial (ficha do produto e painel de interesses).
+  function sendQuote(items, channel, context) {
+    const list = items.filter((x) => x && x.sku), com = commercialInfo();
+    if (!list.length || (channel === 'whatsapp' && !com.wa) || (channel === 'email' && !com.mail)) return false;
+    trackCatalogEvent('catalog_quote_request', { items_count: list.length, product_skus: list.map((x) => x.sku), channel, context });
+    switch (channel) {
+      case 'whatsapp': window.open(waUrl(com.wa, quoteFit(list, com.wa).text), '_blank', 'noopener'); return true;
+      case 'email': location.href = mailtoUrl(com.mail, 'Pedido de informações · Prateleira Dellamed', quoteText(list)); return true;
+      case 'copy': return copyText(quoteText(list), 'Mensagem copiada.');
+      // Novo canal (formulário, CRM, API) entra aqui como mais um "case", sem mudar quem chama.
+      // Uma API no mesmo domínio já é permitida pela CSP (connect-src 'self'); domínios externos exigem mudar o build.ps1.
+      default: return false;
+    }
+  }
+
+  // Imagem da ficha: recorte da região do produto (product.image ou o "+" tocado) da página já decifrada; vira um blob próprio
+  async function productImage(p, spot) {
+    const pi = p.image, pc = pi && cat(pi.catalogId);
+    const reg = pc && P.validHotspot({ ...pi, product: p.sku }) && pi.page <= pc.pages ? pi : spot;
+    if (!reg) return null;
+    const live = R.cat && R.cat.id === reg.catalogId && !R.simple ? R.imgs[reg.page - 1] : null;
+    let im = live && live.complete && live.naturalWidth ? live : null; // desenha do elemento carregado (o src pode já ter sido revogado pelo LRU)
+    if (!im) {
+      const u = await pageURL(reg.catalogId, reg.page);
+      im = await new Promise((res, rej) => { const x = new Image(); x.onload = () => res(x); x.onerror = rej; x.src = u; });
+    }
+    const W = im.naturalWidth, H = im.naturalHeight, sx = reg.x / 100 * W, sy = reg.y / 100 * H;
+    const sw = Math.min(W - sx, reg.width / 100 * W), sh = Math.min(H - sy, reg.height / 100 * H);
+    if (!(sw > 1 && sh > 1)) return null;
+    const k = Math.min(1, 900 / Math.max(sw, sh)), cv = document.createElement('canvas');
+    cv.width = Math.round(sw * k); cv.height = Math.round(sh * k);
+    cv.getContext('2d').drawImage(im, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+    const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9));
+    return blob ? URL.createObjectURL(blob) : null;
+  }
+  // Ficha do produto (painel). where: { catalogId, page, spot } — o toque no "+" nunca sai da página.
+  function openProductCard(p, where = {}) {
+    const c = cat(where.catalogId), page = c ? where.page || 1 : 0;
+    const com = commercialInfo(), url = safeUrl(p.url), params = prodParams(p, c, page);
+    const contact = com.wa ? 'wa' : com.mail ? 'mail' : '';
+    const facts = [['Código', p.sku], ['Categoria', p.category], ['Capacidade', p.capacity]].filter(([, v]) => v);
+    const spot = { catalogId: c ? c.id : '', page: page || 1 };
+    let blob = null, alive = true;
+    openDialog({
+      title: p.name, variant: 'panel',
+      body: `<div class="pc-media loading" id="pcMedia"></div>
+        ${p.benefit ? `<p class="pc-benefit">${esc(p.benefit)}</p>` : ''}
+        <dl class="pc-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+        ${p.description ? `<p class="pc-desc">${esc(p.description)}</p>` : ''}
+        <div class="pc-actions">
+          ${url ? `<a class="btn primary block" id="pcVer" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Ver produto</a>` : ''}
+          ${contact ? `<button type="button" class="btn ${url ? 'ghost' : 'primary'} block" id="pcTalk">${contact === 'wa' ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}
+          <button type="button" class="btn ghost block" id="pcInt" aria-pressed="false"></button>
+          ${c ? '<button type="button" class="btn ghost block" id="pcShare">Compartilhar</button>' : ''}
+        </div>
+        ${c ? `<p class="dlg-note">${esc(c.title)} · página ${page}</p>` : ''}`,
+      onClose: () => { alive = false; if (blob) URL.revokeObjectURL(blob); }
+    });
+    trackCatalogEvent('catalog_product_view', params);
+    const media = $('#pcMedia');
+    productImage(p, where.spot).catch(() => null).then((u) => {
+      if (!alive) { if (u) URL.revokeObjectURL(u); return; }
+      blob = u;
+      media.classList.remove('loading');
+      media.innerHTML = u ? `<img src="${esc(u)}" alt="${esc(p.name)}">` : `<span class="pc-ph">${I.tag}<span>Imagem indisponível</span></span>`;
+    });
+    const ib = $('#pcInt');
+    const paintInt = () => { const on = isInterest(p.sku); ib.setAttribute('aria-pressed', String(on)); ib.innerHTML = on ? `Nos seus interesses ${I.check}` : `${I.heart} Adicionar aos interesses`; };
+    paintInt();
+    ib.addEventListener('click', () => { setInterest(p, !isInterest(p.sku), spot); paintInt(); });
+    const ver = $('#pcVer');
+    if (ver) ver.addEventListener('click', () => trackCatalogEvent('catalog_product_click', { ...params, action: 'ver_produto' }));
+    const talk = $('#pcTalk');
+    if (talk) talk.addEventListener('click', () => {
+      if (contact === 'wa') trackCatalogEvent('catalog_whatsapp_click', { ...params, context: 'produto' });
+      sendQuote([{ sku: p.sku, ...spot }], contact === 'wa' ? 'whatsapp' : 'email', 'produto');
+    });
+    const sh = $('#pcShare');
+    if (sh) sh.addEventListener('click', () => share(c, page, p));
+  }
+  // Painel "Produtos de interesse": reabrir, remover, compartilhar a lista e pedir informações de todos
+  function openInterests() {
+    const items = prefs.interests.slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    const com = commercialInfo();
+    const channel = com.wa ? 'whatsapp' : com.mail ? 'email' : 'copy';
+    const cut = items.length && channel === 'whatsapp' ? quoteFit(items, com.wa).cut : 0;
+    const row = (x) => {
+      const p = prodBySku(x.sku), c = cat(x.catalogId), name = p ? p.name : x.sku;
+      return `<li class="int-item"><button type="button" class="int-open" data-int-open="${esc(x.sku)}"><b>${esc(name)}</b><span class="where">Código ${esc(p ? p.sku : x.sku)}${c ? ` · ${esc(c.title)} · página ${x.page}` : ''}</span></button><button type="button" class="int-rm" data-int-rm="${esc(x.sku)}" aria-label="Remover ${esc(name)} dos interesses" title="Remover">${I.close}</button></li>`;
+    };
+    openDialog({
+      title: 'Produtos de interesse', variant: 'panel',
+      body: items.length ? `<p class="dlg-sub">Produtos que você marcou nos catálogos, guardados neste aparelho.</p>
+        <ul class="int-list">${items.map(row).join('')}</ul>
+        ${cut ? `<p class="warn-note">${WARN}<span>A mensagem do WhatsApp leva ${items.length - cut} de ${items.length} produtos (limite de tamanho). Para enviar todos, copie a mensagem completa.</span></p>` : ''}
+        <div class="pc-actions">
+          <button type="button" class="btn primary block" id="intAsk">${channel === 'copy' ? 'Copiar pedido de informações' : 'Solicitar informações sobre todos'}</button>
+          ${cut ? '<button type="button" class="btn ghost block" id="intCopy">Copiar mensagem completa</button>' : ''}
+          <button type="button" class="btn ghost block" id="intShare">Compartilhar lista</button>
+        </div>`
+        : `<p class="int-empty">Nenhum produto ainda. No catálogo, ${coarse ? 'toque' : 'clique'} no <b>+</b> de um produto e escolha “Adicionar aos interesses”.</p>`
+    });
+    const find = (sku) => prefs.interests.find((x) => P.skuKey(x.sku) === P.skuKey(sku));
+    const list = $('.int-list', dlg);
+    if (list) list.addEventListener('click', (e) => {
+      const rm = e.target.closest('[data-int-rm]');
+      if (rm) { const it = find(rm.dataset.intRm); if (it) setInterest(prodBySku(it.sku) || { sku: it.sku, name: it.sku }, false, it); openInterests(); return; }
+      const op = e.target.closest('[data-int-open]');
+      if (op) { const it = find(op.dataset.intOpen); closeDialog(); if (it) goProduct(it.sku, it.catalogId, it.page); }
+    });
+    const ask = $('#intAsk');
+    if (ask) ask.addEventListener('click', () => {
+      if (channel === 'whatsapp') trackCatalogEvent('catalog_whatsapp_click', { context: 'interesses', items_count: items.length });
+      sendQuote(items, channel, 'interesses');
+    });
+    const cp = $('#intCopy');
+    if (cp) cp.addEventListener('click', () => copyText(quoteText(items), 'Mensagem completa copiada.'));
+    const sl = $('#intShare');
+    if (sl) sl.addEventListener('click', () => shareList(items));
+  }
+  // Lista de interesses para enviar a alguém (cada produto com o link da página)
+  function shareList(items) {
+    const base = `${location.origin}${location.pathname}`;
+    const lines = items.map((x) => {
+      const p = prodBySku(x.sku), c = cat(x.catalogId);
+      return `• ${p ? p.name : x.sku} (${p ? p.sku : x.sku})${c ? `\n${c.title}, página ${x.page}: ${base}${catalogHash(c.id, x.page, x.sku)}` : ''}`;
+    });
+    shareDialog({
+      title: me.role === 'cliente' ? 'Compartilhar lista' : 'Enviar lista ao cliente',
+      msg: `Olá! Seguem os produtos Dellamed que separei:\n\n${lines.join('\n\n')}${signature()}`,
+      name: 'Produtos Dellamed', subject: 'Produtos Dellamed',
+      type: 'list', params: { items_count: items.length, product_skus: items.map((x) => x.sku) }, variant: 'panel'
+    });
+  }
+  // Produto pedido (endereço, busca, interesses): página com o "+" dele no catálogo (a pedida, se tiver). page 0 = sem "+" aqui.
+  function productTarget(cid, page, sku) {
+    const p = prodBySku(sku);
+    if (!p) return null;
+    const k = P.skuKey(p.sku);
+    if (page && hotspotsOn(cid, page).some((h) => P.skuKey(h.product) === k)) return { p, page };
+    const h = productSpots(p.sku, cid).find((x) => x.catalogId === cid);
+    return { p, page: h ? h.page : 0 };
+  }
+  // Busca: abre o catálogo/página do produto (o atual primeiro) com destaque; sem "+" em lugar nenhum, abre a ficha
+  function openProduct(sku, preferCid) {
+    const p = prodBySku(sku);
+    if (!p) { toast('Este produto não está disponível.'); return; }
+    const h = productSpots(p.sku, preferCid)[0];
+    if (h) { goProduct(p.sku, h.catalogId, h.page); return; }
+    const pi = p.image && cat(p.image.catalogId) ? p.image : null;
+    openProductCard(p, pi ? { catalogId: pi.catalogId, page: pi.page } : R.cat ? { catalogId: R.cat.id, page: curIndex() + 1 } : {});
+  }
+  // No mesmo catálogo só folheia (sem nova entrada no histórico); em outro, usa o endereço do produto
+  function goProduct(sku, cid, page) {
+    if (!cat(cid)) { openProduct(sku, null); return; }
+    if (R.cat && R.cat.id === cid && view === 'reader') {
+      const t = productTarget(cid, page, sku);
+      if (t) aimProduct(t); else goTo(page - 1);
+      return;
+    }
+    navigate(catalogHash(cid, page, sku));
   }
 
   /* ================= leitor ================= */
@@ -1905,7 +2389,8 @@
     simple: false,   // uma imagem por vez (catálogo de 1 página ou folheador indisponível)
     fallback: false, // modo simples porque o folheador não carregou
     pages: [], imgs: [], orientation: 'landscape', bookW: 0, cur: 0, z: 1, tx: 0, ty: 0, shift: 0,
-    viewT: null, hashT: null, loaderT: null, statusT: null, lastView: '', pendingProg: null
+    viewT: null, hashT: null, loaderT: null, statusT: null, lastView: '', pendingProg: null,
+    hl: null // produto em destaque (endereço/busca/interesses): { sku, idx, seen, pulsed }
   };
   let soundOn = false, audioCtx = null;
 
@@ -1930,7 +2415,7 @@
   }
   const pageCssW = () => (R.simple || R.solo || R.orientation === 'portrait' ? R.bookW : R.bookW / 2);
   const bookH = () => pageCssW() / R.ratio;
-  function hideLoader() { rLoader.hidden = true; clearTimeout(R.loaderT); R.loaderT = null; }
+  function hideLoader() { rLoader.hidden = true; clearTimeout(R.loaderT); R.loaderT = null; showHighlight(); }
 
   /* ----- imagens das páginas (com memória limitada) ----- */
   function unsetPage(i) {
@@ -1990,10 +2475,7 @@
     if (isDecryptFail(e)) { keysRotated(e); return; }
     const pageEl = R.pages[i];
     if (!pageEl || $('.img-err', pageEl)) return;
-    const d = document.createElement('div');
-    d.className = 'img-err';
-    d.innerHTML = `<span>Não foi possível carregar ·</span><button type="button" class="btn ghost sm" data-retry-page="${i}">Tentar de novo</button>`;
-    pageEl.appendChild(d);
+    pageEl.appendChild(errBox(`data-retry-page="${i}"`));
     if (!rLoader.hidden) hideLoader();
   }
   function clearPageErr(pageEl) { const x = pageEl && $('.img-err', pageEl); if (x) x.remove(); }
@@ -2024,6 +2506,7 @@
       const img = document.createElement('img');
       img.alt = R.cat.title; img.decoding = 'async'; img.draggable = false;
       img.addEventListener('error', () => { if (img.getAttribute('src')) { img.removeAttribute('src'); delete img.dataset.idx; pageFail(0, null); } });
+      img.addEventListener('load', () => { const l = R.book && $(':scope > .interactive-layer', R.book); if (l) fitSimpleLayer(l); });
       R.book.appendChild(img);
       R.imgs.push(img); R.pages.push(R.book);
       return;
@@ -2099,6 +2582,7 @@
     pf.on('changeOrientation', (e) => { R.orientation = e.data; syncUI(); });
     pf.on('changeState', (e) => {
       R.pfState = e.data;
+      stage.classList.toggle('flipping', e.data === 'flipping' || e.data === 'user_fold'); // esconde os "+" durante a virada
       if (e.data === 'flipping') { playFlip(); if (R.z > 1) zoomTo(1); if (pf.getCurrentPageIndex() === 0 || isLastLone()) setShift(0); }
       else if (e.data === 'read') syncUI();
     });
@@ -2117,7 +2601,10 @@
     return s.length === 1 && s[0] === R.n - 1 && R.n > 1;
   }
   function setShift(v) { R.shift = v; applyTransform(); }
-  function applyTransform() { holder.style.transform = `translate(${R.shift + R.tx}px, ${R.ty}px) scale(${R.z})`; }
+  function applyTransform() {
+    holder.style.transform = `translate(${R.shift + R.tx}px, ${R.ty}px) scale(${R.z})`;
+    holder.style.setProperty('--z', R.z); // o "+" compensa o zoom e mantém o tamanho
+  }
   function syncUI() {
     if (!R.cat) return;
     const i = curIndex(), s = spreadOf(i), lastShown = s[s.length - 1];
@@ -2133,20 +2620,27 @@
     else setShift(0);
     ensureSrc(i);
     if (R.simple) fillPageTexts();
+    renderHotspots();
     const cid = R.cat.id, key = cid + ':' + s.join(',');
+    if (pageTimer.cur && pageTimer.cur.key !== key) pageTimer.end('page_change');
     clearTimeout(R.statusT);
     R.statusT = setTimeout(() => { $('#rStatus').textContent = `Página ${label} de ${R.n}`; }, 600);
     clearTimeout(R.viewT);
-    if (key !== R.lastView) { R.pendingProg = { cid, key, page: s[0] + 1 }; R.viewT = setTimeout(saveProgressNow, 700); }
+    if (key !== R.lastView) { R.pendingProg = { cid, key, page: s[0] + 1, label }; R.viewT = setTimeout(() => saveProgressNow(true), 700); }
+    // ?produto= fica no endereço enquanto a página do produto destacado está visível; sai quando a pessoa folheia para outra
+    const hl = R.hl;
+    if (hl) { if (s.includes(hl.idx)) hl.seen = true; else if (hl.seen) R.hl = null; }
     // O endereço acompanha a página, sem criar entradas no histórico
     clearTimeout(R.hashT);
     R.hashT = setTimeout(() => {
       if (!R.cat || R.cat.id !== cid) return;
-      const h = `#/catalogo/${encodeURIComponent(cid)}/${s[0] + 1}`;
+      if (R.hl && !R.hl.seen) return; // ainda folheando até a página do produto
+      const h = catalogHash(cid, s[0] + 1, R.hl ? R.hl.sku : '');
       if (location.hash !== h) { try { history.replaceState(history.state, '', h); lastRoute = h; } catch (e) { /* noop */ } }
     }, 400);
   }
-  function saveProgressNow() {
+  // settled: a página assentou (chamada pelo temporizador do syncUI); ao fechar o leitor só grava o progresso
+  function saveProgressNow(settled) {
     clearTimeout(R.viewT); R.viewT = null;
     const p = R.pendingProg; R.pendingProg = null;
     if (!p || !me) return;
@@ -2154,6 +2648,11 @@
     prefs.progress = prefs.progress || {};
     prefs.progress[p.cid] = { page: p.page, at: new Date().toISOString() };
     savePrefs();
+    if (settled === true && R.cat && R.cat.id === p.cid) {
+      const info = { catalog_id: p.cid, catalog_title: R.cat.title, page_number: p.page, pages: p.label };
+      trackCatalogEvent('catalog_page_view', info);
+      pageTimer.start(p.key, info);
+    }
   }
   function goTo(i) {
     if (!R.cat) return;
@@ -2171,10 +2670,73 @@
   const flipNext = () => { if (R.pf) R.pf.flipNext(); else goTo(R.cur + 1); };
   const flipPrev = () => { if (R.pf) R.pf.flipPrev(); else goTo(R.cur - 1); };
 
-  function openReader(id, page) {
+  /* ----- produtos na página: "+" sobre cada produto, só nas páginas visíveis ----- */
+  function hotspotHTML(h, i) {
+    const p = prodBySku(h.product);
+    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-label="Ver produto: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Ver produto</span></button></div>`;
+  }
+  // Modo simples: a imagem usa object-fit: contain; a camada cobre só a área real da página
+  function fitSimpleLayer(layer) {
+    const im = R.imgs[0], bw = R.book.clientWidth, bh = R.book.clientHeight;
+    const nw = im && im.naturalWidth, nh = im && im.naturalHeight;
+    if (!nw || !nh || !bw || !bh) { layer.removeAttribute('style'); return; }
+    const s = Math.min(bw / nw, bh / nh), w = nw * s, h = nh * s;
+    layer.style.cssText = `left:${(bw - w) / 2}px;top:${(bh - h) / 2}px;width:${w}px;height:${h}px;right:auto;bottom:auto`;
+  }
+  // Chamado pelo syncUI (folhear, orientação, redimensionar): cria a camada nas páginas visíveis e remove das outras
+  function renderHotspots() {
+    if (!R.cat || !R.book) return;
+    const cid = R.cat.id, vis = R.simple ? [R.cur] : spreadOf(curIndex());
+    R.pages.forEach((host, i) => {
+      const idx = R.simple ? R.cur : i;
+      const list = vis.includes(idx) ? hotspotsOn(cid, idx + 1) : [];
+      let layer = $(':scope > .interactive-layer', host);
+      if (!list.length) { if (layer) layer.remove(); return; }
+      if (!layer) { layer = document.createElement('div'); layer.className = 'interactive-layer'; host.appendChild(layer); }
+      const key = cid + ':' + (idx + 1);
+      if (layer.dataset.key !== key) { layer.dataset.key = key; layer.innerHTML = list.map(hotspotHTML).join(''); }
+      if (R.simple) fitSimpleLayer(layer);
+    });
+    showHighlight();
+  }
+  // Destaque do produto pedido: pulso e contorno por ~2,5 s quando a página aparece (sem pulso com movimento reduzido)
+  function showHighlight() {
+    const hl = R.hl;
+    if (!hl || hl.pulsed || !R.cat || !rLoader.hidden || (R.pf && R.pfState !== 'read')) return;
+    const host = R.simple ? (R.cur === hl.idx ? R.book : null) : R.pages[hl.idx];
+    const layer = host && $(':scope > .interactive-layer', host);
+    const k = P.skuKey(hl.sku);
+    const areas = layer ? $$('.product-hotspot', layer).filter((b) => P.skuKey(b.dataset.sku) === k).map((b) => b.parentNode) : [];
+    if (!areas.length) return;
+    hl.pulsed = true;
+    areas.forEach((a) => a.classList.add('pulse'));
+    setTimeout(() => areas.forEach((a) => a.classList.remove('pulse')), 2600);
+    toast(coarse ? 'Toque no + para ver o produto' : 'Clique no + para ver o produto');
+  }
+  function openHotspot(b) {
+    if (!R.cat) return;
+    const page = +b.dataset.page, h = hotspotsOn(R.cat.id, page)[+b.dataset.i], p = h && prodBySku(h.product);
+    if (!p) return;
+    trackCatalogEvent('catalog_product_click', { ...prodParams(p, R.cat, page), action: 'hotspot' });
+    openProductCard(p, { catalogId: R.cat.id, page, spot: h });
+  }
+  // Vai à página do produto no catálogo aberto e marca o destaque (sem "+" neste catálogo: abre a ficha)
+  function aimProduct(t) {
+    if (!t.page) { openProductCard(t.p, { catalogId: R.cat.id, page: curIndex() + 1 }); return; }
+    R.hl = { sku: t.p.sku, idx: t.page - 1, seen: false, pulsed: false };
+    const here = spreadOf(curIndex()).includes(t.page - 1);
+    goTo(t.page - 1);
+    if (here) syncUI(); // já visível: goTo não redesenha
+  }
+
+  function openReader(id, page, sku) {
     const c = cat(id);
     if (!c) { toast('Este catálogo não está disponível.'); navigate('#/prateleira'); return; }
-    if (R.cat && R.cat.id === id) { showOnly('reader'); if (page) goTo(page - 1); return; }
+    // ?produto=<SKU>: página com o "+" do produto (a pedida, se tiver; senão a primeira deste catálogo), com destaque
+    const t = sku ? productTarget(id, page, sku) : null;
+    if (sku && !t) toast('Este produto não está disponível.');
+    if (R.cat && R.cat.id === id) { showOnly('reader'); if (t) aimProduct(t); else if (page) goTo(page - 1); return; }
+    if (R.cat) pageTimer.end('catalog_change');
     closeReader();
     showOnly('reader');
     const ae = document.activeElement;
@@ -2185,7 +2747,8 @@
     const canFlip = !R.single && !!(window.St && window.St.PageFlip);
     R.simple = !canFlip; R.fallback = !R.single && !canFlip;
     R.orientation = 'landscape'; R.pfState = 'read'; R.lastView = ''; R.pendingProg = null;
-    R.cur = clamp((page || 1) - 1, 0, R.n - 1);
+    R.cur = clamp(((t && t.page) || page || 1) - 1, 0, R.n - 1);
+    R.hl = t && t.page ? { sku: t.p.sku, idx: R.cur, seen: false, pulsed: false } : null;
     $('#rTitle').innerHTML = titleHTML(c.title);
     $('#rMeta').textContent = `${plural(R.n, 'página', 'páginas')} · ${c.kind || ''} · atualizado em ${fmtDate(c.updated)}`;
     $('#rLines').innerHTML = LINES.map((l) => ((c.lines || []).includes(l) ? `<em class="on">${l}</em>` : l)).join('<span>•</span>');
@@ -2216,20 +2779,24 @@
     const p = ensureSearch([c.id]);
     if (p) p.then(() => { if (R.cat === c) fillPageTexts(); });
     fillPageTexts();
+    updateInterestUI();
+    trackCatalogEvent('catalog_open', { page_number: R.cur + 1, product_sku: t ? t.p.sku : undefined });
+    if (t && !t.page) openProductCard(t.p, { catalogId: id, page: R.cur + 1 }); // produto sem "+" neste catálogo
   }
   function closeReader() {
     if (!R.cat) return null;
     const id = R.cat.id;
+    pageTimer.end('close');
     saveProgressNow();
     try { if (R.pf) R.pf.destroy(); } catch (e) { /* noop */ }
     clearTimeout(R.loaderT); clearTimeout(R.viewT); clearTimeout(R.hashT); clearTimeout(R.statusT); clearTimeout(clickT);
     R.loaderT = R.viewT = R.hashT = R.statusT = null; clickT = null;
-    R.pf = null; R.cat = null; R.book = null; R.pages = []; R.imgs = [];
+    R.pf = null; R.cat = null; R.book = null; R.pages = []; R.imgs = []; R.hl = null;
     G.pts.clear(); G.pinch = null; G.drag = null;
     unobserveIn(thumbs);
     holder.innerHTML = ''; thumbs.innerHTML = ''; holder.style.width = '';
     R.z = 1; R.tx = 0; R.ty = 0; R.shift = 0; applyTransform();
-    stage.classList.remove('zoomed', 'dragging', 'has-banner');
+    stage.classList.remove('zoomed', 'dragging', 'has-banner', 'flipping');
     collapseRSearch();
     dropCatalogChunks(id); // capas continuam em memória
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
@@ -2284,7 +2851,7 @@
 
   const G = { pts: new Map(), pinch: null, drag: null, lastTap: null, lastType: '', pinchEnd: 0 };
   let clickT = null, downAt = null;
-  const gestureTarget = (e) => !!(R.cat && e.target && e.target.closest && !e.target.closest('button, a, input, .thumbs, .results, .r-banner'));
+  const gestureTarget = (e) => !!(R.cat && e.target && e.target.closest && !e.target.closest('button, a, input, .thumbs, .results, .r-banner, .product-hotspot'));
   stage.addEventListener('pointerdown', (e) => {
     G.lastType = e.pointerType;
     if (!gestureTarget(e)) return;
@@ -2381,17 +2948,27 @@
     R.tx -= e.deltaX; R.ty -= e.deltaY; clampPan(); applyTransform();
     clearTimeout(pan._t); pan._t = setTimeout(() => stage.classList.remove('dragging'), 120);
   }, { passive: false });
+  // Com zoom, a camada de arrasto cobre o livro: um toque/clique parado sobre um "+" abre o produto
+  pan.addEventListener('pointerdown', (e) => { pan._down = { x: e.clientX, y: e.clientY }; });
+  pan.addEventListener('pointerup', (e) => {
+    const d = pan._down; pan._down = null;
+    if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) return;
+    const hs = document.elementsFromPoint(e.clientX, e.clientY).find((el) => el.classList && el.classList.contains('product-hotspot'));
+    if (hs) openHotspot(hs);
+  });
   // Pinça no touchpad (Ctrl + roda)
   stage.addEventListener('wheel', (e) => {
     if (!R.cat || !e.ctrlKey) return;
     e.preventDefault();
     zoomTo(R.z * Math.exp(-e.deltaY / 300), e.clientX, e.clientY);
   }, { passive: false });
-  // Botão "Tentar de novo" dentro da página: o folheador não deve tratar esse toque
+  // Botão "Tentar de novo" e "+" do produto dentro da página: o folheador não deve tratar esse toque (nem arrastar a folha)
   ['mousedown', 'touchstart', 'pointerdown'].forEach((t) => holder.addEventListener(t, (e) => {
-    if (e.target.closest && e.target.closest('[data-retry-page]')) e.stopPropagation();
+    if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot')) e.stopPropagation();
   }, { capture: true, passive: true }));
   holder.addEventListener('click', (e) => {
+    const hs = e.target.closest('.product-hotspot');
+    if (hs) { e.stopPropagation(); openHotspot(hs); return; }
     const b = e.target.closest('[data-retry-page]');
     if (!b) return;
     e.stopPropagation();

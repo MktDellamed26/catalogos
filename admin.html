@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-ldFfRY1B64Kh/LPpuISn8sbKvyWU1g+cWZqXLOpWb4M=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-k9juYZyc40rJa/yZHpxtXP56RJYgMHBU1bEqomFrFM8=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -168,7 +168,50 @@
   .stage .btn.primary { background: var(--white); color: var(--navy); }
   .stage :focus-visible { outline-color: var(--sky); }
   .old { max-width: 540px; margin: 36px auto; padding: 22px 24px; border-radius: 16px; background: var(--white); color: var(--ink); font-size: 15px; }
-  @media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } .wrap { padding: 20px 14px 96px; } .doc span { display: none; } }
+
+  /* Produtos e áreas de produto (editor visual) */
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 11px; font-weight: 700; }
+  .hs-tools { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .hs-tools .field { flex: 1 1 280px; max-width: 440px; }
+  .hs-nav { display: flex; align-items: center; gap: 6px; height: 44px; }
+  .hs-pg { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+  .hs-pg .input { width: 76px; height: 36px; padding: 0 8px; text-align: center; }
+  .hs-thumbs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 8px; }
+  .hs-th { position: relative; flex: none; width: 58px; padding: 0; border: 2px solid transparent; border-radius: 6px; background: var(--light); cursor: pointer; }
+  .hs-th img { display: block; width: 100%; border-radius: 4px; object-fit: cover; object-position: top; }
+  .hs-th span { position: absolute; left: 3px; bottom: 3px; padding: 0 5px; border-radius: 999px; background: var(--white); color: var(--navy); font-size: 10px; font-weight: 700; }
+  .hs-th[aria-current="page"] { border-color: var(--navy); }
+  .hs-th.has::after { content: ""; position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); box-shadow: 0 0 0 2px var(--navy); }
+  .hs-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+  .hs-stage { position: relative; margin: 0 auto; max-width: 100%; background: var(--light); box-shadow: 0 2px 10px -4px rgba(20, 32, 60, .45); touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+  .hs-stage img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-user-drag: none; }
+  .hs-rects { position: absolute; inset: 0; }
+  .hs-msg { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center; color: var(--ink-2); font-size: 13px; }
+  .hs-rect { position: absolute; border: 2px solid var(--navy); background: rgba(139, 184, 232, .15); cursor: move; }
+  .hs-rect.changed, .hs-rect.is-new { border-style: dashed; }
+  .hs-rect.sel { background: rgba(139, 184, 232, .35); box-shadow: 0 0 0 2px var(--white); z-index: 2; }
+  .hs-tag { position: absolute; left: -2px; top: 0; transform: translateY(-100%); max-width: 240px; padding: 1px 6px; border-radius: 4px 4px 0 0; background: var(--navy); color: var(--white); font-size: 11px; font-weight: 600; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+  .hs-h { position: absolute; width: 12px; height: 12px; border: 2px solid var(--navy); border-radius: 2px; background: var(--white); }
+  .hs-h.nw { left: -7px; top: -7px; cursor: nwse-resize; }
+  .hs-h.ne { right: -7px; top: -7px; cursor: nesw-resize; }
+  .hs-h.sw { left: -7px; bottom: -7px; cursor: nesw-resize; }
+  .hs-h.se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+  .hs-side { gap: 10px; }
+  .hs-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .hs-list li { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid transparent; border-radius: 10px; background: var(--light); }
+  .hs-list li.sel { border-color: var(--navy); background: rgba(139, 184, 232, .2); }
+  .hs-pick { display: grid; gap: 2px; padding: 0; border: 0; background: none; color: var(--navy); text-align: left; cursor: pointer; }
+  .hs-pick b { font-weight: 600; }
+  .hs-pick span { font-size: 12px; color: var(--ink-2); }
+  .hs-menu summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--navy); }
+  .hs-menu .actions { margin-top: 6px; }
+  .hs-mobile { display: none; }
+  .pp-list { display: grid; gap: 6px; max-height: 320px; overflow: auto; }
+  .pp-item { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--hair); border-radius: 10px; background: var(--white); text-align: left; cursor: pointer; }
+  .pp-item:hover, .pp-item:focus-visible { border-color: var(--navy); background: rgba(139, 184, 232, .12); }
+  .pp-item b { color: var(--navy); font-weight: 600; }
+  .pp-item span { font-size: 12px; color: var(--ink-2); }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } .wrap { padding: 20px 14px 96px; } .doc span { display: none; } .hs-desk { display: none; } .hs-mobile { display: block; } }
 </style>
 
 <header class="top">
@@ -213,12 +256,14 @@
     <div class="main-head">
       <div class="seg" role="tablist" aria-label="Áreas do painel">
         <button type="button" role="tab" id="tb-cats" data-tab="cats" aria-controls="tabCats" aria-selected="true" tabindex="0">Catálogos</button>
+        <button type="button" role="tab" id="tb-prods" data-tab="prods" aria-controls="tabProds" aria-selected="false" tabindex="-1">Produtos</button>
         <button type="button" role="tab" id="tb-users" data-tab="users" aria-controls="tabUsers" aria-selected="false" tabindex="-1">Pessoas</button>
         <button type="button" role="tab" id="tb-cfg" data-tab="cfg" aria-controls="tabCfg" aria-selected="false" tabindex="-1">Configurações</button>
       </div>
       <div class="row"><p class="muted">O site atualiza de 1 a 3 minutos depois de cada publicação.</p><button class="btn ghost sm" type="button" id="reloadBtn">Atualizar dados</button></div>
     </div>
     <section class="tab" id="tabCats" role="tabpanel" aria-labelledby="tb-cats" tabindex="-1"></section>
+    <section class="tab" id="tabProds" role="tabpanel" aria-labelledby="tb-prods" tabindex="-1" hidden></section>
     <section class="tab" id="tabUsers" role="tabpanel" aria-labelledby="tb-users" tabindex="-1" hidden></section>
     <section class="tab" id="tabCfg" role="tabpanel" aria-labelledby="tb-cfg" tabindex="-1" hidden></section>
   </section>
@@ -529,6 +574,10 @@
   const firstName = (name) => String(name || '').split(/\s+/)[0];
   const plural = (n, one, many) => `${n.toLocaleString('pt-BR')} ${n === 1 ? one : many}`;
   const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
+  // WhatsApp (só números, com DDI e DDD): vazio é aceito; devolve o texto do erro ou ''
+  const whatsProblem = (v) => (v && (v.length < 12 || v.length > 13) ? 'Informe com DDI e DDD, por exemplo 5554999999999.' : '');
+  const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+  const round2 = (n) => Math.round(n * 100) / 100;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const clone = (o) => { try { return structuredClone(o); } catch (e) { return JSON.parse(JSON.stringify(o)); } };
   const sortKeys = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
@@ -536,6 +585,8 @@
   const ICO = {
     up: '<svg viewBox="0 0 24 24"><path d="M6 14l6-6 6 6"/></svg>',
     down: '<svg viewBox="0 0 24 24"><path d="M6 10l6 6 6-6"/></svg>',
+    left: '<svg viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"/></svg>',
+    right: '<svg viewBox="0 0 24 24"><path d="M10 6l6 6-6 6"/></svg>',
     upload: '<svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>',
     warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>'
   };
@@ -548,6 +599,7 @@
   const LINES_ALL = ['Home Care', 'Health Care', 'Wellness', 'Ortho Care', 'Canal Farma'];
   const ROLE = { cliente: 'Cliente', representante: 'Representante', interno: 'Equipe Dellamed' };
   const CONTATO_PADRAO = 'Para recuperar seu acesso, peça ao marketing da Dellamed um novo código provisório.';
+  const MSG_COMERCIAL = 'Olá! Gostaria de receber mais informações sobre estes produtos Dellamed:';
   const AUTHOR = { name: 'Prateleira', email: 'prateleira@users.noreply.github.com' };
   const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sem caracteres ambíguos (igual ao código provisório)
   const PDF_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -753,6 +805,46 @@
   }
   const pendingOpen = (u) => !!(u.pending && Date.parse(u.pending.x) > Date.now());
   const isActive = (u) => !!(u.pub || u.kek);
+  /* Produtos e áreas de produto no cofre (fonte da verdade):
+     d.products = { "<SKU>": { sku, name, category, benefit, capacity, description, url, image?: { catalogId, page, x, y, width, height } } }
+     d.hotspots = [ { id, catalogId, page, product: "<SKU>", x, y, width, height } ]   ← medidas em % da imagem da página (2 casas)
+     d.settings.comercial = { whatsapp, email, mensagem }. Cofres antigos não têm esses campos: sempre usar withProd(d) antes de alterar. */
+  const withProd = (d) => { d.products = d.products || {}; d.hotspots = d.hotspots || []; return d; };
+  const BOX_KEYS = ['catalogId', 'page', 'x', 'y', 'width', 'height'];
+  const boxOf = (r) => Object.fromEntries(BOX_KEYS.map((k) => [k, r[k]]));
+  const sameBox = (a, b) => BOX_KEYS.every((k) => a[k] === b[k]);
+  const sameSpot = (a, b) => a.product === b.product && sameBox(a, b);
+  // A área cabe nos dados: o catálogo existe, a página existe, o produto existe e as medidas são válidas
+  function spotFits(d, h) {
+    const c = d.catalogs.find((x) => x.id === h.catalogId);
+    return !!c && h.page <= (c.pages || 0) && !!(d.products || {})[h.product] && P.validHotspot(h);
+  }
+  const hasSpotsIn = (d, id) => (d.hotspots || []).some((h) => h.catalogId === id) || Object.values(d.products || {}).some((p) => p.image && p.image.catalogId === id);
+  // Tira as áreas (e as imagens de produto) de um catálogo: todas (maxPage 0) ou só as das páginas acima de maxPage. Devolve quantas áreas saíram.
+  function dropCatalogSpots(d, id, maxPage) {
+    withProd(d);
+    const out = (r) => r.catalogId === id && r.page > maxPage;
+    const before = d.hotspots.length;
+    d.hotspots = d.hotspots.filter((h) => !out(h));
+    for (const p of Object.values(d.products)) if (p.image && out(p.image)) delete p.image;
+    return before - d.hotspots.length;
+  }
+  // produtos.bin (chave-raiz): todos os produtos (sem a imagem de catálogos ocultos) e só as áreas válidas dos catálogos visíveis
+  async function produtosBin(d, root, visible) {
+    const pages = new Map(visible.map((c) => [c.id, c.pages || 0]));
+    const onPage = (r) => pages.has(r.catalogId) && r.page <= pages.get(r.catalogId);
+    const products = {};
+    for (const p of Object.values(d.products || {})) {
+      const o = { sku: p.sku, name: p.name, category: p.category || '', benefit: p.benefit || '', capacity: p.capacity || '', description: p.description || '', url: p.url || '' };
+      if (p.image && onPage(p.image) && P.validHotspot({ ...p.image, product: p.sku })) o.image = boxOf(p.image);
+      products[p.sku] = o;
+    }
+    const hotspots = (d.hotspots || []).filter((h) => products[h.product] && onPage(h) && P.validHotspot(h))
+      .map((h) => ({ id: h.id, catalogId: h.catalogId, page: h.page, product: h.product, x: h.x, y: h.y, width: h.width, height: h.height }));
+    const com = (d.settings || {}).comercial || {};
+    const comercial = { whatsapp: com.whatsapp || '', email: com.email || '', mensagem: com.mensagem || MSG_COMERCIAL };
+    return P.sealProdutos(root, { v: 1, comercial, products: sortKeys(products), hotspots });
+  }
   async function coreFiles(d, k, sl, pg) {
     const root = await P.aesKey(P.b64d(d.contentKey), ['encrypt']);
     const visible = d.catalogs.filter((c) => c.visible !== false).sort((a, b) => a.order - b.order);
@@ -762,6 +854,7 @@
       key: c.key || d.contentKey, aad: c.aad ? 1 : 0, th: c.th || 0, busca: !!c.busca
     }));
     const dados = await P.sealDados(root, { v: 2, gerado: new Date().toISOString(), catalogs });
+    const produtos = await produtosBin(d, root, visible);
     const users = {}, pend = {}, now = Date.now();
     let i = 0;
     for (const u of d.users) {
@@ -785,7 +878,7 @@
       v: 3, salt: d.siteSalt, kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: P.MIN_IT }, contato: st.contato || CONTATO_PADRAO,
       ativ: { email: st.ativEmail || '', whatsapp: st.ativWhats || '' }, users: sortKeys(users), pend: sortKeys(pend)
     });
-    return [{ path: 'dados.bin', data: dados }, { path: 'acessos.json', data: acessos }, { path: VAULT, data: await encryptVault(d, k, sl) }];
+    return [{ path: 'dados.bin', data: dados }, { path: 'produtos.bin', data: produtos }, { path: 'acessos.json', data: acessos }, { path: VAULT, data: await encryptVault(d, k, sl) }];
   }
   // Catálogos antigos com o texto da busca dentro do cofre: o texto vai para p/<id>/busca.bin (uma vez só)
   async function migrateTexts(d) {
@@ -828,6 +921,7 @@
           const keyChanged = !!x.vk || vaultFmt === 1;
           vault = draft; vaultSha = res.vaultSha; vk = k; slots = sl; vaultFmt = 2;
           if (keyChanged) await storeToken();
+          if (opts.onDone) opts.onDone(); // depois do envio e antes de redesenhar a barra de alterações
           pg.close();
           return true;
         } catch (e) {
@@ -867,22 +961,70 @@
     }
     vault = v; vaultSha = sha;
     if (meta.v === 2) { slots = meta.slots; vaultFmt = 2; legacyKey = null; }
-    coverUrls.forEach((p) => p.then((u) => u && URL.revokeObjectURL(u))); coverUrls.clear();
+    dropImageCache();
     showStale(false);
   }
 
   /* ================= alterações preparadas (publicadas juntas) ================= */
   const stagedFlags = new Map(); // `${id}|${campo}` → valor
   let stagedOrder = null;         // lista de ids na ordem desejada
-  function applyStaged(d) {
+  // Áreas de produto: operações por id da área (área nova ou alterada; null = removida) e imagem do produto por SKU (null = sem imagem)
+  const stagedSpots = new Map(), stagedImages = new Map();
+  let spotLost = 0;               // operações ignoradas na última aplicação (catálogo, página ou produto sumiram)
+  function applyStaged(d, onlyCatalogs) {
     for (const [k, val] of stagedFlags) { const [id, f] = k.split('|'); const c = d.catalogs.find((x) => x.id === id); if (c) c[f] = val; }
     if (stagedOrder) {
       const rest = d.catalogs.filter((c) => !stagedOrder.includes(c.id)).sort((a, b) => a.order - b.order);
       [...stagedOrder.map((id) => d.catalogs.find((c) => c.id === id)).filter(Boolean), ...rest].forEach((c, i) => { c.order = i + 1; });
     }
+    if (!onlyCatalogs) applySpotStaged(d);
     return d;
   }
-  const viewCatalogs = () => applyStaged(clone({ catalogs: vault.catalogs })).catalogs.sort((a, b) => a.order - b.order);
+  // Reaplica cada operação no rascunho conferindo de novo catálogo, página e produto (o rascunho pode ter vindo de outro administrador)
+  function applySpotStaged(d) {
+    spotLost = 0;
+    if (!stagedSpots.size && !stagedImages.size) return;
+    withProd(d);
+    for (const [id, h] of stagedSpots) {
+      d.hotspots = d.hotspots.filter((x) => x.id !== id);
+      if (h && spotFits(d, h)) d.hotspots.push(clone(h)); else if (h) spotLost++;
+    }
+    for (const [sku, im] of stagedImages) {
+      const p = d.products[sku];
+      if (p && !im) delete p.image;
+      else if (p && spotFits(d, { ...im, product: sku })) p.image = boxOf(im);
+      else if (im) spotLost++;
+    }
+  }
+  const viewCatalogs = () => applyStaged(clone({ catalogs: vault.catalogs }), true).catalogs.sort((a, b) => a.order - b.order);
+  // Áreas como vão ficar depois de publicar (as publicadas mais as preparadas)
+  function viewSpots() {
+    const out = (vault.hotspots || []).filter((h) => !stagedSpots.has(h.id));
+    for (const h of stagedSpots.values()) if (h) out.push(h);
+    return out;
+  }
+  const viewImage = (sku) => (stagedImages.has(sku) ? stagedImages.get(sku) : ((vault.products || {})[sku] || {}).image || null);
+  // Tira da barra o que já não muda nada (igual ao publicado) e, com aviso, o que não cabe mais nos dados
+  function pruneSpotOps() {
+    const prods = vault.products || {}, spots = vault.hotspots || [];
+    let lost = 0;
+    for (const [id, h] of [...stagedSpots]) {
+      const cur = spots.find((x) => x.id === id);
+      if (h && !spotFits(vault, h)) { stagedSpots.delete(id); lost++; }
+      else if (h ? cur && sameSpot(cur, h) : !cur) stagedSpots.delete(id);
+    }
+    for (const [sku, im] of [...stagedImages]) {
+      const p = prods[sku];
+      if (!p || (im && !spotFits(vault, { ...im, product: sku }))) { stagedImages.delete(sku); if (im) lost++; }
+      else if (im ? p.image && sameBox(p.image, im) : !p.image) stagedImages.delete(sku);
+    }
+    if (lost) toast(`${plural(lost, 'área de produto não publicada foi descartada', 'áreas de produto não publicadas foram descartadas')}: o catálogo, a página ou o produto não existem mais.`);
+  }
+  // Tira as operações preparadas que combinam com o teste (usado quando um produto ou catálogo é removido)
+  function dropStaged(test) {
+    for (const [id, h] of [...stagedSpots]) if (h && test(h)) stagedSpots.delete(id);
+    for (const [sku, im] of [...stagedImages]) if (im && test({ ...im, product: sku })) stagedImages.delete(sku);
+  }
   function stageCount() {
     if (!vault) return 0;
     for (const [k, val] of [...stagedFlags]) {
@@ -895,20 +1037,26 @@
       const want = viewCatalogs().map((c) => c.id).join();
       if (now === want) stagedOrder = null;
     }
-    return stagedFlags.size + (stagedOrder ? 1 : 0);
+    pruneSpotOps();
+    return stagedFlags.size + (stagedOrder ? 1 : 0) + stagedSpots.size + stagedImages.size;
   }
   function refreshStage() {
-    const n = stageCount();
+    const n = stageCount(), cats = stagedFlags.size + (stagedOrder ? 1 : 0);
+    const parts = [cats && plural(cats, 'alteração nos catálogos', 'alterações nos catálogos'), stagedSpots.size && plural(stagedSpots.size, 'área de produto', 'áreas de produto'),
+      stagedImages.size && plural(stagedImages.size, 'imagem de produto', 'imagens de produto')].filter(Boolean);
+    const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}` : parts[0];
     $('#stageBar').hidden = !n || !vault;
-    $('#stageText').textContent = n ? `${plural(n, 'alteração não publicada', 'alterações não publicadas')}` : '';
+    $('#stageText').textContent = n ? `${list} ${n === 1 ? 'não publicada' : 'não publicadas'}` : '';
     $('#stagePublish').disabled = busy;
   }
-  function clearStage() { stagedFlags.clear(); stagedOrder = null; refreshStage(); }
-  $('#stageDiscard').addEventListener('click', () => { clearStage(); if (tab === 'cats') renderCats(); toast('Alterações descartadas.'); });
+  function clearStage() { stagedFlags.clear(); stagedOrder = null; stagedSpots.clear(); stagedImages.clear(); refreshStage(); }
+  // Depois de publicar ou descartar, redesenha a aba que mostra alterações preparadas
+  const renderStagedTab = () => { if (tab === 'cats') renderCats(); else if (tab === 'prods') renderProds(); };
+  $('#stageDiscard').addEventListener('click', () => { clearStage(); renderStagedTab(); toast('Alterações descartadas.'); });
   $('#stagePublish').addEventListener('click', async () => {
     const ok = await publish('Publicando alterações', (d) => { applyStaged(d); });
-    if (ok) { clearStage(); toast('Publicado. O site atualiza em 1 a 3 minutos.'); }
-    if (tab === 'cats') renderCats();
+    if (ok) { clearStage(); toast(spotLost ? `Publicado. ${plural(spotLost, 'área de produto foi ignorada', 'áreas de produto foram ignoradas')}: o catálogo, a página ou o produto não existem mais.` : 'Publicado. O site atualiza em 1 a 3 minutos.'); }
+    renderStagedTab();
   });
   window.addEventListener('beforeunload', (e) => { if (busy || stageCount()) { e.preventDefault(); e.returnValue = ''; } });
 
@@ -1087,7 +1235,7 @@
         const k = await newVk(), rk = genRecovery();
         const sl = { m: await makeSlot(pw, k.raw), r: await makeSlot(canonRecovery(rk), k.raw) };
         forget();
-        vault = { v: 2, contentKey: P.b64e(P.rand(32)), keyRev: 1, siteSalt: P.b64e(P.rand(16)), users: [], catalogs: [], settings: { contato: CONTATO_PADRAO, codeHours: 48 } };
+        vault = { v: 2, contentKey: P.b64e(P.rand(32)), keyRev: 1, siteSalt: P.b64e(P.rand(16)), users: [], catalogs: [], products: {}, hotspots: [], settings: { contato: CONTATO_PADRAO, codeHours: 48, comercial: { whatsapp: '', email: '', mensagem: MSG_COMERCIAL } } };
         if (!(await publish('Configurando a Prateleira', () => ({ vk: k, slots: sl }), { retry: false }))) { vault = null; return; }
         clearLogin();
         enterMain();
@@ -1144,8 +1292,8 @@
   /* ================= sair, bloqueio automático e dados desatualizados ================= */
   function lock(msg) {
     stopPoll(); clearStage(); forget(); token = '';
-    coverUrls.forEach((p) => p.then((u) => u && URL.revokeObjectURL(u))); coverUrls.clear();
-    ['#tabCats', '#tabUsers', '#tabCfg'].forEach((s) => { $(s).innerHTML = ''; });
+    dropImageCache(); resetEditor();
+    Object.values(TABS).forEach((t) => { $(t.panel).innerHTML = ''; });
     closeDialog(); hideModal(cf); if (!busy) hideModal(pgd);
     showStale(false);
     show('login');
@@ -1176,7 +1324,7 @@
   async function refreshData() {
     if (busy || !vault) return;
     const b = $('#reloadBtn'); b.disabled = true;
-    try { await reloadVault(); setTab(tab); refreshStage(); toast('Dados atualizados.'); }
+    try { await reloadVault(); setTab(tab); toast('Dados atualizados.'); refreshStage(); } // por último: o aviso de áreas descartadas tem prioridade
     catch (e) { if (!e.locked) alertBox('Não foi possível atualizar', errText(e).replace(' Nada foi alterado no site.', '')); }
     finally { b.disabled = false; }
   }
@@ -1185,7 +1333,9 @@
 
   /* ================= área principal (abas acessíveis) ================= */
   let tab = 'cats';
-  const TABS = ['cats', 'users', 'cfg'];
+  // Cada aba: painel e função que desenha. A ordem aqui é a das setas do teclado (igual à dos botões).
+  const TABS = { cats: { panel: '#tabCats', render: renderCats }, prods: { panel: '#tabProds', render: renderProds }, users: { panel: '#tabUsers', render: renderUsers }, cfg: { panel: '#tabCfg', render: renderCfg } };
+  const TAB_IDS = Object.keys(TABS);
   function enterMain() {
     show('main');
     $('#repoLabel').textContent = `Repositório ${repo.label()} · área restrita aos administradores`;
@@ -1195,40 +1345,70 @@
   function setTab(t, focusTab) {
     tab = t;
     $$('.seg [role="tab"]').forEach((b) => { const on = b.dataset.tab === t; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on && focusTab) b.focus(); });
-    $('#tabCats').hidden = t !== 'cats'; $('#tabUsers').hidden = t !== 'users'; $('#tabCfg').hidden = t !== 'cfg';
+    for (const [k, x] of Object.entries(TABS)) $(x.panel).hidden = k !== t;
     if (!vault) return;
-    if (t === 'cats') renderCats(); else if (t === 'users') renderUsers(); else renderCfg();
+    TABS[t].render();
   }
   $$('.seg [role="tab"]').forEach((b) => {
     b.addEventListener('click', () => setTab(b.dataset.tab));
     b.addEventListener('keydown', (e) => {
-      let i = TABS.indexOf(tab);
-      if (e.key === 'ArrowRight') i = (i + 1) % TABS.length; else if (e.key === 'ArrowLeft') i = (i + TABS.length - 1) % TABS.length;
-      else if (e.key === 'Home') i = 0; else if (e.key === 'End') i = TABS.length - 1; else return;
-      e.preventDefault(); setTab(TABS[i], true);
+      let i = TAB_IDS.indexOf(tab);
+      if (e.key === 'ArrowRight') i = (i + 1) % TAB_IDS.length; else if (e.key === 'ArrowLeft') i = (i + TAB_IDS.length - 1) % TAB_IDS.length;
+      else if (e.key === 'Home') i = 0; else if (e.key === 'End') i = TAB_IDS.length - 1; else return;
+      e.preventDefault(); setTab(TAB_IDS[i], true);
     });
   });
-  // Primeiros passos: aparece enquanto faltar contato de ativação, catálogo ou pessoa
+  // Primeiros passos: aparece enquanto faltar contato de ativação, catálogo ou pessoa (o passo 4 é opcional e não mantém o cartão aberto)
   function firstStepsHtml() {
     const st = vault.settings || {};
     const contacts = !!(st.ativEmail || st.ativWhats), cats = vault.catalogs.length > 0, people = vault.users.length > 0;
     if (contacts && cats && people) return '';
+    const prods = Object.keys(vault.products || {}).length > 0 && (vault.hotspots || []).length > 0;
     const li = (done, n, title, text, step, label) => `<li class="${done ? 'done' : ''}"><span><b>${n}. ${title}</b><br><span class="muted">${text}</span></span><button class="btn ${done ? 'ghost' : 'primary'} sm" type="button" data-step="${step}">${label}</button></li>`;
     return `<div class="card"><h3>Primeiros passos</h3><p class="muted">Siga esta ordem para colocar a Prateleira no ar.</p><ol class="steps">
       ${li(contacts, 1, 'Contatos de ativação', 'O e-mail ou WhatsApp para onde as pessoas enviam o código de ativação.', 'cfg', 'Preencher contatos')}
       ${li(cats, 2, 'Catálogos', 'Arraste os PDFs. O painel converte, protege e publica.', 'cat', 'Adicionar catálogo')}
       ${li(people, 3, 'Pessoas', 'Cadastre quem vai acessar e envie o código provisório.', 'user', 'Adicionar pessoa')}
+      ${li(prods, 4, 'Produtos e áreas (opcional)', 'Cadastre os produtos e marque nas páginas dos catálogos onde cada um aparece.', 'prods', 'Abrir Produtos')}
     </ol></div>`;
   }
   function runStep(step) {
     if (step === 'cfg') { setTab('cfg'); const f = $('#ativEmail'); if (f) f.focus(); }
     else if (step === 'cat') pickPdf(null);
+    else if (step === 'prods') setTab('prods');
     else { setTab('users'); addUserDialog(); }
   }
 
   /* ================= catálogos ================= */
   const coverUrls = new Map();
   const catKeyB64 = (c) => c.key || vault.contentKey;
+  // Páginas e miniaturas abertas no editor de áreas: cache pequeno (o mais recente fica no fim); o que sai do cache é revogado
+  const pageCache = new Map(); // `${id}:${v}:${início da chave}:${arquivo}` → Promise<[blob URL de cada imagem do arquivo]>
+  const PAGE_CACHE_MAX = 6;    // ≈ 4 blocos de páginas + as miniaturas
+  const revokeAll = (p) => p.then((urls) => urls.forEach((u) => URL.revokeObjectURL(u)), () => {});
+  // Único ponto que revoga as imagens decifradas (capas, páginas e miniaturas): ao recarregar o cofre e ao sair
+  function dropImageCache() {
+    coverUrls.forEach((p) => p.then((u) => u && URL.revokeObjectURL(u))); coverUrls.clear();
+    pageCache.forEach(revokeAll); pageCache.clear();
+  }
+  function packedImages(c, p) {
+    const kb = catKeyB64(c), k = `${c.id}:${c.v || 1}:${kb.slice(0, 12)}:${p}`;
+    let hit = pageCache.get(k);
+    if (hit) { pageCache.delete(k); pageCache.set(k, hit); return hit; }
+    hit = (async () => {
+      const enc = await repo.read(p);
+      if (!enc || !vault) return [];
+      const plain = await P.openFile(await P.aesKey(P.b64d(kb), ['decrypt']), c, p, enc);
+      if (!vault) return [];
+      return P.unpackImages(plain).map((b) => URL.createObjectURL(new Blob([b], { type: 'image/jpeg' })));
+    })();
+    hit.catch(() => { if (pageCache.get(k) === hit) pageCache.delete(k); }); // falhou: tenta de novo na próxima vez
+    pageCache.set(k, hit);
+    while (pageCache.size > PAGE_CACHE_MAX) { const [old, pr] = pageCache.entries().next().value; pageCache.delete(old); revokeAll(pr); }
+    return hit;
+  }
+  const pageUrl = async (c, n) => (await packedImages(c, P.path.chunk(c.id, Math.floor((n - 1) / P.CHUNK))))[(n - 1) % P.CHUNK] || '';
+  const thumbUrls = (c, g) => packedImages(c, P.path.thumbs(c.id, g));
   async function coverFor(c) {
     const k = `${c.id}:${c.v}:${catKeyB64(c).slice(0, 12)}`;
     if (!coverUrls.has(k)) {
@@ -1293,12 +1473,13 @@
       const c = vault.catalogs.find((x) => x.id === id); if (!c) return;
       if (act.dataset.act === 'edit') editCatalog(c);
       else if (act.dataset.act === 'replace') pickPdf(c);
-      else if (await confirmBox(`Remover “${c.title}”?`, '<p>O catálogo sai do site e os arquivos dele são apagados do repositório. Esta ação não pode ser desfeita.</p>', 'Remover catálogo', true)) {
+      else if (await confirmBox(`Remover “${c.title}”?`, `<p>O catálogo sai do site e os arquivos dele são apagados do repositório. Esta ação não pode ser desfeita.</p>${spotsLostHtml(id)}`, 'Remover catálogo', true)) {
         const ok = await publish('Removendo o catálogo', (d) => {
           const t = d.catalogs.find((x) => x.id === id); if (!t) return {};
           d.catalogs = d.catalogs.filter((x) => x.id !== id);
+          dropCatalogSpots(d, id, 0);
           return { deletes: catalogPaths(t) };
-        });
+        }, { onDone: () => dropStaged((r) => r.catalogId === id) });
         if (ok) toast('Catálogo removido do site.');
         renderCats();
       }
@@ -1310,6 +1491,11 @@
     if (chunks) for (let ci = 0; ci < Math.ceil((c.pages || 0) / P.CHUNK); ci++) out.push(P.path.chunk(c.id, ci));
     for (let ti = 0; ti < (c.th || 0); ti++) out.push(P.path.thumbs(c.id, ti));
     return out;
+  }
+  // Para a confirmação de remover catálogo: quantas áreas de produto (publicadas ou preparadas) se perdem junto
+  function spotsLostHtml(id) {
+    const n = viewSpots().filter((h) => h.catalogId === id).length;
+    return n ? `<p>${plural(n, 'área de produto marcada', 'áreas de produto marcadas')} neste catálogo também ${n === 1 ? 'será apagada' : 'serão apagadas'}.</p>` : '';
   }
   // Arrastar e soltar: evita que o navegador abra o PDF; aceita o arquivo em qualquer lugar da aba Catálogos
   const canDropPdf = () => vault && !$('#scrMain').hidden && tab === 'cats' && !dlg.open && !pgd.open && !cf.open && !busy;
@@ -1390,10 +1576,12 @@
       }]
     });
   }
-  function oddPagesNotice(odd) {
-    if (!odd || !odd.length) return;
-    const list = odd.slice(0, 12).join(', ') + (odd.length > 12 ? '…' : '');
-    alertBox('Algumas páginas têm outro formato', `As páginas ${list} têm proporção diferente da primeira página. Elas aparecem no site, mas podem ficar com margens ou menores. Se não for intencional, confira o PDF e publique uma nova versão.`);
+  // Avisos depois de converter: páginas com outro formato e, na nova versão, áreas de produto para conferir (num aviso só)
+  function oddPagesNotice(odd, review) {
+    const list = odd && odd.length ? odd.slice(0, 12).join(', ') + (odd.length > 12 ? '…' : '') : '';
+    const oddText = list ? `As páginas ${list} têm proporção diferente da primeira página. Elas aparecem no site, mas podem ficar com margens ou menores. Se não for intencional, confira o PDF e publique uma nova versão.` : '';
+    if (review) alertBox('Confira as áreas de produto deste catálogo', oddText ? `${review} ${oddText}` : review);
+    else if (oddText) alertBox('Algumas páginas têm outro formato', oddText);
   }
   async function addCatalog(file, meta = {}, opts = {}) {
     const id = P.randHex(4);
@@ -1419,8 +1607,8 @@
   // Nova versão: chave nova, v + 1, todos os arquivos reescritos e as sobras antigas apagadas
   async function replaceCatalog(c, file) {
     if (!(await confirmBox(`Nova versão de “${c.title}”?`, `<p>As páginas atuais serão trocadas pelas do arquivo <b>${esc(file.name)}</b> (${mb(file.size)} MB).</p>`, 'Converter e publicar'))) return;
-    const cNew = { id: c.id, v: (c.v || 1) + 1, aad: 1, key: P.b64e(P.rand(32)) };
-    let conv = null;
+    const cNew = { id: c.id, v: (c.v || 1) + 1, aad: 1, key: P.b64e(P.rand(32)) }, before = c.pages;
+    let conv = null, review = false, lost = 0;
     const ok = await publish('Atualizando o catálogo', async (d, pg) => {
       const t = d.catalogs.find((x) => x.id === c.id);
       if (!t) throw userErr('Este catálogo foi removido por outro administrador.');
@@ -1428,11 +1616,19 @@
       if (!conv) { await earlyConflict(); conv = await convertPdf(file, cNew, pg); }
       const keep = new Set(conv.files.map((f) => f.path));
       const deletes = catalogPaths(t).filter((p) => !keep.has(p));
+      // Mudou o número de páginas: saem as áreas das páginas que não existem mais e o catálogo fica marcado para conferir (marca só do cofre)
+      review = conv.pages !== t.pages && hasSpotsIn(d, c.id);
+      lost = review ? dropCatalogSpots(d, c.id, conv.pages) : 0;
       Object.assign(t, { key: cNew.key, aad: 1, v: cNew.v, pages: conv.pages, ratio: conv.ratio, th: conv.th, busca: true, updated: localDate() });
+      if (review) t.reviewHotspots = true;
       delete t.texts;
       return { files: conv.files, deletes };
-    }, { cancel: true });
-    if (ok) { toast('Nova versão publicada.'); renderCats(); oddPagesNotice(conv && conv.odd); }
+    }, { cancel: true, onDone: () => dropStaged((r) => r.catalogId === c.id && r.page > conv.pages) });
+    if (ok) {
+      toast('Nova versão publicada.'); renderCats();
+      const note = review ? `A nova versão tem ${plural(conv.pages, 'página', 'páginas')} (antes eram ${before}).${lost ? ` ${plural(lost, 'área de produto ficou', 'áreas de produto ficaram')} fora das páginas e ${lost === 1 ? 'foi removida' : 'foram removidas'}.` : ''} Abra este catálogo na aba Produtos e confira se as áreas continuam sobre os produtos certos.` : '';
+      oddPagesNotice(conv && conv.odd, note);
+    }
   }
 
   /* ================= conversão do PDF (enviada aos poucos) ================= */
@@ -1872,20 +2068,427 @@
     renderUserRows();
   }
 
+  /* ================= produtos e áreas de produto ================= */
+  let prodQ = '';
+  const ed = { cat: '', page: 1, sel: '', draft: null, drag: null, seq: 0 }; // estado do editor de áreas (sobrevive ao redesenho da aba)
+  const MIN_BOX = 2; // tamanho mínimo de uma área (% da página)
+  function resetEditor() { ed.sel = ''; ed.draft = null; ed.drag = null; ed.seq++; }
+  const focusStage = () => { const st = $('#hsStage'); if (st) st.focus(); };
+  const prodName = (sku) => { const p = (vault.products || {})[sku]; return p ? p.name : `${sku} (produto removido)`; };
+  const prodList = (q) => { q = norm(q); return Object.values(vault.products || {}).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((p) => !q || norm(`${p.sku} ${p.name} ${p.category}`).includes(q)); };
+  const skuTaken = (d, sku, except) => Object.values(d.products || {}).find((x) => x.sku !== except && P.skuKey(x.sku) === P.skuKey(sku));
+  const httpsOk = (v) => { try { return new URL(v).protocol === 'https:'; } catch (e) { return false; } };
+  const pct = (n) => n.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+  const boxStyle = (b) => `left:${b.x}%;top:${b.y}%;width:${b.width}%;height:${b.height}%`;
+  // Arredonda (2 casas), garante o tamanho mínimo e mantém a área dentro da página
+  function fixBox(b) {
+    const w = round2(clamp(b.width, MIN_BOX, 100)), h = round2(clamp(b.height, MIN_BOX, 100));
+    return { x: round2(clamp(b.x, 0, 100 - w)), y: round2(clamp(b.y, 0, 100 - h)), width: w, height: h };
+  }
+  function renderProds() {
+    const box = $('#tabProds'); if (!vault) return;
+    const review = viewCatalogs().filter((c) => c.reviewHotspots);
+    box.innerHTML = `
+      ${review.length ? `<div class="alert warn" id="hsReview" role="status"><span class="badge">Conferir</span> Uma nova versão mudou o número de páginas. Confira as áreas de produto ${review.length === 1 ? 'deste catálogo' : 'destes catálogos'}:
+        <div class="row">${review.map((c) => `<button class="btn ghost sm" type="button" data-review="${esc(c.id)}">${esc(c.title)}</button>`).join('')}</div></div>` : ''}
+      <div class="bar-row">
+        <input class="input" id="pq" type="search" placeholder="Buscar SKU, nome ou categoria" value="${esc(prodQ)}" aria-label="Buscar produtos" aria-describedby="pCount">
+        <div class="bar-actions"><button class="btn primary" id="addProd" type="button">+ Adicionar produto</button></div>
+      </div>
+      <p class="muted"><span id="pCount" aria-live="polite"></span>. Os produtos aparecem na busca do site; as áreas marcadas ligam a foto na página do catálogo ao produto.</p>
+      <div class="card"><div class="table-wrap" id="pTable"></div></div>
+      <div class="card stack" id="hsEd"></div>`;
+    let t = null;
+    $('#pq').addEventListener('input', (e) => { clearTimeout(t); const v = e.target.value; t = setTimeout(() => { prodQ = v; renderProdRows(); }, 200); });
+    $('#addProd').addEventListener('click', () => productDialog(null));
+    $('#pTable').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const p = (vault.products || {})[b.closest('tr').dataset.row]; if (!p) return;
+      if (b.dataset.act === 'edit') productDialog(p); else removeProduct(p);
+    });
+    const rv = $('#hsReview');
+    if (rv) rv.addEventListener('click', (e) => { const b = e.target.closest('[data-review]'); if (b) openCatalog(b.dataset.review); });
+    renderProdRows(); renderEditor();
+  }
+  // Atualiza só a tabela e a contagem (o campo de busca não é recriado)
+  function renderProdRows() {
+    const wrap = $('#pTable'); if (!wrap || !vault) return;
+    const all = Object.keys(vault.products || {}).length, list = prodList(prodQ);
+    const count = new Map(); for (const h of viewSpots()) count.set(h.product, (count.get(h.product) || 0) + 1);
+    $('#pCount').textContent = prodQ.trim() ? `${plural(list.length, 'produto encontrado', 'produtos encontrados')} de ${all}` : plural(all, 'produto', 'produtos');
+    keepFocus(() => {
+      wrap.innerHTML = list.length ? `<table>
+        <thead><tr><th>SKU</th><th>Produto</th><th>Categoria</th><th>Áreas marcadas</th><th></th></tr></thead>
+        <tbody>${list.map((p) => `<tr data-row="${esc(p.sku)}">
+          <td><code>${esc(p.sku)}</code></td>
+          <td><div class="cell"><div><b>${esc(p.name)}</b>${viewImage(p.sku) ? '<span>com imagem</span>' : ''}</div></div></td>
+          <td>${esc(p.category || '—')}</td>
+          <td>${count.get(p.sku) || 0}</td>
+          <td><div class="actions"><button class="btn ghost sm" type="button" data-k="edit" data-act="edit" aria-label="Editar ${esc(p.name)}">Editar</button><button class="btn ghost sm" type="button" data-k="remove" data-act="remove" aria-label="Remover ${esc(p.name)}">Remover</button></div></td>
+        </tr>`).join('')}</tbody></table>` : `<div class="empty">${all ? 'Nenhum produto encontrado com essa busca.' : 'Nenhum produto cadastrado ainda. Adicione o primeiro produto.'}</div>`;
+    });
+  }
+  const productFields = (p) => `
+    <div class="grid2">
+      <label class="field" id="fSku"><span class="field-label">SKU</span><input id="pSku" autocomplete="off" spellcheck="false" maxlength="40" value="${esc(p.sku || '')}" placeholder="D60"><em class="err" hidden></em></label>
+      <label class="field"><span class="field-label">Categoria</span><input id="pCat" autocomplete="off" maxlength="60" value="${esc(p.category || '')}" placeholder="Cadeira de banho"></label>
+    </div>
+    <label class="field" id="fPName"><span class="field-label">Nome</span><input id="pName" autocomplete="off" maxlength="120" value="${esc(p.name || '')}"><em class="err" hidden></em></label>
+    <div class="grid2">
+      <label class="field"><span class="field-label">Principal benefício</span><input id="pBen" autocomplete="off" maxlength="120" value="${esc(p.benefit || '')}"></label>
+      <label class="field"><span class="field-label">Capacidade</span><input id="pCap" autocomplete="off" maxlength="60" value="${esc(p.capacity || '')}" placeholder="Até 150 kg"></label>
+    </div>
+    <label class="field" id="fPDesc"><span class="field-label">Descrição curta (até 240 caracteres)</span><textarea id="pDesc" rows="3" maxlength="240">${esc(p.description || '')}</textarea><em class="err" hidden></em></label>
+    <label class="field" id="fPUrl"><span class="field-label">URL do produto (opcional)</span><input id="pUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" value="${esc(p.url || '')}" placeholder="https://www.dellamed.com.br/…"><em class="err" hidden></em></label>`;
+  function readProduct(except) {
+    const f = { sku: $('#pSku').value.trim().replace(/\s+/g, ' '), name: $('#pName').value.trim(), category: $('#pCat').value.trim(), benefit: $('#pBen').value.trim(),
+      capacity: $('#pCap').value.trim(), description: $('#pDesc').value.trim(), url: $('#pUrl').value.trim() };
+    const dup = !!P.skuKey(f.sku) && skuTaken(vault, f.sku, except);
+    const eSku = !f.sku ? 'Informe o SKU.' : !P.skuKey(f.sku) ? 'O SKU precisa ter letras ou números.' : dup ? `Este SKU já está cadastrado (${dup.name}).` : '';
+    const eDesc = f.description.length > 240 ? `Use até 240 caracteres (agora são ${f.description.length}).` : '';
+    const eUrl = f.url && !httpsOk(f.url) ? 'Use o endereço completo, começando com https://' : '';
+    setFieldErr($('#fSku'), eSku); setFieldErr($('#fPName'), f.name ? '' : 'Informe o nome.'); setFieldErr($('#fPDesc'), eDesc); setFieldErr($('#fPUrl'), eUrl);
+    if (eSku || !f.name || eDesc || eUrl) return null;
+    if (f.url) f.url = new URL(f.url).href;
+    return f;
+  }
+  // Adicionar ou editar produto (publica na hora). Trocar o SKU leva junto as áreas marcadas. onSaved(sku) roda depois de publicar.
+  function productDialog(p, onSaved) {
+    const old = p ? p.sku : '';
+    openDialog({
+      title: p ? 'Editar produto' : 'Adicionar produto',
+      body: `${productFields(p || {})}${p ? '<p class="muted">Se trocar o SKU, as áreas marcadas continuam ligadas a este produto.</p>' : ''}`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
+        label: 'Salvar e publicar', kind: 'primary',
+        onClick: async () => {
+          const f = readProduct(old); if (!f) return false;
+          const ok = await publish('Salvando o produto', (d) => {
+            withProd(d);
+            const cur = old ? d.products[old] : null;
+            if (old && !cur) throw userErr('Este produto foi removido por outro administrador.');
+            if (skuTaken(d, f.sku, old)) throw userErr('Este SKU já está cadastrado (outro administrador acabou de cadastrá-lo).');
+            if (old) delete d.products[old];
+            d.products[f.sku] = { ...(cur || {}), ...f };
+            if (old && old !== f.sku) for (const h of d.hotspots) if (h.product === old) h.product = f.sku;
+            d.products = sortKeys(d.products);
+          }, { onDone: () => { if (old && old !== f.sku) renameStaged(old, f.sku); } });
+          if (!ok) return false;
+          toast('Produto publicado.');
+          renderProdRows(); paintSpots();
+          if (onSaved) onSaved(f.sku);
+          return true;
+        }
+      }]
+    });
+  }
+  // SKU trocado: as operações preparadas passam a apontar para o SKU novo
+  function renameStaged(old, sku) {
+    for (const h of stagedSpots.values()) if (h && h.product === old) h.product = sku;
+    if (stagedImages.has(old)) { stagedImages.set(sku, stagedImages.get(old)); stagedImages.delete(old); }
+  }
+  async function removeProduct(p) {
+    const n = viewSpots().filter((h) => h.product === p.sku).length;
+    const areas = n ? ` ${plural(n, 'área marcada', 'áreas marcadas')} nas páginas dos catálogos também ${n === 1 ? 'sai' : 'saem'}.` : '';
+    if (!(await confirmBox(`Remover “${p.name}”?`, `<p>O produto sai da busca do site.${areas}</p><p>Esta ação não pode ser desfeita.</p>`, 'Remover produto', true))) return;
+    const ok = await publish('Removendo o produto', (d) => {
+      withProd(d);
+      delete d.products[p.sku];
+      d.hotspots = d.hotspots.filter((h) => h.product !== p.sku);
+    }, { onDone: () => dropStaged((r) => r.product === p.sku) });
+    if (ok) toast('Produto removido.');
+    renderProdRows(); paintSpots();
+  }
+  // Escolher o produto de uma área: busca na lista e atalho para criar um produto novo. onCancel roda se o diálogo fechar sem escolha.
+  function pickProduct(title, onPick, onCancel) {
+    let picked = false;
+    openDialog({
+      title,
+      body: `<input class="input" id="ppq" type="search" placeholder="Buscar SKU, nome ou categoria" aria-label="Buscar produto" aria-describedby="ppCount">
+        <p class="muted" id="ppCount" aria-live="polite"></p>
+        <div class="pp-list" id="ppList"></div>
+        <button class="link" type="button" id="ppNew">+ Criar produto novo</button>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }]
+    });
+    dlg.addEventListener('close', () => { if (!picked && onCancel) onCancel(); }, { once: true });
+    const draw = () => {
+      const q = $('#ppq').value, list = prodList(q), total = Object.keys(vault.products || {}).length;
+      $('#ppCount').textContent = q.trim() ? plural(list.length, 'produto encontrado', 'produtos encontrados') : plural(total, 'produto', 'produtos');
+      $('#ppList').innerHTML = list.slice(0, 80).map((p) => `<button type="button" class="pp-item" data-sku="${esc(p.sku)}"><b>${esc(p.name)}</b><span>${esc(p.sku)}${p.category ? ` · ${esc(p.category)}` : ''}</span></button>`).join('')
+        || `<p class="muted">${total ? 'Nenhum produto encontrado. Crie um produto novo abaixo.' : 'Nenhum produto cadastrado ainda. Crie o primeiro abaixo.'}</p>`;
+    };
+    $('#ppq').addEventListener('input', draw);
+    $('#ppList').addEventListener('click', (e) => { const b = e.target.closest('[data-sku]'); if (!b) return; picked = true; closeDialog(); onPick(b.dataset.sku); });
+    $('#ppNew').addEventListener('click', () => productDialog(null, (sku) => { picked = true; onPick(sku); }));
+    draw();
+  }
+
+  /* ---------- editor de áreas (desenhar, mover e redimensionar sobre a página) ---------- */
+  // Catálogo e página do editor (catálogos ocultos também aparecem; se o catálogo sumiu, volta para o primeiro)
+  function edCat() {
+    const list = viewCatalogs();
+    const c = list.find((x) => x.id === ed.cat) || list[0] || null;
+    if (c && c.id !== ed.cat) { ed.cat = c.id; ed.page = 1; ed.sel = ''; ed.draft = null; }
+    if (c) ed.page = clamp(ed.page, 1, c.pages || 1);
+    return c;
+  }
+  const pageSpots = () => viewSpots().filter((h) => h.catalogId === ed.cat && h.page === ed.page);
+  const spotById = (id) => viewSpots().find((h) => h.id === id);
+  const isImage = (h) => { const im = viewImage(h.product); return !!im && sameBox(im, h); };
+  function openCatalog(id) {
+    ed.cat = id; ed.page = 1; ed.sel = ''; ed.draft = null;
+    const real = vault.catalogs.find((x) => x.id === id);
+    if (real && real.reviewHotspots) delete real.reviewHotspots; // marca só do cofre: sai de vez na próxima publicação
+    renderProds();
+    const s = $('#hsCat'); if (s) s.focus();
+  }
+  function renderEditor() {
+    const box = $('#hsEd'); if (!box || !vault) return;
+    const c = edCat();
+    const head = `<h3>Áreas de produto nas páginas</h3>
+      <p class="muted">Escolha o catálogo e a página e arraste sobre a foto do produto para marcar a área. As áreas entram na barra de alterações e vão para o site quando você publicar.</p>
+      <p class="alert warn hs-mobile">Use um computador para marcar as áreas.</p>`;
+    if (!c) { box.innerHTML = `${head}<div class="empty">Adicione um catálogo para marcar as áreas dos produtos.</div>`; return; }
+    box.innerHTML = `${head}
+      <div class="hs-desk stack">
+        <div class="hs-tools">
+          <label class="field"><span class="field-label">Catálogo</span><select id="hsCat">${viewCatalogs().map((x) => `<option value="${esc(x.id)}" ${x.id === c.id ? 'selected' : ''}>${esc(x.title)}${x.visible === false ? ' (oculto)' : ''}${x.reviewHotspots ? ' · conferir áreas' : ''}</option>`).join('')}</select></label>
+          <div class="hs-nav" role="group" aria-label="Página">
+            <button class="mini" type="button" id="hsPrev" aria-label="Página anterior">${ICO.left}</button>
+            <label class="hs-pg">Página <input class="input" id="hsPage" type="number" min="1" max="${c.pages}" value="${ed.page}"> de ${c.pages}</label>
+            <button class="mini" type="button" id="hsNext" aria-label="Próxima página">${ICO.right}</button>
+          </div>
+          <button class="btn ghost sm" type="button" id="hsAdd">Adicionar área</button>
+        </div>
+        ${c.th ? '<div class="hs-thumbs" id="hsThumbs" role="group" aria-label="Miniaturas das páginas"></div>' : ''}
+        <div class="hs-grid">
+          <div class="hs-stage" id="hsStage" tabindex="0" role="group" aria-describedby="hsHelp">
+            <img id="hsImg" draggable="false" alt="" hidden><div class="hs-rects" id="hsRects"></div><p class="hs-msg" id="hsMsg">Carregando a página…</p>
+          </div>
+          <div class="hs-side stack">
+            <h3>Áreas desta página</h3>
+            <p class="muted" id="hsStatus" aria-live="polite"></p>
+            <ul class="hs-list" id="hsList"></ul>
+            <p class="muted" id="hsHelp">Com uma área selecionada: as setas movem, Shift + setas mudam o tamanho, Delete remove e Esc tira a seleção. Sem mouse, use “Adicionar área”.</p>
+          </div>
+        </div>
+      </div>`;
+    const img = $('#hsImg'), strip = $('#hsThumbs');
+    $('#hsCat').addEventListener('change', (e) => openCatalog(e.target.value));
+    $('#hsPrev').addEventListener('click', () => goPage(ed.page - 1));
+    $('#hsNext').addEventListener('click', () => goPage(ed.page + 1));
+    $('#hsPage').addEventListener('change', (e) => goPage(e.target.value));
+    $('#hsAdd').addEventListener('click', () => { ed.sel = ''; ed.draft = { x: 40, y: 40, width: 20, height: 20 }; paintSpots(); askDraftProduct(); });
+    if (strip) strip.addEventListener('click', (e) => { const b = e.target.closest('[data-page]'); if (b) goPage(b.dataset.page); });
+    img.addEventListener('load', () => { setStageSize(img.naturalWidth / img.naturalHeight); img.hidden = false; $('#hsMsg').hidden = true; });
+    img.addEventListener('error', () => { $('#hsMsg').textContent = 'Não foi possível mostrar esta página. Clique em “Atualizar dados” e tente de novo.'; });
+    $('#hsList').addEventListener('click', onSpotList);
+    bindStage($('#hsStage'));
+    goPage(ed.page);
+  }
+  function goPage(n) {
+    const c = edCat(), stage = $('#hsStage'); if (!c || !stage) return;
+    const page = clamp(Math.round(+n) || 1, 1, c.pages || 1);
+    if (page !== ed.page) { ed.sel = ''; ed.draft = null; }
+    ed.page = page;
+    $('#hsPage').value = page; $('#hsPrev').disabled = page <= 1; $('#hsNext').disabled = page >= c.pages;
+    stage.setAttribute('aria-label', `Página ${page} de ${c.title}. Arraste sobre a página para marcar a área de um produto.`);
+    loadPage(c); paintThumbs(c); paintSpots();
+  }
+  // O palco tem a proporção da página: as áreas (em %) ficam no mesmo lugar em qualquer tamanho de tela
+  function setStageSize(r) {
+    const st = $('#hsStage'); if (!st || !(r > 0)) return;
+    st.style.aspectRatio = String(r);
+    st.style.width = `min(100%, calc(72vh * ${r.toFixed(4)}))`;
+  }
+  // Página decifrada (do cache pequeno); depois de cada espera confere se o painel continua aberto e se a página é a mesma
+  async function loadPage(c) {
+    const img = $('#hsImg'), msg = $('#hsMsg'), seq = ++ed.seq;
+    img.hidden = true; msg.hidden = false; msg.textContent = 'Carregando a página…';
+    img.alt = `Página ${ed.page} de ${c.title}`;
+    setStageSize(c.ratio || 0.707);
+    try {
+      const u = await pageUrl(c, ed.page);
+      if (!vault || seq !== ed.seq || !img.isConnected) return;
+      if (!u) throw new Error('página não encontrada');
+      if (img.getAttribute('src') === u && img.complete && img.naturalWidth) { img.hidden = false; msg.hidden = true; } else img.src = u; // mesma imagem: o load não se repete
+    } catch (e) {
+      console.error(e);
+      if (seq === ed.seq && msg.isConnected) msg.textContent = 'Não foi possível carregar esta página. Clique em “Atualizar dados” e tente de novo.';
+    }
+  }
+  // Miniaturas do grupo de 20 páginas da página atual (só quando o catálogo tem miniaturas)
+  async function paintThumbs(c) {
+    const strip = $('#hsThumbs'); if (!strip) return;
+    const g = Math.floor((ed.page - 1) / P.THUMB_CHUNK), key = `${c.id}:${g}`;
+    if (strip.dataset.g === key) { markThumbs(); centerThumb(strip); return; }
+    strip.dataset.g = key;
+    const first = g * P.THUMB_CHUNK + 1, last = Math.min(c.pages, first + P.THUMB_CHUNK - 1);
+    strip.innerHTML = Array.from({ length: last - first + 1 }, (_, i) => `<button type="button" class="hs-th" data-page="${first + i}"><img alt="" draggable="false" style="aspect-ratio:${c.ratio || 0.707}"><span aria-hidden="true">${first + i}</span></button>`).join('');
+    markThumbs(); centerThumb(strip);
+    try {
+      const urls = await thumbUrls(c, g);
+      if (!vault || strip.dataset.g !== key || !strip.isConnected) return;
+      $$('img', strip).forEach((im, i) => { if (urls[i]) im.src = urls[i]; });
+    } catch (e) { console.error(e); } // sem miniaturas: os números continuam funcionando
+  }
+  // Página atual e páginas com áreas na tira de miniaturas
+  function markThumbs() {
+    const strip = $('#hsThumbs'); if (!strip || !vault) return;
+    const has = new Set(viewSpots().filter((h) => h.catalogId === ed.cat).map((h) => h.page));
+    $$('.hs-th', strip).forEach((b) => {
+      const n = +b.dataset.page;
+      b.classList.toggle('has', has.has(n));
+      b.setAttribute('aria-label', `Página ${n}${has.has(n) ? ' (com áreas marcadas)' : ''}`);
+      if (n === ed.page) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+  // Rola só a tira (nunca a página) até a miniatura da página atual
+  function centerThumb(strip) {
+    const cur = $('[aria-current="page"]', strip); if (!cur) return;
+    const r = cur.getBoundingClientRect(), s = strip.getBoundingClientRect();
+    strip.scrollLeft += r.left - s.left - (s.width - r.width) / 2;
+  }
+  // Retângulos no palco e a lista acessível ao lado (sem recarregar a imagem)
+  function paintSpots() {
+    const rects = $('#hsRects'), list = $('#hsList'); if (!rects || !list || !vault) return;
+    const spots = pageSpots();
+    if (ed.sel && !spots.some((h) => h.id === ed.sel)) ed.sel = '';
+    rects.innerHTML = spots.map((h) => {
+      const sel = h.id === ed.sel, label = prodName(h.product) + (isImage(h) ? ' · imagem' : '');
+      return `<div class="hs-rect${sel ? ' sel' : ''}${stagedSpots.has(h.id) ? ' changed' : ''}" data-id="${esc(h.id)}" style="${boxStyle(h)}"><span class="hs-tag">${esc(label)}</span>${sel ? ['nw', 'ne', 'sw', 'se'].map((k) => `<i class="hs-h ${k}" data-h="${k}"></i>`).join('') : ''}</div>`;
+    }).join('') + (ed.draft ? `<div class="hs-rect is-new sel" style="${boxStyle(ed.draft)}"></div>` : '');
+    keepFocus(() => {
+      list.innerHTML = spots.length ? spots.map((h) => `<li class="${h.id === ed.sel ? 'sel' : ''}" data-row="${esc(h.id)}">
+        <button type="button" class="hs-pick" data-k="sel" data-sa="sel" aria-pressed="${h.id === ed.sel}"><b>${esc(prodName(h.product))}</b><span>${esc(h.product)}${isImage(h) ? ' · imagem do produto' : ''}${stagedSpots.has(h.id) ? ' · não publicada' : ''}</span></button>
+        <div class="actions"><button class="btn ghost sm" type="button" data-k="del" data-sa="del" aria-label="Remover a área de ${esc(prodName(h.product))}">Remover área</button></div>
+        <details class="hs-menu"><summary>Mais opções</summary><div class="actions">
+          <button class="btn ghost sm" type="button" data-k="prod" data-sa="prod">Trocar produto</button>
+          <button class="btn ghost sm" type="button" data-k="img" data-sa="img" ${isImage(h) ? 'disabled' : ''}>Usar esta área como imagem do produto</button>
+        </div></details>
+      </li>`).join('') : '<li class="muted">Nenhuma área nesta página. Arraste sobre a página para marcar a primeira.</li>';
+    });
+    const s = ed.sel && spots.find((h) => h.id === ed.sel);
+    $('#hsStatus').textContent = s ? `Selecionada: ${prodName(s.product)} · posição ${pct(s.x)}% × ${pct(s.y)}% · tamanho ${pct(s.width)}% × ${pct(s.height)}%` : plural(spots.length, 'área nesta página', 'áreas nesta página');
+    markThumbs();
+  }
+  // Nova caixa durante o arraste: desenhar, mover ou puxar um canto (o canto oposto fica parado)
+  function dragBox(g, p) {
+    const o = g.orig;
+    if (g.mode === 'draw') return { x: Math.min(g.start.x, p.x), y: Math.min(g.start.y, p.y), width: Math.abs(p.x - g.start.x), height: Math.abs(p.y - g.start.y) };
+    if (g.mode === 'move') return { x: clamp(o.x + p.x - g.start.x, 0, 100 - o.width), y: clamp(o.y + p.y - g.start.y, 0, 100 - o.height), width: o.width, height: o.height };
+    const ax = g.mode.includes('w') ? o.x + o.width : o.x, ay = g.mode.includes('n') ? o.y + o.height : o.y;
+    return { x: Math.min(ax, p.x), y: Math.min(ay, p.y), width: Math.abs(p.x - ax), height: Math.abs(p.y - ay) };
+  }
+  // Mouse, caneta ou toque: a posição vira % da imagem (0 a 100)
+  function bindStage(stage) {
+    const img = $('#hsImg', stage);
+    const at = (e) => { const b = img.getBoundingClientRect(); return { x: clamp((e.clientX - b.left) / b.width * 100, 0, 100), y: clamp((e.clientY - b.top) / b.height * 100, 0, 100) }; };
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || img.hidden) return;
+      const p = at(e), el = e.target.closest('.hs-rect[data-id]'), h = el && spotById(el.dataset.id), handle = e.target.closest('[data-h]');
+      if (h) { ed.sel = h.id; ed.drag = { mode: handle ? handle.dataset.h : 'move', start: p, orig: h, box: boxOf(h) }; }
+      else { ed.sel = ''; ed.draft = { x: p.x, y: p.y, width: 0, height: 0 }; ed.drag = { mode: 'draw', start: p, box: ed.draft }; }
+      e.preventDefault();
+      stage.setPointerCapture(e.pointerId);
+      stage.focus({ preventScroll: true });
+      paintSpots();
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const g = ed.drag; if (!g) return;
+      const p = at(e);
+      if (!g.moved && Math.abs(p.x - g.start.x) + Math.abs(p.y - g.start.y) < 0.4) return; // a tremida do clique não move a área
+      g.moved = true; g.box = dragBox(g, p);
+      if (g.mode === 'draw') ed.draft = g.box;
+      const el = g.mode === 'draw' ? $('.hs-rect.is-new', stage) : $(`.hs-rect[data-id="${CSS.escape(g.orig.id)}"]`, stage);
+      if (el) Object.assign(el.style, { left: g.box.x + '%', top: g.box.y + '%', width: g.box.width + '%', height: g.box.height + '%' });
+    });
+    const end = (e) => {
+      const g = ed.drag; if (!g) return;
+      ed.drag = null;
+      if (g.mode === 'draw') {
+        const big = e.type === 'pointerup' && g.box.width >= MIN_BOX && g.box.height >= MIN_BOX;
+        ed.draft = big ? fixBox(g.box) : null; // um clique (ou área pequena demais) só tira a seleção
+        paintSpots();
+        if (big) askDraftProduct();
+      } else if (g.moved && e.type === 'pointerup') saveSpot({ ...g.orig, ...fixBox(g.box) });
+      else paintSpots();
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+    stage.addEventListener('keydown', onStageKey);
+  }
+  // Teclado: setas movem 0,5%, Shift + setas mudam o tamanho, Delete remove, Esc tira a seleção
+  function onStageKey(e) {
+    const h = ed.sel && spotById(ed.sel); if (!h) return;
+    if (e.key === 'Escape') { ed.sel = ''; paintSpots(); return; }
+    const d = { ArrowLeft: [-0.5, 0], ArrowRight: [0.5, 0], ArrowUp: [0, -0.5], ArrowDown: [0, 0.5] }[e.key];
+    if (d) {
+      e.preventDefault();
+      const b = e.shiftKey ? { x: h.x, y: h.y, width: h.width + d[0], height: h.height + d[1] } : { x: h.x + d[0], y: h.y + d[1], width: h.width, height: h.height };
+      saveSpot({ ...h, ...fixBox(b) });
+    } else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removeSpot(h); }
+  }
+  function onSpotList(e) {
+    const b = e.target.closest('[data-sa]'); if (!b) return;
+    const h = spotById(b.closest('[data-row]').dataset.row); if (!h) return;
+    const a = b.dataset.sa;
+    if (a === 'sel') { ed.sel = h.id; paintSpots(); focusStage(); }
+    else if (a === 'prod') pickProduct('Trocar o produto desta área', (sku) => { const cur = spotById(h.id); if (cur) { saveSpot({ ...cur, product: sku }, true); focusStage(); } });
+    else if (a === 'img') { useAsImage(h); focusStage(); }
+    else removeSpot(h);
+  }
+  // Área nova (desenhada ou pelo botão): pergunta o produto; sem escolha, a área é descartada
+  function askDraftProduct() {
+    pickProduct('Qual produto está nesta área?', (sku) => {
+      if (!ed.draft || !vault) return;
+      const h = { id: P.randHex(6), catalogId: ed.cat, page: ed.page, product: sku, ...ed.draft };
+      ed.draft = null;
+      saveSpot(h, true); focusStage();
+    }, () => { ed.draft = null; paintSpots(); });
+  }
+  // Toda mudança de área vai para a barra de alterações (publicada junto com o resto)
+  function saveSpot(h, recount) {
+    stagedSpots.set(h.id, h); ed.sel = h.id;
+    refreshStage(); paintSpots();
+    if (recount) renderProdRows();
+  }
+  function removeSpot(h) {
+    stagedSpots.set(h.id, null);
+    if (ed.sel === h.id) ed.sel = '';
+    refreshStage(); paintSpots(); renderProdRows(); focusStage();
+    toast('Área removida.');
+  }
+  function useAsImage(h) {
+    const p = (vault.products || {})[h.product]; if (!p) return;
+    stagedImages.set(h.product, boxOf(h));
+    refreshStage(); paintSpots(); renderProdRows();
+    toast(`Esta área vai ser a imagem de “${p.name}” no site depois de publicar.`);
+  }
+
   /* ================= configurações ================= */
   function renderCfg() {
     const box = $('#tabCfg'); if (!vault) return;
-    const st = vault.settings || {}, hasR = !!(slots && slots.r);
+    const st = vault.settings || {}, hasR = !!(slots && slots.r), com = st.comercial || {};
     box.innerHTML = `
       <div class="grid2">
-        <div class="card stack">
-          <h3>Ativação de acessos</h3>
-          <p class="muted">Para onde a pessoa envia o código de ativação depois de criar a senha. O site mostra um botão para cada contato preenchido e sempre oferece “Copiar código”.</p>
-          <label class="field" id="fAE"><span class="field-label">E-mail do marketing</span><input id="ativEmail" type="email" value="${esc(st.ativEmail || '')}" placeholder="marketing@empresa.com.br"><em class="err" hidden></em></label>
-          <label class="field" id="fAW"><span class="field-label">WhatsApp do marketing (com DDI e DDD, só números)</span><input id="ativWhats" inputmode="numeric" value="${esc(st.ativWhats || '')}" placeholder="5554999999999"><em class="err" hidden></em></label>
-          <label class="field"><span class="field-label">Validade do código provisório</span><select id="codeHours">${[[24, '24 horas'], [48, '48 horas'], [168, '7 dias']].map(([h, l]) => `<option value="${h}" ${codeHours() === h ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
-          <label class="field"><span class="field-label">Texto de “Esqueci minha senha”</span><textarea id="contato" rows="3">${esc(st.contato || CONTATO_PADRAO)}</textarea></label>
-          <button class="btn primary" id="saveAtiv" type="button">Salvar e publicar</button>
+        <div class="stack">
+          <div class="card stack">
+            <h3>Ativação de acessos</h3>
+            <p class="muted">Para onde a pessoa envia o código de ativação depois de criar a senha. O site mostra um botão para cada contato preenchido e sempre oferece “Copiar código”.</p>
+            <label class="field" id="fAE"><span class="field-label">E-mail do marketing</span><input id="ativEmail" type="email" value="${esc(st.ativEmail || '')}" placeholder="marketing@empresa.com.br"><em class="err" hidden></em></label>
+            <label class="field" id="fAW"><span class="field-label">WhatsApp do marketing (com DDI e DDD, só números)</span><input id="ativWhats" inputmode="numeric" value="${esc(st.ativWhats || '')}" placeholder="5554999999999"><em class="err" hidden></em></label>
+            <label class="field"><span class="field-label">Validade do código provisório</span><select id="codeHours">${[[24, '24 horas'], [48, '48 horas'], [168, '7 dias']].map(([h, l]) => `<option value="${h}" ${codeHours() === h ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+            <label class="field"><span class="field-label">Texto de “Esqueci minha senha”</span><textarea id="contato" rows="3">${esc(st.contato || CONTATO_PADRAO)}</textarea></label>
+            <button class="btn primary" id="saveAtiv" type="button">Salvar e publicar</button>
+          </div>
+          <div class="card stack">
+            <h3>Contato comercial</h3>
+            <p class="muted">Para onde a pessoa pede informações sobre os produtos marcados nos catálogos. Estes contatos ficam protegidos: só aparecem para quem entra na Prateleira.</p>
+            <label class="field" id="fCW"><span class="field-label">WhatsApp comercial (com DDI e DDD, só números)</span><input id="comWhats" inputmode="numeric" value="${esc(com.whatsapp || '')}" placeholder="5554999999999"><em class="err" hidden></em></label>
+            <label class="field" id="fCE"><span class="field-label">E-mail comercial (opcional)</span><input id="comEmail" type="email" value="${esc(com.email || '')}" placeholder="comercial@empresa.com.br"><em class="err" hidden></em></label>
+            <label class="field"><span class="field-label">Mensagem padrão (opcional)</span><textarea id="comMsg" rows="3" maxlength="300">${esc(com.mensagem || MSG_COMERCIAL)}</textarea></label>
+            <button class="btn primary" id="saveCom" type="button">Salvar e publicar</button>
+          </div>
         </div>
         <div class="stack">
           <div class="card stack">
@@ -1906,6 +2509,7 @@
         </div>
       </div>`;
     $('#saveAtiv').addEventListener('click', saveAtiv);
+    $('#saveCom').addEventListener('click', saveCom);
     box.onclick = (e) => {
       const b = e.target.closest('[data-cfg]'); if (!b) return;
       const a = b.dataset.cfg;
@@ -1917,13 +2521,23 @@
     };
   }
   async function saveAtiv() {
-    const email = $('#ativEmail').value.trim(), whats = $('#ativWhats').value.replace(/\D/g, '');
+    const email = $('#ativEmail').value.trim(), whats = $('#ativWhats').value.replace(/\D/g, ''), wp = whatsProblem(whats);
     setFieldErr($('#fAE'), email && !emailOk(email) ? 'Confira o formato do e-mail.' : '');
-    setFieldErr($('#fAW'), whats && (whats.length < 12 || whats.length > 13) ? 'Informe com DDI e DDD, por exemplo 5554999999999.' : '');
-    if ((email && !emailOk(email)) || (whats && (whats.length < 12 || whats.length > 13))) return;
+    setFieldErr($('#fAW'), wp);
+    if ((email && !emailOk(email)) || wp) return;
     const s = { ativEmail: email, ativWhats: whats, codeHours: +$('#codeHours').value, contato: $('#contato').value.trim() || CONTATO_PADRAO };
     const ok = await publish('Salvando', (d) => { d.settings = { ...(d.settings || {}), ...s }; });
     if (ok) { toast('Configurações publicadas.'); renderCfg(); }
+  }
+  // Contato comercial (vai só no produtos.bin, cifrado; nunca no acessos.json)
+  async function saveCom() {
+    const whats = $('#comWhats').value.replace(/\D/g, ''), email = $('#comEmail').value.trim();
+    const wp = whatsProblem(whats), ep = email && !emailOk(email) ? 'Confira o formato do e-mail.' : '';
+    setFieldErr($('#fCW'), wp); setFieldErr($('#fCE'), ep);
+    if (wp || ep) return;
+    const comercial = { whatsapp: whats, email, mensagem: $('#comMsg').value.trim() || MSG_COMERCIAL };
+    const ok = await publish('Salvando', (d) => { d.settings = { ...(d.settings || {}), comercial }; });
+    if (ok) { toast('Contato comercial publicado.'); renderCfg(); }
   }
   function showRecoveryKey(rk, intro) {
     openDialog({
