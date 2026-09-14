@@ -96,6 +96,11 @@
   .check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
   .check input { width: 16px; height: 16px; accent-color: var(--navy); }
   .login-foot { max-width: 380px; margin: 28px auto 0; font-size: 12px; color: var(--ink-2); text-align: center; }
+  .login-panel .stack-login { width: 100%; max-width: 380px; margin: 0 auto; display: grid; gap: 18px; }
+  .rules { margin: -6px 0 0; padding-left: 18px; display: grid; gap: 2px; font-size: 12px; color: var(--ink-2); }
+  .code-box { width: 100%; padding: 12px 14px; border: 1px solid var(--silver); border-radius: 10px; background: var(--light); color: var(--navy); font: 12px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace; word-break: break-all; resize: none; }
+  .btn-col { display: grid; gap: 10px; }
+  a.btn { text-decoration: none; }
   .secure { display: inline-flex; align-items: center; gap: 6px; }
   .secure svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -331,7 +336,7 @@
       <p class="sub">Use o e-mail e a senha que você recebeu da Dellamed.</p>
       <div class="alert error" id="loginAlert" role="alert" hidden></div>
       <label class="field" id="fEmail"><span class="field-label">E-mail</span><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required><em class="err" hidden></em></label>
-      <div class="field" id="fPass"><label class="field-label" for="loginPass">Senha</label>
+      <div class="field" id="fPass"><label class="field-label" for="loginPass">Senha ou código provisório</label>
         <div class="pw"><input id="loginPass" type="password" autocomplete="current-password" required><button type="button" class="pw-toggle ico" id="pwToggle" aria-label="Mostrar senha" aria-pressed="false"></button></div>
         <em class="err" hidden></em>
       </div>
@@ -346,6 +351,33 @@
       <div class="alert ok" id="forgotText" role="status"></div>
       <button type="button" class="btn primary block" id="toLogin">Voltar para o login</button>
     </form>
+    <form id="setupForm" novalidate hidden>
+      <p class="label-caps">Primeiro acesso</p>
+      <h2>Crie a sua senha</h2>
+      <p class="sub" id="setupSub"></p>
+      <div class="alert error" id="setupAlert" role="alert" hidden></div>
+      <div class="field" id="fNew"><label class="field-label" for="newPass">Nova senha</label>
+        <div class="pw"><input id="newPass" type="password" autocomplete="new-password"><button type="button" class="pw-toggle ico" id="pwToggle2" aria-label="Mostrar senha" aria-pressed="false"></button></div>
+        <em class="err" hidden></em>
+      </div>
+      <div class="field" id="fNew2"><label class="field-label" for="newPass2">Repita a nova senha</label><input id="newPass2" type="password" autocomplete="new-password"><em class="err" hidden></em></div>
+      <ul class="rules"><li>Pelo menos 10 caracteres, com letras e números</li><li>Sem espaços e sem partes do seu e-mail</li><li>Evite palavras óbvias, como “dellamed” ou “senha”</li></ul>
+      <button class="btn primary block" type="submit" id="setupSubmit">Criar minha senha</button>
+      <button type="button" class="link" id="setupBack" style="justify-self:center">Voltar para o login</button>
+    </form>
+    <div class="stack-login" id="activateView" hidden>
+      <p class="label-caps">Quase pronto</p>
+      <h2>Envie o código de ativação</h2>
+      <p class="sub">Sua senha foi criada. Para liberar o acesso, envie o código abaixo para o marketing da Dellamed. Ele não revela a sua senha.</p>
+      <textarea class="code-box" id="actCode" rows="6" readonly aria-label="Código de ativação"></textarea>
+      <div class="btn-col">
+        <a class="btn primary block" id="actMail" hidden>Enviar por e-mail</a>
+        <a class="btn primary block" id="actWhats" target="_blank" rel="noopener" hidden>Enviar por WhatsApp</a>
+        <button type="button" class="btn ghost block" id="actCopy">Copiar código</button>
+      </div>
+      <p class="alert ok">Assim que o marketing ativar, você entra com o seu e-mail e a senha que acabou de criar.</p>
+      <button type="button" class="link" id="actBack" style="justify-self:center">Voltar para o login</button>
+    </div>
     <p class="login-foot"><span class="secure" id="secureNote"></span></p>
   </div>
 </section>
@@ -460,6 +492,7 @@
   const plural = (n, one, many) => `${fmtN(n)} ${n === 1 ? one : many}`;
   const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const pad3 = (n) => String(n).padStart(3, '0');
+  const fmtDateTime = (iso) => new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   function ago(iso) {
     if (!iso) return '';
     const s = (Date.now() - Date.parse(iso)) / 1000;
@@ -505,6 +538,26 @@
     const u = new Uint8Array(packed);
     return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: u.subarray(0, 12) }, key, u.subarray(12)));
   }
+  const b64e = (buf) => { const u = buf instanceof Uint8Array ? buf : new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+  async function sealBox(key, bytes) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, bytes));
+    const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
+    return out;
+  }
+  const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const EC = { name: 'ECDH', namedCurve: 'P-256' };
+  async function wrapKeyFrom(shared) {
+    const tag = te.encode('prateleira-v2');
+    const buf = new Uint8Array(shared.byteLength + tag.length);
+    buf.set(new Uint8Array(shared)); buf.set(tag, shared.byteLength);
+    return crypto.subtle.digest('SHA-256', buf);
+  }
+  const canonCode = (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  async function activationMac(code, id, msg) {
+    const k = await crypto.subtle.importKey('raw', await crypto.subtle.digest('SHA-256', te.encode('ativacao|' + canonCode(code) + '|' + id)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    return b64e(await crypto.subtle.sign('HMAC', k, te.encode(msg)));
+  }
 
   /* ================= estado ================= */
   const LINES = ['Home Care', 'Health Care', 'Wellness', 'Ortho Care'];
@@ -530,9 +583,31 @@
     const bits = await deriveBits(pass, salt, ACCESS.kdf.iterations);
     if (!entry) return null;
     try {
-      const plain = await openBox(await importAes(bits), b64d(entry.d));
+      let plain;
+      if (entry.t === 2) {
+        // Senha criada pela própria pessoa: ela abre a chave privada da pessoa, que abre a chave dos catálogos
+        const pk8 = await openBox(await importAes(bits), b64d(entry.p));
+        const priv = await crypto.subtle.importKey('pkcs8', pk8, EC, false, ['deriveBits']);
+        const eph = await crypto.subtle.importKey('raw', b64d(entry.e), EC, false, []);
+        const shared = await crypto.subtle.deriveBits({ name: 'ECDH', public: eph }, priv, 256);
+        plain = await openBox(await importAes(await wrapKeyFrom(shared)), b64d(entry.d));
+      } else {
+        plain = await openBox(await importAes(bits), b64d(entry.d));
+      }
       return { ...JSON.parse(td.decode(plain)), id };
     } catch (err) { return null; }
+  }
+  // Código provisório: confere o código publicado (PBKDF2) e a validade antes de deixar a pessoa criar a senha
+  async function checkPending(email, code) {
+    const e = email.trim().toLowerCase();
+    const id = await sha256hex(ACCESS.salt + '|' + e);
+    const p = ACCESS.pend && ACCESS.pend[id];
+    if (!p) return { status: 'none' };
+    const c = canonCode(code);
+    if (c.length !== 8) return { status: 'wrong' };
+    if (hex(await deriveBits(c, b64d(p.s), ACCESS.kdf.iterations)) !== p.h) return { status: 'wrong' };
+    if (Date.parse(p.x) < Date.now()) return { status: 'expired', x: p.x };
+    return { status: 'ok', id, email: e, code: c, x: p.x };
   }
   async function unlockData(kB64) {
     const key = await importAes(b64d(kB64));
@@ -655,7 +730,14 @@
     btn.disabled = true; btn.textContent = 'Verificando o acesso…';
     try {
       const prof = await tryLogin(email, pass);
-      if (!prof) { loginAlert('E-mail ou senha incorretos. Se o seu acesso foi criado ou a senha foi trocada há pouco, aguarde 3 minutos e tente de novo.'); return; }
+      if (!prof) {
+        const pend = await checkPending(email, pass);
+        if (pend.status === 'ok') { $('#loginPass').value = ''; openSetup(pend); return; }
+        if (pend.status === 'expired') { loginAlert(`Seu código provisório venceu em ${fmtDateTime(pend.x)}. Peça um novo ao marketing da Dellamed.`); return; }
+        if (pend.status === 'wrong') { loginAlert('Senha ou código incorretos. Se você já criou a sua senha, ela só funciona depois que o marketing ativar o seu acesso.'); return; }
+        loginAlert('E-mail ou senha incorretos. Se o seu acesso foi criado ou ativado há pouco, aguarde 3 minutos e tente de novo.');
+        return;
+      }
       try { await unlockData(prof.k); }
       catch (err) { loginAlert('Não foi possível abrir os catálogos agora. Aguarde alguns minutos e tente de novo.'); return; }
       $('#loginPass').value = '';
@@ -664,10 +746,89 @@
     } finally { btn.disabled = false; btn.textContent = 'Entrar'; }
   });
   $('#toForgot').addEventListener('click', () => {
-    $('#forgotText').textContent = (ACCESS && ACCESS.contato) || 'Para recuperar seu acesso, fale com o seu representante ou com o marketing da Dellamed.';
+    $('#forgotText').textContent = (ACCESS && ACCESS.contato) || 'Para recuperar seu acesso, peça ao marketing da Dellamed um novo código provisório. Com ele, você cria uma senha nova.';
     loginForm.hidden = true; forgotForm.hidden = false; $('#toLogin').focus();
   });
   $('#toLogin').addEventListener('click', () => { forgotForm.hidden = true; loginForm.hidden = false; $('#loginEmail').focus(); });
+
+  /* ================= primeiro acesso: criar a senha e gerar o código de ativação ================= */
+  const setupForm = $('#setupForm'), activateView = $('#activateView');
+  let setupState = null;
+  function showLoginPart(name) {
+    loginForm.hidden = name !== 'login'; forgotForm.hidden = name !== 'forgot';
+    setupForm.hidden = name !== 'setup'; activateView.hidden = name !== 'activate';
+  }
+  $('#pwToggle2').innerHTML = I.eye;
+  $('#pwToggle2').addEventListener('click', () => {
+    const show = $('#newPass').type === 'password';
+    $('#newPass').type = $('#newPass2').type = show ? 'text' : 'password';
+    $('#pwToggle2').innerHTML = show ? I.eyeOff : I.eye;
+    $('#pwToggle2').setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+    $('#pwToggle2').setAttribute('aria-pressed', String(show));
+  });
+  function openSetup(st) {
+    setupState = st;
+    $('#setupSub').textContent = `Código confirmado para ${st.email}. Agora crie a senha que você vai usar para entrar.`;
+    $('#setupAlert').hidden = true;
+    $('#newPass').value = ''; $('#newPass2').value = '';
+    setErr($('#fNew'), ''); setErr($('#fNew2'), '');
+    showLoginPart('setup');
+    $('#newPass').focus();
+  }
+  const COMMON = ['dellamed', 'senha', 'password', '123456', '12345678', 'qwerty', 'catalogo', 'prateleira', 'abc123', 'admin', 'mudar'];
+  function pwdProblem(pwd, email) {
+    if (pwd.length < 10) return 'Use pelo menos 10 caracteres.';
+    if (/\s/.test(pwd)) return 'Não use espaços.';
+    if (!/[a-zA-Z]/.test(pwd) || !/\d/.test(pwd)) return 'Misture letras e números.';
+    if (/(.)\1{3,}/.test(pwd)) return 'Evite repetir o mesmo caractere várias vezes.';
+    const low = norm(pwd);
+    if (COMMON.some((w) => low.includes(w))) return 'Evite palavras óbvias como “dellamed”, “senha” ou sequências como “123456”.';
+    const parts = norm(String(email || '').split('@')[0]).split(/[^a-z0-9]+/).filter((w) => w.length >= 3);
+    if (parts.some((w) => low.includes(w))) return 'A senha não pode conter partes do seu e-mail.';
+    return '';
+  }
+  // A senha nunca sai do aparelho: ela protege uma chave privada nova; o código leva só a chave pública e a chave privada já criptografada.
+  async function buildActivation(st, pwd) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const kek = await crypto.subtle.importKey('raw', await deriveBits(pwd, salt, ACCESS.kdf.iterations), 'AES-GCM', false, ['encrypt']);
+    const kp = await crypto.subtle.generateKey(EC, true, ['deriveBits']);
+    const k = b64e(await crypto.subtle.exportKey('raw', kp.publicKey));
+    const p = b64e(await sealBox(kek, new Uint8Array(await crypto.subtle.exportKey('pkcs8', kp.privateKey))));
+    const s = b64e(salt);
+    const m = await activationMac(st.code, st.id, `${st.id}|${s}|${p}|${k}`);
+    return 'PRATELEIRA-ATIVACAO:' + btoa(JSON.stringify({ v: 2, i: st.id, s, p, k, m }));
+  }
+  setupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const a = $('#newPass').value, b = $('#newPass2').value;
+    const perr = pwdProblem(a, setupState.email);
+    setErr($('#fNew'), perr);
+    setErr($('#fNew2'), !perr && a !== b ? 'As duas senhas não são iguais.' : '');
+    if (perr || a !== b) return;
+    const btn = $('#setupSubmit');
+    btn.disabled = true; btn.textContent = 'Criando…';
+    try { showActivation(await buildActivation(setupState, a)); }
+    catch (x) { const al = $('#setupAlert'); al.textContent = 'Não foi possível criar a senha neste navegador. Atualize a página e tente de novo.'; al.hidden = false; }
+    finally { btn.disabled = false; btn.textContent = 'Criar minha senha'; $('#newPass').value = ''; $('#newPass2').value = ''; }
+  });
+  function showActivation(code) {
+    $('#actCode').value = code;
+    const a = (ACCESS && ACCESS.ativ) || {};
+    const msg = `Ativação da Prateleira de Catálogos Dellamed\nE-mail: ${setupState.email}\n\n${code}`;
+    const mail = $('#actMail'), wa = $('#actWhats');
+    mail.hidden = !a.email;
+    if (a.email) mail.href = `mailto:${encodeURIComponent(a.email)}?subject=${encodeURIComponent('Ativação da Prateleira de Catálogos')}&body=${encodeURIComponent(msg)}`;
+    wa.hidden = !a.whatsapp;
+    if (a.whatsapp) wa.href = `https://wa.me/${String(a.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+    showLoginPart('activate');
+  }
+  $('#actCopy').addEventListener('click', async () => {
+    const ta = $('#actCode');
+    try { await navigator.clipboard.writeText(ta.value); toast('Código copiado.'); }
+    catch (e) { ta.focus(); ta.select(); try { document.execCommand('copy'); toast('Código copiado.'); } catch (_) { toast('Selecione o código e copie com Ctrl+C.'); } }
+  });
+  $('#setupBack').addEventListener('click', () => showLoginPart('login'));
+  $('#actBack').addEventListener('click', () => { $('#loginPass').value = ''; showLoginPart('login'); $('#loginEmail').focus(); });
 
   function saveSession(prof, remember) {
     const s = JSON.stringify(prof);
