@@ -655,7 +655,7 @@
     btn.disabled = true; btn.textContent = 'Verificando o acesso…';
     try {
       const prof = await tryLogin(email, pass);
-      if (!prof) { loginAlert('E-mail ou senha incorretos. Confira os dados e tente de novo.'); return; }
+      if (!prof) { loginAlert('E-mail ou senha incorretos. Se o seu acesso foi criado ou a senha foi trocada há pouco, aguarde 3 minutos e tente de novo.'); return; }
       try { await unlockData(prof.k); }
       catch (err) { loginAlert('Não foi possível abrir os catálogos agora. Aguarde alguns minutos e tente de novo.'); return; }
       $('#loginPass').value = '';
