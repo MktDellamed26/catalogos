@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-O5SXobB5YxDuiL2hLa4YDOAXBW8cQa2uzZSAjp/grZw=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-g5l57tyf/Pb259jqLotJ1GSzQu3XaMC2G/DFe9n1Cn8=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -153,7 +153,6 @@
   .nav-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nav-c { font-size: 12px; font-weight: 400; color: rgba(255, 255, 255, .66); font-variant-numeric: tabular-nums; }
   .nav-c:empty { display: none; }
-  .nav-b { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 7px; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .nav-h { margin: 22px 12px 6px; font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
   .side-foot { margin-top: auto; display: grid; gap: 4px; padding: 14px; border-radius: 14px; background: rgba(255, 255, 255, .07); }
   .side-foot .label-caps { font-size: 10px; color: rgba(255, 255, 255, .6); }
@@ -182,7 +181,6 @@
   .tb-i[aria-current="page"]::before { content: ""; position: absolute; top: 0; left: 28%; right: 28%; height: 3px; border-radius: 0 0 3px 3px; background: var(--navy); }
   .tb-i .ico svg { width: 22px; height: 22px; }
   .tb-l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tb-n { position: absolute; top: 5px; left: calc(50% + 6px); display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 10px; font-weight: 700; }
 
   /* ---------- blocos (resumos), barra de busca e seleção ---------- */
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
@@ -259,6 +257,10 @@
   .u-role { grid-area: role; }
   .u-status { grid-area: status; font-size: 12px; }
   .rw.user-grid > .rw-acts { grid-area: acts; margin-top: 4px; }
+  /* Pessoas no Supabase: mesma linha das pessoas, sem a coluna de seleção */
+  .sb-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) 140px minmax(130px, .8fr); }
+  .rw.sb-grid { grid-template-areas: "who comp role status" "acts acts acts status"; }
+  .rw.sb-grid > .rw-acts { grid-area: acts; margin-top: 4px; }
   .prod-grid { grid-template-columns: minmax(90px, .7fr) minmax(0, 1.6fr) minmax(0, 1fr) 110px 180px; }
   .rw.prod-grid { grid-template-areas: "sku name cat areas acts"; }
   .p-sku { grid-area: sku; }
@@ -293,10 +295,19 @@
   .status.on { background: var(--sky); color: var(--navy); }
   .status.wait { background: var(--light); color: var(--navy); border: 1px solid var(--silver); }
   .status.off { background: transparent var(--warn) 9px center / 13px no-repeat; color: var(--graphite); padding-left: 27px; border: 1px solid var(--graphite); }
-  .live { display: inline-block; margin-top: 4px; font-size: 12px; color: var(--ink-2); }
-  .live.ok { color: var(--navy); font-weight: 600; }
+  .sb-status { white-space: normal; overflow-wrap: anywhere; } /* "Conectado como <e-mail>" quebra em telas estreitas */
   .empty { padding: 40px 20px; border-radius: 18px; background: var(--white); box-shadow: var(--card-shadow); text-align: center; color: var(--ink-2); }
   .card .empty { padding: 28px 16px; background: var(--light); box-shadow: none; border-radius: 14px; }
+  .empty .row { justify-content: center; margin-top: 12px; }
+  /* Pessoas: título da seção do Supabase e seção "Acessos antigos" (recolhida por padrão) */
+  .sec-title { font-size: 18px; font-weight: 700; }
+  .legacy > summary { display: flex; align-items: center; gap: 10px; min-height: 32px; cursor: pointer; list-style: none; }
+  .legacy > summary::-webkit-details-marker { display: none; }
+  .legacy > summary::after { content: ""; width: 8px; height: 8px; margin: 0 6px 4px auto; border-right: 2px solid var(--navy); border-bottom: 2px solid var(--navy); transform: rotate(45deg); }
+  .legacy[open] > summary::after { margin-bottom: -4px; transform: rotate(-135deg); }
+  .legacy-body { margin-top: 14px; }
+  .legacy .selbar { justify-self: start; }
+  .legacy .list-card { box-shadow: 0 0 0 1px var(--hair); }
 
   /* ---------- Configurações: cartões ---------- */
   .cfg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
@@ -373,7 +384,6 @@
   .pbar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--navy); transition: width .2s; }
   .secret { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 22px; letter-spacing: .08em; color: var(--navy); background: var(--light); padding: 10px 14px; border-radius: 10px; user-select: all; overflow-wrap: anywhere; }
   .secret.long { width: 100%; border: 0; resize: none; font-size: 17px; letter-spacing: .04em; }
-  .paste { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 12px; }
   .toast { position: fixed; left: calc(50% + var(--side-w) / 2); bottom: calc(28px + var(--safe-b)); z-index: 90; transform: translateX(-50%); padding: 12px 20px; border-radius: 999px; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 600; box-shadow: 0 16px 34px -12px rgba(20, 32, 60, .6); width: max-content; max-width: calc(100vw - var(--side-w) - 32px); text-align: center; }
   .stage:not([hidden]) ~ .toast { bottom: calc(96px + var(--safe-b)); }
   /* Barra de alterações: pílula azul-marinho centralizada na coluna de conteúdo (não cobre o menu lateral) */
@@ -412,6 +422,7 @@
     .hs-th { min-height: 44px; }
     .hs-pg .input { height: 44px; }
     .hs-menu summary, details.help summary { display: flex; align-items: center; min-height: 44px; }
+    .legacy > summary { min-height: 44px; }
     /* iOS: campos com menos de 16 px disparam zoom automático */
     input, select, textarea, .field input, .field select, .field textarea, .input { font-size: 16px; }
     .secret.long { font-size: 17px; }
@@ -442,8 +453,10 @@
     .c-main { align-self: center; }
     .c-site, .c-new, .c-order { display: flex; align-items: center; gap: 10px; min-height: 44px; }
     .c-new, .c-order { justify-content: flex-end; }
-    .rw.cat-grid > .rw-acts, .rw.user-grid > .rw-acts { margin-top: 0; }
+    .rw.cat-grid > .rw-acts, .rw.user-grid > .rw-acts, .rw.sb-grid > .rw-acts { margin-top: 0; }
     .rw.user-grid { grid-template-columns: 32px minmax(0, 1fr) auto; grid-template-areas: "sel who who" ". comp role" ". status status" "acts acts acts"; }
+    .rw.sb-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "who who" "comp role" "status status" "acts acts"; }
+    .legacy .list-card { box-shadow: none; }
     .u-sel { align-self: center; }
     .rw.prod-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "sku areas" "name name" "cat cat" "acts acts"; }
     .rw.prod-grid > .rw-acts { justify-content: flex-start; }
@@ -553,7 +566,7 @@
       <div class="side-nav" role="tablist" aria-label="Áreas do painel" aria-orientation="vertical">
         <button class="nav-i" type="button" role="tab" id="tb-cats" data-tab="cats" aria-controls="tabCats" aria-selected="true" tabindex="0"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 17V6.5A2.5 2.5 0 0 1 7.5 4H19v13H7.5A2.5 2.5 0 0 0 5 19.5 2.5 2.5 0 0 0 7.5 22H19v-5"/></svg></span><span class="nav-t">Catálogos</span><span class="nav-c" id="navCats"></span></button>
         <button class="nav-i" type="button" role="tab" id="tb-prods" data-tab="prods" aria-controls="tabProds" aria-selected="false" tabindex="-1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3-8.7 8.7z"/><circle cx="8" cy="8" r="1.5"/></svg></span><span class="nav-t">Produtos</span><span class="nav-c" id="navProds"></span></button>
-        <button class="nav-i" type="button" role="tab" id="tb-users" data-tab="users" aria-controls="tabUsers" aria-selected="false" tabindex="-1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></span><span class="nav-t">Pessoas</span><span class="nav-c" id="navUsers"></span><span class="nav-b" id="navWaitBox" title="Aguardando ativação" hidden><span class="sr-only">, aguardando ativação: </span><span id="navWait"></span></span></button>
+        <button class="nav-i" type="button" role="tab" id="tb-users" data-tab="users" aria-controls="tabUsers" aria-selected="false" tabindex="-1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></span><span class="nav-t">Pessoas</span><span class="nav-c" id="navUsers"></span></button>
         <button class="nav-i" type="button" role="tab" id="tb-cfg" data-tab="cfg" aria-controls="tabCfg" aria-selected="false" tabindex="-1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="nav-t">Configurações</span></button>
       </div>
       <p class="nav-h">Atalhos</p>
@@ -590,7 +603,7 @@
     <nav class="tabbar" id="tabbar" aria-label="Áreas do painel">
       <button class="tb-i" type="button" data-nav="cats" aria-current="page"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 17V6.5A2.5 2.5 0 0 1 7.5 4H19v13H7.5A2.5 2.5 0 0 0 5 19.5 2.5 2.5 0 0 0 7.5 22H19v-5"/></svg></span><span class="tb-l">Catálogos</span></button>
       <button class="tb-i" type="button" data-nav="prods"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3-8.7 8.7z"/><circle cx="8" cy="8" r="1.5"/></svg></span><span class="tb-l">Produtos</span></button>
-      <button class="tb-i" type="button" data-nav="users"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></span><span class="tb-l">Pessoas</span><span class="tb-n" id="tbWait" hidden></span></button>
+      <button class="tb-i" type="button" data-nav="users"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg></span><span class="tb-l">Pessoas</span></button>
       <button class="tb-i" type="button" data-nav="cfg"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tb-l">Ajustes</span></button>
     </nav>
   </div>
@@ -873,7 +886,110 @@
     const validHotspot = (h) => !!h && typeof h.catalogId === 'string' && Number.isInteger(h.page) && h.page >= 1 && typeof h.product === 'string' &&
       num(h.x) && num(h.y) && num(h.width) && num(h.height) && h.x >= 0 && h.y >= 0 && h.width > 0 && h.height > 0 && h.x + h.width <= 100.5 && h.y + h.height <= 100.5;
 
+    /* ---------- cartão de visita publicado (cartoes/<id>.bin, aberto com a chave-raiz) ----------
+       A pessoa edita no site e gera um CÓDIGO DE CARTÃO; o marketing cola no painel e publica.
+       Código: PRATELEIRA-CARTAO:<base64 JSON { v:1, i:<id v3 da pessoa>, at:<ISO>, d:<dados>, f:<foto JPEG base64 | null> }>
+       Arquivo publicado: seal(chave-raiz, JSON { v:1, at, d, f }, 'cartao|'+id) */
+    const CARD_PREFIX = 'PRATELEIRA-CARTAO:';
+    const CARD_MAX = { nome: 80, cargo: 80, empresa: 80, email: 120, cidade: 80, fone: 16, msg: 300 };
+    const CARD_PHOTO_MAX = 90000; // caracteres base64 (~65 KB de JPEG)
+    function cleanCard(d) {
+      d = d && typeof d === 'object' ? d : {};
+      const out = {};
+      for (const [k, max] of Object.entries(CARD_MAX)) out[k] = String(d[k] == null ? '' : d[k]).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
+      out.fone = out.fone.replace(/\D/g, '');
+      out.tema = d.tema === 'claro' ? 'claro' : 'navy';
+      out.qr = d.qr === 'contato' ? 'contato' : 'whatsapp';
+      const s = d.show && typeof d.show === 'object' ? d.show : {};
+      out.show = { email: s.email !== false, cidade: s.cidade !== false, fone: s.fone !== false, cargo: s.cargo !== false };
+      return out;
+    }
+    const isIso = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(s) && !isNaN(Date.parse(s));
+    const isPhoto = (f) => f === null || (typeof f === 'string' && f.length <= CARD_PHOTO_MAX && /^\/9j\/[A-Za-z0-9+/]+={0,2}$/.test(f));
+    function makeCardCode(id, at, data, photoB64) {
+      const o = { v: 1, i: id, at, d: cleanCard(data), f: photoB64 || null };
+      const json = te.encode(JSON.stringify(o));
+      return CARD_PREFIX + b64e(json);
+    }
+    function readCardCode(text) {
+      const m = /PRATELEIRA-CARTAO:([A-Za-z0-9+/=]+)/.exec(String(text || '').replace(/\s+/g, ''));
+      if (!m) return { err: 'semcodigo' };
+      let o; try { o = JSON.parse(td.decode(b64d(m[1]))); } catch (e) { return { err: 'incompleto' }; }
+      if (!o || typeof o !== 'object') return { err: 'incompleto' };
+      if (o.v !== 1) return { err: 'versao' };
+      if (!/^[0-9a-f]{64}$/.test(o.i || '') || !isIso(o.at) || !isPhoto(o.f === undefined ? null : o.f)) return { err: 'incompleto' };
+      return { o: { v: 1, i: o.i, at: o.at, d: cleanCard(o.d), f: o.f || null } };
+    }
+    const sealCard = (rootKey, id, card) => seal(rootKey, JSON.stringify({ v: 1, at: card.at, d: cleanCard(card.d), f: card.f || null }), 'cartao|' + id);
+    async function openCard(rootKey, id, data) {
+      const o = JSON.parse(td.decode(await open(rootKey, data, 'cartao|' + id)));
+      if (!o || o.v !== 1 || !isIso(o.at) || !isPhoto(o.f === undefined ? null : o.f)) throw new Error('cartao');
+      return { at: o.at, d: cleanCard(o.d), f: o.f || null };
+    }
+    path.card = (id) => `cartoes/${id}.bin`;
+
+    /* ---------- Supabase: login, perfis, chave dos catálogos e cartões ----------
+       Só a chave PUBLICÁVEL fica no site. As regras de acesso (RLS) e as funções do banco decidem o que cada pessoa pode ler e gravar.
+       Convidar e remover pessoas usam a função "pessoas" (Edge Function), que roda dentro do Supabase. */
+    const SUPA = { url: 'https://xrsivxdtfliejbosprns.supabase.co', key: 'sb_publishable_W-TcMxAnaZR8U83jBxclQQ__uyh_zai' };
+    async function supaFetch(path, opts) {
+      const o = opts || {};
+      const headers = Object.assign({ apikey: SUPA.key }, o.headers || {});
+      if (o.token) headers.Authorization = 'Bearer ' + o.token;
+      let body = o.body;
+      if (body !== undefined && !(body instanceof Blob)) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(body); }
+      const r = await fetch(SUPA.url + path, { method: o.method || 'GET', headers, body, cache: 'no-store' });
+      if (o.raw) return r;
+      const text = await r.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+      if (!r.ok) {
+        const msg = data && typeof data === 'object' ? (data.erro || data.msg || data.message || data.error_description || data.error) : ''; // "erro": mensagens da função "pessoas"
+        const err = new Error(msg || ('HTTP ' + r.status));
+        err.status = r.status;
+        err.code = data && typeof data === 'object' ? (data.error_code || data.code || data.error || '') : '';
+        throw err;
+      }
+      return data;
+    }
+    const supa = {
+      url: SUPA.url,
+      // Sessão: { access_token, refresh_token, expires_in, user }
+      signIn: (email, password) => supaFetch('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: normEmail(email), password } }),
+      refresh: (refreshToken) => supaFetch('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: { refresh_token: refreshToken } }),
+      signOut: (token) => supaFetch('/auth/v1/logout?scope=local', { method: 'POST', token }).catch(() => null), // sai só deste aparelho
+      // Envia o e-mail de "criar nova senha"; o link volta para redirectTo com os tokens no endereço
+      recover: (email, redirectTo) => supaFetch('/auth/v1/recover?redirect_to=' + encodeURIComponent(redirectTo), { method: 'POST', body: { email: normEmail(email) } }),
+      user: (token) => supaFetch('/auth/v1/user', { token }),
+      setPassword: (token, password) => supaFetch('/auth/v1/user', { method: 'PUT', token, body: { password } }),
+      rpc: (token, name, args) => supaFetch('/rest/v1/rpc/' + name, { method: 'POST', token, body: args || {} }),
+      select: (token, table, query) => supaFetch('/rest/v1/' + table + '?' + query, { token }),
+      upsert: (token, table, row, onConflict) => supaFetch('/rest/v1/' + table + '?on_conflict=' + onConflict, { method: 'POST', token, body: row, headers: { Prefer: 'resolution=merge-duplicates,return=representation' } }),
+      update: (token, table, query, patch) => supaFetch('/rest/v1/' + table + '?' + query, { method: 'PATCH', token, body: patch, headers: { Prefer: 'return=representation' } }),
+      putFile: (token, bucket, filePath, blob) => supaFetch('/storage/v1/object/' + bucket + '/' + filePath, { method: 'POST', token, body: blob, headers: { 'x-upsert': 'true', 'Content-Type': blob.type || 'application/octet-stream', 'Cache-Control': 'no-cache' } }),
+      async getFile(token, bucket, filePath) {
+        const r = await supaFetch('/storage/v1/object/authenticated/' + bucket + '/' + filePath, { token, raw: true });
+        if (r.status === 400 || r.status === 404) return null;
+        if (!r.ok) { const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+        return r.blob();
+      },
+      removeFile: (token, bucket, filePath) => supaFetch('/storage/v1/object/' + bucket + '/' + filePath, { method: 'DELETE', token }).catch(() => null),
+      fn: (token, name, body) => supaFetch('/functions/v1/' + name, { method: 'POST', token, body }),
+      // Depois de clicar no link de convite ou de "esqueci minha senha", o Supabase devolve os tokens no endereço (#access_token=…&type=invite|recovery)
+      readLinkTokens(hash) {
+        const h = String(hash || '').replace(/^#/, '');
+        if (!/(^|&)access_token=/.test(h)) {
+          const m = /(^|&)error_description=([^&]*)/.exec(h);
+          return m ? { error: decodeURIComponent(m[2].replace(/\+/g, ' ')) } : null;
+        }
+        const q = new URLSearchParams(h);
+        return { access_token: q.get('access_token'), refresh_token: q.get('refresh_token'), expires_in: Number(q.get('expires_in')) || 3600, type: q.get('type') || '' };
+      }
+    };
+
     return {
+      SUPA, supa,
+      CARD_PREFIX, CARD_MAX, CARD_PHOTO_MAX, cleanCard, makeCardCode, readCardCode, sealCard, openCard,
       sealProdutos, openProdutos, skuKey, validHotspot,
       te, td, MIN_IT, ID_IT, ACESSOS_V, CHUNK, THUMB_CHUNK, THUMB_W,
       b64e, b64d, hex, rand, randHex, iters, sha256, isB64,
@@ -898,7 +1014,6 @@
   const localDate = (d = new Date()) => { const z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; };
   const norm = (s) => P.normTxt(s);
   const initials = (name) => String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
-  const firstName = (name) => String(name || '').split(/\s+/)[0];
   const plural = (n, one, many) => `${n.toLocaleString('pt-BR')} ${n === 1 ? one : many}`;
   const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
   // WhatsApp (só números, com DDI e DDD): vazio é aceito; devolve o texto do erro ou ''
@@ -919,6 +1034,7 @@
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>',
     mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></svg>',
     chat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18.5V6.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8z"/><path d="M8.5 9.5h7M8.5 12.5h4"/></svg>',
+    users: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>',
     shield: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7 2.8v5.2c0 4.3-2.9 7.6-7 9-4.1-1.4-7-4.7-7-9V6.3z"/><path d="M9 12l2 2 4-4"/></svg>'
   };
   const userErr = (msg) => { const e = new Error(msg); e.userMessage = msg; return e; };
@@ -928,8 +1044,8 @@
   /* ================= constantes ================= */
   const VAULT = 'admin/cofre.json', TOKKEY = 'dm.admin.token', REPOKEY = 'dm.admin.repo';
   const LINES_ALL = ['Home Care', 'Health Care', 'Wellness', 'Ortho Care', 'Canal Farma'];
-  const ROLE = { cliente: 'Cliente', representante: 'Representante', interno: 'Equipe Dellamed' };
-  const CONTATO_PADRAO = 'Para recuperar seu acesso, peça ao marketing da Dellamed um novo código provisório.';
+  const ROLE = { cliente: 'Cliente', representante: 'Representante', interno: 'Equipe Dellamed', admin: 'Administrador' }; // = perfis.papel no Supabase
+  const CONTATO_PADRAO = 'Não recebeu o e-mail ou não tem acesso? Fale com o marketing da Dellamed.';
   const MSG_COMERCIAL = 'Olá! Gostaria de receber mais informações sobre estes produtos Dellamed:';
   const AUTHOR = { name: 'Prateleira', email: 'prateleira@users.noreply.github.com' };
   const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sem caracteres ambíguos (igual ao código provisório)
@@ -1136,9 +1252,8 @@
   }
   const pendingOpen = (u) => !!(u.pending && Date.parse(u.pending.x) > Date.now());
   const isActive = (u) => !!(u.pub || u.kek);
-  // Código provisório vencido sem acesso ativo e quantas pessoas aguardam ativação (usados na lista, nos blocos e no menu)
+  // Código provisório vencido sem acesso ativo (situação na lista "Acessos antigos")
   const expiredOf = (u) => !!u.pending && !pendingOpen(u) && !isActive(u);
-  const waitingOf = (list) => list.filter((u) => pendingOpen(u) && !isActive(u)).length;
   /* Produtos e áreas de produto no cofre (fonte da verdade):
      d.products = { "<SKU>": { sku, name, category, benefit, capacity, description, url, image?: { catalogId, page, x, y, width, height } } }
      d.hotspots = [ { id, catalogId, page, product: "<SKU>", x, y, width, height } ]   ← medidas em % da imagem da página (2 casas)
@@ -1234,6 +1349,7 @@
   async function publish(title, mutate, opts = {}) {
     if (busy) return false;
     busy = true;
+    const keyBefore = vault && vault.contentKey; // chave-raiz antes do envio: se mudar, vai para o Supabase no fim (sbKeyChanged)
     const pg = progressDialog(title, !!opts.cancel);
     let retried = false;
     try {
@@ -1257,6 +1373,7 @@
           if (keyChanged) await storeToken();
           if (opts.onDone) opts.onDone(); // depois do envio e antes de redesenhar a barra de alterações
           pg.close();
+          if (vault.contentKey !== keyBefore) sbKeyChanged(); // toda troca da chave-raiz (remover pessoa, senha mestra, recriptografar, bloquear/remover no Supabase)
           return true;
         } catch (e) {
           if (e.conflict && !retried && opts.retry !== false && !e.maybeDone) {
@@ -1433,11 +1550,12 @@
     if (msg) box.scrollIntoView({ block: 'nearest' });
   }
   // Confirmações e avisos usam um diálogo próprio, por cima do formulário (o formulário não se perde)
-  const confirmBox = (title, html, okLabel, danger) => new Promise((resolve) => {
+  // altLabel (opcional): terceiro botão; resolve 'alt' quando clicado (true = okLabel, false = Cancelar/Esc)
+  const confirmBox = (title, html, okLabel, danger, altLabel) => new Promise((resolve) => {
     let done = false;
     const finish = (v) => { if (done) return; done = true; hideModal(cf); resolve(v); };
-    cf.innerHTML = `<div class="dlg-body"><h2 id="cfTitle" tabindex="-1">${esc(title)}</h2><div class="muted stack">${html}</div></div><div class="dlg-actions">${btnHtml({ label: 'Cancelar', kind: 'ghost' }, 0)}${btnHtml({ label: okLabel, kind: danger ? 'danger' : 'primary' }, 1)}</div>`;
-    $$('.dlg-actions button', cf).forEach((b) => b.addEventListener('click', () => finish(b.dataset.i === '1')));
+    cf.innerHTML = `<div class="dlg-body"><h2 id="cfTitle" tabindex="-1">${esc(title)}</h2><div class="muted stack">${html}</div></div><div class="dlg-actions">${btnHtml({ label: 'Cancelar', kind: 'ghost' }, 0)}${altLabel ? btnHtml({ label: altLabel, kind: 'ghost' }, 2) : ''}${btnHtml({ label: okLabel, kind: danger ? 'danger' : 'primary' }, 1)}</div>`;
+    $$('.dlg-actions button', cf).forEach((b) => b.addEventListener('click', () => finish(b.dataset.i === '1' ? true : b.dataset.i === '2' ? 'alt' : false)));
     cf.onclose = () => finish(false);
     showModal(cf); $('#cfTitle').focus();
   });
@@ -1526,7 +1644,6 @@
   ['(min-width: 1200px)', '(max-width: 767px)'].forEach((q) => { const mq = matchMedia(q); mq.addEventListener('change', () => { if (mq.matches) setDrawer(false, false); }); });
 
   /* ================= entrar / configurar / recuperar ================= */
-  const siteUrl = () => new URL('./', location.href).href;
   function show(name) { $('#scrLogin').hidden = name !== 'login'; $('#scrMain').hidden = name !== 'main'; if (name !== 'main') setDrawer(false, false); }
   function lgMsg(msg, kind = 'error') { const e = $('#lgErr'); e.className = 'alert ' + kind; e.textContent = msg || ''; e.hidden = !msg; }
   function clearLogin() { ['#lgPw', '#lgPw2', '#lgTok'].forEach((s) => { $(s).value = ''; }); $('#lgPw').type = mode === 'recovery' ? 'text' : 'password'; }
@@ -1604,7 +1721,7 @@
         const k = await newVk(), rk = genRecovery();
         const sl = { m: await makeSlot(pw, k.raw), r: await makeSlot(canonRecovery(rk), k.raw) };
         forget();
-        vault = { v: 2, contentKey: P.b64e(P.rand(32)), keyRev: 1, siteSalt: P.b64e(P.rand(16)), users: [], catalogs: [], products: {}, hotspots: [], settings: { contato: CONTATO_PADRAO, codeHours: 48, comercial: { whatsapp: '', email: '', mensagem: MSG_COMERCIAL } } };
+        vault = { v: 2, contentKey: P.b64e(P.rand(32)), keyRev: 1, siteSalt: P.b64e(P.rand(16)), users: [], catalogs: [], products: {}, hotspots: [], settings: { contato: CONTATO_PADRAO, comercial: { whatsapp: '', email: '', mensagem: MSG_COMERCIAL } } };
         if (!(await publish('Configurando a Prateleira', () => ({ vk: k, slots: sl }), { retry: false }))) { vault = null; return; }
         clearLogin();
         enterMain();
@@ -1660,7 +1777,8 @@
 
   /* ================= sair, bloqueio automático e dados desatualizados ================= */
   function lock(msg) {
-    stopPoll(); clearStage(); forget(); token = '';
+    clearStage(); forget(); token = '';
+    sbEnd(false); sbWarn = ''; // sessão do Supabase só na memória e no sessionStorage desta aba: sair e o bloqueio automático apagam
     dropImageCache(); resetEditor();
     Object.values(TABS).forEach((t) => { $(t.panel).innerHTML = ''; });
     closeDialog(); hideModal(cf); if (!busy) hideModal(pgd);
@@ -1694,7 +1812,10 @@
   async function refreshData() {
     if (busy || !vault) return;
     const bs = $$('[data-reload]'); bs.forEach((b) => { b.disabled = true; });
-    try { await reloadVault(); setTab(tab); toast('Dados atualizados.'); refreshStage(); } // por último: o aviso de áreas descartadas tem prioridade
+    try {
+      await reloadVault(); setTab(tab); toast('Dados atualizados.'); refreshStage(); // por último: o aviso de áreas descartadas tem prioridade
+      if (sb) { sbSyncKey(); loadPeople().then(sbRepaint); } // outro administrador pode ter trocado a chave ou as pessoas
+    }
     catch (e) { if (!e.locked) alertBox('Não foi possível atualizar', errText(e).replace(' Nada foi alterado no site.', '')); }
     finally { bs.forEach((b) => { b.disabled = false; }); }
   }
@@ -1709,8 +1830,8 @@
   const TABS = {
     cats: { panel: '#tabCats', render: renderCats, title: 'Catálogos', head: 'Catálogos.', sub: 'Publique e organize', desc: 'Arraste o PDF para publicar. “No site”, selo “Novo” e ordem entram na barra de alterações e vão para o site quando você publicar.' },
     prods: { panel: '#tabProds', render: renderProds, title: 'Produtos', head: 'Produtos.', sub: 'Cadastre e marque nas páginas', desc: 'Os produtos aparecem na busca do site; as áreas marcadas ligam a foto na página do catálogo ao produto.' },
-    users: { panel: '#tabUsers', render: renderUsers, title: 'Pessoas', head: 'Pessoas.', sub: 'Convide e ative acessos', desc: 'Cada pessoa cria a própria senha com um código provisório; ninguém mais conhece a senha.' },
-    cfg: { panel: '#tabCfg', render: renderCfg, title: 'Configurações', head: 'Configurações.', sub: 'Contatos e segurança', desc: 'Contatos de ativação e comercial, validade do código provisório e a segurança do cofre dos administradores.' }
+    users: { panel: '#tabUsers', render: renderUsers, title: 'Pessoas', head: 'Pessoas.', sub: 'Convide e gerencie acessos', desc: 'Cada pessoa recebe um convite por e-mail e cria a própria senha pelo link; ninguém mais conhece a senha.' },
+    cfg: { panel: '#tabCfg', render: renderCfg, title: 'Configurações', head: 'Configurações.', sub: 'Contatos e segurança', desc: 'Acesso das pessoas (Supabase), contatos do marketing e comercial e a segurança do cofre dos administradores.' }
   };
   const TAB_IDS = Object.keys(TABS);
   // Cabeçalho da área (desenhado junto com a aba) e bloco de resumo com número
@@ -1721,6 +1842,7 @@
     $('#repoLabel').textContent = repo.label() || 'Repositório não informado';
     lastAct = Date.now(); showStale(false);
     setTab(tab); refreshStage();
+    if (sb) sbSyncKey(); else sbResume(); // cofre desbloqueado: volta a sessão desta aba (se houver) e confere a chave dos catálogos
   }
   function setTab(t, focusTab) {
     tab = t;
@@ -1733,13 +1855,10 @@
   }
   // Contagens do menu lateral e da barra de abas (redesenhadas junto com a barra de alterações, que roda depois de cada publicação)
   function paintNav() {
-    const users = vault ? vault.users : [], wait = waitingOf(users);
     const put = (sel, n) => { $(sel).textContent = n ? n.toLocaleString('pt-BR') : ''; };
     put('#navCats', vault ? vault.catalogs.length : 0);
     put('#navProds', vault ? Object.keys(vault.products || {}).length : 0);
-    put('#navUsers', users.length);
-    put('#navWait', wait); $('#navWaitBox').hidden = !wait;
-    put('#tbWait', wait); $('#tbWait').hidden = !wait;
+    put('#navUsers', vault ? vault.users.length + (sb && people ? people.length : 0) : 0); // acessos antigos + pessoas do Supabase (quando conectado)
   }
   $$('#side [role="tab"]').forEach((b) => {
     // Na gaveta (tablet), escolher a área fecha o menu e leva o foco ao título da área
@@ -1756,17 +1875,19 @@
   });
   // Barra de abas (celular): as mesmas áreas, sem duplicar a lógica das abas
   $$('#tabbar [data-nav]').forEach((b) => b.addEventListener('click', () => { setTab(b.dataset.nav); window.scrollTo(0, 0); }));
-  // Primeiros passos: aparece enquanto faltar contato de ativação, catálogo ou pessoa (o passo 4 é opcional e não mantém o cartão aberto)
+  // Primeiros passos: aparece enquanto faltar contato do marketing, catálogo ou pessoa (o passo 4 é opcional e não mantém o cartão aberto)
   function firstStepsHtml() {
     const st = vault.settings || {};
-    const contacts = !!(st.ativEmail || st.ativWhats), cats = vault.catalogs.length > 0, people = vault.users.length > 0;
-    if (contacts && cats && people) return '';
+    // Pessoa: acesso antigo ou alguém no Supabase além do próprio administrador conectado
+    const hasPeople = vault.users.length > 0 || !!(sb && people && people.some((p) => p.id !== sb.uid));
+    const contacts = !!(st.ativEmail || st.ativWhats), cats = vault.catalogs.length > 0;
+    if (contacts && cats && hasPeople) return '';
     const prods = Object.keys(vault.products || {}).length > 0 && (vault.hotspots || []).length > 0;
     const li = (done, n, title, text, step, label) => `<li class="${done ? 'done' : ''}"><span class="st-n" aria-hidden="true">${n}</span><span><b>${title}</b><br><span class="muted">${text}</span></span><button class="btn ${done ? 'ghost' : 'primary'} sm" type="button" data-step="${step}">${label}</button></li>`;
     return `<section class="card steps-card" aria-labelledby="stepsH"><h2 id="stepsH">Primeiros passos</h2><p class="muted">Siga esta ordem para colocar a Prateleira no ar.</p><ol class="steps">
-      ${li(contacts, 1, 'Contatos de ativação', 'O e-mail ou WhatsApp para onde as pessoas enviam o código de ativação.', 'cfg', 'Preencher contatos')}
+      ${li(contacts, 1, 'Contatos do marketing', 'O e-mail ou WhatsApp do marketing que aparece nas telas de entrar e de ajuda do site.', 'cfg', 'Preencher contatos')}
       ${li(cats, 2, 'Catálogos', 'Arraste os PDFs. O painel converte, protege e publica.', 'cat', 'Adicionar catálogo')}
-      ${li(people, 3, 'Pessoas', 'Cadastre quem vai acessar e envie o código provisório.', 'user', 'Adicionar pessoa')}
+      ${li(hasPeople, 3, 'Pessoas', 'Conecte o Supabase e convide pessoas', 'user', sb ? 'Convidar pessoa' : 'Conectar o Supabase')}
       ${li(prods, 4, 'Produtos e áreas (opcional)', 'Cadastre os produtos e marque nas páginas dos catálogos onde cada um aparece.', 'prods', 'Abrir Produtos')}
     </ol></section>`;
   }
@@ -1774,7 +1895,7 @@
     if (step === 'cfg') { setTab('cfg'); const f = $('#ativEmail'); if (f) f.focus(); }
     else if (step === 'cat') pickPdf(null);
     else if (step === 'prods') setTab('prods');
-    else { setTab('users'); addUserDialog(); }
+    else { setTab('users'); inviteDialog(); } // sem Supabase conectado, o convite abre antes o "Entrar no Supabase"
   }
 
   /* ================= catálogos ================= */
@@ -2180,90 +2301,284 @@
     return { files };
   }
 
-  /* ================= pessoas: código provisório → a pessoa cria a senha → ativação ================= */
-  const codeHours = () => (vault.settings && vault.settings.codeHours) || 48;
-  const newPending = () => ({ code: P.genCode(), x: new Date(Date.now() + codeHours() * 3600e3).toISOString(), createdAt: new Date().toISOString() });
-  // Acompanha o site até ele entregar o que acabou de ser publicado. Um único ciclo cuida de todas as pessoas.
-  const live = new Map(); // uid → { kind: 'pend' | 'act', id, s, t0, state: 'pub' | 'ok' | 'late' }
-  let pollTimer = null;
-  function watchLive(u, kind) {
-    if (!u) return;
-    const id = u.idv3 && u.idv3.id, s = kind === 'pend' ? u.pending && u.pending.ps : u.salt;
-    if (!id || !s) return;
-    live.set(u.uid, { kind, id, s, t0: Date.now(), state: 'pub' });
-    paintRow(u.uid);
-    if (!pollTimer) pollTimer = setTimeout(poll, 5000);
+  /* ================= Supabase: sessão do administrador (só nesta aba) =================
+     Conta do próprio administrador no Supabase (perfis.papel = admin e ativo). O token fica na memória e o refresh token no
+     sessionStorage desta aba: depois de recarregar a página, a sessão volta quando o cofre é desbloqueado. Sair do painel, o bloqueio
+     automático e "Sair do Supabase" apagam os dois. Toda chamada pega o token por sbToken() (uma renovação por vez). */
+  const SBKEY = 'dm.admin.supabase';
+  let sb = null;                   // { token, refresh, exp, uid, email }
+  let sbGen = 0;                   // muda a cada fim de sessão: respostas atrasadas de uma sessão anterior são ignoradas
+  let sbJob = null, sbTimer = null;
+  let sbWarn = '';                 // aviso persistente em Pessoas e Configurações (chave dos catálogos não sincronizada)
+  let sbChain = Promise.resolve(); // sincronizações da chave, uma depois da outra
+  let people = null, peopleErr = '', peopleJob = null, peopleSeq = 0; // perfis do Supabase (null = ainda não carregados)
+  const sbStore = (r) => { try { if (r) sessionStorage.setItem(SBKEY, r); else sessionStorage.removeItem(SBKEY); } catch (e) { /* noop */ } };
+  const sbStored = () => { try { return sessionStorage.getItem(SBKEY) || ''; } catch (e) { return ''; } };
+  const sbAuthErr = (msg) => { const e = userErr(msg); e.status = 401; return e; };
+  function sbSet(s) {
+    const u = s.user || {};
+    sb = { token: s.access_token, refresh: s.refresh_token, exp: Date.now() + (+s.expires_in || 3600) * 1000, uid: u.id || (sb && sb.uid) || '', email: u.email || (sb && sb.email) || '' };
+    sbStore(sb.refresh);
+    clearTimeout(sbTimer);
+    sbTimer = setTimeout(sbAutoRefresh, Math.max(5000, sb.exp - Date.now() - 120000)); // renova 2 minutos antes de vencer
   }
-  async function poll() {
-    pollTimer = null;
-    const waiting = [...live.entries()].filter(([, l]) => l.state === 'pub');
-    if (!waiting.length || !vault) return;
-    let a = null;
-    try { a = await (await fetch(siteUrl() + 'acessos.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch (e) { /* tenta de novo */ }
-    if (!vault) return;
-    for (const [uid, l] of waiting) {
-      const hit = a && (l.kind === 'pend' ? a.pend && a.pend[l.id] && a.pend[l.id].s === l.s : a.users && a.users[l.id] && a.users[l.id].s === l.s);
-      const u = vault.users.find((x) => x.uid === uid);
-      if (hit) { l.state = 'ok'; if (u) toast(l.kind === 'pend' ? `Pronto: o código de ${firstName(u.name)} já funciona no site.` : `Pronto: ${firstName(u.name)} já pode entrar com a senha.`); }
-      else if (Date.now() - l.t0 > 10 * 60 * 1000) l.state = 'late';
-      paintRow(uid);
+  // Token válido: renova 1 minuto antes de vencer. Uma renovação por vez (quem chega durante a renovação espera a mesma promessa).
+  function sbToken(force) {
+    if (!sb) return Promise.reject(sbAuthErr('Conecte o Supabase para continuar.'));
+    if (!force && Date.now() < sb.exp - 60000) return Promise.resolve(sb.token);
+    if (!sbJob) {
+      const gen = sbGen;
+      sbJob = P.supa.refresh(sb.refresh).then((s) => {
+        if (gen !== sbGen || !sb) throw sbAuthErr('A conexão com o Supabase foi encerrada.');
+        sbSet(s);
+        return sb.token;
+      }, (e) => {
+        // refresh token recusado (vencido, revogado ou já usado): a sessão acaba; sem internet ou Supabase instável: só repassa o erro
+        if (gen === sbGen && e.status && e.status !== 429 && e.status < 500) { sbEnd(false); throw sbAuthErr('A conexão com o Supabase expirou. Clique em “Entrar no Supabase” e conecte de novo.'); }
+        throw e;
+      }).finally(() => { if (gen === sbGen) sbJob = null; });
     }
-    if ([...live.values()].some((l) => l.state === 'pub')) pollTimer = setTimeout(poll, 8000);
+    return sbJob;
   }
-  function stopPoll() { clearTimeout(pollTimer); pollTimer = null; live.clear(); }
-  function liveText(l, u) {
-    if (l.state === 'late') return 'O site ainda não atualizou. Aguarde mais alguns minutos.';
-    if (l.state === 'pub') return 'Publicando no site… (1 a 3 minutos)';
-    return l.kind === 'pend' ? 'Pronto: o código provisório já funciona no site.' : `Pronto: ${firstName(u && u.name)} já pode entrar com a senha.`;
+  async function sbAutoRefresh() {
+    if (!sb) return;
+    try { await sbToken(true); }
+    catch (e) {
+      if (!sb) { if (vault) toast('A conexão com o Supabase expirou. Entre de novo em Configurações.'); return; }
+      sbTimer = setTimeout(sbAutoRefresh, 30000); // sem internet: tenta de novo
+    }
   }
+  // Fim da sessão desta aba. revoke: também encerra a sessão no Supabase ("Sair do Supabase")
+  function sbEnd(revoke) {
+    const old = sb;
+    sbGen++; peopleSeq++;
+    sb = null; sbJob = null; clearTimeout(sbTimer); sbTimer = null; sbStore('');
+    people = null; peopleErr = ''; peopleJob = null;
+    if (revoke && old) P.supa.signOut(old.token);
+    sbRepaint();
+  }
+  // Chamada autenticada; 401 (token recusado) encerra a sessão desta aba
+  async function sbCall(fn) {
+    try { return await fn(await sbToken()); }
+    catch (e) { if (e.status === 401 && sb) sbEnd(false); throw e; }
+  }
+  function sbErrText(e) {
+    if (e && e.userMessage) return e.userMessage;
+    if (!e || !e.status) return 'Sem conexão com o Supabase. Verifique a internet e tente de novo.';
+    if (e.status === 401 || e.status === 403) return 'A conexão com o Supabase expirou ou esta conta não tem permissão de administrador. Clique em “Entrar no Supabase” e conecte de novo.';
+    if (e.status === 429) return 'O Supabase limitou a quantidade de pedidos. Espere alguns minutos e tente de novo.';
+    if (e.status >= 500) return 'O Supabase está instável agora. Espere alguns minutos e tente de novo.';
+    const detail = e.message && !/^HTTP \d+$/.test(e.message) ? ` (${e.message})` : '';
+    return `O Supabase recusou o pedido (erro ${e.status})${detail}.`;
+  }
+  // Erros da função "pessoas": vale o código HTTP (P.supa.fn não lê o campo "erro" da resposta)
+  const sbFnErr = (e, acao) => (e && e.status === 409 && acao === 'convidar' ? 'Este e-mail já tem acesso. Use Reenviar acesso.'
+    : e && e.status === 404 ? "A função 'pessoas' ainda não foi publicada no Supabase." : sbErrText(e));
+  async function sbIsAdmin(s) {
+    const rows = await P.supa.select(s.access_token, 'perfis', `id=eq.${encodeURIComponent((s.user || {}).id || '')}&select=papel,ativo`);
+    const r = Array.isArray(rows) ? rows[0] : null;
+    return !!(r && r.papel === 'admin' && r.ativo === true);
+  }
+  // Entrar com a conta do próprio administrador: só segue se o perfil for admin e ativo
+  async function sbConnect(email, password) {
+    const gen = sbGen;
+    const s = await P.supa.signIn(email, password);
+    let ok = false;
+    try { ok = await sbIsAdmin(s); } catch (e) { P.supa.signOut(s.access_token); throw e; }
+    if (!ok) { P.supa.signOut(s.access_token); throw userErr('Esta conta não é administradora.'); }
+    if (gen !== sbGen || !vault) { P.supa.signOut(s.access_token); throw cancelErr(); } // o painel foi bloqueado no meio
+    sbSet(s);
+    sbAfterConnect();
+  }
+  // Página recarregada nesta aba: o refresh token guardado volta a sessão quando o cofre é desbloqueado (enterMain)
+  async function sbResume() {
+    const r = sbStored(); if (!r || sb) return;
+    const gen = sbGen;
+    try {
+      const s = await P.supa.refresh(r);
+      if (gen === sbGen && !sb) sbStore(s.refresh_token); // o refresh token anterior deixou de valer (o Supabase troca a cada renovação)
+      const ok = await sbIsAdmin(s);
+      if (gen !== sbGen || !vault || sb) return;
+      if (!ok) { P.supa.signOut(s.access_token); sbStore(''); return; }
+      sbSet(s);
+      sbAfterConnect();
+    } catch (e) { console.error(e); if (e.status) sbStore(''); }
+  }
+  function sbAfterConnect() {
+    sbRepaint();
+    sbSyncKey();
+    loadPeople().then(sbRepaint);
+  }
+
+  /* ---------- chave dos catálogos no Supabase ----------
+     Quem entra pelo Supabase recebe a chave-raiz (vault.contentKey) pela RPC chave_conteudo. O painel confere ao conectar, ao desbloquear
+     o cofre já conectado e em "Atualizar dados", e grava (definir_chave) depois de toda publicação que troca a chave-raiz (publish). */
+  function sbSyncKey() {
+    const run = sbChain.then(sbSyncOnce);
+    sbChain = run.catch(() => {});
+    return run;
+  }
+  async function sbSyncOnce() {
+    if (!sb || !vault) return false;
+    const want = vault.contentKey;
+    try {
+      const have = await sbCall((t) => P.supa.rpc(t, 'chave_conteudo', {}));
+      if (have !== want) {
+        await sbCall((t) => P.supa.rpc(t, 'definir_chave', { k: want }));
+        toast('Chave dos catálogos sincronizada com o Supabase.');
+      }
+      sbSetWarn('');
+      return true;
+    } catch (e) {
+      console.error(e);
+      if (vault) sbSetWarn(`A chave dos catálogos não foi sincronizada com o Supabase. ${sbErrText(e)} Até sincronizar, quem usa o novo acesso pode ficar sem abrir os catálogos.`);
+      return false;
+    }
+  }
+  // Chamado por publish() quando a chave-raiz mudou
+  function sbKeyChanged() {
+    if (sb) sbSyncKey();
+    else sbSetWarn('A chave dos catálogos mudou e o Supabase não foi atualizado. Conecte o Supabase para sincronizar: até lá, quem usa o novo acesso fica sem abrir os catálogos.');
+  }
+  // Antes de uma troca da chave-raiz sem Supabase conectado. true = seguir agora. "Conectar agora" abre o "Entrar no Supabase" e
+  // resume(conectou) roda quando esse diálogo termina (para repetir a ação).
+  async function sbRotationGate(resume) {
+    if (sb) return true;
+    const r = await confirmBox('Conecte o Supabase antes', '<p>Conecte o Supabase antes de trocar as chaves. Sem isso, quem usa o novo acesso fica sem abrir os catálogos até você conectar.</p>', 'Conectar agora', false, 'Continuar mesmo assim');
+    if (r === 'alt') return true;
+    if (r === true) sbConnectDialog(resume);
+    return false;
+  }
+  const sbWarnHtml = () => `<div class="alert error" role="alert" data-sb-warn><b>Supabase:</b> ${esc(sbWarn)}<div class="row"><button class="btn primary sm" type="button" data-sb="retry">Tentar de novo</button></div></div>`;
+  function paintSbWarn() {
+    $$('[data-sb-warn-slot]').forEach((s) => {
+      if (s.dataset.msg === sbWarn) return;
+      s.dataset.msg = sbWarn; s.hidden = !sbWarn; s.innerHTML = sbWarn ? sbWarnHtml() : '';
+    });
+  }
+  function sbSetWarn(msg) { sbWarn = msg; paintSbWarn(); }
+  // Cartão "Acesso das pessoas (Supabase)" em Configurações e cartão de conexão em Pessoas
+  const sbCardHtml = () => `<div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="cfgSbH">Acesso das pessoas (Supabase)</h2></div>
+    <p class="muted">As pessoas entram no site com e-mail e senha pelo Supabase. Conecte a sua conta de administrador do Supabase para convidar e gerenciar pessoas e manter a chave dos catálogos sincronizada. A conexão vale só para esta aba e termina quando você sai do painel.</p>
+    <p><span class="status ${sb ? 'on' : 'off'} sb-status" id="sbStatus">${sb ? `Conectado como ${esc(sb.email)}` : 'Desconectado'}</span></p>
+    <div class="row">${sb ? '<button class="btn ghost" type="button" id="sbSignOut" data-sb="signout">Sair do Supabase</button>' : '<button class="btn primary" type="button" id="sbConnect" data-sb="connect">Entrar no Supabase</button>'}</div>`;
+  const sbConnectCardHtml = () => `<section class="card stack" aria-labelledby="sbConnH"><div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="sbConnH">Conecte o Supabase para convidar e gerenciar pessoas</h2></div>
+    <p class="muted">Entre com a sua conta de administrador do Supabase. A conexão vale só para esta aba do navegador.</p>
+    <button class="btn primary" type="button" data-sb="connect">Entrar no Supabase</button></section>`;
+  // Redesenha o que depende da conexão (contagem do menu e a aba aberta), sem recriar campos em edição
+  function sbRepaint() {
+    if (!vault) return;
+    paintNav();
+    if (tab === 'users') renderUserRows();
+    else if (tab === 'cfg' && $('#cfgSb')) { $('#cfgSb').innerHTML = sbCardHtml(); paintSbWarn(); }
+  }
+  // Botões [data-sb] das abas Pessoas e Configurações (um manipulador só)
+  function onSbClick(e) {
+    const b = e.target.closest('[data-sb]'); if (!b) return false;
+    const a = b.dataset.sb;
+    if (a === 'connect') sbConnectDialog();
+    else if (a === 'signout') { sbEnd(true); toast('Desconectado do Supabase.'); }
+    else if (a === 'retry') {
+      if (!sb) sbConnectDialog(); // ao conectar, a chave é sincronizada
+      else { b.disabled = true; sbSyncKey().then((ok) => { b.disabled = false; if (ok) toast('Chave dos catálogos sincronizada com o Supabase.'); }); }
+    } else if (a === 'reload') { const job = loadPeople(); sbRepaint(); job.then(sbRepaint); }
+    return true;
+  }
+  // "Entrar no Supabase". then(conectou): opcional; roda quando o diálogo termina (conectou ou cancelou) para continuar o que pediu a conexão
+  function sbConnectDialog(then) {
+    let done = false;
+    const fin = (ok) => { if (!done) { done = true; if (then) then(ok); } };
+    openDialog({
+      title: 'Entrar no Supabase', locked: !!then,
+      body: `<p class="muted">Use a sua própria conta de administrador do Supabase (e-mail e senha). A conexão vale só para esta aba e termina quando você sai do painel.</p>
+        <label class="field" id="fSbMail"><span class="field-label">E-mail</span><input id="sbMail" type="email" autocomplete="username" spellcheck="false"><em class="err" hidden></em></label>
+        <label class="field" id="fSbPw"><span class="field-label">Senha</span><input id="sbPw" type="password" autocomplete="current-password" spellcheck="false"><em class="err" hidden></em></label>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost', onClick: () => { fin(false); } }, {
+        label: 'Entrar', kind: 'primary',
+        onClick: async () => {
+          const email = P.normEmail($('#sbMail').value), pw = $('#sbPw').value;
+          setFieldErr($('#fSbMail'), !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : '');
+          setFieldErr($('#fSbPw'), pw ? '' : 'Digite a senha.');
+          if (!email || !emailOk(email) || !pw) return false;
+          dlgErr('');
+          try { await sbConnect(email, pw); }
+          catch (e) {
+            if (e.cancelled) return false;
+            console.error(e);
+            dlgErr(e.userMessage || (e.code === 'email_not_confirmed' ? 'Confirme o e-mail desta conta antes de entrar.' : e.status === 400 ? 'E-mail ou senha incorretos.' : sbErrText(e)));
+            $('#sbPw').value = '';
+            return false;
+          }
+          toast(`Conectado ao Supabase como ${sb.email || email}.`);
+          fin(true);
+          return true;
+        }
+      }]
+    });
+  }
+  function loadPeople() {
+    if (!sb) return Promise.resolve();
+    const seq = ++peopleSeq;
+    peopleErr = '';
+    peopleJob = sbCall((t) => P.supa.select(t, 'perfis', 'select=id,email,nome,empresa,papel,ativo,criado_em&order=nome.asc'))
+      .then((rows) => { if (seq === peopleSeq) people = Array.isArray(rows) ? rows : []; })
+      .catch((e) => { console.error(e); if (seq === peopleSeq) { peopleErr = sbErrText(e); if (people) toast(peopleErr); } })
+      .finally(() => { if (seq === peopleSeq) peopleJob = null; });
+    return peopleJob;
+  }
+
+  /* ================= pessoas =================
+     "Pessoas": perfis do Supabase (convidar, editar, bloquear, reenviar acesso, remover).
+     "Acessos antigos": pessoas do cofre (vault.users) que ainda entram pelo acesso antigo: só leitura, "Convidar para o novo acesso" e
+     "Remover". O acessos.json delas continua sendo gerado por coreFiles() enquanto existirem. */
+  const pendingLabel = (u) => `código provisório até ${fmtDateTime(u.pending.x)}`;
   function statusOf(u) {
-    let h;
-    if (pendingOpen(u)) h = isActive(u) ? `<span class="status on">Ativo</span><br><span class="muted">novo código até ${fmtDateTime(u.pending.x)}</span>` : `<span class="status wait">Aguardando ativação</span><br><span class="muted">código até ${fmtDateTime(u.pending.x)}</span>`;
-    else if (expiredOf(u)) h = '<span class="status off">Código vencido</span>';
-    else h = isActive(u) ? `<span class="status on">Ativo</span>${u.pub ? '' : '<br><span class="muted">senha definida no painel</span>'}` : '<span class="status off">Sem acesso</span>';
-    const l = live.get(u.uid);
-    if (l) h += `<br><span class="live ${l.state === 'ok' ? 'ok' : ''}">${esc(liveText(l, u))}</span>`;
-    return h;
+    if (isActive(u)) return `<span class="status on">Ativo</span>${u.pub ? '' : '<br><span class="muted">senha definida no painel</span>'}`;
+    if (pendingOpen(u)) return `<span class="status wait">Não ativado</span><br><span class="muted">${esc(pendingLabel(u))}</span>`;
+    return `<span class="status off">${expiredOf(u) ? 'Código vencido' : 'Sem acesso'}</span>`;
   }
-  const actionsOf = (u) => `${pendingOpen(u) ? '<button class="btn primary sm" type="button" data-k="activate" data-act="activate">Colar ativação</button>' : ''}<button class="btn ghost sm" type="button" data-k="code" data-act="code">Novo código</button><button class="btn ghost sm" type="button" data-k="edit" data-act="edit">Editar</button><button class="btn ghost sm" type="button" data-k="remove" data-act="remove">Remover</button>`;
-  function paintRow(uid) {
-    const u = vault && vault.users.find((x) => x.uid === uid); if (!u) return;
-    const tr = $(`#tabUsers [data-row="${CSS.escape(uid)}"]`);
-    if (tr) $('[data-status]', tr).innerHTML = statusOf(u);
-    const l = live.get(uid), box = $(`#liveStatus[data-uid="${CSS.escape(uid)}"]`);
-    if (box && l) { box.className = 'alert ' + (l.state === 'ok' ? 'ok' : 'warn'); box.textContent = l.state === 'ok' && l.kind === 'pend' ? 'Pronto: o código provisório já funciona no site. Pode enviar a mensagem.' : liveText(l, u); }
-  }
-  let userQ = '';
+  let userQ = '', legacyOpen = false; // "Acessos antigos" começa recolhido
   const selected = new Set();
-  const visibleUsers = () => { const q = norm(userQ); return vault.users.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((u) => !q || norm(`${u.name} ${u.email} ${u.company}`).includes(q)); };
+  const matcher = () => { const q = norm(userQ); return (s) => !q || norm(s).includes(q); };
+  const visibleUsers = () => { const hit = matcher(); return vault.users.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((u) => hit(`${u.name} ${u.email} ${u.company}`)); };
+  const visiblePeople = () => { const hit = matcher(); return (people || []).filter((p) => hit(`${p.nome || ''} ${p.email || ''} ${p.empresa || ''}`)); };
   function renderUsers() {
     const box = $('#tabUsers'); if (!vault) return;
-    box.innerHTML = `${pageHead('users', '<button class="btn ghost" id="activateBtn" type="button">Colar ativação</button><button class="btn primary" id="addUser" type="button">+ Adicionar pessoa</button>')}
+    box.innerHTML = `${pageHead('users', '<button class="btn primary" id="inviteBtn" type="button">+ Convidar pessoa</button>')}
+      <div data-sb-warn-slot hidden></div>
+      <div id="sbConnectSlot" hidden></div>
       <div class="tiles" id="uTiles"></div>
       <div class="toolbar">
         <div class="search"><span class="ico">${ICO.search}</span><input class="input" id="uq" type="search" placeholder="Buscar nome, e-mail ou empresa" value="${esc(userQ)}" aria-label="Buscar pessoas" aria-describedby="uCount"></div>
-        <div class="selbar" id="selBar"><label class="check"><input type="checkbox" data-selall> Selecionar todas da lista</label><button class="btn ghost sm" id="removeSel" type="button" disabled></button></div>
       </div>
       <p class="count"><span id="uCount" aria-live="polite"></span></p>
-      <div id="uTable"></div>`;
+      <section class="stack" id="uPeople" aria-labelledby="uPeopleH" hidden><h2 class="sec-title" id="uPeopleH">Pessoas</h2><div id="uTable"></div></section>
+      <details class="card legacy" id="uLegacyBox" ${legacyOpen ? 'open' : ''} hidden>
+        <summary><h2 class="sec-title">Acessos antigos</h2><span class="badge" id="uLegacyN"></span></summary>
+        <div class="stack legacy-body">
+          <p class="muted">Essas pessoas ainda entram pelo acesso antigo. Convide-as para o novo acesso; depois de entrarem, remova daqui.</p>
+          <div class="selbar" id="selBar"><label class="check"><input type="checkbox" data-selall> Selecionar todas da lista</label><button class="btn ghost sm" id="removeSel" type="button" disabled></button></div>
+          <div id="uLegacy"></div>
+        </div>
+      </details>`;
     let t = null;
     $('#uq').addEventListener('input', (e) => { clearTimeout(t); const v = e.target.value; t = setTimeout(() => { userQ = v; renderUserRows(); }, 200); });
-    $('#addUser').addEventListener('click', addUserDialog);
-    $('#activateBtn').addEventListener('click', () => activateDialog(null));
+    $('#inviteBtn').addEventListener('click', () => inviteDialog());
     $('#removeSel').addEventListener('click', () => removePeople([...selected]));
+    $('#uLegacyBox').addEventListener('toggle', (e) => { legacyOpen = e.currentTarget.open; });
     box.onchange = (e) => {
       if (e.target.matches('[data-selall]')) { visibleUsers().forEach((u) => { if (e.target.checked) selected.add(u.uid); else selected.delete(u.uid); }); renderUserRows(); return; }
       const tr = e.target.closest('[data-row]');
       if (tr && e.target.dataset.k === 'sel') { if (e.target.checked) selected.add(tr.dataset.row); else selected.delete(tr.dataset.row); paintSelection(); }
     };
     box.onclick = (e) => {
-      const b = e.target.closest('[data-act]'); if (!b) return;
-      const u = vault.users.find((x) => x.uid === b.closest('[data-row]').dataset.row); if (!u) return;
-      const act = b.dataset.act;
-      if (act === 'code') newCode(u);
-      else if (act === 'edit') editUserDialog(u);
-      else if (act === 'activate') activateDialog(u);
-      else removePeople([u.uid]);
+      if (onSbClick(e)) return;
+      const b = e.target.closest('[data-sb-act], [data-act]'); if (!b || b.disabled) return;
+      const row = b.closest('[data-row]'); if (!row) return;
+      if (b.dataset.sbAct) { const p = (people || []).find((x) => `sb:${x.id}` === row.dataset.row); if (p) personAction(p, b.dataset.sbAct, b); return; }
+      const u = vault.users.find((x) => x.uid === row.dataset.row); if (!u) return;
+      if (b.dataset.act === 'invite') inviteDialog({ name: u.name, email: u.email, company: u.company, role: u.role });
+      else if (b.dataset.act === 'remove') removePeople([u.uid]);
     };
     renderUserRows();
   }
@@ -2273,191 +2588,174 @@
     b.innerHTML = `${ICO.warn}Remover selecionadas${selected.size ? ` (${selected.size})` : ''}`;
     $('#selBar').classList.toggle('on', selected.size > 0);
   }
-  // Atualiza só a tabela e a contagem (o campo de busca não é recriado)
+  const SELF_TIP = 'Você não pode bloquear nem remover a própria conta.';
+  function personRowHtml(p) {
+    const me = !!sb && p.id === sb.uid, name = p.nome || p.email, off = me ? ` disabled title="${SELF_TIP}"` : '';
+    return `<li class="rw sb-grid" data-row="sb:${esc(p.id)}">
+      <div class="u-who cell"><span class="avatar" aria-hidden="true">${esc(initials(name))}</span><div><b>${esc(name)}${me ? ' (você)' : ''}</b><span>${esc(p.email)}</span></div></div>
+      <div class="u-comp"><span class="cell-l">Empresa:</span> ${esc(p.empresa || '—')}</div>
+      <div class="u-role"><span class="chip-role">${esc(ROLE[p.papel] || p.papel || '—')}</span></div>
+      <div class="u-status">${p.ativo ? '<span class="status on">Ativo</span>' : '<span class="status off">Bloqueado</span>'}</div>
+      <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-sb-act="edit">Editar</button><button class="btn ghost sm" type="button" data-k="block" data-sb-act="${p.ativo ? 'block' : 'unblock'}"${off}>${p.ativo ? 'Bloquear' : 'Desbloquear'}</button><button class="btn ghost sm" type="button" data-k="resend" data-sb-act="resend">Reenviar acesso</button><button class="btn ghost sm" type="button" data-k="remove" data-sb-act="remove"${off}>Remover</button></div>
+    </li>`;
+  }
+  // Atualiza aviso, cartão de conexão, blocos, contagem e as duas listas (o campo de busca não é recriado)
   function renderUserRows() {
     const wrap = $('#uTable'); if (!wrap || !vault) return;
-    const all = vault.users, list = visibleUsers();
+    const all = vault.users, list = visibleUsers(), ppl = people || [], shown = visiblePeople();
+    const loaded = !!(sb && people), blocked = ppl.filter((p) => !p.ativo).length, q = userQ.trim();
     for (const uid of [...selected]) if (!all.some((u) => u.uid === uid)) selected.delete(uid);
-    const waiting = waitingOf(all);
-    $('#uCount').textContent = (userQ.trim() ? `${plural(list.length, 'pessoa encontrada', 'pessoas encontradas')} de ${all.length}` : plural(all.length, 'pessoa', 'pessoas')) + (waiting ? ` · ${waiting} aguardando ativação` : '');
-    $('#uTiles').innerHTML = tileHtml('Pessoas ativas', all.filter(isActive).length, plural(all.length, 'pessoa cadastrada', 'pessoas cadastradas'), 'navy')
-      + tileHtml('Aguardando ativação', waiting, 'com código provisório em aberto', 'sky') + tileHtml('Códigos vencidos', all.filter(expiredOf).length, 'gere um novo código para liberar');
+    paintSbWarn();
+    const slot = $('#sbConnectSlot');
+    if (slot.dataset.on !== String(!!sb)) { slot.dataset.on = String(!!sb); slot.hidden = !!sb; slot.innerHTML = sb ? '' : sbConnectCardHtml(); }
+    $('#uPeople').hidden = !sb;
+    $('#uCount').textContent = [
+      loaded && (q ? `${plural(shown.length, 'pessoa encontrada', 'pessoas encontradas')} de ${ppl.length}` : plural(ppl.length, 'pessoa', 'pessoas')),
+      all.length > 0 && (q ? `${plural(list.length, 'acesso antigo encontrado', 'acessos antigos encontrados')} de ${all.length}` : plural(all.length, 'acesso antigo', 'acessos antigos'))
+    ].filter(Boolean).join(' · ');
+    $('#uTiles').innerHTML = tileHtml('Pessoas ativas', loaded ? ppl.length - blocked : '—', loaded ? plural(ppl.length, 'pessoa no novo acesso', 'pessoas no novo acesso') : sb ? 'carregando…' : 'conecte o Supabase', 'navy')
+      + tileHtml('Bloqueadas', loaded ? blocked : '—', loaded ? 'sem acesso até desbloquear' : '')
+      + tileHtml('Acessos antigos', all.length, all.length ? 'convide para o novo acesso' : 'ninguém no acesso antigo', 'sky');
+    if (sb) keepFocus(() => {
+      wrap.innerHTML = !people
+        ? `<div class="empty">${peopleErr ? `${esc(peopleErr)}<div class="row"><button class="btn ghost sm" type="button" data-sb="reload">Tentar de novo</button></div>` : 'Carregando as pessoas…'}</div>`
+        : shown.length ? `<div class="list-card">
+          <div class="rows-head sb-grid" aria-hidden="true"><span>Pessoa</span><span>Empresa</span><span>Perfil</span><span>Situação</span></div>
+          <ul class="rows" aria-label="Pessoas">${shown.map(personRowHtml).join('')}</ul></div>`
+        : `<div class="empty">${ppl.length ? 'Ninguém encontrado com essa busca.' : 'Ninguém no novo acesso ainda. Clique em “+ Convidar pessoa”.'}</div>`;
+    });
+    // Acessos antigos: quem já tem perfil no Supabase com o mesmo e-mail não mostra "Convidar"
+    const moved = new Set(ppl.map((p) => P.normEmail(p.email)));
+    $('#uLegacyBox').hidden = !all.length;
+    $('#uLegacyN').textContent = all.length.toLocaleString('pt-BR');
     const sa = $('[data-selall]', $('#selBar'));
     sa.checked = list.length > 0 && list.every((u) => selected.has(u.uid)); sa.disabled = !list.length;
     keepFocus(() => {
-      wrap.innerHTML = list.length ? `<div class="list-card">
+      $('#uLegacy').innerHTML = list.length ? `<div class="list-card">
         <div class="rows-head user-grid" aria-hidden="true"><span></span><span>Pessoa</span><span>Empresa</span><span>Perfil</span><span>Situação</span></div>
-        <ul class="rows" aria-label="Pessoas">${list.map((u) => `<li class="rw user-grid" data-row="${esc(u.uid)}">
+        <ul class="rows" aria-label="Acessos antigos">${list.map((u) => { const inNew = loaded && moved.has(P.normEmail(u.email)); return `<li class="rw user-grid" data-row="${esc(u.uid)}">
           <label class="u-sel sel-hit"><input type="checkbox" data-k="sel" ${selected.has(u.uid) ? 'checked' : ''} aria-label="Selecionar ${esc(u.name)}"></label>
           <div class="u-who cell"><span class="avatar" aria-hidden="true">${esc(initials(u.name))}</span><div><b>${esc(u.name)}</b><span>${esc(u.email)}</span></div></div>
           <div class="u-comp"><span class="cell-l">Empresa:</span> ${esc(u.company || '—')}</div>
           <div class="u-role"><span class="chip-role">${esc(ROLE[u.role] || u.role)}</span></div>
-          <div class="u-status" data-status>${statusOf(u)}</div>
-          <div class="rw-acts">${actionsOf(u)}</div>
-        </li>`).join('')}</ul></div>` : `<div class="empty">${all.length ? 'Ninguém encontrado com essa busca.' : 'Nenhuma pessoa cadastrada ainda. Adicione quem vai acessar a Prateleira.'}</div>`;
+          <div class="u-status">${statusOf(u)}${inNew ? '<br><span class="muted">já tem o novo acesso</span>' : ''}</div>
+          <div class="rw-acts">${inNew ? '' : '<button class="btn primary sm" type="button" data-k="invite" data-act="invite">Convidar para o novo acesso</button>'}<button class="btn ghost sm" type="button" data-k="remove" data-act="remove">Remover</button></div>
+        </li>`; }).join('')}</ul></div>` : '<div class="empty">Ninguém encontrado com essa busca.</div>';
     });
     paintSelection();
+    if (sb && !people && !peopleJob && !peopleErr) loadPeople().then(sbRepaint); // primeira vez nesta sessão
   }
-  const personFields = (u) => `
+  // Formulário de pessoa (convite e edição). noMail: sem o campo de e-mail (no Supabase o e-mail é o login e não muda aqui)
+  const personFields = (u, noMail) => `
     <label class="field" id="fName"><span class="field-label">Nome</span><input id="nName" autocomplete="off" value="${esc(u.name || '')}"><em class="err" hidden></em></label>
-    <label class="field" id="fMail"><span class="field-label">E-mail</span><input id="nMail" type="email" autocomplete="off" value="${esc(u.email || '')}"><em class="err" hidden></em></label>
+    ${noMail ? '' : `<label class="field" id="fMail"><span class="field-label">E-mail</span><input id="nMail" type="email" autocomplete="off" value="${esc(u.email || '')}"><em class="err" hidden></em></label>`}
     <label class="field"><span class="field-label">Empresa</span><input id="nComp" autocomplete="off" value="${esc(u.company || '')}"></label>
     <label class="field"><span class="field-label">Perfil</span><select id="nRole">${Object.entries(ROLE).map(([k, l]) => `<option value="${k}" ${u.role === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
-  function readPerson(exceptUid) {
-    const name = $('#nName').value.trim(), email = P.normEmail($('#nMail').value);
-    const dup = vault.users.some((x) => x.uid !== exceptUid && P.normEmail(x.email) === email);
+  // Lê o formulário de pessoa. taken(e-mail) diz se o e-mail já tem acesso; noMail: formulário sem e-mail
+  function readPerson(taken, noMail) {
+    const name = $('#nName').value.trim(), email = noMail ? '' : P.normEmail($('#nMail').value);
+    const mailErr = noMail ? '' : !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : taken(email) ? 'Este e-mail já tem acesso. Use Reenviar acesso.' : '';
     setFieldErr($('#fName'), name ? '' : 'Informe o nome.');
-    setFieldErr($('#fMail'), !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : dup ? 'Este e-mail já está cadastrado.' : '');
-    if (!name || !email || !emailOk(email) || dup) return null;
+    if (!noMail) setFieldErr($('#fMail'), mailErr);
+    if (!name || mailErr) return null;
     return { name, email, company: $('#nComp').value.trim(), role: $('#nRole').value };
   }
-  const dupCheck = (d, uid, email) => { if (d.users.some((x) => x.uid !== uid && P.normEmail(x.email) === email)) throw userErr('Este e-mail já está cadastrado (outro administrador acabou de cadastrá-lo).'); };
-  function addUserDialog() {
-    const st = vault.settings || {};
+  // Convidar: a função "pessoas" cria a conta e o perfil e envia o e-mail com o link para a pessoa criar a própria senha
+  function inviteDialog(pre) {
+    if (!sb) { sbConnectDialog((ok) => { if (ok) inviteDialog(pre); }); return; }
     openDialog({
-      title: 'Adicionar pessoa',
-      body: `${st.ativEmail || st.ativWhats ? '' : '<div class="alert error">Os contatos de ativação estão vazios. A pessoa não terá botão de e-mail ou WhatsApp para enviar o código de ativação, só “Copiar código”. Preencha em Configurações → Ativação de acessos.</div>'}
-        <p class="muted">O painel gera um código provisório. A pessoa entra com o e-mail e esse código, cria a própria senha e envia o código de ativação para vocês.</p>
-        ${personFields({ role: 'cliente' })}
-        <p class="muted">O código vale por ${codeHours() >= 72 ? `${Math.round(codeHours() / 24)} dias` : `${codeHours()} horas`} (altere em Configurações).</p>`,
+      title: 'Convidar pessoa',
+      body: `<p class="muted">A pessoa recebe um e-mail com o link para criar a própria senha e entrar na Prateleira. Ninguém mais conhece a senha.</p>${personFields({ role: 'cliente', ...(pre || {}) })}`,
       actions: [{ label: 'Cancelar', kind: 'ghost' }, {
-        label: 'Criar e gerar código', kind: 'primary',
+        label: 'Enviar convite', kind: 'primary',
         onClick: async () => {
-          const f = readPerson(null); if (!f) return false;
-          const u = { uid: P.randHex(6), ...f, createdAt: new Date().toISOString(), pending: newPending() };
-          const ok = await publish('Criando o acesso', (d) => { dupCheck(d, u.uid, f.email); d.users.push(clone(u)); });
-          if (!ok) return false;
-          renderUserRows();
-          const cur = vault.users.find((x) => x.uid === u.uid);
-          watchLive(cur, 'pend'); showInvite(cur, 'Acesso criado');
+          const f = readPerson((mail) => (people || []).some((p) => P.normEmail(p.email) === mail)); if (!f) return false;
+          try { await sbCall((t) => P.supa.fn(t, 'pessoas', { acao: 'convidar', email: f.email, nome: f.name, empresa: f.company, papel: f.role })); }
+          catch (e) { console.error(e); dlgErr(sbFnErr(e, 'convidar')); return false; }
+          toast(`Convite enviado para ${f.email}. A pessoa cria a própria senha pelo link do e-mail.`);
+          loadPeople().then(sbRepaint);
           return true;
         }
       }]
     });
   }
-  // Editar pessoa: trocar o e-mail mantém a senha (só o identificador é recalculado; nenhuma chave muda)
-  function editUserDialog(u) {
+  function editPersonDialog(p) {
     openDialog({
       title: 'Editar pessoa',
-      body: `${personFields(u)}<p class="muted">Se trocar o e-mail, a senha continua a mesma: ${esc(firstName(u.name))} passa a entrar com o e-mail novo depois que o site atualizar.</p>`,
+      body: `<p class="muted">${esc(p.email)} · o e-mail é o login da pessoa e não muda aqui.</p>${personFields({ name: p.nome, company: p.empresa, role: p.papel }, true)}`,
       actions: [{ label: 'Cancelar', kind: 'ghost' }, {
-        label: 'Salvar e publicar', kind: 'primary',
+        label: 'Salvar', kind: 'primary',
         onClick: async () => {
-          const f = readPerson(u.uid); if (!f) return false;
-          const mailChanged = P.normEmail(u.email) !== f.email;
-          const ok = await publish('Salvando', (d) => {
-            const t = d.users.find((x) => x.uid === u.uid); if (!t) throw userErr('Esta pessoa foi removida por outro administrador.');
-            dupCheck(d, u.uid, f.email);
-            Object.assign(t, f); if (mailChanged) delete t.idv3;
-          });
-          if (!ok) return false;
-          toast(mailChanged ? 'Publicado. Avise a pessoa que o e-mail de acesso mudou.' : 'Publicado.');
-          renderUserRows();
+          const f = readPerson(null, true); if (!f) return false;
+          if (sb && p.id === sb.uid && f.role !== 'admin') { dlgErr('Você não pode tirar o perfil de administrador da própria conta.'); return false; }
+          let rows;
+          try { rows = await sbCall((t) => P.supa.update(t, 'perfis', `id=eq.${encodeURIComponent(p.id)}`, { nome: f.name, empresa: f.company, papel: f.role })); }
+          catch (e) { console.error(e); dlgErr(sbErrText(e)); return false; }
+          if (!Array.isArray(rows) || !rows.length) { dlgErr('Nada foi salvo: a pessoa não foi encontrada ou esta conta não pode alterar perfis.'); return false; }
+          toast('Pessoa atualizada.');
+          loadPeople().then(sbRepaint);
           return true;
         }
       }]
     });
   }
-  async function newCode(u) {
-    const text = isActive(u) ? `<p>O código anterior deixa de valer. A senha atual de ${esc(firstName(u.name))} continua funcionando até a nova ser ativada.</p>` : '<p>O código anterior deixa de valer.</p>';
-    if (!(await confirmBox(`Gerar novo código para ${u.name}?`, text, 'Gerar e publicar'))) return;
-    const p = newPending();
-    const ok = await publish('Publicando o código provisório', (d) => {
-      const t = d.users.find((x) => x.uid === u.uid); if (!t) throw userErr('Esta pessoa foi removida por outro administrador.');
-      t.pending = { ...p };
-    });
-    renderUserRows();
-    if (ok) { const cur = vault.users.find((x) => x.uid === u.uid); watchLive(cur, 'pend'); showInvite(cur, 'Novo código publicado'); }
+  // Caixa "Trocar também as chaves dos catálogos" nas confirmações de bloquear e remover (lida em $('#sbRot', cf) depois de confirmar)
+  function rotationCheckHtml() {
+    const legacy = rotationTargets(vault, false), n = rotationFileCount(legacy);
+    return `<label class="check"><input type="checkbox" id="sbRot" checked> Trocar também as chaves dos catálogos (recomendado)</label>
+      <p>O que a pessoa já viu não pode ser desfeito; com a chave nova, as próximas versões ficam protegidas${n ? `. O painel também troca a chave de ${plural(legacy.length, 'catálogo antigo', 'catálogos antigos')} (${estimate(n)}): não feche a janela durante o envio` : ''}.</p>`;
   }
-  function showInvite(u, title) {
-    const p = u.pending, code = P.fmtCode(p.code), first = firstName(u.name);
-    const steps = `1. Acesse: ${siteUrl()}\n2. Entre com o seu e-mail (${u.email}) e o código provisório: ${code}\n3. Crie a ${isActive(u) ? 'nova senha' : 'sua senha'} e envie o código de ativação que aparecer na tela.`;
-    const msg = isActive(u)
-      ? `Olá, ${first}! Aqui está um novo código provisório para você criar uma nova senha na Prateleira de Catálogos Dellamed.\n\n${steps}\n\nSua senha atual continua funcionando até a nova ser ativada. O código provisório vale até ${fmtDateTime(p.x)}.`
-      : `Olá, ${first}! Seu acesso à Prateleira de Catálogos Dellamed foi criado.\n\n${steps}\n\nO código provisório vale até ${fmtDateTime(p.x)}.`;
-    openDialog({
-      title,
-      body: `<div><p class="label-caps">E-mail</p><p>${esc(u.email)}</p></div>
-        <div><p class="label-caps">Código provisório</p><p class="secret">${esc(code)}</p><p class="muted">Vale até ${esc(fmtDateTime(p.x))}. Ele só serve para a pessoa criar a própria senha.</p></div>
-        <label class="field"><span class="field-label">Mensagem para enviar</span><textarea id="welcome" rows="9" readonly>${esc(msg)}</textarea></label>
-        <p class="alert warn" id="liveStatus" data-uid="${esc(u.uid)}" role="status">Publicando no site… costuma levar de 1 a 3 minutos. Envie a mensagem depois do aviso “Pronto” (ele também aparece na linha da pessoa).</p>`,
-      actions: [{ label: 'Copiar mensagem', kind: 'ghost', onClick: async () => { await copyText($('#welcome')); return false; } }, { label: 'Concluir', kind: 'primary' }]
-    });
-    paintRow(u.uid);
+  // Troca da chave-raiz pelo mesmo caminho de removePeople (rotateKeys num único envio); publish() leva a chave nova ao Supabase no fim
+  async function rotateRoot() {
+    const n = rotationFileCount(rotationTargets(vault, false));
+    const ok = await publish('Trocando as chaves dos catálogos', (d, pg) => rotateKeys(d, pg, false), { cancel: n > 0 });
+    if (ok) toast('Chaves dos catálogos trocadas.');
+    return ok;
   }
-  const ACT_ERR = {
-    semcodigo: 'Não encontrei um código de ativação no texto. Cole a mensagem inteira que a pessoa enviou.',
-    incompleto: 'O código de ativação está incompleto. Peça para a pessoa enviar de novo a mensagem inteira.',
-    versao: 'Este código foi gerado por uma versão antiga do site. Peça para a pessoa atualizar a página e criar a senha de novo.',
-    corrompido: 'O código de ativação está corrompido. Peça para a pessoa enviar de novo.'
-  };
-  async function verifyActivation(text, expected) {
-    const r = await P.readActivation(text);
-    if (r.err) return { err: ACT_ERR[r.err] || ACT_ERR.incompleto };
-    const o = r.o;
-    let u = null;
-    const order = expected ? [expected, ...vault.users.filter((x) => x.uid !== expected.uid)] : vault.users;
-    for (const x of order) if ((await idOf(vault, x)) === o.i) { u = x; break; }
-    if (!u) return { err: 'Este código de ativação não corresponde a nenhuma pessoa cadastrada. Confira se a pessoa entrou com o e-mail cadastrado.' };
-    if (expected && u.uid !== expected.uid) return { err: `Este código de ativação é de ${u.name}, não de ${expected.name}.` };
-    if (!u.pending) return { err: `${u.name} não tem código provisório em aberto. Gere um novo código e peça para a pessoa criar a senha de novo.` };
-    if (!pendingOpen(u)) return { err: `O código provisório de ${u.name} venceu. Gere um novo código.` };
-    if (!(await P.checkActivation(o, u.pending.code))) return { err: `Este código de ativação não foi gerado com o código provisório atual de ${u.name}. Peça para a pessoa entrar de novo com o código mais recente.` };
-    return { u, o, conf: r.conf };
+  function personAction(p, act, btn) {
+    if (act === 'edit') editPersonDialog(p);
+    else if (act === 'block' || act === 'unblock') setBlocked(p, act === 'block');
+    else if (act === 'resend') resendAccess(p, btn);
+    else if (act === 'remove') removeSbPerson(p);
   }
-  function activateDialog(expected) {
-    openDialog({
-      title: expected ? `Ativar o acesso de ${expected.name}` : 'Colar ativação',
-      body: `<p class="muted">Cole a mensagem que a pessoa enviou por e-mail ou WhatsApp. Ative só mensagens que vieram do contato da própria pessoa.</p>
-        <label class="field" id="fAct"><span class="field-label">Código de ativação</span><textarea id="actText" rows="6" class="paste" spellcheck="false" placeholder="PRATELEIRA-ATIVACAO:…"></textarea><em class="err" hidden></em></label>`,
-      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
-        label: 'Verificar', kind: 'primary',
-        onClick: async () => {
-          setFieldErr($('#fAct'), '');
-          const r = await verifyActivation($('#actText').value, expected);
-          setFieldErr($('#fAct'), r.err || '');
-          if (r.err) return false;
-          confirmActivation(r);
-          return false;
-        }
-      }]
-    });
+  async function setBlocked(p, block) {
+    if (sb && p.id === sb.uid) return;
+    const name = p.nome || p.email;
+    let rotate = false;
+    if (block) {
+      if (!(await confirmBox(`Bloquear ${name}?`, `<p>${esc(name)} deixa de entrar na Prateleira. A conta continua cadastrada e pode ser desbloqueada depois.</p>${rotationCheckHtml()}`, 'Bloquear', true))) return;
+      rotate = $('#sbRot', cf).checked;
+    }
+    try {
+      const rows = await sbCall((t) => P.supa.update(t, 'perfis', `id=eq.${encodeURIComponent(p.id)}`, { ativo: !block }));
+      if (!Array.isArray(rows) || !rows.length) throw userErr('A pessoa não foi encontrada ou esta conta não pode alterar perfis.');
+    } catch (e) { console.error(e); alertBox(block ? 'Não foi possível bloquear' : 'Não foi possível desbloquear', sbErrText(e)); return; }
+    toast(block ? `Acesso de ${name} bloqueado.` : `Acesso de ${name} desbloqueado.`);
+    await loadPeople(); sbRepaint();
+    if (rotate) await rotateRoot();
   }
-  function confirmActivation({ u, o, conf }) {
-    const first = firstName(u.name), code = u.pending.code;
-    openDialog({
-      title: 'Código válido',
-      body: `<p>Ativar o acesso de <b>${esc(u.name)}</b> (${esc(u.email)}, ${esc(ROLE[u.role] || u.role)})?</p>
-        <p class="alert ok">Número de conferência: <b>${esc(conf)}</b> (a pessoa vê o mesmo número na tela dela)</p>
-        <p class="muted">A partir da publicação, ${esc(first)} entra com a senha que criou.${isActive(u) ? ' A senha anterior deixa de funcionar.' : ''}</p>`,
-      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
-        label: 'Ativar e publicar', kind: 'primary',
-        onClick: async () => {
-          const now = new Date().toISOString();
-          const ok = await publish('Ativando o acesso', (d) => {
-            const t = d.users.find((x) => x.uid === u.uid);
-            if (!t || !pendingOpen(t) || t.pending.code !== code) throw userErr('O código provisório desta pessoa mudou ou venceu. Peça para ela criar a senha de novo com o código mais recente.');
-            Object.assign(t, { salt: o.s, encPriv: o.p, pub: o.k, activatedAt: now });
-            delete t.kek; delete t.pending;
-          });
-          if (!ok) return false;
-          renderUserRows();
-          watchLive(vault.users.find((x) => x.uid === u.uid), 'act');
-          openDialog({
-            title: 'Acesso ativado',
-            body: `<p>${esc(u.name)} já pode entrar com o e-mail e a senha que criou assim que o site atualizar.</p>
-              <p class="alert warn" id="liveStatus" data-uid="${esc(u.uid)}" role="status">Publicando no site… costuma levar de 1 a 3 minutos. O aviso “Pronto” também aparece na linha da pessoa.</p>`,
-            actions: [{ label: 'Concluir', kind: 'primary' }]
-          });
-          return true;
-        }
-      }]
-    });
+  async function resendAccess(p, btn) {
+    btn.disabled = true;
+    try { await sbCall((t) => P.supa.fn(t, 'pessoas', { acao: 'reenviar', email: p.email })); toast(`E-mail enviado para ${p.email}`); }
+    catch (e) { console.error(e); alertBox('Não foi possível reenviar o acesso', sbFnErr(e, 'reenviar')); }
+    finally { btn.disabled = false; }
   }
-  // Remover uma ou várias pessoas: uma única troca da chave-raiz e um único envio
+  async function removeSbPerson(p) {
+    if (sb && p.id === sb.uid) return;
+    const name = p.nome || p.email;
+    if (!(await confirmBox(`Remover ${name}?`, `<p>A conta de ${esc(name)} é apagada do Supabase e a pessoa deixa de entrar. Para voltar, será preciso convidar de novo.</p>${rotationCheckHtml()}`, 'Remover', true))) return;
+    const rotate = $('#sbRot', cf).checked;
+    try { await sbCall((t) => P.supa.fn(t, 'pessoas', { acao: 'remover', id: p.id })); }
+    catch (e) { console.error(e); alertBox('Não foi possível remover', sbFnErr(e, 'remover')); return; }
+    toast('Pessoa removida do novo acesso.');
+    await loadPeople(); sbRepaint();
+    if (rotate) await rotateRoot();
+  }
+  // Remover uma ou várias pessoas do acesso antigo: uma única troca da chave-raiz e um único envio
   async function removePeople(uids) {
     const list = vault.users.filter((u) => uids.includes(u.uid)); if (!list.length) return;
     const anyActive = list.some(isActive);
+    if (anyActive && !(await sbRotationGate((ok) => { if (ok) removePeople(uids); }))) return;
     const legacy = rotationTargets(vault, false), n = rotationFileCount(legacy);
     const who = list.length === 1 ? list[0].name : plural(list.length, 'pessoa', 'pessoas');
     const text = anyActive
@@ -2470,7 +2768,7 @@
       if (!gone.some(isActive)) return {};
       return rotateKeys(d, pg, false);
     }, { cancel: anyActive && n > 0 });
-    if (ok) { uids.forEach((x) => { selected.delete(x); live.delete(x); }); toast(list.length === 1 ? 'Acesso removido.' : 'Acessos removidos.'); }
+    if (ok) { uids.forEach((x) => selected.delete(x)); toast(list.length === 1 ? 'Acesso removido.' : 'Acessos removidos.'); }
     renderUserRows();
   }
 
@@ -2882,13 +3180,14 @@
     const box = $('#tabCfg'); if (!vault) return;
     const st = vault.settings || {}, hasR = !!(slots && slots.r), com = st.comercial || {};
     box.innerHTML = `${pageHead('cfg')}
+      <div data-sb-warn-slot hidden></div>
       <div class="cfg-grid">
+          <section class="card stack span2" id="cfgSb" aria-labelledby="cfgSbH">${sbCardHtml()}</section>
           <section class="card stack" aria-labelledby="cfgAtivH">
-            <div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.mail}</span><h2 id="cfgAtivH">Ativação de acessos</h2></div>
-            <p class="muted">Para onde a pessoa envia o código de ativação depois de criar a senha. O site mostra um botão para cada contato preenchido e sempre oferece “Copiar código”.</p>
+            <div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.mail}</span><h2 id="cfgAtivH">Contatos do marketing</h2></div>
+            <p class="muted">Aparecem nas telas de entrar e de ajuda do site, para quem precisa de ajuda com o acesso. O site mostra um botão para cada contato preenchido.</p>
             <label class="field" id="fAE"><span class="field-label">E-mail do marketing</span><input id="ativEmail" type="email" value="${esc(st.ativEmail || '')}" placeholder="marketing@empresa.com.br"><em class="err" hidden></em></label>
             <label class="field" id="fAW"><span class="field-label">WhatsApp do marketing (com DDI e DDD, só números)</span><input id="ativWhats" inputmode="numeric" value="${esc(st.ativWhats || '')}" placeholder="5554999999999"><em class="err" hidden></em></label>
-            <label class="field"><span class="field-label">Validade do código provisório</span><select id="codeHours">${[[24, '24 horas'], [48, '48 horas'], [168, '7 dias']].map(([h, l]) => `<option value="${h}" ${codeHours() === h ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
             <label class="field"><span class="field-label">Texto de “Esqueci minha senha”</span><textarea id="contato" rows="3">${esc(st.contato || CONTATO_PADRAO)}</textarea></label>
             <button class="btn primary" id="saveAtiv" type="button">Salvar e publicar</button>
           </section>
@@ -2919,6 +3218,7 @@
     $('#saveAtiv').addEventListener('click', saveAtiv);
     $('#saveCom').addEventListener('click', saveCom);
     box.onclick = (e) => {
+      if (onSbClick(e)) return; // Entrar / Sair do Supabase e "Tentar de novo" do aviso
       const b = e.target.closest('[data-cfg]'); if (!b) return;
       const a = b.dataset.cfg;
       if (a === 'recovery') createRecovery();
@@ -2927,13 +3227,14 @@
       else if (a === 'recrypt') recryptAll();
       else forgetToken();
     };
+    paintSbWarn();
   }
   async function saveAtiv() {
     const email = $('#ativEmail').value.trim(), whats = $('#ativWhats').value.replace(/\D/g, ''), wp = whatsProblem(whats);
     setFieldErr($('#fAE'), email && !emailOk(email) ? 'Confira o formato do e-mail.' : '');
     setFieldErr($('#fAW'), wp);
     if ((email && !emailOk(email)) || wp) return;
-    const s = { ativEmail: email, ativWhats: whats, codeHours: +$('#codeHours').value, contato: $('#contato').value.trim() || CONTATO_PADRAO };
+    const s = { ativEmail: email, ativWhats: whats, contato: $('#contato').value.trim() || CONTATO_PADRAO }; // settings.codeHours antigo fica como está (sem uso)
     const ok = await publish('Salvando', (d) => { d.settings = { ...(d.settings || {}), ...s }; });
     if (ok) { toast('Configurações publicadas.'); renderCfg(); }
   }
@@ -2974,7 +3275,8 @@
   }
   // Trocar a senha mestra: chave do cofre nova, compartimento m novo, chave de recuperação nova e chave-raiz nova.
   // Tudo em variáveis locais; os valores globais só mudam depois de publicar com sucesso.
-  function changeMasterDialog(forced) {
+  // keep: { a, b, all } devolve o que foi digitado quando o diálogo reabre depois do "Entrar no Supabase" (sbRotationGate)
+  function changeMasterDialog(forced, keep) {
     const legacyN = rotationFileCount(rotationTargets(vault, false)), allN = rotationFileCount(vault.catalogs);
     openDialog({
       title: forced === 'recovery' ? 'Crie uma nova senha mestra' : 'Trocar senha mestra', locked: !!forced,
@@ -2995,6 +3297,7 @@
             setFieldErr($('#fM2'), a === b ? '' : 'As duas senhas não são iguais.');
             if (prob || a !== b) return false;
             const all = $('#mAll').checked, rk = genRecovery();
+            if (!(await sbRotationGate(() => changeMasterDialog(forced, { a, b, all })))) return false; // a senha mestra sempre troca a chave-raiz
             let k = null, sl = null;
             const ok = await publish('Trocando a senha mestra', async (d, pg) => {
               if (!k) {
@@ -3016,6 +3319,7 @@
     });
     $('#mGen').addEventListener('click', () => { const s = genMaster(); $('#m1').type = 'text'; $('#m1').value = s; $('#m2').value = s; $('#m1').focus(); $('#m1').select(); toast('Senha gerada. Anote-a num lugar seguro.'); });
     const est = () => { $('#mEst').textContent = $('#mAll').checked ? `Troca de chaves: ${estimate(allN)}.` : `A chave da lista de catálogos também muda${legacyN ? ` (${estimate(legacyN)})` : ''}.`; };
+    if (keep) { $('#m1').value = keep.a; $('#m2').value = keep.b; $('#mAll').checked = keep.all; }
     est(); $('#mAll').addEventListener('change', est);
   }
   async function exportBackup() {
@@ -3027,6 +3331,7 @@
     } catch (e) { alertBox('Não foi possível exportar', errText(e).replace(' Nada foi alterado no site.', '')); }
   }
   async function recryptAll() {
+    if (!(await sbRotationGate((ok) => { if (ok) recryptAll(); }))) return;
     const n = rotationFileCount(vault.catalogs);
     if (!(await confirmBox('Recriptografar todos os catálogos?', `<p>Todos os catálogos e a lista de catálogos ganham chaves novas (${estimate(n)}). Quem tem acesso continua entrando normalmente.</p><p>Tudo é publicado num único envio no fim: se algo falhar ou você cancelar, nada muda no site.</p>`, 'Recriptografar'))) return;
     const ok = await publish('Recriptografando os catálogos', (d, pg) => rotateKeys(d, pg, true), { cancel: true });

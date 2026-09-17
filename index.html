@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-JgsCvY9/u04OojftNdkLgAnqGrBcCSJmZHma3kSFpvw=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-en+ORXRXiybid6XucXqWWA+jSfgOXoAuskO3x7VK57g=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://xrsivxdtfliejbosprns.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -150,16 +150,20 @@
   .side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; margin: 0 0 20px 10px; }
   .side .logo { height: 34px; width: 128px; }
   .side-close { display: none; }
-  .side-nav, .side-lines { display: grid; gap: 2px; }
+  .side-nav { display: grid; gap: 2px; }
   .nav-i { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: rgba(255, 255, 255, .78); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
   .nav-i:hover { background: var(--hover-dark); color: var(--white); }
   .nav-i[aria-current="true"], .nav-i[aria-pressed="true"] { background: rgba(139, 184, 232, .16); color: var(--white); box-shadow: inset 3px 0 0 var(--sky); }
   .nav-i .ico svg { width: 20px; height: 20px; }
   .nav-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .nav-c { font-size: 12px; font-weight: 400; color: rgba(255, 255, 255, .66); font-variant-numeric: tabular-nums; }
-  .nav-i .dot { width: 8px; height: 8px; margin: 0 6px; border-radius: 50%; background: var(--sky); flex: none; }
-  .nav-h { margin: 22px 12px 6px; font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
-  .side-lines { margin-bottom: 18px; }
+  /* "Meu cartão" + lápis na borda direita (32 px visíveis, 44 px de toque) que abre direto a edição */
+  .nav-row { position: relative; }
+  .nav-row .nav-i { padding-right: 48px; }
+  .nav-edit { position: absolute; top: 50%; right: 6px; width: 32px; height: 32px; margin-top: -16px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: rgba(255, 255, 255, .78); cursor: pointer; }
+  .nav-edit::before { content: ""; position: absolute; inset: -6px; border-radius: 10px; }
+  .nav-edit:hover { background: var(--hover-dark); color: var(--white); }
+  .nav-edit .ico svg { width: 17px; height: 17px; }
   .me { margin-top: auto; display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 10px 10px 12px; border: 0; border-radius: 14px; background: rgba(255, 255, 255, .07); color: var(--white); text-align: left; cursor: pointer; }
   .me:hover, .me[aria-expanded="true"] { background: rgba(255, 255, 255, .13); }
   .me .avatar { width: 36px; height: 36px; }
@@ -210,6 +214,15 @@
   .tab[aria-current="true"], .tab[aria-expanded="true"] { color: var(--navy); font-weight: 600; }
   .tab .ico svg { width: 22px; height: 22px; }
   .tab .int-n { position: absolute; top: 5px; left: calc(50% + 6px); }
+  /* Aba central "Cartão" (só representante e equipe): botão circular elevado, azul-marinho com anel azul-claro */
+  .tabbar.has-card { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .tab-card { align-content: end; padding-bottom: 6px; color: var(--navy); font-weight: 600; }
+  .tab-card-btn { width: 58px; height: 58px; margin-top: -30px; display: grid; place-items: center; border-radius: 50%; background: var(--navy); color: var(--white); box-shadow: 0 0 0 3px var(--sky), 0 0 0 6px var(--white), 0 14px 24px -12px rgba(20, 32, 60, .65); transition: transform .15s; }
+  .tab .tab-card-btn .ico svg { width: 26px; height: 26px; }
+  .tab-card:active .tab-card-btn { transform: scale(.95); }
+  .tab-card[aria-current="true"] .tab-card-btn { background: var(--sky); color: var(--navy); box-shadow: 0 0 0 3px var(--navy), 0 0 0 6px var(--white), 0 14px 24px -12px rgba(20, 32, 60, .65); }
+  .tab-card:focus-visible { outline: none; }
+  .tab-card:focus-visible .tab-card-btn { outline: 2px solid var(--navy); outline-offset: 8px; }
 
   /* ---------- início: saudação, destaque, blocos e catálogos ---------- */
   .wrap { max-width: 1240px; margin: 0 auto; padding: 4px 32px 72px; }
@@ -218,6 +231,13 @@
   .greet h1 b { font-weight: 700; }
   .greet h1:focus { outline: none; }
   .greet p { color: var(--ink-2); font-size: 13px; }
+  /* Aviso discreto do acesso antigo (login por acessos.json): fecha no "x" e não volta nesta sessão do navegador */
+  .legacy-note { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 6px 6px 6px 14px; border-radius: 14px; background: var(--white); box-shadow: var(--card-shadow); color: var(--ink-2); font-size: 13px; line-height: 1.45; }
+  .legacy-note > .ico { color: var(--navy); }
+  .legacy-note > .ico svg { width: 16px; height: 16px; }
+  .legacy-note p { flex: 1; min-width: 0; }
+  .legacy-note .icon-btn { color: var(--navy); }
+  .legacy-note .icon-btn:hover { background: var(--light); }
   /* Destaque (direção 2): cartão azul-marinho com o fundo oficial e capas em leque */
   .hero { position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 24px; min-height: 330px; margin-top: 16px; padding: 36px 44px; border-radius: 18px; color: var(--white); background: var(--navy) var(--kv) center / cover no-repeat; }
   .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(100deg, rgba(30, 44, 79, .95) 30%, rgba(30, 44, 79, .6) 68%, rgba(30, 44, 79, .3)); }
@@ -373,7 +393,7 @@
   /* Controles (anterior, contador, próxima, zoom, som, tela cheia): na barra superior no computador; pílula flutuante nas telas menores */
   .bar { display: flex; align-items: center; gap: 2px; flex: none; }
   .grp { display: flex; align-items: center; gap: 2px; }
-  .bar .grp.left, .btn-first, .btn-last { display: none; }
+  .bar .grp.left { display: none; }
   .icon-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--white); cursor: pointer; transition: background-color .15s, color .15s; }
   .icon-btn:hover { background: var(--hover-dark); }
   .icon-btn:disabled { opacity: .35; cursor: default; background: transparent; }
@@ -564,8 +584,35 @@
   /* ---------- cartão de visita digital (#/cartao): editor, prévia, apresentação ---------- */
   /* O cartão usa a unidade --u = 1% da largura dele (medida por ResizeObserver): a prévia, a apresentação e o PNG 1080 × 1350
      seguem as mesmas proporções (1 --u = 10,8 px no PNG). */
+  /* Visualização (#/cartao): cartão grande e centralizado, lápis para editar, "Salvo neste aparelho" e ações embaixo */
+  .card-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 16px; }
+  .card-frame { position: relative; container-type: inline-size; width: min(100%, 480px); width: min(100%, max(300px, min(480px, calc((100vh - 300px) * .8)))); }
+  .card-pencil { position: relative; width: 44px; height: 44px; flex: none; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--white); color: var(--navy); cursor: pointer; box-shadow: 0 0 0 1px var(--hair), 0 10px 20px -10px rgba(20, 32, 60, .6); }
+  .card-pencil:hover { background: var(--light); }
+  .card-pencil .ico svg { width: 20px; height: 20px; }
+  /* Lápis sobre a borda direita, logo abaixo da tag MED PRO (≈ 12,06 --u de altura), sem nunca cobri-la. 1cqw = 1% da largura do cartão */
+  .card-frame > .card-pencil { position: absolute; z-index: 2; right: -10px; top: 64px; top: calc(12.1cqw + 12px); }
+  .card-invite { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 18px; width: min(100%, 480px); margin: 16px auto 0; }
+  .card-invite h2 { font-size: 16px; font-weight: 700; }
+  .card-invite p { margin-top: 2px; font-size: 13px; color: var(--ink-2); }
+  .card-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 6px; font-size: 12px; color: var(--ink-2); text-align: center; }
+  .card-status .ico svg { width: 14px; height: 14px; }
+  .card-status .link { font-size: 12px; }
+  .card-view .card-acts { width: min(100%, 480px); }
+  /* Faixa "Seu cartão" do início: só no celular (regras na faixa < 768 px) */
+  .card-strip { display: none; }
+  .card-thumb.sm { width: 40px; height: 40px; font-size: 14px; }
+  /* Edição (#/cartao/editar): barra fixa com Cancelar/Concluir, formulário e prévia ao vivo */
+  .card-editbar { position: sticky; top: 0; z-index: 21; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin: 0 -32px; padding: 12px 100px 12px 32px; background: rgba(240, 240, 240, .96); border-bottom: 1px solid var(--hair); } /* 100 px à direita: livre da tag MED PRO da página */
+  .card-editbar h1 { font-size: 20px; font-weight: 700; }
+  .card-editbar h1:focus { outline: none; }
+  .card-editbar-acts { display: flex; gap: 8px; }
+  .card-prev-toggle { display: none; }
+  .card-prev-t { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
+  .card-prev-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+  .card-prev-t span { font-size: 12px; font-weight: 400; color: var(--ink-2); }
   .card-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 420px); grid-template-areas: "form aside"; gap: 28px; align-items: start; margin-top: 16px; }
-  .card-aside { grid-area: aside; position: sticky; top: 16px; display: grid; gap: 14px; min-width: 0; }
+  .card-aside { grid-area: aside; position: sticky; top: 92px; display: grid; gap: 14px; min-width: 0; }
   .card-form { grid-area: form; display: grid; gap: 16px; min-width: 0; }
   .card-fs { display: grid; gap: 14px; }
   .card-fs .seg { justify-self: start; flex-wrap: wrap; max-width: 100%; border-radius: 22px; background: var(--light); box-shadow: none; }
@@ -581,9 +628,7 @@
   .card-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   #viewCard .card-acts .btn { width: 100%; height: auto; min-height: 42px; padding: 8px 12px; white-space: normal; line-height: 1.25; text-align: center; }
   .card-acts .btn:disabled { cursor: not-allowed; }
-  .card-nfc { display: grid; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--white); font-size: 12px; line-height: 1.5; color: var(--ink-2); box-shadow: var(--card-shadow); }
-  .card-link { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .card-link code { flex: 1; min-width: 0; max-height: 4.5em; overflow: hidden; padding: 6px 8px; border-radius: 6px; background: var(--light); color: var(--navy); font: 11px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+  .card-acts-more { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   /* Cartão: azul-marinho (brilho azul-claro suave, texto branco) ou claro (branco, texto azul-marinho) */
   .vcard { --u: 4px; position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; width: 100%; aspect-ratio: 4 / 5; padding: calc(var(--u) * 6.667); border-radius: 18px; background: var(--navy); color: var(--white); text-align: center; line-height: 1.2; box-shadow: 0 24px 50px -30px rgba(20, 32, 60, .6); }
   .vcard::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle calc(var(--u) * 90) at 85% 10%, rgba(139, 184, 232, .35), rgba(139, 184, 232, 0)); }
@@ -639,33 +684,56 @@
     .card-show .vcard.big .vc-medpro { right: calc(var(--u) * 42); }
     .card-show-tip { display: none; }
   }
-  /* O item "Meu cartão" do menu da conta é o acesso do celular (computador: menu lateral; tablet: gaveta) */
-  @media (min-width: 768px) { #cardMenuBtn { display: none; } }
-  @media (min-width: 1200px) { #viewCard .wrap { padding-top: 28px; } } /* sem barra de busca: afasta a prévia da tag MED PRO do topo */
+  /* Acesso ao cartão: menu lateral (computador), gaveta (tablet) e aba central (celular) — não fica mais no menu da conta */
+  @media (min-width: 1200px) { #viewCard .wrap { padding-top: 28px; } } /* sem barra de busca: afasta o título da tag MED PRO do topo */
   @media (min-width: 1200px) and (max-height: 820px) { .card-aside { position: static; } }
   @media (max-width: 1199px) {
     .card-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "aside" "form"; gap: 20px; }
     .card-aside { position: static; width: 100%; max-width: 440px; justify-self: center; }
-    #viewCard .card-acts .btn { min-height: 44px; } /* id: vence a altura fixa de .btn.sm abaixo de 1200 px (o texto pode quebrar) */
-    .card-link .btn { flex: none; }
+    #viewCard .card-acts .btn, .card-editbar .btn, .card-invite .btn { min-height: 44px; } /* id: vence a altura fixa de .btn.sm abaixo de 1200 px (o texto pode quebrar) */
+    .card-editbar { top: var(--bar-h); margin: 0 -24px; padding: 10px 56px 10px 24px; }
+    /* Prévia no topo, recolhível num cabeçalho compacto (foto, nome e "Mostrar prévia") */
+    .card-prev-toggle { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 56px; padding: 8px 12px; border: 0; border-radius: 14px; background: var(--white); color: var(--navy); font-weight: 600; text-align: left; cursor: pointer; box-shadow: var(--card-shadow); }
+    .card-prev-toggle > .ico svg { transform: rotate(90deg); transition: transform .15s; }
+    .card-prev-toggle[aria-expanded="true"] > .ico svg { transform: rotate(-90deg); }
+    .card-aside.collapsed .card-edit-prev { display: none; }
   }
   @media (max-width: 767px) {
-    /* Pilha: prévia, ações secundárias, formulário compacto; Apresentar e Compartilhar numa faixa fixa acima das abas */
-    .card-grid { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
-    .card-aside { display: contents; }
-    .card-prev { order: 0; width: min(100%, 340px); align-self: center; }
-    .card-acts-more { order: 1; }
-    .card-nfc { order: 2; }
-    .card-form { order: 3; gap: 12px; }
-    .card-acts-main { align-self: stretch; order: 4; position: sticky; z-index: 5; bottom: calc(var(--tab-h) + var(--safe-b)); margin: 0 -16px; padding: 10px 16px; background: rgba(240, 240, 240, .96); box-shadow: 0 -12px 20px -18px rgba(20, 32, 60, .5); }
+    /* Visualização: cartão quase na largura toda; Apresentar e Compartilhar numa faixa fixa acima das abas (folga para a aba central elevada) */
+    .card-frame { width: 100%; }
+    .card-invite .btn { width: 100%; }
+    .card-view .card-acts-main { position: sticky; z-index: 5; bottom: calc(var(--tab-h) + var(--safe-b)); align-self: stretch; width: auto; margin: 0 -16px; padding: 10px 16px 32px; background: rgba(240, 240, 240, .96); box-shadow: 0 -12px 20px -18px rgba(20, 32, 60, .5); }
+    .card-acts-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card-acts-more > :last-child { grid-column: 1 / -1; }
+    /* Edição: barra com as duas ações em largura total; formulário compacto */
+    .card-editbar { margin: 0 -16px; padding: 10px 16px 12px; }
+    .card-editbar h1 { padding-right: 40px; font-size: 18px; }
+    .card-editbar-acts { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card-grid { gap: 14px; margin-top: 12px; }
+    .card-aside { max-width: none; }
+    .card-edit-prev { width: min(100%, 340px); justify-self: center; }
+    .card-form { gap: 12px; }
     .card-fs { padding: 14px; gap: 12px; }
     .card-2 { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    /* Faixa "Seu cartão" no topo do início: tocar em qualquer ponto apresenta; o lápis edita */
+    .card-strip { position: relative; display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 8px 8px 10px; border-radius: 14px; background: var(--navy); color: var(--white); }
+    .card-strip :focus-visible { outline-color: var(--sky); }
+    .card-strip .card-thumb { box-shadow: 0 0 0 2px var(--white); }
+    .card-strip-t { flex: 1; min-width: 0; display: grid; line-height: 1.25; }
+    .card-strip-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+    .card-strip-t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: rgba(255, 255, 255, .78); }
+    .card-strip-go { padding: 0 14px; }
+    .card-strip-go::after { content: ""; position: absolute; inset: 0; border-radius: 14px; }
+    .card-strip .card-pencil { z-index: 1; background: rgba(255, 255, 255, .12); color: var(--white); box-shadow: none; }
+    .card-strip .card-pencil:hover { background: rgba(255, 255, 255, .2); }
+    /* O aviso (toast) sobe acima da aba central elevada */
+    body.card-tab > .toast-wrap { bottom: calc(var(--tab-h) + 40px + var(--safe-b)); }
   }
+  @media (max-width: 399px) { .card-strip-go .ico { display: none; } }
 
   /* =================== responsivo =================== */
   /* Computador (≥ 1200): o trilho de miniaturas fica sempre visível e o painel pode ser recolhido */
   @media (min-width: 1200px) {
-    .cats > .chips { display: none; } /* as linhas ficam no menu lateral */
     .r-body > .thumbs[hidden] { display: flex !important; }
     .reader.panel-off .r-body { grid-template-columns: 100px minmax(0, 1fr); }
     .reader.panel-off .r-panel { display: none; }
@@ -883,9 +951,10 @@
     .spread img, .spread img:only-child { height: 52px; }
     .r-panel { max-height: 92vh; max-height: 92dvh; min-height: 0; }
     .reader .toast-wrap { bottom: calc(62px + var(--safe-b)); }
+    .card-editbar { position: static; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .holder, .cover-open img, .side, .r-panel { transition: none !important; }
+    .holder, .cover-open img, .side, .r-panel, .tab-card-btn, .card-prev-toggle > .ico svg { transition: none !important; }
     .page .ph, .r-loader .track i, .cover-open img, .tile.cont img, .np-img.loading { animation: none; }
     .hs-area.pulse .product-hotspot, dialog.panel, .pc-media.loading { animation: none; }
     .hs-txt, .hs-area { transition: none; }
@@ -949,12 +1018,16 @@
     </form>
     <form id="forgotForm" novalidate hidden>
       <h2 id="forgotH" tabindex="-1">Esqueci minha senha</h2>
-      <div class="alert ok" id="forgotText" role="status"></div>
-      <p class="contact" data-contact="Fale com o marketing:" hidden></p>
-      <button type="button" class="btn primary block" id="toLogin">Voltar para o login</button>
+      <p class="sub">Informe o e-mail do seu acesso. Vamos enviar um link para você criar uma nova senha.</p>
+      <div class="alert error" id="forgotAlert" role="alert" hidden></div>
+      <div class="alert ok" id="forgotText" role="status" hidden></div>
+      <div class="field" id="fForgotEmail"><label class="field-label" for="forgotEmail">E-mail</label><input id="forgotEmail" type="email" autocomplete="username" inputmode="email" required><em class="err" id="errForgotEmail" hidden></em></div>
+      <button class="btn primary block" type="submit" id="forgotSubmit">Enviar link</button>
+      <p class="contact" data-contact="Não recebeu? Fale com o marketing:" hidden></p>
+      <button type="button" class="link" id="toLogin" style="justify-self:center">Voltar para o login</button>
     </form>
     <form id="setupForm" novalidate hidden>
-      <p class="label-caps">Primeiro acesso</p>
+      <p class="label-caps" id="setupCaps">Primeiro acesso</p>
       <h2 id="setupH" tabindex="-1">Crie a sua senha</h2>
       <p class="sub" id="setupSub"></p>
       <div class="alert error" id="setupAlert" role="alert" hidden></div>
@@ -1001,16 +1074,17 @@
       <button class="nav-i" type="button" data-nav="catalogos"><span class="ico" data-ico="book"></span><span class="nav-t">Catálogos</span></button>
       <button class="nav-i" type="button" data-nav="favoritos"><span class="ico" data-ico="star"></span><span class="nav-t">Favoritos</span><span class="nav-c" id="navFavN"></span></button>
       <button class="nav-i" type="button" data-nav="interesses" data-int-btn="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="nav-t">Produtos de interesse</span><span class="int-n" data-int-count data-hide0 hidden>0</span></button>
-      <button class="nav-i" type="button" data-nav="cartao" data-card-entry hidden><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
+      <div class="nav-row" data-card-entry hidden>
+        <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
+        <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
+      </div>
     </nav>
-    <p class="nav-h" id="navLinesH">Linhas</p>
-    <div class="side-lines" id="sideLines" role="group" aria-labelledby="navLinesH"></div>
     <button class="me" id="userBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="side"><span class="avatar" data-avatar></span><span class="u-text"><span class="u-name" id="uName"></span><span class="u-role" id="uRole"></span></span><span class="ico me-more" data-ico="more"></span></button>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
   <div class="menu" id="userMenu" hidden>
     <p class="who"><b id="mName"></b><span id="mEmail"></span></p>
-    <button type="button" id="cardMenuBtn" data-card-entry hidden>Meu cartão</button>
+    <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
   <div class="main-col" id="mainCol">
@@ -1031,6 +1105,19 @@
         </div>
       </div>
       <div class="wrap">
+        <!-- Seu cartão (só celular, representante e equipe): apresentar direto ou editar -->
+        <section class="card-strip" id="cardStrip" aria-label="Seu cartão" data-card-entry hidden>
+          <span class="card-thumb sm" id="cardStripAv" aria-hidden="true"></span>
+          <p class="card-strip-t"><b id="cardStripName"></b><span>Toque para apresentar</span></p>
+          <button class="btn sky sm card-strip-go" type="button" id="cardStripPresent"><span class="ico" data-ico="present"></span>Apresentar</button>
+          <button class="card-pencil" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
+        </section>
+        <!-- Acesso antigo (acessos.json): aviso discreto para pedir o convite do login novo -->
+        <div class="legacy-note" id="legacyNote" role="note" hidden>
+          <span class="ico" data-ico="lock" aria-hidden="true"></span>
+          <p>Você está no acesso antigo. Peça ao marketing o convite do novo acesso para trocar sua senha quando quiser.</p>
+          <button class="icon-btn" type="button" id="legacyNoteX" aria-label="Fechar o aviso do acesso antigo" title="Fechar"><span class="ico" data-ico="close"></span></button>
+        </div>
         <div class="greet"><h1 id="greet"></h1><p id="greetSub"></p></div>
         <section class="hero" id="hero" hidden aria-labelledby="heroTitle"></section>
         <div class="bento" id="bento" hidden>
@@ -1060,24 +1147,53 @@
         </section>
       </div>
     </main>
-    <!-- Cartão de visita digital (representante e equipe): dados só neste aparelho -->
+    <!-- Cartão de visita digital (representante e equipe): #/cartao = visualização; #/cartao/editar = edição (rascunho gravado só em "Concluir") -->
     <main id="viewCard" hidden>
       <div class="wrap">
-        <div class="greet"><h1 id="cardH" tabindex="-1"><b>Meu cartão.</b> Seu contato na palma da mão.</h1><p>Fica só neste aparelho. Nada é publicado.</p></div>
-        <div class="card-grid">
-          <div class="card-aside">
-            <div class="card-prev" id="cardPreview"></div>
+        <section class="card-view" id="cardViewPane" aria-labelledby="cardH">
+          <div class="greet"><h1 id="cardH" tabindex="-1"><b>Meu cartão.</b> Seu contato na palma da mão.</h1></div>
+          <div class="tile card-invite" id="cardInvite" hidden>
+            <div><h2>Personalize seu cartão</h2><p>Confira nome, cargo e WhatsApp e escolha a foto e o tema.</p></div>
+            <button class="btn primary" type="button" data-card-edit><span class="ico" data-ico="pencil"></span>Editar cartão</button>
+          </div>
+          <div class="card-stage">
+            <div class="card-frame">
+              <div class="card-prev" id="cardPreview"></div>
+              <button class="card-pencil" type="button" id="cardEditBtn" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
+            </div>
+            <!-- Estado da gravação (paintCardStatus): "Salvo neste aparelho" (acesso antigo) ou a sincronização com a conta (login Supabase) -->
+            <p class="card-status" id="cardStatus" role="status"><span class="ico" data-ico="device" aria-hidden="true"></span>Salvo neste aparelho</p>
+            <div class="seg" role="group" aria-label="Conteúdo do QR Code">
+              <button type="button" data-qr="whatsapp" aria-pressed="true">WhatsApp</button>
+              <button type="button" data-qr="contato" aria-pressed="false">Contato</button>
+            </div>
             <div class="card-acts card-acts-main">
               <button class="btn primary" type="button" id="cardPresent"><span class="ico" data-ico="present"></span>Apresentar</button>
               <button class="btn sky" type="button" id="cardShareBtn"><span class="ico" data-ico="share"></span>Compartilhar</button>
             </div>
             <div class="card-acts card-acts-more">
               <button class="btn ghost sm" type="button" id="cardPng"><span class="ico" data-ico="download"></span>Baixar imagem</button>
-              <button class="btn ghost sm" type="button" id="cardVcf"><span class="ico" data-ico="userPlus"></span>Salvar contato (.vcf)</button>
+              <button class="btn ghost sm" type="button" id="cardVcf"><span class="ico" data-ico="userPlus"></span>Salvar contato</button>
               <button class="btn ghost sm" type="button" id="cardCopyWa"><span class="ico" data-ico="copy"></span>Copiar link do WhatsApp</button>
-              <button class="btn ghost sm" type="button" id="cardNfc" hidden><span class="ico" data-ico="nfc"></span>Gravar em etiqueta NFC</button>
             </div>
-            <div class="card-nfc" id="cardNfcInfo" hidden></div>
+          </div>
+        </section>
+        <section class="card-edit" id="cardEditPane" aria-labelledby="cardEditH" hidden>
+          <div class="card-editbar">
+            <h1 id="cardEditH" tabindex="-1">Editar cartão</h1>
+            <div class="card-editbar-acts">
+              <button class="btn ghost" type="button" id="cardCancel">Cancelar</button>
+              <button class="btn primary" type="button" id="cardDone"><span class="ico" data-ico="check"></span>Concluir</button>
+            </div>
+          </div>
+          <div class="card-grid">
+          <div class="card-aside" id="cardEditAside">
+            <button class="card-prev-toggle" type="button" id="cardPrevToggle" aria-expanded="true" aria-controls="cardEditPreview">
+              <span class="card-thumb sm" id="cardPrevAv" aria-hidden="true"></span>
+              <span class="card-prev-t"><b id="cardPrevName"></b><span id="cardPrevHint">Ocultar prévia</span></span>
+              <span class="ico" data-ico="next" aria-hidden="true"></span>
+            </button>
+            <div class="card-prev card-edit-prev" id="cardEditPreview"></div>
           </div>
           <form class="card-form" id="cardForm" novalidate>
             <section class="tile card-fs" aria-labelledby="cardFsDados">
@@ -1134,13 +1250,15 @@
               </div>
             </section>
           </form>
-        </div>
+          </div>
+        </section>
       </div>
     </main>
   </div>
   <nav class="tabbar" id="tabbar" aria-label="Atalhos">
     <button class="tab" type="button" data-tab="inicio" aria-current="true"><span class="ico" data-ico="home"></span><span>Início</span></button>
     <button class="tab" type="button" data-tab="buscar"><span class="ico" data-ico="search"></span><span>Buscar</span></button>
+    <button class="tab tab-card" type="button" data-tab="cartao" data-card-entry hidden><span class="tab-card-btn" aria-hidden="true"><span class="ico" data-ico="qr"></span></span><span>Cartão</span></button>
     <button class="tab" type="button" data-tab="interesses" data-int-btn="Interesses"><span class="ico" data-ico-heart></span><span>Interesses</span><span class="int-n" data-int-count data-hide0 hidden>0</span></button>
     <button class="tab" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="tab"><span class="ico" data-ico="user"></span><span>Conta</span></button>
   </nav>
@@ -1485,7 +1603,110 @@
     const validHotspot = (h) => !!h && typeof h.catalogId === 'string' && Number.isInteger(h.page) && h.page >= 1 && typeof h.product === 'string' &&
       num(h.x) && num(h.y) && num(h.width) && num(h.height) && h.x >= 0 && h.y >= 0 && h.width > 0 && h.height > 0 && h.x + h.width <= 100.5 && h.y + h.height <= 100.5;
 
+    /* ---------- cartão de visita publicado (cartoes/<id>.bin, aberto com a chave-raiz) ----------
+       A pessoa edita no site e gera um CÓDIGO DE CARTÃO; o marketing cola no painel e publica.
+       Código: PRATELEIRA-CARTAO:<base64 JSON { v:1, i:<id v3 da pessoa>, at:<ISO>, d:<dados>, f:<foto JPEG base64 | null> }>
+       Arquivo publicado: seal(chave-raiz, JSON { v:1, at, d, f }, 'cartao|'+id) */
+    const CARD_PREFIX = 'PRATELEIRA-CARTAO:';
+    const CARD_MAX = { nome: 80, cargo: 80, empresa: 80, email: 120, cidade: 80, fone: 16, msg: 300 };
+    const CARD_PHOTO_MAX = 90000; // caracteres base64 (~65 KB de JPEG)
+    function cleanCard(d) {
+      d = d && typeof d === 'object' ? d : {};
+      const out = {};
+      for (const [k, max] of Object.entries(CARD_MAX)) out[k] = String(d[k] == null ? '' : d[k]).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
+      out.fone = out.fone.replace(/\D/g, '');
+      out.tema = d.tema === 'claro' ? 'claro' : 'navy';
+      out.qr = d.qr === 'contato' ? 'contato' : 'whatsapp';
+      const s = d.show && typeof d.show === 'object' ? d.show : {};
+      out.show = { email: s.email !== false, cidade: s.cidade !== false, fone: s.fone !== false, cargo: s.cargo !== false };
+      return out;
+    }
+    const isIso = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(s) && !isNaN(Date.parse(s));
+    const isPhoto = (f) => f === null || (typeof f === 'string' && f.length <= CARD_PHOTO_MAX && /^\/9j\/[A-Za-z0-9+/]+={0,2}$/.test(f));
+    function makeCardCode(id, at, data, photoB64) {
+      const o = { v: 1, i: id, at, d: cleanCard(data), f: photoB64 || null };
+      const json = te.encode(JSON.stringify(o));
+      return CARD_PREFIX + b64e(json);
+    }
+    function readCardCode(text) {
+      const m = /PRATELEIRA-CARTAO:([A-Za-z0-9+/=]+)/.exec(String(text || '').replace(/\s+/g, ''));
+      if (!m) return { err: 'semcodigo' };
+      let o; try { o = JSON.parse(td.decode(b64d(m[1]))); } catch (e) { return { err: 'incompleto' }; }
+      if (!o || typeof o !== 'object') return { err: 'incompleto' };
+      if (o.v !== 1) return { err: 'versao' };
+      if (!/^[0-9a-f]{64}$/.test(o.i || '') || !isIso(o.at) || !isPhoto(o.f === undefined ? null : o.f)) return { err: 'incompleto' };
+      return { o: { v: 1, i: o.i, at: o.at, d: cleanCard(o.d), f: o.f || null } };
+    }
+    const sealCard = (rootKey, id, card) => seal(rootKey, JSON.stringify({ v: 1, at: card.at, d: cleanCard(card.d), f: card.f || null }), 'cartao|' + id);
+    async function openCard(rootKey, id, data) {
+      const o = JSON.parse(td.decode(await open(rootKey, data, 'cartao|' + id)));
+      if (!o || o.v !== 1 || !isIso(o.at) || !isPhoto(o.f === undefined ? null : o.f)) throw new Error('cartao');
+      return { at: o.at, d: cleanCard(o.d), f: o.f || null };
+    }
+    path.card = (id) => `cartoes/${id}.bin`;
+
+    /* ---------- Supabase: login, perfis, chave dos catálogos e cartões ----------
+       Só a chave PUBLICÁVEL fica no site. As regras de acesso (RLS) e as funções do banco decidem o que cada pessoa pode ler e gravar.
+       Convidar e remover pessoas usam a função "pessoas" (Edge Function), que roda dentro do Supabase. */
+    const SUPA = { url: 'https://xrsivxdtfliejbosprns.supabase.co', key: 'sb_publishable_W-TcMxAnaZR8U83jBxclQQ__uyh_zai' };
+    async function supaFetch(path, opts) {
+      const o = opts || {};
+      const headers = Object.assign({ apikey: SUPA.key }, o.headers || {});
+      if (o.token) headers.Authorization = 'Bearer ' + o.token;
+      let body = o.body;
+      if (body !== undefined && !(body instanceof Blob)) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(body); }
+      const r = await fetch(SUPA.url + path, { method: o.method || 'GET', headers, body, cache: 'no-store' });
+      if (o.raw) return r;
+      const text = await r.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
+      if (!r.ok) {
+        const msg = data && typeof data === 'object' ? (data.erro || data.msg || data.message || data.error_description || data.error) : ''; // "erro": mensagens da função "pessoas"
+        const err = new Error(msg || ('HTTP ' + r.status));
+        err.status = r.status;
+        err.code = data && typeof data === 'object' ? (data.error_code || data.code || data.error || '') : '';
+        throw err;
+      }
+      return data;
+    }
+    const supa = {
+      url: SUPA.url,
+      // Sessão: { access_token, refresh_token, expires_in, user }
+      signIn: (email, password) => supaFetch('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: normEmail(email), password } }),
+      refresh: (refreshToken) => supaFetch('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: { refresh_token: refreshToken } }),
+      signOut: (token) => supaFetch('/auth/v1/logout?scope=local', { method: 'POST', token }).catch(() => null), // sai só deste aparelho
+      // Envia o e-mail de "criar nova senha"; o link volta para redirectTo com os tokens no endereço
+      recover: (email, redirectTo) => supaFetch('/auth/v1/recover?redirect_to=' + encodeURIComponent(redirectTo), { method: 'POST', body: { email: normEmail(email) } }),
+      user: (token) => supaFetch('/auth/v1/user', { token }),
+      setPassword: (token, password) => supaFetch('/auth/v1/user', { method: 'PUT', token, body: { password } }),
+      rpc: (token, name, args) => supaFetch('/rest/v1/rpc/' + name, { method: 'POST', token, body: args || {} }),
+      select: (token, table, query) => supaFetch('/rest/v1/' + table + '?' + query, { token }),
+      upsert: (token, table, row, onConflict) => supaFetch('/rest/v1/' + table + '?on_conflict=' + onConflict, { method: 'POST', token, body: row, headers: { Prefer: 'resolution=merge-duplicates,return=representation' } }),
+      update: (token, table, query, patch) => supaFetch('/rest/v1/' + table + '?' + query, { method: 'PATCH', token, body: patch, headers: { Prefer: 'return=representation' } }),
+      putFile: (token, bucket, filePath, blob) => supaFetch('/storage/v1/object/' + bucket + '/' + filePath, { method: 'POST', token, body: blob, headers: { 'x-upsert': 'true', 'Content-Type': blob.type || 'application/octet-stream', 'Cache-Control': 'no-cache' } }),
+      async getFile(token, bucket, filePath) {
+        const r = await supaFetch('/storage/v1/object/authenticated/' + bucket + '/' + filePath, { token, raw: true });
+        if (r.status === 400 || r.status === 404) return null;
+        if (!r.ok) { const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+        return r.blob();
+      },
+      removeFile: (token, bucket, filePath) => supaFetch('/storage/v1/object/' + bucket + '/' + filePath, { method: 'DELETE', token }).catch(() => null),
+      fn: (token, name, body) => supaFetch('/functions/v1/' + name, { method: 'POST', token, body }),
+      // Depois de clicar no link de convite ou de "esqueci minha senha", o Supabase devolve os tokens no endereço (#access_token=…&type=invite|recovery)
+      readLinkTokens(hash) {
+        const h = String(hash || '').replace(/^#/, '');
+        if (!/(^|&)access_token=/.test(h)) {
+          const m = /(^|&)error_description=([^&]*)/.exec(h);
+          return m ? { error: decodeURIComponent(m[2].replace(/\+/g, ' ')) } : null;
+        }
+        const q = new URLSearchParams(h);
+        return { access_token: q.get('access_token'), refresh_token: q.get('refresh_token'), expires_in: Number(q.get('expires_in')) || 3600, type: q.get('type') || '' };
+      }
+    };
+
     return {
+      SUPA, supa,
+      CARD_PREFIX, CARD_MAX, CARD_PHOTO_MAX, cleanCard, makeCardCode, readCardCode, sealCard, openCard,
       sealProdutos, openProdutos, skuKey, validHotspot,
       te, td, MIN_IT, ID_IT, ACESSOS_V, CHUNK, THUMB_CHUNK, THUMB_W,
       b64e, b64d, hex, rand, randHex, iters, sha256, isB64,
@@ -1565,7 +1786,9 @@
     present: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
     download: '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
     userPlus: '<svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 20.5a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg>',
-    nfc: '<svg viewBox="0 0 24 24"><path d="M6 8.5a5 5 0 0 1 0 7M9.5 6a8.5 8.5 0 0 1 0 12M13 3.5a12 12 0 0 1 0 17"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24"><path d="M4.5 19.5l1-4.2L15.8 5a2.1 2.1 0 0 1 3 0l.2.2a2.1 2.1 0 0 1 0 3L8.7 18.5z"/><path d="M13.8 7l3.2 3.2"/></svg>',
+    qr: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5H14zM19 14h1M14 19.5h1M17.5 17.5H20V20h-2.5z"/></svg>',
+    device: '<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17.5h2"/></svg>',
     search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>',
     star: '<svg viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -1616,6 +1839,9 @@
   const MSG_UPDATE = 'Há uma versão nova do site. Recarregue a página (Ctrl+F5 ou puxe para baixo no celular).';
   const MSG_EXPIRED = 'Seu acesso foi atualizado. Entre novamente.';
   const MSG_OFFLINE = 'Sem conexão com a internet.';
+  const MSG_BLOCKED = 'Seu acesso ainda não foi liberado ou está bloqueado. Fale com o marketing.';
+  const MSG_CONFIG = 'Seu acesso está sendo configurado. Tente novamente em alguns minutos.';
+  const MSG_LINK = "Este link expirou ou já foi usado. Use 'Esqueci minha senha' para receber outro.";
   let ACCESS = null, ROOT = null, SLOT = null, CATALOGS = [], KEYS = new Map();
   let DATA_GEN = 0; // sobe a cada leitura de dados.bin: erros de pedidos anteriores são ignorados
   const SEARCH = {};              // id → textos originais das páginas
@@ -1673,6 +1899,8 @@
   }
   // Só uma falha real de decifragem (chave trocada) conta como "acesso atualizado"
   const isDecryptFail = (e) => !!e && e.name === 'OperationError';
+  // Pedidos ao Supabase (P.supa): erro com .status = resposta do servidor; sem .status (TypeError do fetch) = sem conexão
+  const offlineErr = (e) => !!e && e.status == null && (e instanceof NetError || e.name === 'TypeError');
 
   /* ================= acesso (acessos.json) ================= */
   async function loadAccess() {
@@ -1926,12 +2154,19 @@
     if (Date.now() - rotatedAt < 60000) { logout({ msg: MSG_EXPIRED }); return null; }
     rotating = (async () => {
       try {
-        await unlockData(ROOT);
+        // Login Supabase: confere o perfil e busca a chave-raiz atual antes de reabrir (a guardada pode ter sido trocada)
+        let key = ROOT;
+        if (me.auth === 'supabase') {
+          const chk = await supaCheck();
+          if (!chk.perfil) { logout({ msg: MSG_BLOCKED }); return; }
+          if (chk.key) key = chk.key;
+        }
+        await unlockData(key);
         rotatedAt = Date.now();
         clearAllImages();
         rerenderCurrent();
       } catch (e) {
-        if (isDecryptFail(e) || e.status === 404) logout({ msg: MSG_EXPIRED });
+        if (isDecryptFail(e) || e.status === 404 || (me && me.auth === 'supabase' && (e.status === 400 || e.status === 401))) logout({ msg: MSG_EXPIRED });
       } finally { rotating = null; }
     })();
     return rotating;
@@ -2004,6 +2239,7 @@
     prefs.interests = applyInterestOps(st.interests);
     if (!cardDirty) prefs.card = st.card;
     updateInterestUI();
+    if (cardAllowed()) renderCard(); // cartão salvo em outra aba: visualização e faixa do início acompanham
     if (typeof st.sound === 'boolean' && !prefsDirty) { prefs.sound = st.sound; setSound(st.sound, false); }
     if (view === 'shelf') {
       renderChips(visibleCatalogs());
@@ -2097,10 +2333,11 @@
   async function saveSession(prof, rootKey, remember) {
     await clearStoredSession();
     const exp = Date.now() + (remember ? 30 * 864e5 : 12 * 36e5);
-    const slot = P.randHex(16);
-    try { await IDB.put(slot, { key: rootKey, exp, keep: !!remember }); }
+    const slot = P.randHex(16), supa = prof.auth === 'supabase';
+    // Login Supabase: os tokens (AUTH.record) ficam no mesmo registro da chave-raiz, com a mesma validade
+    try { await IDB.put(slot, { key: rootKey, exp, keep: !!remember, ...(supa ? AUTH.record() : {}) }); }
     catch (e) { return; } // sem IndexedDB: não guarda nada (a pessoa entra a cada visita)
-    const rec = JSON.stringify({ id: prof.id, av: Number(ACCESS.v) || 1, u: prof.u, n: prof.n, r: prof.r, c: prof.c || '', e: prof.e, slot, exp });
+    const rec = JSON.stringify({ id: prof.id, av: Number(ACCESS.v) || 1, u: prof.u, n: prof.n, r: prof.r, c: prof.c || '', e: prof.e, slot, exp, auth: supa ? 'supabase' : 'legacy' });
     const st = store(remember ? 'localStorage' : 'sessionStorage');
     try { st.setItem(SKEY, rec); SLOT = slot; } catch (e) { IDB.del(slot).catch(() => {}); }
   }
@@ -2112,6 +2349,108 @@
     const st = store('sessionStorage');
     try { const m = st && st.getItem(AVISO); if (m) st.removeItem(AVISO); return m || ''; } catch (e) { return ''; }
   }
+  // Nome, perfil e e-mail atualizados (login Supabase) no registro da sessão guardada, sem mudar a validade
+  function updateStoredProfile(s) {
+    for (const st of [store('sessionStorage'), store('localStorage')]) {
+      try { const o = JSON.parse(st.getItem(SKEY)); if (o && o.slot === s.slot) st.setItem(SKEY, JSON.stringify({ ...o, n: s.n, r: s.r, c: s.c, e: s.e })); } catch (e) { /* noop */ }
+    }
+  }
+
+  /* ================= login Supabase: sessão de tokens (um lugar só) =================
+     AUTH.s = { access_token, refresh_token, expires_at, uid, email, kh } — em memória e no registro do IndexedDB do slot da sessão
+     (campos auth/at/rt/ea/uid/em/kh ao lado de key/exp/keep). kh = resumo da chave-raiz, para saber se ela mudou.
+     getToken() renova quando faltam 60 s ou menos, com um pedido por vez; os tokens renovados voltam para o mesmo slot. */
+  const RESET_URL = 'https://mktdellamed26.github.io/catalogos/';
+  const wait = (ms) => new Promise((res) => setTimeout(res, ms, ''));
+  const jwtExp = (t) => { try { return Number(JSON.parse(atob(String(t).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp) * 1000 || 0; } catch (e) { return 0; } };
+  const AUTH = {
+    s: null, job: null,
+    // r = resposta do login/renovação ou tokens do link: { access_token, refresh_token, expires_in, user? }
+    set(r) {
+      const old = this.s || {}, u = (r && r.user) || {};
+      this.s = {
+        access_token: r.access_token, refresh_token: r.refresh_token,
+        expires_at: jwtExp(r.access_token) || Date.now() + (Number(r.expires_in) || 3600) * 1000,
+        uid: u.id || old.uid || '', email: P.normEmail(u.email || old.email || ''), kh: old.kh || ''
+      };
+      return this.s;
+    },
+    fromRecord(rec) {
+      this.job = null;
+      this.s = rec && rec.auth === 'supabase' && rec.rt && rec.uid ? { access_token: rec.at || '', refresh_token: rec.rt, expires_at: Number(rec.ea) || 0, uid: rec.uid, email: rec.em || '', kh: rec.kh || '' } : null;
+      return this.s;
+    },
+    record() { const s = this.s; return s ? { auth: 'supabase', at: s.access_token, rt: s.refresh_token, ea: s.expires_at, uid: s.uid, em: s.email, kh: s.kh || '' } : {}; },
+    clear() { this.s = null; this.job = null; },
+    async persist() {
+      if (!SLOT || !this.s) return;
+      try { const rec = await IDB.get(SLOT); if (rec && rec.key) await IDB.put(SLOT, { ...rec, ...this.record() }); } catch (e) { /* segue só em memória */ }
+    },
+    getToken() {
+      const s = this.s;
+      if (!s) { const e = new Error('sem sessão'); e.status = 401; e.code = 'no_session'; return Promise.reject(e); }
+      if (s.expires_at - Date.now() > 60000) return Promise.resolve(s.access_token);
+      if (!this.job) {
+        const job = (async () => {
+          // O token de renovação muda a cada uso: se outra aba já renovou, usa o que ela gravou
+          if (SLOT) {
+            try {
+              const rec = await IDB.get(SLOT);
+              if (rec && rec.auth === 'supabase' && rec.rt && rec.rt !== s.refresh_token && Number(rec.ea) - Date.now() > 60000 && this.s === s) { this.fromRecord(rec); return this.s.access_token; }
+            } catch (e) { /* noop */ }
+          }
+          const r = await P.supa.refresh(s.refresh_token);
+          if (this.s !== s) { const e = new Error('sessão trocada'); e.status = 401; throw e; }
+          this.set(r);
+          await this.persist();
+          return this.s.access_token;
+        })();
+        this.job = job;
+        job.then(() => {}, () => {}).then(() => { if (this.job === job) this.job = null; });
+      }
+      return this.job;
+    }
+  };
+  // Encerra no Supabase sem travar a saída (sem internet, só descarta os tokens)
+  async function supaSignOut() {
+    if (!AUTH.s) return;
+    const t = await Promise.race([AUTH.getToken().catch(() => ''), wait(3000)]);
+    AUTH.clear();
+    if (t) await Promise.race([P.supa.signOut(t), wait(3000)]);
+  }
+  const SUPA_ROLES = ['cliente', 'representante', 'interno'];
+  // Perfil ativo da própria pessoa (RLS: só a linha dela) ou null
+  async function supaPerfil(token, uid) {
+    const rows = await P.supa.select(token, 'perfis', 'id=eq.' + encodeURIComponent(uid) + '&select=nome,email,empresa,papel,ativo');
+    const p = Array.isArray(rows) ? rows[0] : null;
+    return p && p.ativo === true ? p : null;
+  }
+  // Chave-raiz (base64) liberada pelo banco para perfis ativos; null = sem perfil ativo ou ainda não configurada
+  async function supaChave(token) {
+    const k = await P.supa.rpc(token, 'chave_conteudo', {});
+    return typeof k === 'string' && k.trim() ? k.trim() : null;
+  }
+  const keyHash = async (b64) => P.hex(await P.sha256('chave|' + b64)).slice(0, 16);
+  // Perfil do Supabase no formato do pacote de acessos.json ({ id, u, n, r, c, e }); admin usa as telas da equipe interna
+  function supaProf(perfil, s) {
+    const papel = perfil.papel === 'admin' ? 'interno' : perfil.papel;
+    const email = String(perfil.email || s.email || '').trim();
+    return { id: null, u: s.uid, n: String(perfil.nome || '').trim() || email, r: SUPA_ROLES.includes(papel) ? papel : 'cliente', c: perfil.empresa || '', e: email, auth: 'supabase' };
+  }
+  // Sessão aberta: confere o perfil e a chave atuais. → { perfil | null, key: CryptoKey nova quando a chave mudou, senão null }
+  async function supaCheck() {
+    const tok = await AUTH.getToken();
+    const perfil = await supaPerfil(tok, AUTH.s.uid);
+    if (!perfil) return { perfil: null, key: null };
+    const k = await supaChave(tok);
+    const kh = k ? await keyHash(k) : '';
+    if (!k || kh === AUTH.s.kh) return { perfil, key: null };
+    const key = await P.aesKey(P.b64d(k), ['decrypt']);
+    AUTH.s.kh = kh;
+    if (SLOT) { try { const rec = await IDB.get(SLOT); if (rec && rec.key) await IDB.put(SLOT, { ...rec, ...AUTH.record(), key }); } catch (e) { /* noop */ } }
+    return { perfil, key };
+  }
+
   let bc = null;
   try { bc = new BroadcastChannel('dm'); bc.onmessage = (e) => { if (e.data && e.data.t === 'sair' && me) logout({ broadcast: false }); }; } catch (e) { bc = null; }
 
@@ -2120,7 +2459,7 @@
   let view = '';
   function showOnly(name) {
     if (name !== 'shelf') { drawer.close(false); setMenu(false); }
-    if (name !== 'card') leaveCard();
+    if (name !== 'card') leaveCard(name);
     V.login.hidden = name !== 'login';
     V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card');
     V.shelf.hidden = name === 'card';
@@ -2135,8 +2474,9 @@
     if (tw.parentNode !== host) host.appendChild(tw);
     view = name;
     syncNav();
-    const tabHome = $('#tabbar [data-tab="inicio"]');
-    if (name === 'card') tabHome.removeAttribute('aria-current'); else tabHome.setAttribute('aria-current', 'true');
+    const tabHome = $('#tabbar [data-tab="inicio"]'), tabCard = $('#tabbar [data-tab="cartao"]');
+    if (name === 'card') { tabHome.removeAttribute('aria-current'); tabCard.setAttribute('aria-current', 'true'); }
+    else { tabHome.setAttribute('aria-current', 'true'); tabCard.removeAttribute('aria-current'); }
   }
   let lastRoute = '#/prateleira';
   function navigate(h) {
@@ -2153,6 +2493,8 @@
     const m = qi >= 0 ? /(?:^|&)produto=([^&]*)/.exec(h.slice(qi + 1)) : null;
     let sku = '';
     if (m) { try { sku = decodeURIComponent(m[1].replace(/\+/g, ' ')); } catch (e) { sku = m[1]; } }
+    // Saindo da edição do cartão com alterações não concluídas: pergunta antes (a URL volta para a edição)
+    if (!(parts[0] === 'cartao' && parts[1] === 'editar') && cardLeaveBlocked(h)) return;
     if (parts[0] === 'catalogo' && parts[1]) {
       let id = parts[1];
       try { id = decodeURIComponent(id); } catch (e) { /* mantém */ }
@@ -2161,13 +2503,14 @@
       openReader(id, parseInt(parts[2], 10) || 1, sku);
       return;
     }
-    // Cartão de visita digital: só representante e equipe interna
+    // Cartão de visita digital: só representante e equipe interna. #/cartao = visualização; #/cartao/editar = edição
     if (parts[0] === 'cartao') {
       if (!cardAllowed()) { navigate('#/prateleira'); return; }
+      const mode = parts[1] === 'editar' ? 'edit' : 'view', entering = view !== 'card';
       closeReader();
-      const again = view === 'card';
+      const again = !entering && CARD.mode === mode;
       showOnly('card');
-      if (again) $('#cardH').focus({ preventScroll: true }); else openCardView();
+      if (again) $(mode === 'edit' ? '#cardEditH' : '#cardH').focus({ preventScroll: true }); else openCardView(mode, entering);
       return;
     }
     const closed = closeReader();
@@ -2182,12 +2525,15 @@
     if (b) { b.focus(); return; }
     const g = $('#greet'); g.setAttribute('tabindex', '-1'); g.focus();
   }
-  // Do cartão para a prateleira na hora (menu lateral, gaveta e abas continuam o próprio clique depois)
+  // Do cartão para a prateleira na hora (menu lateral, gaveta e abas continuam o próprio clique depois).
+  // Devolve false quando a edição do cartão tem alterações não concluídas (o diálogo pergunta e o clique para aqui).
   function toShelf() {
-    if (view !== 'card') return;
+    if (view !== 'card') return true;
+    if (cardLeaveBlocked('#/prateleira')) return false;
     lastRoute = '#/prateleira';
     try { history.pushState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
     route('#/prateleira');
+    return true;
   }
   function leaveReader() {
     let fromShelf = false;
@@ -2263,9 +2609,22 @@
     if (!okE || !okP) { focusFirstInvalid(loginForm); return; }
     if (!ACCESS) return;
     if (accessTooNew()) { loginAlert(MSG_UPDATE); return; }
-    const b = $('#loginSubmit');
+    const b = $('#loginSubmit'), remember = $('#loginRemember').checked, retry = () => $('#loginSubmit').click();
     loginBusy = true; b.disabled = true; b.textContent = 'Verificando o acesso…';
     try {
+      // 1) Acesso novo (Supabase). Credencial não reconhecida → acesso antigo (acessos.json e código provisório), sem mudanças nele
+      let sess = null, supaErr = null;
+      try { sess = await P.supa.signIn(email, pass); }
+      catch (err) {
+        if (offlineErr(err)) { showNet(MSG_OFFLINE, retry); return; }
+        if (err.code === 'email_not_confirmed') { loginAlert('Confirme seu e-mail pelo link do convite.'); return; }
+        if (!(err.code === 'invalid_credentials' || err.status === 400)) supaErr = err; // limite de tentativas ou servidor fora: tenta o antigo e, se falhar, avisa
+      }
+      if (sess) {
+        if (await supaEnter(sess, remember, retry)) trackCatalogEvent('auth_login', { method: 'supabase' });
+        return;
+      }
+      // 2) Acesso antigo
       const id = await P.userId(ACCESS.salt, email, ACCESS.v);
       const prof = await tryLogin(id, pass);
       if (!prof) {
@@ -2273,39 +2632,117 @@
         if (pend.status === 'ok') { $('#loginPass').value = ''; openSetup(pend); return; }
         if (pend.status === 'expired') { loginAlert(`Seu código provisório venceu em ${fmtDateTime(pend.x)}. Peça um novo ao marketing da Dellamed.`); return; }
         if (pend.status === 'wrong') { loginAlert('Senha ou código incorretos. Se você já criou a sua senha, ela só funciona depois que o marketing ativar o seu acesso.'); return; }
+        if (supaErr) { loginAlert(supaErr.status === 429 ? 'Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo.' : 'Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.'); return; }
         loginAlert('E-mail ou senha incorretos. Se o seu acesso foi criado ou ativado há pouco, aguarde 3 minutos e tente de novo.');
         return;
       }
-      let rootKey;
-      try { rootKey = await P.aesKey(P.b64d(prof.k), ['decrypt']); }
-      catch (err) { loginAlert('Não foi possível abrir os catálogos neste navegador. Atualize a página e tente de novo.'); return; }
+      const k = prof.k;
       delete prof.k;
-      try { await unlockData(rootKey); }
-      catch (err) {
-        if (err instanceof NetError) showNet(MSG_OFFLINE, () => $('#loginSubmit').click());
-        else if (err.name === 'VersionError') loginAlert(MSG_UPDATE);
-        else loginAlert('Não foi possível abrir os catálogos agora. Se o seu acesso foi alterado há pouco, aguarde 3 minutos e tente de novo.');
-        return;
-      }
-      $('#loginPass').value = '';
-      await saveSession(prof, rootKey, $('#loginRemember').checked);
-      startSession(prof);
+      if (await openWithRoot(prof, k, remember, retry)) trackCatalogEvent('auth_login', { method: 'legado' });
     } catch (err) {
-      if (err instanceof NetError) showNet(MSG_OFFLINE, () => $('#loginSubmit').click());
+      if (err instanceof NetError) showNet(MSG_OFFLINE, retry);
       else loginAlert('Não foi possível verificar o acesso neste navegador. Atualize a página e tente de novo.');
     } finally { loginBusy = false; b.disabled = false; b.textContent = 'Entrar'; }
   });
+  // Chave-raiz (base64) → dados.bin → sessão guardada → prateleira. Caminho único do acesso antigo e do Supabase. → true | false (erro já na tela)
+  async function openWithRoot(prof, k, remember, retry) {
+    let rootKey;
+    try { rootKey = await P.aesKey(P.b64d(k), ['decrypt']); }
+    catch (err) { loginAlert('Não foi possível abrir os catálogos neste navegador. Atualize a página e tente de novo.'); return false; }
+    try { await unlockData(rootKey); }
+    catch (err) {
+      if (err instanceof NetError) showNet(MSG_OFFLINE, retry);
+      else if (err.name === 'VersionError') loginAlert(MSG_UPDATE);
+      else loginAlert('Não foi possível abrir os catálogos agora. Se o seu acesso foi alterado há pouco, aguarde 3 minutos e tente de novo.');
+      return false;
+    }
+    $('#loginPass').value = '';
+    if (prof.auth === 'supabase') await adoptDeviceData(prof.u, prof.e);
+    await saveSession(prof, rootKey, remember);
+    startSession(prof);
+    return true;
+  }
+  // Login Supabase (formulário ou link do e-mail): perfil ativo → chave dos catálogos → openWithRoot
+  async function supaEnter(sess, remember, retry) {
+    const s = AUTH.set(sess);
+    try {
+      if (!s.uid) { const u = await P.supa.user(s.access_token); s.uid = u.id; s.email = P.normEmail(u.email); }
+      const perfil = await supaPerfil(s.access_token, s.uid);
+      if (!perfil) { await supaSignOut(); loginAlert(MSG_BLOCKED); return false; }
+      const k = await supaChave(s.access_token);
+      if (!k) { AUTH.clear(); loginAlert(MSG_CONFIG); return false; }
+      s.kh = await keyHash(k);
+      const ok = await openWithRoot(supaProf(perfil, s), k, remember, retry);
+      if (!ok) AUTH.clear();
+      return ok;
+    } catch (err) {
+      AUTH.clear();
+      if (offlineErr(err)) showNet(MSG_OFFLINE, retry);
+      else loginAlert('Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.');
+      return false;
+    }
+  }
+  // Mesmo aparelho, troca do acesso antigo para o novo: favoritos, progresso, interesses e cartão seguem a pessoa (pelo e-mail)
+  const LEGADO = 'dm.legado';
+  function rememberLegacyUid() {
+    if (!me || !me.email) return;
+    try { const m = JSON.parse(localStorage.getItem(LEGADO)) || {}; m[P.normEmail(me.email)] = me.uid; localStorage.setItem(LEGADO, JSON.stringify(m)); } catch (e) { /* noop */ }
+  }
+  async function adoptDeviceData(uid, email) {
+    try {
+      const m = JSON.parse(localStorage.getItem(LEGADO)) || {}, old = m[P.normEmail(email)];
+      if (!old || old === uid || localStorage.getItem('dm.prefs.' + uid) != null) return;
+      const raw = localStorage.getItem('dm.prefs.' + old);
+      if (raw) localStorage.setItem('dm.prefs.' + uid, raw);
+      const photo = await CARD_DB.get(old);
+      if (photo instanceof Blob) await CARD_DB.put(uid, photo);
+    } catch (e) { /* segue sem copiar */ }
+  }
+  // Aviso do acesso antigo na prateleira: fechado, não volta nesta sessão do navegador
+  const LEGACY_NOTE = 'dm.aviso.legado';
+  const legacyNoteClosed = () => { try { return sessionStorage.getItem(LEGACY_NOTE) === '1'; } catch (e) { return false; } };
+  $('#legacyNoteX').addEventListener('click', () => {
+    $('#legacyNote').hidden = true;
+    try { sessionStorage.setItem(LEGACY_NOTE, '1'); } catch (e) { /* noop */ }
+    const g = $('#greet'); g.setAttribute('tabindex', '-1'); g.focus();
+  });
   $('#toForgot').addEventListener('click', () => {
-    $('#forgotText').textContent = (ACCESS && ACCESS.contato) || 'Para recuperar seu acesso, peça ao marketing da Dellamed um novo código provisório. Com ele, você cria uma senha nova.';
+    $('#forgotEmail').value = $('#loginEmail').value.trim();
+    $('#forgotText').hidden = true; $('#forgotAlert').hidden = true;
+    setErr($('#fForgotEmail'), '');
     showLoginPart('forgot'); $('#forgotH').focus();
   });
   $('#toLogin').addEventListener('click', () => { showLoginPart('login'); $('#loginH').focus(); });
+  // Esqueci minha senha: sempre a mesma resposta (não revela se o e-mail tem acesso); o link volta para o site publicado
+  let forgotBusy = false;
+  forgotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (forgotBusy) return;
+    const email = $('#forgotEmail').value.trim(), ok = $('#forgotText'), al = $('#forgotAlert');
+    ok.hidden = true; al.hidden = true;
+    if (!setErr($('#fForgotEmail'), !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : '')) { $('#forgotEmail').focus(); return; }
+    const b = $('#forgotSubmit');
+    forgotBusy = true; b.disabled = true; b.textContent = 'Enviando…';
+    const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    try { await P.supa.recover(email, local ? location.origin + location.pathname : RESET_URL); }
+    catch (err) {
+      if (offlineErr(err)) { al.innerHTML = `${WARN}<span>${esc(MSG_OFFLINE)} Confira e tente de novo.</span>`; al.hidden = false; return; }
+      /* limite de envios ou outro erro do servidor: mesma resposta abaixo */
+    } finally { forgotBusy = false; b.disabled = false; b.textContent = 'Enviar link'; }
+    trackCatalogEvent('auth_recover_request');
+    ok.textContent = 'Se esse e-mail tiver acesso, você vai receber um link para criar uma nova senha em alguns minutos. Confira também o spam.';
+    ok.hidden = false;
+  });
 
   /* ================= primeiro acesso: criar a senha e gerar o código de ativação ================= */
+  /* Mesma tela para o link do e-mail do Supabase (setupState.mode = 'link', type 'invite' | 'recovery'): cria a senha e entra direto */
   let setupState = null;
-  function openSetup(st) {
+  function openSetup(st, texts) {
     setupState = st;
-    $('#setupSub').textContent = `Código confirmado para ${st.email}. Agora crie a senha que você vai usar para entrar.`;
+    const t = texts || { caps: 'Primeiro acesso', title: 'Crie a sua senha', sub: `Código confirmado para ${st.email}. Agora crie a senha que você vai usar para entrar.` };
+    $('#setupCaps').textContent = t.caps;
+    $('#setupH').textContent = t.title;
+    $('#setupSub').textContent = t.sub;
     $('#setupAlert').hidden = true;
     newPw().forEach((i) => { i.value = ''; });
     setPwVisible($('#pwToggle2'), newPw(), false);
@@ -2322,19 +2759,38 @@
     $('#pwHint').hidden = false;
     $('#newPass').focus();
   });
+  // Nova senha + repetição (primeiro acesso, link do e-mail e "Trocar senha"): mesma regra do painel. → a senha válida ou ''
+  function checkNewPw(f1, f2, email, name) {
+    const a = $('input', f1).value, b = $('input', f2).value;
+    const perr = P.pwdProblem(a, email, name);
+    setErr(f1, perr);
+    setErr(f2, !perr && a !== b ? 'As duas senhas não são iguais.' : '');
+    return perr || a !== b ? '' : a;
+  }
+  function setupError(msg) { const al = $('#setupAlert'); al.innerHTML = `${WARN}<span>${esc(msg)}</span>`; al.hidden = false; }
+  // Mensagem para falhas ao gravar a senha no Supabase (link do e-mail e "Trocar senha")
+  function pwSetError(err) {
+    if (offlineErr(err)) return `${MSG_OFFLINE} Confira e tente de novo.`;
+    if (err && err.code === 'weak_password') return 'Essa senha não foi aceita. Escolha outra mais forte.';
+    if (err && err.code === 'reauthentication_needed') return 'Por segurança, saia e entre de novo antes de trocar a senha.';
+    if (err && (err.status === 401 || err.status === 403)) return 'Sua sessão expirou. Saia e entre de novo para trocar a senha.';
+    return 'Não foi possível salvar a senha agora. Tente de novo em alguns minutos.';
+  }
   setupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!setupState) return;
-    const a = $('#newPass').value, b = $('#newPass2').value;
-    const perr = P.pwdProblem(a, setupState.email, '');
-    setErr($('#fNew'), perr);
-    setErr($('#fNew2'), !perr && a !== b ? 'As duas senhas não são iguais.' : '');
-    if (perr || a !== b) { focusFirstInvalid(setupForm); return; }
+    const st = setupState;
+    const a = checkNewPw($('#fNew'), $('#fNew2'), st.email, '');
+    if (!a) { focusFirstInvalid(setupForm); return; }
     const btnS = $('#setupSubmit');
     btnS.disabled = true; btnS.textContent = 'Criando…';
+    $('#setupAlert').hidden = true;
     let ok = false;
-    try { showActivation(await P.makeActivation(setupState.id, setupState.code, a)); ok = true; }
-    catch (x) { const al = $('#setupAlert'); al.innerHTML = `${WARN}<span>Não foi possível criar a senha neste navegador. Atualize a página e tente de novo.</span>`; al.hidden = false; }
+    try {
+      if (st.mode === 'link') ok = await linkSetPassword(st, a);
+      else { showActivation(await P.makeActivation(st.id, st.code, a)); ok = true; }
+    }
+    catch (x) { setupError('Não foi possível criar a senha neste navegador. Atualize a página e tente de novo.'); }
     finally {
       btnS.disabled = false; btnS.textContent = 'Criar minha senha';
       if (ok) { newPw().forEach((i) => { i.value = ''; }); setPwVisible($('#pwToggle2'), newPw(), false); $('#pwHint').hidden = true; }
@@ -2375,8 +2831,50 @@
   $('#setupBack').addEventListener('click', () => { showLoginPart('login'); $('#loginH').focus(); });
   $('#actBack').addEventListener('click', () => { $('#loginPass').value = ''; showLoginPart('login'); $('#loginH').focus(); });
 
+  /* ================= link do e-mail (convite ou "esqueci minha senha"): criar a senha e entrar ================= */
+  function openLinkSetup(link) {
+    const recovery = link.type === 'recovery';
+    const st = { mode: 'link', type: recovery ? 'recovery' : 'invite', link, email: '', uid: '' };
+    openSetup(st, { caps: recovery ? 'Recuperar acesso' : 'Primeiro acesso', title: recovery ? 'Crie uma nova senha' : 'Crie sua senha', sub: 'Crie a senha que você vai usar para entrar na Prateleira.' });
+    // E-mail da pessoa (regra de senha e texto de apoio); link já vencido volta para o login com o aviso
+    P.supa.user(link.access_token).then((u) => {
+      if (setupState !== st || !u || !u.email) return;
+      st.email = P.normEmail(u.email); st.uid = u.id || '';
+      $('#setupSub').textContent = `Acesso de ${st.email}. Crie a senha que você vai usar para entrar na Prateleira.`;
+    }).catch((err) => {
+      if (setupState !== st || !err || !(err.status === 401 || err.status === 403)) return;
+      setupState = null; showLoginPart('login'); loginAlert(MSG_LINK); $('#loginH').focus();
+    });
+  }
+  // → true quando a senha foi gravada (a entrada segue; erros dela aparecem no login, onde a senha nova já funciona)
+  async function linkSetPassword(st, pwd) {
+    let u;
+    try { u = await P.supa.setPassword(st.link.access_token, pwd); }
+    catch (err) {
+      if (err && err.code === 'same_password') { setErr($('#fNew'), 'Use uma senha diferente da anterior.'); $('#newPass').focus(); }
+      else if (err && (err.status === 401 || err.status === 403)) { setupState = null; showLoginPart('login'); loginAlert(MSG_LINK); $('#loginH').focus(); }
+      else setupError(pwSetError(err));
+      return false;
+    }
+    trackCatalogEvent('auth_password_set', { type: st.type });
+    setupState = null;
+    const user = u && u.id ? u : { id: st.uid, email: st.email };
+    if (user.email) $('#loginEmail').value = user.email;
+    showLoginPart('login');
+    const sess = { access_token: st.link.access_token, refresh_token: st.link.refresh_token, expires_in: st.link.expires_in, user };
+    const enter = async () => {
+      if (!(await supaEnter(sess, $('#loginRemember').checked, enter))) { $('#loginH').focus(); return; }
+      trackCatalogEvent('auth_login', { method: 'supabase' });
+      toast('Senha criada. Bem-vindo(a)!');
+    };
+    await enter();
+    return true;
+  }
+
   function startSession(prof) {
-    me = { uid: prof.u || prof.id, id: prof.id, name: prof.n || '', role: prof.r, company: prof.c || '', email: prof.e || '' };
+    // auth: 'legacy' (acessos.json; sessões antigas sem o campo) ou 'supabase' (id = null; uid = id do usuário no Supabase)
+    me = { uid: prof.u || prof.id, id: prof.id, name: prof.n || '', role: prof.r, company: prof.c || '', email: prof.e || '', auth: prof.auth === 'supabase' ? 'supabase' : 'legacy' };
+    if (me.auth === 'legacy') { AUTH.clear(); rememberLegacyUid(); }
     loadPrefs();
     setSound(typeof prefs.sound === 'boolean' ? prefs.sound : !coarse, false);
     $$('[data-avatar]').forEach((a) => { a.textContent = initials(me.name); });
@@ -2385,8 +2883,15 @@
     $('#avatarBtn').setAttribute('aria-label', `Conta: ${me.name}`);
     $('#mName').textContent = me.name;
     $('#mEmail').textContent = me.email;
+    $('#pwChangeBtn').hidden = me.auth !== 'supabase';
+    $('#legacyNote').hidden = me.auth !== 'legacy' || legacyNoteClosed();
     $('#rShareTxt').textContent = me.role === 'cliente' ? 'Compartilhar' : 'Enviar ao cliente';
-    $$('[data-card-entry]').forEach((el) => { el.hidden = !cardAllowed(); }); // "Meu cartão": menu lateral, gaveta e menu da conta
+    // Cartão: item do menu lateral/gaveta (com lápis), aba central do celular e faixa "Seu cartão" do início
+    const cardOn = cardAllowed();
+    $$('[data-card-entry]').forEach((el) => { el.hidden = !cardOn; });
+    $('#tabbar').classList.toggle('has-card', cardOn);
+    document.body.classList.toggle('card-tab', cardOn);
+    if (cardOn) loadCard(); // foto do cartão para a faixa do início (sem bloquear a entrada)
     updateInterestUI();
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
@@ -2401,9 +2906,12 @@
     loggingOut = true;
     flushPrefs();
     clearCardMemory(); // os dados do cartão ficam no aparelho; só a tela e a foto em memória são descartadas
+    // Login Supabase: encerra no servidor (só a aba que pediu; as outras recebem o aviso "sair" e limpam)
+    if (me && me.auth === 'supabase' && opts.broadcast !== false) await supaSignOut(); else AUTH.clear();
     await clearStoredSession();
     if (opts.broadcast !== false && bc) { try { bc.postMessage({ t: 'sair' }); } catch (e) { /* noop */ } }
     clearAllImages(true);
+    try { sessionStorage.removeItem(LEGACY_NOTE); } catch (e) { /* noop */ }
     if (opts.msg) { try { sessionStorage.setItem(AVISO, opts.msg); } catch (e) { /* noop */ } }
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
     location.reload();
@@ -2420,7 +2928,48 @@
   }
   $$('[data-menu-trigger]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setMenu($('#userMenu').hidden || menuFrom !== b, b); }));
   $('#logoutBtn').addEventListener('click', () => logout());
-  $('#cardMenuBtn').addEventListener('click', () => { setMenu(false); navigate('#/cartao'); });
+  $('#pwChangeBtn').addEventListener('click', () => { const from = menuFrom; setMenu(false); openPwChange(from); });
+
+  /* ================= conta: trocar senha (só login Supabase) ================= */
+  function openPwChange(from) {
+    if (!me || me.auth !== 'supabase') return;
+    openDialog({
+      title: 'Trocar senha',
+      body: `<p class="dlg-sub">A senha nova vale para entrar em todos os seus aparelhos.</p>
+        <div class="alert error" id="pcAlert" role="alert" hidden></div>
+        <div class="field" id="fPc1"><label class="field-label" for="pcNew">Nova senha</label><input id="pcNew" type="password" autocomplete="new-password"><em class="err" id="errPc1" hidden></em></div>
+        <div class="field" id="fPc2"><label class="field-label" for="pcNew2">Repita a nova senha</label><input id="pcNew2" type="password" autocomplete="new-password"><em class="err" id="errPc2" hidden></em></div>
+        <div class="pw-actions"><button type="button" class="link" id="pcSuggest">Sugerir uma senha forte</button></div>
+        <p class="hint" id="pcHint" role="status" hidden>${esc($('#pwHint').textContent)}</p>
+        <ul class="rules">${$('#pwRules').innerHTML}</ul>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Salvar senha', kind: 'primary', onClick: savePwChange }]
+    });
+    if (from) dlg._ret = from; // o menu fechou: o foco volta para quem o abriu
+    $('#pcSuggest').addEventListener('click', () => {
+      const p = P.genPassword(), inputs = [$('#pcNew'), $('#pcNew2')];
+      inputs.forEach((i) => { i.value = p; i.type = 'text'; });
+      setErr($('#fPc1'), ''); setErr($('#fPc2'), '');
+      $('#pcHint').hidden = false;
+      inputs[0].focus();
+    });
+    $('#pcNew').focus();
+  }
+  async function savePwChange() {
+    const pwd = checkNewPw($('#fPc1'), $('#fPc2'), me.email, me.name);
+    if (!pwd) { focusFirstInvalid(dlg); return false; }
+    const btn = $('.dlg-actions .btn.primary', dlg), al = $('#pcAlert');
+    btn.disabled = true; btn.textContent = 'Salvando…'; al.hidden = true;
+    try { await P.supa.setPassword(await AUTH.getToken(), pwd); }
+    catch (err) {
+      btn.disabled = false; btn.textContent = 'Salvar senha';
+      if (err && err.code === 'same_password') { setErr($('#fPc1'), 'Use uma senha diferente da atual.'); $('#pcNew').focus(); }
+      else { al.innerHTML = `${WARN}<span>${esc(pwSetError(err))}</span>`; al.hidden = false; }
+      return false;
+    }
+    trackCatalogEvent('auth_password_set', { type: 'conta' });
+    toast('Senha alterada.');
+    return true;
+  }
   document.addEventListener('click', (e) => {
     if (!e.target.closest('[data-menu-trigger], #userMenu')) setMenu(false);
     if (!e.target.closest('.search')) closeBox($('#results'), $('#q'));
@@ -2497,6 +3046,7 @@
     const latest = list.reduce((a, c) => (c.updated > a ? c.updated : a), '');
     $('#greet').innerHTML = `<b>Olá, ${esc(firstName(me.name))}.</b> Seus catálogos Dellamed.`;
     $('#greetSub').textContent = list.length ? `${plural(list.length, 'catálogo', 'catálogos')} · última atualização em ${fmtDate(latest)}` : 'Nenhum catálogo publicado no momento.';
+    paintCardStrip(); // faixa "Seu cartão" (celular)
     renderHero(list);
     renderContinue();
     renderIntTile();
@@ -2602,14 +3152,11 @@
     return expiredLast(l); // vencidos sempre por último
   }
   // Linha que não muda o resultado (está em todos os catálogos ou em nenhum) não vira filtro; o filtro ativo sempre aparece.
-  // A mesma lista alimenta os filtros (tablet e celular) e a seção "Linhas" do menu lateral.
+  // Os filtros de linha ficam na página inicial (computador, tablet e celular).
   function renderChips(list) {
     const defs = chipDefs().map(([k, l]) => ({ k, l, n: filterList(list, k).length }))
       .filter((d) => d.k === 'todos' || d.k === 'favoritos' || d.k === filter || !(d.n === 0 || d.n === list.length));
     $('#chips').innerHTML = defs.map((d) => `<button class="chip" type="button" data-k="${esc(d.k)}" aria-pressed="${filter === d.k}">${esc(d.l)}<span class="count">${d.n}</span></button>`).join('');
-    const lines = defs.filter((d) => d.k !== 'todos' && d.k !== 'favoritos');
-    $('#sideLines').innerHTML = lines.map((d) => `<button class="nav-i" type="button" data-k="${esc(d.k)}" aria-pressed="${filter === d.k}"><span class="dot" aria-hidden="true"></span><span class="nav-t">${esc(d.l)}</span><span class="nav-c">${d.n}</span></button>`).join('');
-    $('#navLinesH').hidden = !lines.length;
     const favN = filterList(list, 'favoritos').length;
     $('#navFavN').textContent = favN ? fmtN(favN) : '';
     syncNav();
@@ -2628,16 +3175,15 @@
     setFilter(b.dataset.k);
     const again = $(`#chips [data-k="${cssq(filter)}"]`); if (again) again.focus();
   });
-  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel) e Linhas (mesmo filtro dos chips)
+  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel) e Meu cartão
   side.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-nav], #sideLines [data-k]'); if (!b) return;
+    const b = e.target.closest('[data-nav]'); if (!b) return;
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
     if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'interesses') { drawer.close(); openInterests(); return; }
-    toShelf(); // no cartão, Início, Catálogos, Favoritos e Linhas voltam à prateleira antes de agir
+    if (!toShelf()) { drawer.close(false); return; } // no cartão, Início, Catálogos e Favoritos voltam à prateleira antes de agir
     if (nav === 'favoritos') setFilter('favoritos');
-    else if (nav) { navSel = nav; setFilter('todos'); }
-    else setFilter(filter === b.dataset.k ? 'todos' : b.dataset.k); // tocar de novo na linha ativa volta a todos
+    else { navSel = nav; setFilter('todos'); }
     if (inDrawer) drawer.close(false);
     if (nav === 'inicio') {
       window.scrollTo({ top: 0, behavior: scrollBehavior() });
@@ -2646,12 +3192,12 @@
     }
     $('#cats').scrollIntoView({ block: 'start', behavior: scrollBehavior() });
     if (inDrawer) $('#catsTitle').focus({ preventScroll: true });
-    else if (!nav) { const again = $(`#sideLines [data-k="${cssq(b.dataset.k)}"]`); if (again) again.focus({ preventScroll: true }); }
   });
-  // Barra de abas (celular): Início, Buscar e Interesses (a aba Conta abre o menu da conta)
+  // Barra de abas (celular): Início, Buscar, Cartão (central, representante e equipe) e Interesses (a aba Conta abre o menu da conta)
   $('#tabbar').addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab]'); if (!t) return;
-    if (t.dataset.tab !== 'interesses') toShelf();
+    if (t.dataset.tab === 'cartao') { navigate('#/cartao'); return; }
+    if (t.dataset.tab !== 'interesses' && !toShelf()) return;
     if (t.dataset.tab === 'inicio') { navSel = 'inicio'; if (filter !== 'todos') setFilter('todos'); else syncNav(); window.scrollTo({ top: 0, behavior: scrollBehavior() }); }
     else if (t.dataset.tab === 'buscar') { window.scrollTo({ top: 0 }); $('#q').focus(); }
     else if (t.dataset.tab === 'interesses') openInterests();
@@ -4192,6 +4738,7 @@
   // Voltou a internet: tenta de novo o que falhou
   window.addEventListener('online', () => {
     if (!me) { if (!$('#netBox').hidden && netRetry === boot) { hideNet(); boot(); } return; }
+    if (cardSyncOn() && syncMeta().pend) cardSyncPush(); // cartão salvo só neste aparelho: envia para a conta
     $$('img[data-fail]').forEach(retryImg);
     if (R.cat && R.book) {
       $$('.img-err', holder).forEach((x) => x.remove());
@@ -4200,14 +4747,20 @@
     }
   });
 
-  /* ================= cartão de visita digital (#/cartao) =================
-     Só representante e equipe interna. Textos em prefs.card (mesma gravação e mescla das preferências);
-     foto num banco IndexedDB à parte ('dm-cartao' → 'fotos', chave = me.uid). Nada sai do aparelho.
+  /* ================= cartão de visita digital (#/cartao e #/cartao/editar) =================
+     Só representante e equipe interna (admin do Supabase entra como interno). Toda leitura e gravação passa pelo cardStore: cópia local
+     (textos em prefs.card e foto no IndexedDB 'dm-cartao' → 'fotos', chave = me.uid) e, no login Supabase, a conta (tabela cartoes + bucket 'cartoes').
+     #/cartao mostra o cartão salvo; #/cartao/editar trabalha num rascunho (CARD.draft) gravado só em "Concluir".
      cardModel() descreve o cartão uma vez; cardHTML() (prévia e apresentação) e drawCard() (PNG 1080 × 1350) desenham essa descrição. */
   const cardAllowed = () => !!me && (me.role === 'representante' || me.role === 'interno');
   const CARD_DB = idbStore('dm-cartao', 'fotos');
   const QR_LIB = { src: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js', sri: 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k' };
-  const CARD = { t: null, pngT: null, png: null, photoUrl: '', photoLoaded: false, qrJob: null, qrFail: false, qrCache: new Map(), live: '', fs: false, wake: null, sharing: false, busyPng: false };
+  const CARD = {
+    t: null, pngT: null, png: null, photoUrl: '', photoLoaded: false, photoGen: 0,
+    qrJob: null, qrFail: false, qrCache: new Map(), live: '', fs: false, wake: null, sharing: false, busyPng: false,
+    // mode: 'view' | 'edit' | ''; draft: dados em edição (null fora dela); draftPhoto: undefined = sem troca, null = remover, Blob = nova
+    mode: '', draft: null, draftBase: '', draftPhoto: undefined, draftUrl: '', saving: false
+  };
   const cardView = $('#viewCard'), cardForm = $('#cardForm'), cardShowEl = $('#cardShow');
 
   /* ----- dados ----- */
@@ -4228,9 +4781,9 @@
     return d.length === 12 || d.length === 13 ? d : '';
   }
   const fmtPhone = (d) => (d.startsWith('55') ? `+55 ${maskPhone(d.slice(2))}` : `+${d}`);
-  // Dados em uso: o que a pessoa editou; o resto vem da sessão (nome, perfil, e-mail)
+  // Dados em uso: o rascunho (na edição) ou o cartão salvo; o que estiver vazio vem da sessão (nome, perfil, e-mail)
   function cardData() {
-    const c = prefs.card || {}, sh = c.show || {};
+    const c = CARD.draft || prefs.card || {}, sh = c.show || {};
     const nome = String(c.nome || '').trim() || me.name;
     const d = {
       nome,
@@ -4250,8 +4803,225 @@
     d.waLink = d.wa ? waUrl(d.wa, d.msg) : '';
     return d;
   }
-  function cardEdit() { if (!prefs.card) prefs.card = normCard({}); return prefs.card; }
-  function saveCard() { cardDirty = true; savePrefs(); }
+
+  /* ----- armazenamento: um adaptador assíncrono para a visualização, a edição e a faixa do início -----
+     cardStore = { async load(), async save(data, photoBlob|null|undefined), async removePhoto() }
+     · load()            → { data: prefs.card normalizado | null, photo: Blob | null }
+     · save(data, photo) → grava os textos (mesma gravação e mescla entre abas de prefs) e a foto: Blob = troca, null = remove,
+                           undefined = mantém. Resolve true, ou false quando o navegador não guardou a foto (os textos ficam gravados).
+     · removePhoto()     → apaga a foto (true/false).
+     localCard = cópia NESTE APARELHO: textos em localStorage 'dm.prefs.<uid>' → card; foto no IndexedDB 'dm-cartao' → 'fotos' (chave me.uid).
+     Acesso antigo: só a cópia local ("Salvo neste aparelho"). Login Supabase: a mesma interface grava primeiro a cópia local (tela na hora e
+     leitura sem internet) e depois a conta (cardSyncPush); load() traz a conta quando ela é mais nova (a conta vence) e envia uma vez o cartão
+     que só existia neste aparelho. Pendências ficam em localStorage 'dm.cartao.sync.<uid>' = { at, lt, pend, pf }. */
+  const localCard = {
+    async load() {
+      if (!me) return { data: null, photo: null };
+      const data = normCard(readStoredPrefs().card) || null;
+      let photo = null;
+      try { const b = await CARD_DB.get(me.uid); photo = b instanceof Blob ? b : null; } catch (e) { photo = null; }
+      return { data, photo };
+    },
+    async save(data, photoBlob) {
+      prefs.card = normCard(data || {});
+      cardDirty = true;
+      savePrefs(); flushPrefs(); // grava já (sem esperar o intervalo das preferências)
+      if (photoBlob === undefined) return true;
+      if (!photoBlob) return localCard.removePhoto();
+      try { await CARD_DB.put(me.uid, photoBlob); return true; } catch (e) { return false; }
+    },
+    async removePhoto() {
+      if (!me) return false;
+      try { await CARD_DB.del(me.uid); return true; } catch (e) { return false; }
+    }
+  };
+  /* ----- sincronização com a conta (login Supabase): cartoes { user_id, dados, tem_foto, atualizado_em } + foto '<uid>/foto.jpg' ----- */
+  const cardSyncOn = () => cardAllowed() && me.auth === 'supabase';
+  // state: '' (calculado pela pendência) | 'saving' | 'ok' | 'erro'; ver sobe a cada gravação local (leituras antigas não sobrescrevem)
+  const CARD_SYNC = { state: '', busy: false, ver: 0, pulledAt: 0 };
+  const CARD_PHOTO_PATH = () => me.uid + '/foto.jpg';
+  // at = atualizado_em da conta na última troca; lt = hora da última gravação local; pend = falta enviar; pf = falta enviar a foto (undefined = sim)
+  function syncMeta(patch) {
+    const k = 'dm.cartao.sync.' + me.uid;
+    let m = {};
+    try { m = JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { m = {}; }
+    if (!patch) return m;
+    m = { ...m, ...patch };
+    try { localStorage.setItem(k, JSON.stringify(m)); } catch (e) { /* noop */ }
+    return m;
+  }
+  function setSyncState(s) { CARD_SYNC.state = s; if (cardAllowed()) paintCardStatus(); }
+  function paintCardStatus() {
+    const el = $('#cardStatus');
+    const st = !cardSyncOn() ? 'local' : CARD_SYNC.state || (syncMeta().pend ? 'erro' : 'ok');
+    if (el.dataset.v === st) return;
+    el.dataset.v = st;
+    const ico = (name) => `<span class="ico" aria-hidden="true">${I[name]}</span>`;
+    el.innerHTML = st === 'local' ? `${ico('device')}Salvo neste aparelho`
+      : st === 'saving' ? `${ico('device')}Salvando…`
+      : st === 'ok' ? `${ico('check')}Salvo na sua conta · igual em todos os seus aparelhos`
+      : `<span class="warn-ico" aria-hidden="true">${I.warn}</span><span>Não foi possível salvar na conta agora. Ficou salvo neste aparelho.</span><button type="button" class="link" id="cardSyncRetry">Tentar de novo</button>`;
+  }
+  // Envia a cópia local para a conta (um envio por vez; gravação feita durante o envio → envia de novo)
+  function cardSyncPush() {
+    if (!cardSyncOn() || CARD_SYNC.busy) return;
+    CARD_SYNC.busy = true;
+    setSyncState('saving');
+    const uid = me.uid;
+    (async () => {
+      try {
+        for (;;) {
+          const ver = CARD_SYNC.ver, meta = syncMeta();
+          const tok = await AUTH.getToken();
+          const local = await localCard.load();
+          if (!me || me.uid !== uid) return;
+          if (meta.pf !== false) { // foto antes da linha: outro aparelho nunca vê tem_foto sem o arquivo
+            if (local.photo) await P.supa.putFile(tok, 'cartoes', CARD_PHOTO_PATH(), local.photo.type === 'image/jpeg' ? local.photo : new Blob([local.photo], { type: 'image/jpeg' }));
+            else await P.supa.removeFile(tok, 'cartoes', CARD_PHOTO_PATH());
+          }
+          const sentAt = new Date().toISOString();
+          const rows = await P.supa.upsert(tok, 'cartoes', { user_id: uid, dados: local.data || {}, tem_foto: !!local.photo, atualizado_em: sentAt }, 'user_id');
+          if (!me || me.uid !== uid) return;
+          if (CARD_SYNC.ver !== ver) continue;
+          const row = Array.isArray(rows) ? rows[0] : null;
+          syncMeta({ at: (row && row.atualizado_em) || sentAt, pend: false, pf: false });
+          break;
+        }
+        setSyncState('ok');
+        trackCatalogEvent('card_sync', { result: 'ok' });
+      } catch (e) {
+        if (me && me.uid === uid) { setSyncState('erro'); trackCatalogEvent('card_sync', { result: 'erro' }); }
+      } finally { CARD_SYNC.busy = false; }
+    })();
+  }
+  // Traz a conta quando ela é mais nova que a cópia local (sem alterações abertas no editor). → o resultado de localCard.load() ou { data, photo, fresh: true }
+  async function cardSyncPull(local, force) {
+    if (CARD_SYNC.busy || cardEditDirty() || (!force && Date.now() - CARD_SYNC.pulledAt < 15000)) return local;
+    const uid = me.uid, ver = CARD_SYNC.ver, meta = syncMeta();
+    try {
+      const tok = await AUTH.getToken();
+      const rows = await P.supa.select(tok, 'cartoes', 'user_id=eq.' + encodeURIComponent(uid) + '&select=dados,tem_foto,atualizado_em');
+      if (!me || me.uid !== uid) return local;
+      CARD_SYNC.pulledAt = Date.now();
+      const row = Array.isArray(rows) ? rows[0] : null;
+      const serverAt = row ? Date.parse(row.atualizado_em) || 0 : 0;
+      // Gravação deste aparelho ainda não enviada e mais nova que a conta, ou cartão que só existe aqui (migração, uma vez): envia
+      if ((meta.pend && serverAt <= (Date.parse(meta.lt) || 0)) || (!row && (local.data || local.photo))) {
+        if (!meta.pend) syncMeta({ pend: true, lt: new Date().toISOString() });
+        cardSyncPush();
+        return local;
+      }
+      if (!row || (!meta.pend && (Date.parse(meta.at) || 0) === serverAt)) return local; // nada novo na conta
+      const photo = row.tem_foto ? await P.supa.getFile(tok, 'cartoes', CARD_PHOTO_PATH()) : null;
+      if (!me || me.uid !== uid || CARD_SYNC.ver !== ver || CARD_SYNC.busy || cardEditDirty()) return local;
+      const data = normCard(row.dados) || null;
+      await localCard.save(data || {}, photo); // a conta vence; a cópia local fica para ver sem internet
+      syncMeta({ at: row.atualizado_em, pend: false, pf: false });
+      setSyncState('ok');
+      return { data, photo, fresh: true };
+    } catch (e) { return local; }
+  }
+  const cardStore = {
+    async load(opts) {
+      const local = await localCard.load();
+      return me && cardSyncOn() ? cardSyncPull(local, !!(opts && opts.force)) : local;
+    },
+    async save(data, photoBlob) {
+      const ok = await localCard.save(data, photoBlob);
+      if (me && cardSyncOn()) {
+        CARD_SYNC.ver++;
+        syncMeta({ pend: true, lt: new Date().toISOString(), pf: photoBlob !== undefined ? true : syncMeta().pf });
+        cardSyncPush();
+      }
+      return ok;
+    },
+    removePhoto: () => cardStore.save(normCard(readStoredPrefs().card) || {}, null)
+  };
+  // Lê pelo cardStore (sem bloquear a tela) e aplica o que mudou: textos de outra aba ou da conta e a foto (primeira leitura ou conta mais nova)
+  function loadCard(force) {
+    if (!cardAllowed()) return;
+    const uid = me.uid, gen = CARD.photoGen, needPhoto = !CARD.photoLoaded;
+    CARD.photoLoaded = true;
+    cardStore.load({ force }).then(({ data, photo, fresh }) => {
+      if (!me || me.uid !== uid) return;
+      let changed = !!fresh;
+      if (!cardDirty && JSON.stringify(data || null) !== JSON.stringify(prefs.card || null)) { prefs.card = data || undefined; changed = true; }
+      if (fresh && gen === CARD.photoGen) setCardPhoto(photo);
+      else if (needPhoto && photo && gen === CARD.photoGen && !CARD.photoUrl) { setCardPhoto(photo); changed = true; }
+      if (!changed) return;
+      CARD.png = null;
+      if (CARD.draft && !cardEditDirty()) { beginCardEdit(); fillCardForm(); } // rascunho ainda sem alterações acompanha
+      renderCard();
+    }).catch(() => { /* segue com o que já está na tela */ });
+  }
+
+  /* ----- rascunho da edição ----- */
+  function beginCardEdit() {
+    CARD.draft = normCard(prefs.card || {});
+    CARD.draftBase = JSON.stringify(CARD.draft);
+    CARD.draftPhoto = undefined;
+    setCardPhoto(null, true);
+  }
+  function endCardEdit() {
+    CARD.draft = null; CARD.draftBase = ''; CARD.draftPhoto = undefined;
+    setCardPhoto(null, true);
+  }
+  function cardEditDirty() {
+    if (!CARD.draft) return false;
+    if (CARD.draftPhoto instanceof Blob || (CARD.draftPhoto === null && CARD.photoUrl)) return true;
+    return JSON.stringify(CARD.draft) !== CARD.draftBase;
+  }
+  const cardPhotoUrl = () => (CARD.draft && CARD.draftPhoto !== undefined ? CARD.draftUrl : CARD.photoUrl);
+  // Grava o rascunho pelo cardStore. Devolve o campo inválido (para receber o foco) ou null.
+  async function commitCardEdit() {
+    if (!CARD.draft || !me) return null;
+    validateCard(true);
+    const bad = $('.field.invalid input', cardForm);
+    if (bad) { toast('Confira os campos destacados antes de concluir.'); return bad; }
+    const data = CARD.draft, photo = CARD.draftPhoto;
+    if (photo !== undefined) { CARD.photoGen++; CARD.photoLoaded = true; setCardPhoto(photo); }
+    endCardEdit();
+    CARD.png = null;
+    const ok = await cardStore.save(data, photo);
+    trackCatalogEvent('card_save');
+    toast(!ok ? 'Cartão salvo, mas este navegador não guardou a foto: ela some ao fechar a página.' : cardSyncOn() ? 'Cartão salvo.' : 'Cartão salvo neste aparelho.');
+    return null;
+  }
+  async function finishCardEdit() {
+    if (CARD.saving) return;
+    CARD.saving = true;
+    try {
+      const bad = await commitCardEdit();
+      if (bad) { bad.focus(); return; }
+      navigate('#/cartao');
+    } finally { CARD.saving = false; }
+  }
+  function cancelCardEdit() {
+    endCardEdit();
+    trackCatalogEvent('card_edit_cancel');
+    navigate('#/cartao');
+  }
+  // Sair da edição por navegação (menu, abas, voltar do navegador): só pergunta quando há alterações não concluídas
+  const CARD_EDIT_HASH = '#/cartao/editar';
+  function cardLeaveBlocked(target) {
+    if (view !== 'card' || !cardEditDirty()) return false;
+    lastRoute = CARD_EDIT_HASH;
+    if (location.hash !== CARD_EDIT_HASH) { try { history.replaceState(null, '', CARD_EDIT_HASH); } catch (e) { /* noop */ } }
+    openDialog({ // com outro diálogo aberto (ex.: produtos de interesse), este toma o lugar dele
+      title: 'Salvar as alterações do cartão?',
+      body: '<p class="dlg-sub">Você alterou o cartão e ainda não concluiu. Salve para manter as alterações ou descarte para voltar ao cartão anterior.</p>',
+      actions: [
+        { label: 'Descartar', kind: 'ghost', onClick: () => { dlg._ret = null; endCardEdit(); trackCatalogEvent('card_edit_cancel'); navigate(target); } },
+        { label: 'Salvar', kind: 'primary', onClick: async () => {
+          const bad = await commitCardEdit();
+          if (bad) { dlg._ret = bad; return; } // fecha o diálogo e o foco vai ao campo a corrigir
+          dlg._ret = null;
+          navigate(target);
+        } }
+      ]
+    });
+    return true;
+  }
   // vCard 3.0 (CRLF), só com os campos visíveis; \ , ; e quebras de linha escapados
   const vcEsc = (s) => String(s).replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
   function cardVcf(d) {
@@ -4280,7 +5050,6 @@
       hint: wa && !d.wa ? 'Informe um WhatsApp válido para gerar o QR Code.' : ''
     };
   }
-  const cardNfcLink = (d) => d.waLink || (d.emailOk ? mailtoUrl(d.email) : '');
   const cardFileName = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'cartao';
 
   /* ----- QR Code: qrcode-generator baixado só quando o cartão abre (uma vez; se falhar, dá para tentar de novo) ----- */
@@ -4301,7 +5070,7 @@
   }
   function ensureQr() {
     if (window.qrcode) return;
-    loadQr().then(() => { CARD.qrFail = false; }, () => { CARD.qrFail = true; }).then(() => { if (view === 'card') renderCard(); });
+    loadQr().then(() => { CARD.qrFail = false; }, () => { CARD.qrFail = true; }).then(() => { if (view === 'card' || cardShowLayer.isOpen()) renderCard(); });
   }
   function retryQr() { CARD.qrFail = false; renderCard(); ensureQr(); }
   // Matriz de módulos (versão automática, correção M, texto em UTF-8); guarda as últimas combinações
@@ -4337,7 +5106,7 @@
     return `<div class="vc-qrbox" role="img" aria-label="${esc(md.qrLabel)}">${svg}</div><p class="vc-cap">${esc(md.caption)}</p>`;
   }
   function cardHTML(md, big) {
-    const photo = CARD.photoUrl ? `<img src="${esc(CARD.photoUrl)}" alt="">` : `<span aria-hidden="true">${esc(md.ini)}</span>`;
+    const url = cardPhotoUrl(), photo = url ? `<img src="${esc(url)}" alt="">` : `<span aria-hidden="true">${esc(md.ini)}</span>`;
     return `<article class="vcard${big ? ' big' : ''}" data-theme="${md.theme}" aria-label="Cartão de visita de ${esc(md.nome)}">
       <div class="vc-top"><span class="vc-logo" role="img" aria-label="Dellamed"></span><span class="vc-medpro" aria-hidden="true"></span></div>
       <div class="vc-main">
@@ -4360,45 +5129,57 @@
     cardRO.observe(el);
   }
   function scheduleCard() { clearTimeout(CARD.t); CARD.t = setTimeout(renderCard, 150); }
+  // Pinta o que estiver à vista: apresentação, faixa do início e a tela do cartão no modo atual (visualização ou edição)
   function renderCard() {
     clearTimeout(CARD.t); CARD.t = null;
-    if (view !== 'card' || !me) return;
+    if (!cardAllowed()) return;
     const d = cardData(), md = cardModel(d);
-    paintCard($('#cardPreview'), md, false);
     if (cardShowLayer.isOpen()) paintCard($('#cardShowCard'), md, true);
     $$('[data-qr]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.qr === d.qr)));
-    $$('[data-tema]', cardForm).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tema === d.tema)));
-    $('#cardMsg').placeholder = d.defMsg;
-    paintCardThumb(d);
+    paintCardStrip(d);
+    if (view !== 'card') return;
+    if (CARD.draft) {
+      paintCard($('#cardEditPreview'), md, false);
+      $$('[data-tema]', cardForm).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tema === d.tema)));
+      $('#cardMsg').placeholder = d.defMsg;
+      paintCardThumb(d);
+      $('#cardPrevName').textContent = d.nome;
+      paintCardMini($('#cardPrevAv'), d.nome, cardPhotoUrl());
+      return;
+    }
+    paintCard($('#cardPreview'), md, false);
+    $('#cardInvite').hidden = !!prefs.card;
     paintCardActions(d);
+    paintCardStatus();
     // Imagem pronta com antecedência: o compartilhamento do celular precisa responder logo ao toque
     clearTimeout(CARD.pngT);
-    CARD.pngT = setTimeout(() => { if (view === 'card') cardPng().catch(() => {}); }, 1500);
+    CARD.pngT = setTimeout(() => { if (view === 'card' && !CARD.draft) cardPng().catch(() => {}); }, 1500);
+  }
+  // Foto redonda ou iniciais: miniatura do formulário, cabeçalho compacto da prévia e faixa do início
+  function paintCardMini(host, name, url) {
+    const v = url || initials(name);
+    if (host.dataset.v === v) return;
+    host.dataset.v = v;
+    host.innerHTML = url ? `<img src="${esc(url)}" alt="">` : esc(v);
   }
   function paintCardThumb(d) {
-    const t = $('#cardThumb'), v = CARD.photoUrl || initials(d.nome);
-    $('#cardPhotoRm').hidden = !CARD.photoUrl;
-    if (t.dataset.v === v) return;
-    t.dataset.v = v;
-    t.innerHTML = CARD.photoUrl ? `<img src="${esc(CARD.photoUrl)}" alt="">` : esc(v);
+    $('#cardPhotoRm').hidden = !cardPhotoUrl();
+    paintCardMini($('#cardThumb'), d.nome, cardPhotoUrl());
+  }
+  // Faixa "Seu cartão" do início: sempre o cartão salvo (nunca o rascunho)
+  function paintCardStrip(d) {
+    if (!cardAllowed() || CARD.draft) return;
+    const nome = (d || cardData()).nome;
+    $('#cardStripName').textContent = nome;
+    paintCardMini($('#cardStripAv'), nome, CARD.photoUrl);
   }
   function paintCardActions(d) {
-    const cp = $('#cardCopyWa'), nfcBtn = $('#cardNfc'), info = $('#cardNfcInfo');
-    const hasNfc = 'NDEFReader' in window, link = cardNfcLink(d);
-    cp.disabled = !d.waLink;
-    nfcBtn.hidden = !hasNfc;
-    nfcBtn.disabled = !link;
-    info.hidden = hasNfc;
-    if (hasNfc || info.dataset.link === link) return;
-    info.dataset.link = link;
-    info.innerHTML = `<p>Gravar NFC funciona no Chrome para Android. No iPhone, use o app gratuito NXP TagWriter para gravar este link:</p>${link
-      ? `<div class="card-link"><code>${esc(link)}</code><button type="button" class="btn ghost sm" data-copy-nfc>Copiar</button></div>`
-      : '<p>Informe um WhatsApp ou e-mail válido para ter o link.</p>'}`;
+    $('#cardCopyWa').disabled = !d.waLink;
   }
 
   /* ----- editor ----- */
   function fillCardForm() {
-    const c = prefs.card || {}, d = cardData();
+    const c = CARD.draft || prefs.card || {}, d = cardData();
     $('#cardNome').value = d.nome;
     $('#cardCargo').value = d.cargo;
     $('#cardEmpresa').value = d.empresa;
@@ -4422,8 +5203,10 @@
     if (live !== CARD.live) { CARD.live = live; $('#cardLive').textContent = live; }
   }
   cardForm.addEventListener('submit', (e) => e.preventDefault());
+  // O formulário só altera o rascunho: nada é gravado até "Concluir"
   cardForm.addEventListener('input', (e) => {
-    const t = e.target;
+    const t = e.target, c = CARD.draft;
+    if (!c) return;
     if (t.id === 'cardFone') {
       // Reaplica a máscara mantendo o cursor depois do mesmo número de dígitos
       const pos = t.selectionStart == null ? t.value.length : t.selectionStart;
@@ -4432,52 +5215,68 @@
       let i = 0;
       for (let k = 0; i < t.value.length && k < n; i++) if (/\d/.test(t.value[i])) k++;
       try { if (document.activeElement === t) t.setSelectionRange(i, i); } catch (_) { /* noop */ }
-      cardEdit().fone = onlyDigits(t.value);
+      c.fone = onlyDigits(t.value);
       validateCard(false);
     } else if (t.dataset.card) {
-      cardEdit()[t.dataset.card] = t.value;
+      c[t.dataset.card] = t.value;
       if (t.id === 'cardEmail') validateCard(false);
     } else return;
-    saveCard();
     scheduleCard();
   });
   cardForm.addEventListener('change', (e) => {
     const k = e.target.dataset.show;
-    if (!k) return;
-    cardEdit().show[k] = e.target.checked;
-    saveCard();
+    if (!k || !CARD.draft) return;
+    CARD.draft.show[k] = e.target.checked;
     renderCard();
   });
   cardForm.addEventListener('focusout', (e) => { if (e.target.id === 'cardFone' || e.target.id === 'cardEmail') validateCard(true); });
+  // Tipo de QR: na edição muda o rascunho; na visualização e na apresentação é gravado na hora (preferência de uso, não conta como edição a publicar)
   function setCardQr(type) {
-    const c = cardEdit();
-    if (c.qr === type) return;
-    c.qr = type;
-    saveCard();
+    if (cardData().qr === type) return;
+    if (CARD.draft) CARD.draft.qr = type;
+    else cardStore.save({ ...(prefs.card || {}), qr: type });
     trackCatalogEvent('card_qr_type', { type });
     renderCard();
+  }
+  function toggleCardPrev() {
+    const b = $('#cardPrevToggle'), on = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(on));
+    $('#cardEditAside').classList.toggle('collapsed', !on);
+    $('#cardPrevHint').textContent = on ? 'Ocultar prévia' : 'Mostrar prévia';
   }
   cardView.addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b || b.disabled) return;
-    if (b.dataset.tema) { cardEdit().tema = b.dataset.tema === 'claro' ? 'claro' : 'navy'; saveCard(); renderCard(); }
+    if (b.dataset.tema) { if (CARD.draft) { CARD.draft.tema = b.dataset.tema === 'claro' ? 'claro' : 'navy'; renderCard(); } }
     else if (b.dataset.qr) setCardQr(b.dataset.qr === 'contato' ? 'contato' : 'whatsapp');
     else if (b.hasAttribute('data-qr-retry')) retryQr();
-    else if (b.hasAttribute('data-copy-nfc')) copyText(cardNfcLink(cardData()), 'Link copiado.');
-    else if (b.id === 'cardPresent') openPresent(b);
+    else if (b.id === 'cardPresent') openPresent(b, 'cartao');
     else if (b.id === 'cardShareBtn') cardShare();
     else if (b.id === 'cardPng') cardDownloadPng();
     else if (b.id === 'cardVcf') cardDownloadVcf();
     else if (b.id === 'cardCopyWa') { const d = cardData(); if (d.waLink) copyText(d.waLink, 'Link do WhatsApp copiado.'); }
-    else if (b.id === 'cardNfc') cardNfcWrite();
     else if (b.id === 'cardPhotoRm') removeCardPhoto();
+    else if (b.id === 'cardDone') finishCardEdit();
+    else if (b.id === 'cardCancel') cancelCardEdit();
+    else if (b.id === 'cardPrevToggle') toggleCardPrev();
+    else if (b.id === 'cardSyncRetry') cardSyncPush();
   });
+  // Lápis (visualização, faixa do início, menu lateral e gaveta) e convite "Editar cartão": direto para a edição
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-card-edit]') || !cardAllowed()) return;
+    setMenu(false);
+    navigate(CARD_EDIT_HASH);
+  });
+  // Faixa do início (celular): o toque em qualquer ponto cai em "Apresentar" (o lápis fica por cima)
+  $('#cardStrip').addEventListener('click', (e) => { const b = e.target.closest('#cardStripPresent'); if (b) openPresent(b, 'inicio'); });
 
-  /* ----- foto: recorte quadrado central, 512 px, JPEG 0,85; blob no IndexedDB 'dm-cartao' ----- */
+  /* ----- foto: recorte quadrado central, 512 px, JPEG 0,85; gravada pelo cardStore em "Concluir" ----- */
   const loadImage = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
-  function setCardPhoto(blob) {
-    if (CARD.photoUrl) URL.revokeObjectURL(CARD.photoUrl);
-    CARD.photoUrl = blob ? URL.createObjectURL(blob) : '';
+  // draft = foto do rascunho (só na edição); sem draft = foto salva (usada pela visualização, faixa, apresentação e PNG)
+  function setCardPhoto(blob, draft) {
+    const k = draft ? 'draftUrl' : 'photoUrl';
+    if (CARD[k]) URL.revokeObjectURL(CARD[k]);
+    CARD[k] = blob ? URL.createObjectURL(blob) : '';
   }
   async function squarePhoto(file) {
     const url = URL.createObjectURL(file);
@@ -4502,30 +5301,21 @@
     const uid = me.uid;
     try {
       const blob = await squarePhoto(f);
-      if (!me || me.uid !== uid) return;
-      setCardPhoto(blob);
+      if (!me || me.uid !== uid || !CARD.draft) return;
+      CARD.draftPhoto = blob;
+      setCardPhoto(blob, true);
       renderCard();
-      try { await CARD_DB.put(uid, blob); toast('Foto atualizada.'); }
-      catch (err) { toast('Foto aplicada, mas este navegador não a guardou: ela some ao fechar a página.'); }
+      toast('Foto aplicada. Use “Concluir” para salvar.');
     } catch (err) { toast('Não foi possível usar esta foto. Tente outra imagem.'); }
     finally { inp.value = ''; }
   });
   function removeCardPhoto() {
-    setCardPhoto(null);
+    if (!CARD.draft) return;
+    CARD.draftPhoto = null;
+    setCardPhoto(null, true);
     renderCard();
-    CARD_DB.del(me.uid).catch(() => {});
-    toast('Foto removida.');
+    toast('Foto removida. Use “Concluir” para salvar.');
     $('#cardPhoto').focus(); // o botão "Remover foto" sumiu
-  }
-  function loadCardPhoto() {
-    if (CARD.photoLoaded) return;
-    CARD.photoLoaded = true;
-    const uid = me.uid;
-    CARD_DB.get(uid).then((b) => {
-      if (!(b instanceof Blob) || !me || me.uid !== uid || CARD.photoUrl) return;
-      setCardPhoto(b);
-      renderCard();
-    }).catch(() => {});
   }
 
   /* ----- imagem PNG 1080 × 1350: mesmas proporções do CSS (1 --u = 10,8 px) ----- */
@@ -4581,7 +5371,7 @@
     }
     let qr = null;
     if (!md.hint) { try { await loadQr(); qr = qrMatrix(md.qrText); } catch (e) { qr = null; } }
-    const [logo, medpro, photo] = await Promise.all([cssImage('--logo'), cssImage('--medpro'), CARD.photoUrl ? loadImage(CARD.photoUrl).catch(() => null) : null]);
+    const [logo, medpro, photo] = await Promise.all([cssImage('--logo'), cssImage('--medpro'), cardPhotoUrl() ? loadImage(cardPhotoUrl()).catch(() => null) : null]);
     const W = 1080, H = 1350, u = W / 100, PAD = 6.667 * u, navy = md.theme === 'navy';
     const ink = navy ? '#ffffff' : '#1e2c4f', icoColor = navy ? '#8bb8e8' : '#1e2c4f', cx = W / 2;
     const cv = document.createElement('canvas');
@@ -4689,7 +5479,7 @@
     return cv;
   }
   async function cardPng() {
-    const md = cardModel(cardData()), key = `${JSON.stringify(md)}|${CARD.photoUrl}|${!!window.qrcode}`;
+    const md = cardModel(cardData()), key = `${JSON.stringify(md)}|${cardPhotoUrl()}|${!!window.qrcode}`;
     if (CARD.png && CARD.png.key === key) return CARD.png.blob;
     const cv = await drawCard(md);
     const blob = await new Promise((res) => cv.toBlob(res, 'image/png'));
@@ -4766,41 +5556,6 @@
     const wa = $('#csWa');
     if (wa) wa.addEventListener('click', () => copyText(d.waLink, 'Link do WhatsApp copiado.'));
   }
-  // Web NFC (Chrome no Android): grava o link do WhatsApp (ou mailto:) numa etiqueta; 30 s para aproximar
-  async function cardNfcWrite() {
-    const d = cardData(), link = cardNfcLink(d);
-    if (!link || !('NDEFReader' in window)) return;
-    const ctrl = new AbortController();
-    let timedOut = false, mine = true, done = false;
-    const timer = setTimeout(() => { timedOut = true; ctrl.abort(); }, 30000);
-    openDialog({
-      title: 'Gravar em etiqueta NFC',
-      body: `<p class="dlg-sub">Aproxime a etiqueta NFC (NTAG213/215/216) da parte de trás do celular.</p>
-        <p class="dlg-note">${d.waLink ? 'Quem encostar o celular na etiqueta abre uma conversa com você no WhatsApp.' : 'Sem WhatsApp válido, a etiqueta abre um e-mail para você.'}</p>`,
-      actions: [{ label: 'Cancelar', kind: 'ghost' }],
-      onClose: () => { mine = false; clearTimeout(timer); if (!done) ctrl.abort(); }
-    });
-    let result = 'ok';
-    try {
-      await new window.NDEFReader().write({ records: [{ recordType: 'url', data: link }] }, { signal: ctrl.signal });
-      toast(d.waLink ? 'Etiqueta gravada! Qualquer celular com NFC abre seu WhatsApp ao encostar.' : 'Etiqueta gravada! Qualquer celular com NFC abre um e-mail para você ao encostar.');
-    } catch (e) {
-      const name = e && e.name;
-      if (name === 'AbortError' && !timedOut) { result = ''; } // a pessoa cancelou
-      else {
-        result = 'erro';
-        toast(name === 'NotAllowedError' ? 'Permissão de NFC negada'
-          : name === 'NotSupportedError' ? 'Este aparelho não grava NFC'
-          : name === 'AbortError' ? 'Tempo esgotado. Tente de novo.'
-          : 'Não consegui gravar. Verifique se a etiqueta não está protegida e tente de novo.');
-      }
-    } finally {
-      done = true;
-      clearTimeout(timer);
-      if (mine) closeDialog();
-    }
-    if (result) trackCatalogEvent('card_nfc_write', { result });
-  }
 
   /* ----- apresentação: tela cheia (ou camada fixa), foco preso, Esc/toque para sair, tela sempre acesa ----- */
   // Registrado antes do modalLayer: a barra (tipo de QR) e "Tentar de novo" não fecham; qualquer outro toque fecha
@@ -4821,12 +5576,14 @@
     $('#cardShowCard').innerHTML = '';
     if (document.fullscreenElement === cardShowEl) { CARD.fs = false; document.exitFullscreen().catch(() => {}); }
   });
-  function openPresent(from) {
+  // where: 'cartao' (visualização) ou 'inicio' (faixa do celular)
+  function openPresent(from, where) {
     if (cardShowLayer.isOpen()) return;
+    ensureQr();
     cardShowLayer.open(from);
     renderCard();
     $('#cardShowClose').focus();
-    trackCatalogEvent('card_present');
+    trackCatalogEvent('card_present', { from: where || 'cartao' });
     if (document.fullscreenEnabled && cardShowEl.requestFullscreen) {
       cardShowEl.requestFullscreen().then(() => {
         if (cardShowLayer.isOpen()) CARD.fs = true; else document.exitFullscreen().catch(() => {});
@@ -4848,42 +5605,78 @@
       w.addEventListener('release', () => { if (CARD.wake === w) CARD.wake = null; });
     } catch (e) { /* bateria fraca, aba oculta ou sem permissão: segue sem */ }
   }
-  // O sistema solta a trava ao esconder a aba: pede de novo na volta
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && cardShowLayer.isOpen()) keepAwake(true); });
+  // Na volta à aba: o sistema soltou a trava da tela (pede de novo) e outro aparelho pode ter mudado o cartão na conta (sem alterações abertas no editor)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (cardShowLayer.isOpen()) keepAwake(true);
+    if (cardSyncOn() && !cardEditDirty()) loadCard();
+  });
 
   /* ----- entrar e sair da tela ----- */
-  function openCardView() {
-    fillCardForm();
-    loadCardPhoto();
+  // mode 'view' (#/cartao) ou 'edit' (#/cartao/editar); entering = veio de fora do cartão
+  function openCardView(mode, entering) {
+    const edit = mode === 'edit';
+    cardShowLayer.close(false);
+    if (edit) { if (!CARD.draft) beginCardEdit(); fillCardForm(); } else endCardEdit();
+    CARD.mode = edit ? 'edit' : 'view';
+    $('#cardViewPane').hidden = edit;
+    $('#cardEditPane').hidden = !edit;
     ensureQr();
     renderCard();
+    loadCard(true); // login Supabase: confere a conta ao abrir
     window.scrollTo(0, 0);
-    $('#cardH').focus({ preventScroll: true });
-    trackCatalogEvent('card_open');
+    $(edit ? '#cardEditH' : '#cardH').focus({ preventScroll: true });
+    if (edit) trackCatalogEvent('card_edit_open');
+    else if (entering) trackCatalogEvent('card_open');
   }
-  function leaveCard() {
+  // next = vista para onde vai; a apresentação (aberta pelo cartão ou pela faixa do início) fecha ao trocar de vista
+  function leaveCard(next) {
+    if (next !== view) cardShowLayer.close(false);
     if (view !== 'card') return;
-    cardShowLayer.close(false);
+    endCardEdit(); // quem pediu para sair já passou por cardLeaveBlocked
+    CARD.mode = '';
     clearTimeout(CARD.t); clearTimeout(CARD.pngT);
     CARD.t = CARD.pngT = null;
   }
-  // Sair da conta: os dados continuam no aparelho (são da pessoa); a tela e a foto em memória são descartadas
+  // Sair da conta: os dados continuam no aparelho (são da pessoa); a tela, o rascunho e a foto em memória são descartados
   function clearCardMemory() {
     cardShowLayer.close(false);
     clearTimeout(CARD.t); clearTimeout(CARD.pngT);
+    endCardEdit();
     setCardPhoto(null);
-    CARD.photoLoaded = false; CARD.png = null; CARD.qrCache.clear(); CARD.live = '';
+    CARD.mode = ''; CARD.photoLoaded = false; CARD.png = null; CARD.qrCache.clear(); CARD.live = '';
+    CARD_SYNC.state = ''; CARD_SYNC.pulledAt = 0; // envio em andamento termina sozinho (confere me.uid)
     $$('.vcard').forEach((el) => cardRO.unobserve(el));
-    ['#cardPreview', '#cardShowCard', '#cardThumb', '#cardNfcInfo', '#cardLive'].forEach((s) => { const el = $(s); el.innerHTML = ''; delete el.dataset.v; delete el.dataset.link; });
+    ['#cardPreview', '#cardEditPreview', '#cardShowCard', '#cardThumb', '#cardPrevAv', '#cardPrevName', '#cardStripAv', '#cardStripName', '#cardLive', '#cardStatus'].forEach((s) => { const el = $(s); el.innerHTML = ''; delete el.dataset.v; });
     cardForm.reset();
   }
 
   /* ================= início ================= */
+  // Sessão do Supabase guardada: renova o token, confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
+  // Sem internet (ou servidor fora), segue com a chave guardada, como o acesso antigo.
+  async function supaRestore(s, rec) {
+    if (!AUTH.fromRecord(rec)) { await clearStoredSession(); return { status: 'nokey' }; }
+    SLOT = s.slot; // renovações de token gravam neste slot
+    try {
+      const chk = await supaCheck();
+      if (!chk.perfil) { await supaSignOut(); await clearStoredSession(); return { status: 'blocked' }; }
+      Object.assign(s, supaProf(chk.perfil, AUTH.s));
+      updateStoredProfile(s);
+      return { key: chk.key };
+    } catch (e) {
+      if (!offlineErr(e) && (e.status === 400 || e.status === 401 || e.status === 403)) { AUTH.clear(); await clearStoredSession(); return { status: 'expired' }; }
+      return { key: null };
+    }
+  }
   async function restoreSession(s) {
-    let key = null;
-    try { const rec = await IDB.get(s.slot); key = rec && rec.exp > Date.now() ? rec.key : null; } catch (e) { key = null; }
+    let key = null, rec = null;
+    try { rec = await IDB.get(s.slot); key = rec && rec.exp > Date.now() ? rec.key : null; } catch (e) { key = null; }
     if (!key) { await clearStoredSession(); return 'nokey'; }
-    if (ACCESS.users && typeof ACCESS.users === 'object') {
+    if (s.auth === 'supabase') {
+      const r = await supaRestore(s, rec);
+      if (r.status) return r.status;
+      if (r.key) key = r.key; // chave trocada no painel: abre dados.bin com a nova
+    } else if (ACCESS.users && typeof ACCESS.users === 'object') {
       let id = s.id;
       // O formato do identificador mudou desde o login (ex.: v2 → v3): recalcula a partir do e-mail
       if ((Number(s.av) || 1) !== (Number(ACCESS.v) || 1) && s.e) { try { id = await P.userId(ACCESS.salt, s.e, ACCESS.v); } catch (e) { id = s.id; } }
@@ -4898,8 +5691,15 @@
       return 'erro';
     }
     SLOT = s.slot;
-    startSession({ id: s.id, u: s.u, n: s.n, r: s.r, c: s.c, e: s.e });
+    startSession({ id: s.id, u: s.u, n: s.n, r: s.r, c: s.c, e: s.e, auth: s.auth });
     return 'ok';
+  }
+  // Link do e-mail (#access_token=…&type=invite|recovery ou #error…): lido uma vez, antes do roteador, e retirado do endereço
+  let linkTokens = null;
+  try { linkTokens = P.supa.readLinkTokens(location.hash); } catch (e) { linkTokens = null; }
+  if (linkTokens) {
+    lastRoute = '#/prateleira'; // depois do login, a prateleira
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* noop */ }
   }
   async function boot() {
     showOnly('login');
@@ -4914,6 +5714,10 @@
     }
     renderContacts();
     if (accessTooNew()) { loginAlert(MSG_UPDATE); setLoginReady(false, 'Entrar'); return; }
+    const link = linkTokens;
+    linkTokens = null;
+    if (link && link.access_token) { sweepSlots(); setLoginReady(true); openLinkSetup(link); return; }
+    if (link && link.error) loginAlert(MSG_LINK);
     const s = readSession();
     let r = '';
     if (s) {
@@ -4922,6 +5726,7 @@
       if (r === 'net') showNet(MSG_OFFLINE, boot);
       else if (r === 'erro') showNet('Não foi possível abrir os catálogos agora.', boot);
       else if (r === 'expired') loginAlert(MSG_EXPIRED);
+      else if (r === 'blocked') loginAlert(MSG_BLOCKED);
       else if (r === 'version') loginAlert(MSG_UPDATE);
     }
     sweepSlots();
