@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-AMJ8Uhv9myVmcH7WNSQm8VwrgsII5KNiOGrjEdymIOw=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-JgsCvY9/u04OojftNdkLgAnqGrBcCSJmZHma3kSFpvw=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -55,7 +55,7 @@
   [hidden] { display: none !important; }
   html, body { min-height: 100%; }
   body { margin: 0; background: var(--light); color: var(--ink); font-family: var(--font-text); font-size: 14px; line-height: 1.5; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  body.reading, body.drawer-open { overflow: hidden; }
+  body.reading, body.drawer-open, body.presenting { overflow: hidden; }
   h1, h2, h3 { margin: 0; font-family: var(--font-title); color: var(--navy); text-wrap: balance; }
   p { margin: 0; }
   b, strong { font-weight: 600; } /* Open Sans só até SemiBold (Brandbook); os títulos em Montserrat têm o 700 explícito */
@@ -561,6 +561,107 @@
   .int-rm:hover { background: var(--light); color: var(--navy); }
   .int-empty { padding: 8px 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
 
+  /* ---------- cartão de visita digital (#/cartao): editor, prévia, apresentação ---------- */
+  /* O cartão usa a unidade --u = 1% da largura dele (medida por ResizeObserver): a prévia, a apresentação e o PNG 1080 × 1350
+     seguem as mesmas proporções (1 --u = 10,8 px no PNG). */
+  .card-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 420px); grid-template-areas: "form aside"; gap: 28px; align-items: start; margin-top: 16px; }
+  .card-aside { grid-area: aside; position: sticky; top: 16px; display: grid; gap: 14px; min-width: 0; }
+  .card-form { grid-area: form; display: grid; gap: 16px; min-width: 0; }
+  .card-fs { display: grid; gap: 14px; }
+  .card-fs .seg { justify-self: start; flex-wrap: wrap; max-width: 100%; border-radius: 22px; background: var(--light); box-shadow: none; }
+  .card-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .card-f { display: grid; gap: 2px; min-width: 0; }
+  .card-vis { justify-self: start; font-size: 12px; color: var(--ink-2); }
+  .card-photo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .card-thumb { width: 64px; height: 64px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: var(--sky); color: var(--navy); font-family: var(--font-title); font-size: 20px; font-weight: 700; }
+  .card-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .card-photo-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .card-file { position: relative; }
+  .card-file:focus-within { outline: 2px solid var(--navy); outline-offset: 2px; }
+  .card-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  #viewCard .card-acts .btn { width: 100%; height: auto; min-height: 42px; padding: 8px 12px; white-space: normal; line-height: 1.25; text-align: center; }
+  .card-acts .btn:disabled { cursor: not-allowed; }
+  .card-nfc { display: grid; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--white); font-size: 12px; line-height: 1.5; color: var(--ink-2); box-shadow: var(--card-shadow); }
+  .card-link { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .card-link code { flex: 1; min-width: 0; max-height: 4.5em; overflow: hidden; padding: 6px 8px; border-radius: 6px; background: var(--light); color: var(--navy); font: 11px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+  /* Cartão: azul-marinho (brilho azul-claro suave, texto branco) ou claro (branco, texto azul-marinho) */
+  .vcard { --u: 4px; position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; width: 100%; aspect-ratio: 4 / 5; padding: calc(var(--u) * 6.667); border-radius: 18px; background: var(--navy); color: var(--white); text-align: center; line-height: 1.2; box-shadow: 0 24px 50px -30px rgba(20, 32, 60, .6); }
+  .vcard::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle calc(var(--u) * 90) at 85% 10%, rgba(139, 184, 232, .35), rgba(139, 184, 232, 0)); }
+  .vcard[data-theme="claro"] { background: var(--white); color: var(--navy); box-shadow: 0 0 0 1px var(--hair), 0 24px 50px -30px rgba(20, 32, 60, .45); }
+  .vcard[data-theme="claro"]::before { background: radial-gradient(circle calc(var(--u) * 90) at 85% 10%, rgba(139, 184, 232, .22), rgba(139, 184, 232, 0)); }
+  .vc-top { align-self: stretch; height: calc(var(--u) * 5.556); flex: none; }
+  .vc-logo { display: block; width: calc(var(--u) * 20.83); height: 100%; background: var(--logo) left center / contain no-repeat; }
+  /* Tema claro: o mesmo logo (variável --logo) recolorido em azul-marinho por máscara */
+  .vcard[data-theme="claro"] .vc-logo { background: var(--navy); -webkit-mask: var(--logo) left center / contain no-repeat; mask: var(--logo) left center / contain no-repeat; }
+  .vc-medpro { position: absolute; top: 0; right: calc(var(--u) * 6.667); width: calc(var(--u) * 5.37); aspect-ratio: 570 / 1280; background: var(--medpro) center / contain no-repeat; }
+  .vc-main { display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0; }
+  .vc-photo { width: calc(var(--u) * 20.37); aspect-ratio: 1; margin-top: calc(var(--u) * 5.37); flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: var(--sky); color: var(--navy); font-family: var(--font-title); font-size: calc(var(--u) * 7.4); font-weight: 700; box-shadow: 0 0 0 calc(var(--u) * .926) var(--white); }
+  .vcard[data-theme="claro"] .vc-photo { box-shadow: 0 0 0 calc(var(--u) * .926) var(--white), 0 calc(var(--u) * .6) calc(var(--u) * 2.5) rgba(20, 32, 60, .25); }
+  .vc-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .vc-name { max-width: 100%; margin-top: calc(var(--u) * 3.7); font-family: var(--font-title); font-size: calc(var(--u) * 5.926); font-weight: 700; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vc-sub { max-width: 100%; margin-top: var(--u); font-family: var(--font-title); font-size: calc(var(--u) * 3.333); font-weight: 300; opacity: .85; overflow-wrap: anywhere; }
+  .vc-rows { list-style: none; display: grid; justify-items: center; gap: calc(var(--u) * 1.85); max-width: 100%; margin: calc(var(--u) * 4) 0 0; padding: 0; }
+  .vc-rows li { display: flex; align-items: center; gap: calc(var(--u) * 1.48); max-width: 100%; min-width: 0; font-size: calc(var(--u) * 2.963); }
+  .vc-rows li > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vc-ico { display: grid; flex: none; }
+  .vc-ico svg { width: calc(var(--u) * 3.333); height: calc(var(--u) * 3.333); fill: none; stroke: var(--sky); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .vcard[data-theme="claro"] .vc-ico svg { stroke: var(--navy); }
+  .vc-qr { margin-top: auto; padding-top: calc(var(--u) * 3); display: grid; justify-items: center; gap: calc(var(--u) * 1.6); }
+  .vc-qrbox, .vc-hint { width: calc(var(--u) * 37); aspect-ratio: 1; border-radius: calc(var(--u) * 2.963); }
+  .vc-qrbox { padding: calc(var(--u) * 2.6); background: var(--white); }
+  .vcard[data-theme="claro"] .vc-qrbox { box-shadow: 0 0 0 1px var(--silver); }
+  .vc-qrbox svg { display: block; width: 100%; height: 100%; }
+  .vc-cap { font-size: calc(var(--u) * 2.78); font-weight: 600; }
+  .vc-hint { margin: 0; display: grid; place-content: center; justify-items: center; gap: calc(var(--u) * 2); padding: calc(var(--u) * 3); border: max(1px, calc(var(--u) * .3)) dashed currentColor; font-size: max(11px, calc(var(--u) * 2.9)); line-height: 1.35; }
+  .vc-hint .btn { height: auto; min-height: 32px; white-space: normal; }
+  /* Apresentação: tela cheia (ou camada fixa), cartão grande e QR o maior possível */
+  .card-show { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: max(16px, env(safe-area-inset-top, 0px)) calc(16px + var(--safe-r)) calc(16px + var(--safe-b)) calc(16px + var(--safe-l)); overflow: auto; overscroll-behavior: contain; background: var(--graphite); color: var(--white); cursor: pointer; }
+  .card-show:focus { outline: none; }
+  .card-show :focus-visible { outline-color: var(--sky); }
+  .card-show-card { display: flex; justify-content: center; width: 100%; }
+  .card-show .vcard { width: min(calc(100vw - 32px), calc((100vh - 132px) / 1.5), 720px); width: min(calc(100vw - 32px), calc((100dvh - 132px) / 1.5), 720px); cursor: pointer; }
+  .vcard.big { aspect-ratio: auto; }
+  .vcard.big .vc-photo { width: calc(var(--u) * 16); margin-top: calc(var(--u) * 3.5); }
+  .vcard.big .vc-rows { margin-top: calc(var(--u) * 3); }
+  .vcard.big .vc-qrbox, .vcard.big .vc-hint { width: calc(var(--u) * 76); } /* QR grande para escanear de longe */
+  .card-show-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; cursor: default; }
+  .card-show-bar .btn, .card-show-bar .seg button { min-height: 44px; }
+  .card-show-tip { font-size: 12px; color: var(--silver); }
+  /* Celular deitado e telas baixas: dados à esquerda, QR à direita */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .card-show { gap: 8px; }
+    .card-show .vcard.big { width: min(calc(100vw - 32px), calc((100vh - 84px) * 1.9), 900px); width: min(calc(100vw - 32px), calc((100dvh - 84px) * 1.9), 900px); display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr; column-gap: calc(var(--u) * 4); align-items: center; }
+    .card-show .vcard.big .vc-top { grid-column: 1; }
+    .card-show .vcard.big .vc-main { grid-column: 1; }
+    .card-show .vcard.big .vc-qr { grid-column: 2; grid-row: 1 / span 2; margin: 0; padding: 0; }
+    .card-show .vcard.big .vc-qrbox, .card-show .vcard.big .vc-hint { width: calc(var(--u) * 34); }
+    .card-show .vcard.big .vc-photo { width: calc(var(--u) * 11); margin-top: calc(var(--u) * 2); }
+    .card-show .vcard.big .vc-medpro { right: calc(var(--u) * 42); }
+    .card-show-tip { display: none; }
+  }
+  /* O item "Meu cartão" do menu da conta é o acesso do celular (computador: menu lateral; tablet: gaveta) */
+  @media (min-width: 768px) { #cardMenuBtn { display: none; } }
+  @media (min-width: 1200px) { #viewCard .wrap { padding-top: 28px; } } /* sem barra de busca: afasta a prévia da tag MED PRO do topo */
+  @media (min-width: 1200px) and (max-height: 820px) { .card-aside { position: static; } }
+  @media (max-width: 1199px) {
+    .card-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "aside" "form"; gap: 20px; }
+    .card-aside { position: static; width: 100%; max-width: 440px; justify-self: center; }
+    #viewCard .card-acts .btn { min-height: 44px; } /* id: vence a altura fixa de .btn.sm abaixo de 1200 px (o texto pode quebrar) */
+    .card-link .btn { flex: none; }
+  }
+  @media (max-width: 767px) {
+    /* Pilha: prévia, ações secundárias, formulário compacto; Apresentar e Compartilhar numa faixa fixa acima das abas */
+    .card-grid { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .card-aside { display: contents; }
+    .card-prev { order: 0; width: min(100%, 340px); align-self: center; }
+    .card-acts-more { order: 1; }
+    .card-nfc { order: 2; }
+    .card-form { order: 3; gap: 12px; }
+    .card-acts-main { align-self: stretch; order: 4; position: sticky; z-index: 5; bottom: calc(var(--tab-h) + var(--safe-b)); margin: 0 -16px; padding: 10px 16px; background: rgba(240, 240, 240, .96); box-shadow: 0 -12px 20px -18px rgba(20, 32, 60, .5); }
+    .card-fs { padding: 14px; gap: 12px; }
+    .card-2 { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  }
+
   /* =================== responsivo =================== */
   /* Computador (≥ 1200): o trilho de miniaturas fica sempre visível e o painel pode ser recolhido */
   @media (min-width: 1200px) {
@@ -900,6 +1001,7 @@
       <button class="nav-i" type="button" data-nav="catalogos"><span class="ico" data-ico="book"></span><span class="nav-t">Catálogos</span></button>
       <button class="nav-i" type="button" data-nav="favoritos"><span class="ico" data-ico="star"></span><span class="nav-t">Favoritos</span><span class="nav-c" id="navFavN"></span></button>
       <button class="nav-i" type="button" data-nav="interesses" data-int-btn="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="nav-t">Produtos de interesse</span><span class="int-n" data-int-count data-hide0 hidden>0</span></button>
+      <button class="nav-i" type="button" data-nav="cartao" data-card-entry hidden><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
     </nav>
     <p class="nav-h" id="navLinesH">Linhas</p>
     <div class="side-lines" id="sideLines" role="group" aria-labelledby="navLinesH"></div>
@@ -908,6 +1010,7 @@
   <div class="scrim" id="scrim" hidden></div>
   <div class="menu" id="userMenu" hidden>
     <p class="who"><b id="mName"></b><span id="mEmail"></span></p>
+    <button type="button" id="cardMenuBtn" data-card-entry hidden>Meu cartão</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
   <div class="main-col" id="mainCol">
@@ -957,6 +1060,83 @@
         </section>
       </div>
     </main>
+    <!-- Cartão de visita digital (representante e equipe): dados só neste aparelho -->
+    <main id="viewCard" hidden>
+      <div class="wrap">
+        <div class="greet"><h1 id="cardH" tabindex="-1"><b>Meu cartão.</b> Seu contato na palma da mão.</h1><p>Fica só neste aparelho. Nada é publicado.</p></div>
+        <div class="card-grid">
+          <div class="card-aside">
+            <div class="card-prev" id="cardPreview"></div>
+            <div class="card-acts card-acts-main">
+              <button class="btn primary" type="button" id="cardPresent"><span class="ico" data-ico="present"></span>Apresentar</button>
+              <button class="btn sky" type="button" id="cardShareBtn"><span class="ico" data-ico="share"></span>Compartilhar</button>
+            </div>
+            <div class="card-acts card-acts-more">
+              <button class="btn ghost sm" type="button" id="cardPng"><span class="ico" data-ico="download"></span>Baixar imagem</button>
+              <button class="btn ghost sm" type="button" id="cardVcf"><span class="ico" data-ico="userPlus"></span>Salvar contato (.vcf)</button>
+              <button class="btn ghost sm" type="button" id="cardCopyWa"><span class="ico" data-ico="copy"></span>Copiar link do WhatsApp</button>
+              <button class="btn ghost sm" type="button" id="cardNfc" hidden><span class="ico" data-ico="nfc"></span>Gravar em etiqueta NFC</button>
+            </div>
+            <div class="card-nfc" id="cardNfcInfo" hidden></div>
+          </div>
+          <form class="card-form" id="cardForm" novalidate>
+            <section class="tile card-fs" aria-labelledby="cardFsDados">
+              <h2 class="eyebrow" id="cardFsDados">Seus dados</h2>
+              <div class="field"><label class="field-label" for="cardNome">Nome</label><input id="cardNome" data-card="nome" type="text" autocomplete="name" maxlength="80"></div>
+              <div class="card-2">
+                <div class="card-f">
+                  <div class="field"><label class="field-label" for="cardCargo">Cargo</label><input id="cardCargo" data-card="cargo" type="text" autocomplete="organization-title" maxlength="80"></div>
+                  <label class="check card-vis"><input type="checkbox" data-show="cargo"> Mostrar no cartão<span class="sr-only">: cargo</span></label>
+                </div>
+                <div class="field"><label class="field-label" for="cardEmpresa">Empresa</label><input id="cardEmpresa" data-card="empresa" type="text" autocomplete="organization" maxlength="80"></div>
+              </div>
+            </section>
+            <section class="tile card-fs" aria-labelledby="cardFsContato">
+              <h2 class="eyebrow" id="cardFsContato">Contato</h2>
+              <div class="card-2">
+                <div class="card-f">
+                  <div class="field" id="fCardFone"><label class="field-label" for="cardFone">WhatsApp / telefone</label><input id="cardFone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="(54) 99999-9999"><em class="err" id="errCardFone" hidden></em></div>
+                  <label class="check card-vis"><input type="checkbox" data-show="fone"> Mostrar no cartão<span class="sr-only">: telefone</span></label>
+                </div>
+                <div class="card-f">
+                  <div class="field" id="fCardEmail"><label class="field-label" for="cardEmail">E-mail</label><input id="cardEmail" data-card="email" type="email" inputmode="email" autocomplete="email" maxlength="120"><em class="err" id="errCardEmail" hidden></em></div>
+                  <label class="check card-vis"><input type="checkbox" data-show="email"> Mostrar no cartão<span class="sr-only">: e-mail</span></label>
+                </div>
+              </div>
+              <div class="card-f">
+                <div class="field"><label class="field-label" for="cardCidade">Cidade</label><input id="cardCidade" data-card="cidade" type="text" autocomplete="address-level2" placeholder="Caxias do Sul – RS" maxlength="80"></div>
+                <label class="check card-vis"><input type="checkbox" data-show="cidade"> Mostrar no cartão<span class="sr-only">: cidade</span></label>
+              </div>
+              <div class="field"><label class="field-label" for="cardMsg">Mensagem inicial do WhatsApp <span class="meta">(opcional)</span></label><textarea id="cardMsg" data-card="msg" rows="2" maxlength="300"></textarea></div>
+              <p class="sr-only" id="cardLive" aria-live="polite"></p><!-- avisos de validação (os campos também ganham aria-invalid e aria-describedby) -->
+            </section>
+            <section class="tile card-fs" aria-labelledby="cardFsFoto">
+              <h2 class="eyebrow" id="cardFsFoto">Foto <span class="meta">(opcional)</span></h2>
+              <div class="card-photo">
+                <span class="card-thumb" id="cardThumb" aria-hidden="true"></span>
+                <div class="card-photo-btns">
+                  <label class="btn ghost sm card-file"><input class="sr-only" id="cardPhoto" type="file" accept="image/*" capture="user">Escolher foto</label>
+                  <button class="btn ghost sm" type="button" id="cardPhotoRm" hidden>Remover foto</button>
+                </div>
+              </div>
+            </section>
+            <section class="tile card-fs" aria-labelledby="cardFsVisual">
+              <h2 class="eyebrow" id="cardFsVisual">Aparência</h2>
+              <p class="field-label" id="cardTemaL">Tema</p>
+              <div class="seg" role="group" aria-labelledby="cardTemaL">
+                <button type="button" data-tema="navy" aria-pressed="true">Azul-marinho</button>
+                <button type="button" data-tema="claro" aria-pressed="false">Claro</button>
+              </div>
+              <p class="field-label" id="cardQrL">QR Code</p>
+              <div class="seg" role="group" aria-labelledby="cardQrL">
+                <button type="button" data-qr="whatsapp" aria-pressed="true">Falar no WhatsApp</button>
+                <button type="button" data-qr="contato" aria-pressed="false">Salvar contato</button>
+              </div>
+            </section>
+          </form>
+        </div>
+      </div>
+    </main>
   </div>
   <nav class="tabbar" id="tabbar" aria-label="Atalhos">
     <button class="tab" type="button" data-tab="inicio" aria-current="true"><span class="ico" data-ico="home"></span><span>Início</span></button>
@@ -965,6 +1145,19 @@
     <button class="tab" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="tab"><span class="ico" data-ico="user"></span><span>Conta</span></button>
   </nav>
   <span class="medpro" aria-hidden="true"></span>
+</div>
+
+<!-- Cartão em apresentação: fora do #shell (que fica inerte enquanto ela está aberta) -->
+<div class="card-show" id="cardShow" aria-label="Cartão em tela cheia" tabindex="-1" hidden>
+  <div class="card-show-card" id="cardShowCard"></div>
+  <div class="card-show-bar">
+    <div class="seg" role="group" aria-label="Conteúdo do QR Code">
+      <button type="button" data-qr="whatsapp" aria-pressed="true">WhatsApp</button>
+      <button type="button" data-qr="contato" aria-pressed="false">Contato</button>
+    </div>
+    <button class="btn ghost-w" type="button" id="cardShowClose">Fechar</button>
+  </div>
+  <p class="card-show-tip">Toque na tela ou pressione Esc para sair.</p>
 </div>
 
 <!-- ================= LEITOR ================= -->
@@ -1358,7 +1551,21 @@
   }
   const catalogHash = (id, page, sku) => `#/catalogo/${encodeURIComponent(id)}/${page || 1}${sku ? '?produto=' + encodeURIComponent(sku) : ''}`;
 
+  // Ícones das linhas do cartão: só <path>, para servir ao SVG da tela e ao Path2D do PNG (mesmo desenho)
+  const CARD_ICO = {
+    fone: 'M6.5 3.5h3l1.5 4.5-2 1.3a10.5 10.5 0 0 0 5.7 5.7l1.3-2 4.5 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z',
+    email: 'M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 17V7A1.5 1.5 0 0 1 5 5.5zM4 7l8 6 8-6',
+    cidade: 'M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11zM12 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z'
+  };
   const I = {
+    fone: `<svg viewBox="0 0 24 24"><path d="${CARD_ICO.fone}"/></svg>`,
+    email: `<svg viewBox="0 0 24 24"><path d="${CARD_ICO.email}"/></svg>`,
+    cidade: `<svg viewBox="0 0 24 24"><path d="${CARD_ICO.cidade}"/></svg>`,
+    idcard: '<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16a3 3 0 0 1 6 0M14 10h4M14 13.5h3"/></svg>',
+    present: '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>',
+    download: '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+    userPlus: '<svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 20.5a7 7 0 0 1 14 0M19 8v6M16 11h6"/></svg>',
+    nfc: '<svg viewBox="0 0 24 24"><path d="M6 8.5a5 5 0 0 1 0 7M9.5 6a8.5 8.5 0 0 1 0 12M13 3.5a12 12 0 0 1 0 17"/></svg>',
     search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>',
     star: '<svg viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -1743,8 +1950,21 @@
       sound: typeof o.sound === 'boolean' ? o.sound : undefined,
       view: o.view === 'lista' || o.view === 'grade' ? o.view : undefined, // prateleira em lista ou grade
       panel: typeof o.panel === 'boolean' ? o.panel : undefined, // painel "Nesta página" aberto no computador
+      card: normCard(o.card), // cartão de visita digital (a foto fica no IndexedDB 'dm-cartao')
       interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
         .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : []
+    };
+  }
+  // Cartão: só textos curtos e opções conhecidas; campo ausente = valor padrão (nome, cargo, e-mail… da sessão)
+  function normCard(o) {
+    if (!o || typeof o !== 'object') return undefined;
+    const s = (v, n) => (typeof v === 'string' ? v.slice(0, n) : undefined);
+    const sh = o.show && typeof o.show === 'object' ? o.show : {};
+    return {
+      nome: s(o.nome, 80), cargo: s(o.cargo, 80), empresa: s(o.empresa, 80), email: s(o.email, 120), cidade: s(o.cidade, 80),
+      fone: onlyDigits(o.fone).slice(0, 13), msg: s(o.msg, 300),
+      tema: o.tema === 'claro' ? 'claro' : 'navy', qr: o.qr === 'contato' ? 'contato' : 'whatsapp',
+      show: { fone: sh.fone !== false, email: sh.email !== false, cidade: sh.cidade !== false, cargo: sh.cargo !== false }
     };
   }
   function applyFavOps(list) { const s = new Set(list); for (const [id, on] of favOps) { if (on) s.add(id); else s.delete(id); } return [...s]; }
@@ -1759,7 +1979,8 @@
     for (const [id, p] of Object.entries(b || {})) if (p && (!out[id] || String(p.at) > String(out[id].at))) out[id] = p;
     return out;
   }
-  function loadPrefs() { prefs = normPrefs(readStoredPrefs()); favOps.clear(); interestOps.clear(); prefsDirty = false; }
+  let cardDirty = false; // cartão alterado nesta aba e ainda não gravado (as outras abas não sobrescrevem)
+  function loadPrefs() { prefs = normPrefs(readStoredPrefs()); favOps.clear(); interestOps.clear(); prefsDirty = false; cardDirty = false; }
   function savePrefs() { prefsDirty = true; clearTimeout(prefsT); prefsT = setTimeout(flushPrefs, 600); }
   // Relê o que está gravado (outra aba pode ter mudado), mescla e grava
   function flushPrefs() {
@@ -1770,9 +1991,10 @@
     if (typeof prefs.sound === 'boolean') out.sound = prefs.sound;
     if (prefs.view) out.view = prefs.view;
     if (typeof prefs.panel === 'boolean') out.panel = prefs.panel;
+    if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
     prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests;
-    favOps.clear(); interestOps.clear(); prefsDirty = false;
+    favOps.clear(); interestOps.clear(); prefsDirty = false; cardDirty = false;
   }
   window.addEventListener('storage', (e) => {
     if (!me || e.key !== prefsKey()) return;
@@ -1780,6 +2002,7 @@
     prefs.favorites = applyFavOps(st.favorites);
     prefs.progress = mergeProgress(st.progress, prefs.progress);
     prefs.interests = applyInterestOps(st.interests);
+    if (!cardDirty) prefs.card = st.card;
     updateInterestUI();
     if (typeof st.sound === 'boolean' && !prefsDirty) { prefs.sound = st.sound; setSound(st.sound, false); }
     if (view === 'shelf') {
@@ -1796,15 +2019,16 @@
   });
 
   /* ================= sessão: chave em IndexedDB (não exportável), perfil sem chave no Web Storage ================= */
-  const IDB = (() => {
+  // Banco IndexedDB versão 1 com um único depósito (sessão: 'dm' → 'chaves'; cartão: 'dm-cartao' → 'fotos')
+  function idbStore(dbName, storeName) {
     let ok = false;
     try { ok = !!window.indexedDB; } catch (e) { ok = false; }
     function open() {
       return new Promise((res, rej) => {
         if (!ok) { rej(new Error('sem IndexedDB')); return; }
         let rq;
-        try { rq = indexedDB.open('dm', 1); } catch (e) { rej(e); return; }
-        rq.onupgradeneeded = () => { if (!rq.result.objectStoreNames.contains('chaves')) rq.result.createObjectStore('chaves'); };
+        try { rq = indexedDB.open(dbName, 1); } catch (e) { rej(e); return; }
+        rq.onupgradeneeded = () => { if (!rq.result.objectStoreNames.contains(storeName)) rq.result.createObjectStore(storeName); };
         rq.onsuccess = () => res(rq.result);
         rq.onerror = () => rej(rq.error || new Error('IndexedDB'));
         rq.onblocked = () => rej(new Error('IndexedDB bloqueado'));
@@ -1814,8 +2038,8 @@
       const db = await open();
       try {
         return await new Promise((res, rej) => {
-          const tx = db.transaction('chaves', mode);
-          const rq = fn(tx.objectStore('chaves'));
+          const tx = db.transaction(storeName, mode);
+          const rq = fn(tx.objectStore(storeName));
           tx.oncomplete = () => res(rq ? rq.result : undefined);
           tx.onerror = () => rej(tx.error || new Error('IndexedDB'));
           tx.onabort = () => rej(tx.error || new Error('IndexedDB'));
@@ -1823,9 +2047,16 @@
       } finally { db.close(); }
     }
     return {
+      run,
       get: (k) => run('readonly', (s) => s.get(k)),
       put: (k, v) => run('readwrite', (s) => s.put(v, k)),
-      del: (k) => run('readwrite', (s) => s.delete(k)),
+      del: (k) => run('readwrite', (s) => s.delete(k))
+    };
+  }
+  const IDB = (() => {
+    const { run, get, put, del } = idbStore('dm', 'chaves');
+    return {
+      get, put, del,
       // Remove chaves vencidas e chaves "manter conectado" que o localStorage não usa mais
       sweep: (keepSlot) => run('readwrite', (s) => {
         const rq = s.openCursor();
@@ -1885,12 +2116,15 @@
   try { bc = new BroadcastChannel('dm'); bc.onmessage = (e) => { if (e.data && e.data.t === 'sair' && me) logout({ broadcast: false }); }; } catch (e) { bc = null; }
 
   /* ================= vistas e rotas ================= */
-  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader') };
+  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader'), card: $('#viewCard') };
   let view = '';
   function showOnly(name) {
     if (name !== 'shelf') { drawer.close(false); setMenu(false); }
+    if (name !== 'card') leaveCard();
     V.login.hidden = name !== 'login';
-    V.shell.hidden = !(name === 'shelf' || name === 'reader');
+    V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card');
+    V.shelf.hidden = name === 'card';
+    V.card.hidden = name !== 'card';
     V.reader.hidden = name !== 'reader';
     // Com o leitor aberto, a prateleira por baixo sai da ordem de foco e da árvore de acessibilidade
     V.shell.inert = name === 'reader';
@@ -1900,6 +2134,9 @@
     const tw = $('#toastWrap'), host = name === 'reader' ? V.reader : document.body;
     if (tw.parentNode !== host) host.appendChild(tw);
     view = name;
+    syncNav();
+    const tabHome = $('#tabbar [data-tab="inicio"]');
+    if (name === 'card') tabHome.removeAttribute('aria-current'); else tabHome.setAttribute('aria-current', 'true');
   }
   let lastRoute = '#/prateleira';
   function navigate(h) {
@@ -1924,6 +2161,15 @@
       openReader(id, parseInt(parts[2], 10) || 1, sku);
       return;
     }
+    // Cartão de visita digital: só representante e equipe interna
+    if (parts[0] === 'cartao') {
+      if (!cardAllowed()) { navigate('#/prateleira'); return; }
+      closeReader();
+      const again = view === 'card';
+      showOnly('card');
+      if (again) $('#cardH').focus({ preventScroll: true }); else openCardView();
+      return;
+    }
     const closed = closeReader();
     showOnly('shelf');
     renderShelf();
@@ -1935,6 +2181,13 @@
     const b = $(`#shelves button${sel}`) || $(`#hero button${sel}`) || $(`#bento button${sel}`);
     if (b) { b.focus(); return; }
     const g = $('#greet'); g.setAttribute('tabindex', '-1'); g.focus();
+  }
+  // Do cartão para a prateleira na hora (menu lateral, gaveta e abas continuam o próprio clique depois)
+  function toShelf() {
+    if (view !== 'card') return;
+    lastRoute = '#/prateleira';
+    try { history.pushState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
+    route('#/prateleira');
   }
   function leaveReader() {
     let fromShelf = false;
@@ -2133,6 +2386,7 @@
     $('#mName').textContent = me.name;
     $('#mEmail').textContent = me.email;
     $('#rShareTxt').textContent = me.role === 'cliente' ? 'Compartilhar' : 'Enviar ao cliente';
+    $$('[data-card-entry]').forEach((el) => { el.hidden = !cardAllowed(); }); // "Meu cartão": menu lateral, gaveta e menu da conta
     updateInterestUI();
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
@@ -2146,6 +2400,7 @@
     if (loggingOut) return;
     loggingOut = true;
     flushPrefs();
+    clearCardMemory(); // os dados do cartão ficam no aparelho; só a tela e a foto em memória são descartadas
     await clearStoredSession();
     if (opts.broadcast !== false && bc) { try { bc.postMessage({ t: 'sair' }); } catch (e) { /* noop */ } }
     clearAllImages(true);
@@ -2165,6 +2420,7 @@
   }
   $$('[data-menu-trigger]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setMenu($('#userMenu').hidden || menuFrom !== b, b); }));
   $('#logoutBtn').addEventListener('click', () => logout());
+  $('#cardMenuBtn').addEventListener('click', () => { setMenu(false); navigate('#/cartao'); });
   document.addEventListener('click', (e) => {
     if (!e.target.closest('[data-menu-trigger], #userMenu')) setMenu(false);
     if (!e.target.closest('.search')) closeBox($('#results'), $('#q'));
@@ -2359,7 +2615,7 @@
     syncNav();
   }
   function syncNav() {
-    const cur = filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
+    const cur = view === 'card' ? 'cartao' : filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
     $$('#side [data-nav]').forEach((b) => { if (b.dataset.nav === cur) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
   }
   function setFilter(k) {
@@ -2376,7 +2632,9 @@
   side.addEventListener('click', (e) => {
     const b = e.target.closest('[data-nav], #sideLines [data-k]'); if (!b) return;
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
+    if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'interesses') { drawer.close(); openInterests(); return; }
+    toShelf(); // no cartão, Início, Catálogos, Favoritos e Linhas voltam à prateleira antes de agir
     if (nav === 'favoritos') setFilter('favoritos');
     else if (nav) { navSel = nav; setFilter('todos'); }
     else setFilter(filter === b.dataset.k ? 'todos' : b.dataset.k); // tocar de novo na linha ativa volta a todos
@@ -2393,6 +2651,7 @@
   // Barra de abas (celular): Início, Buscar e Interesses (a aba Conta abre o menu da conta)
   $('#tabbar').addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab]'); if (!t) return;
+    if (t.dataset.tab !== 'interesses') toShelf();
     if (t.dataset.tab === 'inicio') { navSel = 'inicio'; if (filter !== 'todos') setFilter('todos'); else syncNav(); window.scrollTo({ top: 0, behavior: scrollBehavior() }); }
     else if (t.dataset.tab === 'buscar') { window.scrollTo({ top: 0 }); $('#q').focus(); }
     else if (t.dataset.tab === 'interesses') openInterests();
@@ -3927,7 +4186,7 @@
       }
       return;
     }
-    if (e.key === '/' && !typing && !V.shell.hidden && !drawer.isOpen()) { e.preventDefault(); $('#q').focus(); }
+    if (e.key === '/' && !typing && view === 'shelf' && !drawer.isOpen()) { e.preventDefault(); $('#q').focus(); }
   });
 
   // Voltou a internet: tenta de novo o que falhou
@@ -3940,6 +4199,684 @@
       ensureSrc(curIndex());
     }
   });
+
+  /* ================= cartão de visita digital (#/cartao) =================
+     Só representante e equipe interna. Textos em prefs.card (mesma gravação e mescla das preferências);
+     foto num banco IndexedDB à parte ('dm-cartao' → 'fotos', chave = me.uid). Nada sai do aparelho.
+     cardModel() descreve o cartão uma vez; cardHTML() (prévia e apresentação) e drawCard() (PNG 1080 × 1350) desenham essa descrição. */
+  const cardAllowed = () => !!me && (me.role === 'representante' || me.role === 'interno');
+  const CARD_DB = idbStore('dm-cartao', 'fotos');
+  const QR_LIB = { src: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js', sri: 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k' };
+  const CARD = { t: null, pngT: null, png: null, photoUrl: '', photoLoaded: false, qrJob: null, qrFail: false, qrCache: new Map(), live: '', fs: false, wake: null, sharing: false, busyPng: false };
+  const cardView = $('#viewCard'), cardForm = $('#cardForm'), cardShowEl = $('#cardShow');
+
+  /* ----- dados ----- */
+  // Máscara brasileira: (54) 9999-9999 ou (54) 99999-9999; um "+55" colado no começo é ignorado
+  function maskPhone(v) {
+    let d = onlyDigits(v);
+    if (d.length > 11 && d.startsWith('55')) d = d.slice(2);
+    d = d.slice(0, 11);
+    if (!d) return '';
+    if (d.length <= 2) return `(${d}`;
+    const r = d.slice(2), cut = r.length > 8 ? 5 : 4;
+    return `(${d.slice(0, 2)}) ${r.length > 4 ? `${r.slice(0, cut)}-${r.slice(cut)}` : r}`;
+  }
+  // E.164 sem o "+": 10 ou 11 dígitos ganham o 55; válido com 12 ou 13 dígitos
+  function cardPhone(v) {
+    let d = onlyDigits(v);
+    if (d.length === 10 || d.length === 11) d = '55' + d;
+    return d.length === 12 || d.length === 13 ? d : '';
+  }
+  const fmtPhone = (d) => (d.startsWith('55') ? `+55 ${maskPhone(d.slice(2))}` : `+${d}`);
+  // Dados em uso: o que a pessoa editou; o resto vem da sessão (nome, perfil, e-mail)
+  function cardData() {
+    const c = prefs.card || {}, sh = c.show || {};
+    const nome = String(c.nome || '').trim() || me.name;
+    const d = {
+      nome,
+      cargo: String(c.cargo != null ? c.cargo : ROLE[me.role] || '').trim(),
+      empresa: String(c.empresa != null ? c.empresa : 'Dellamed').trim(),
+      email: String(c.email != null ? c.email : me.email || '').trim(),
+      cidade: String(c.cidade || '').trim(),
+      fone: c.fone || '',
+      tema: c.tema === 'claro' ? 'claro' : 'navy',
+      qr: c.qr === 'contato' ? 'contato' : 'whatsapp',
+      show: { fone: sh.fone !== false, email: sh.email !== false, cidade: sh.cidade !== false, cargo: sh.cargo !== false }
+    };
+    d.defMsg = `Olá, ${firstName(nome)}! Vi seu cartão digital da Dellamed.`;
+    d.msg = String(c.msg || '').trim() || d.defMsg;
+    d.wa = cardPhone(d.fone);
+    d.emailOk = emailLike(d.email);
+    d.waLink = d.wa ? waUrl(d.wa, d.msg) : '';
+    return d;
+  }
+  function cardEdit() { if (!prefs.card) prefs.card = normCard({}); return prefs.card; }
+  function saveCard() { cardDirty = true; savePrefs(); }
+  // vCard 3.0 (CRLF), só com os campos visíveis; \ , ; e quebras de linha escapados
+  const vcEsc = (s) => String(s).replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+  function cardVcf(d) {
+    const parts = d.nome.split(/\s+/).filter(Boolean), first = parts.shift() || '', last = parts.join(' ');
+    const L = ['BEGIN:VCARD', 'VERSION:3.0', `N:${vcEsc(last)};${vcEsc(first)};;;`, `FN:${vcEsc(d.nome)}`];
+    if (d.empresa) L.push(`ORG:${vcEsc(d.empresa)}`);
+    if (d.show.cargo && d.cargo) L.push(`TITLE:${vcEsc(d.cargo)}`);
+    if (d.show.fone && d.wa) L.push(`TEL;TYPE=CELL:+${d.wa}`);
+    if (d.show.email && d.emailOk) L.push(`EMAIL;TYPE=INTERNET:${vcEsc(d.email)}`);
+    if (d.show.cidade && d.cidade) L.push(`ADR;TYPE=WORK:;;;${vcEsc(d.cidade)};;;Brasil`);
+    L.push('END:VCARD');
+    return L.join('\r\n') + '\r\n';
+  }
+  function cardModel(d) {
+    const rows = [];
+    if (d.show.fone && d.wa) rows.push({ k: 'fone', label: 'Telefone', t: fmtPhone(d.wa) });
+    if (d.show.email && d.emailOk) rows.push({ k: 'email', label: 'E-mail', t: d.email });
+    if (d.show.cidade && d.cidade) rows.push({ k: 'cidade', label: 'Cidade', t: d.cidade });
+    const wa = d.qr === 'whatsapp';
+    return {
+      theme: d.tema, nome: d.nome, ini: initials(d.nome), rows,
+      sub: [d.show.cargo ? d.cargo : '', d.empresa].filter(Boolean).join(' · '),
+      qrText: wa ? d.waLink : cardVcf(d),
+      qrLabel: `QR Code para ${wa ? 'falar no WhatsApp' : 'salvar o contato'} de ${d.nome}`,
+      caption: wa ? 'Escaneie para falar no WhatsApp' : 'Escaneie para salvar o contato',
+      hint: wa && !d.wa ? 'Informe um WhatsApp válido para gerar o QR Code.' : ''
+    };
+  }
+  const cardNfcLink = (d) => d.waLink || (d.emailOk ? mailtoUrl(d.email) : '');
+  const cardFileName = (s) => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'cartao';
+
+  /* ----- QR Code: qrcode-generator baixado só quando o cartão abre (uma vez; se falhar, dá para tentar de novo) ----- */
+  function loadQr() {
+    if (window.qrcode) return Promise.resolve(window.qrcode);
+    if (!CARD.qrJob) {
+      const job = new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = QR_LIB.src; s.integrity = QR_LIB.sri; s.crossOrigin = 'anonymous';
+        s.onload = () => (window.qrcode ? res(window.qrcode) : rej(new Error('qrcode')));
+        s.onerror = () => { s.remove(); rej(new Error('qrcode')); };
+        document.head.appendChild(s);
+      });
+      CARD.qrJob = job;
+      job.catch(() => { if (CARD.qrJob === job) CARD.qrJob = null; });
+    }
+    return CARD.qrJob;
+  }
+  function ensureQr() {
+    if (window.qrcode) return;
+    loadQr().then(() => { CARD.qrFail = false; }, () => { CARD.qrFail = true; }).then(() => { if (view === 'card') renderCard(); });
+  }
+  function retryQr() { CARD.qrFail = false; renderCard(); ensureQr(); }
+  // Matriz de módulos (versão automática, correção M, texto em UTF-8); guarda as últimas combinações
+  function qrMatrix(text) {
+    let m = CARD.qrCache.get(text);
+    if (m) return m;
+    const lib = window.qrcode;
+    lib.stringToBytes = (lib.stringToBytesFuncs && lib.stringToBytesFuncs['UTF-8']) || ((s) => Array.from(new TextEncoder().encode(s)));
+    const q = lib(0, 'M');
+    q.addData(text);
+    q.make();
+    const n = q.getModuleCount(), bits = [];
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) bits.push(q.isDark(r, c));
+    m = { n, dark: (r, c) => bits[r * n + c] };
+    if (CARD.qrCache.size > 6) CARD.qrCache.clear();
+    CARD.qrCache.set(text, m);
+    return m;
+  }
+  // SVG nítido montado aqui mesmo (sem markup de terceiros); a margem branca vem do quadro .vc-qrbox
+  function qrSvg(m) {
+    let d = '';
+    for (let r = 0; r < m.n; r++) for (let c = 0; c < m.n; c++) if (m.dark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+    return `<svg viewBox="0 0 ${m.n} ${m.n}" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="#1e2c4f" d="${d}"/></svg>`;
+  }
+
+  /* ----- cartão na tela: prévia e apresentação ----- */
+  function cardQrHTML(md) {
+    if (md.hint) return `<p class="vc-hint">${esc(md.hint)}</p>`;
+    if (CARD.qrFail) return `<div class="vc-hint"><span>Não foi possível gerar o QR Code</span><button type="button" class="btn ${md.theme === 'navy' ? 'sky' : 'primary'} sm" data-qr-retry>Tentar de novo</button></div>`;
+    if (!window.qrcode) return '<p class="vc-hint">Gerando o QR Code…</p>';
+    let svg;
+    try { svg = qrSvg(qrMatrix(md.qrText)); } catch (e) { return '<p class="vc-hint">Dados demais para o QR Code. Encurte a mensagem ou oculte algum campo.</p>'; }
+    return `<div class="vc-qrbox" role="img" aria-label="${esc(md.qrLabel)}">${svg}</div><p class="vc-cap">${esc(md.caption)}</p>`;
+  }
+  function cardHTML(md, big) {
+    const photo = CARD.photoUrl ? `<img src="${esc(CARD.photoUrl)}" alt="">` : `<span aria-hidden="true">${esc(md.ini)}</span>`;
+    return `<article class="vcard${big ? ' big' : ''}" data-theme="${md.theme}" aria-label="Cartão de visita de ${esc(md.nome)}">
+      <div class="vc-top"><span class="vc-logo" role="img" aria-label="Dellamed"></span><span class="vc-medpro" aria-hidden="true"></span></div>
+      <div class="vc-main">
+        <span class="vc-photo">${photo}</span>
+        <p class="vc-name">${esc(md.nome)}</p>
+        ${md.sub ? `<p class="vc-sub">${esc(md.sub)}</p>` : ''}
+        ${md.rows.length ? `<ul class="vc-rows">${md.rows.map((r) => `<li><span class="vc-ico" aria-hidden="true">${I[r.k]}</span><span><span class="sr-only">${r.label}: </span>${esc(r.t)}</span></li>`).join('')}</ul>` : ''}
+      </div>
+      <div class="vc-qr">${cardQrHTML(md)}</div>
+    </article>`;
+  }
+  // --u = 1% da largura do cartão: todas as medidas internas acompanham o tamanho (prévia pequena ou apresentação)
+  const cardRO = new ResizeObserver((entries) => entries.forEach((en) => { const w = en.target.offsetWidth; if (w) en.target.style.setProperty('--u', `${w / 100}px`); }));
+  function paintCard(host, md, big) {
+    const old = $('.vcard', host), u = old ? old.style.getPropertyValue('--u') : '';
+    if (old) cardRO.unobserve(old);
+    host.innerHTML = cardHTML(md, big);
+    const el = $('.vcard', host);
+    if (u) el.style.setProperty('--u', u);
+    cardRO.observe(el);
+  }
+  function scheduleCard() { clearTimeout(CARD.t); CARD.t = setTimeout(renderCard, 150); }
+  function renderCard() {
+    clearTimeout(CARD.t); CARD.t = null;
+    if (view !== 'card' || !me) return;
+    const d = cardData(), md = cardModel(d);
+    paintCard($('#cardPreview'), md, false);
+    if (cardShowLayer.isOpen()) paintCard($('#cardShowCard'), md, true);
+    $$('[data-qr]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.qr === d.qr)));
+    $$('[data-tema]', cardForm).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tema === d.tema)));
+    $('#cardMsg').placeholder = d.defMsg;
+    paintCardThumb(d);
+    paintCardActions(d);
+    // Imagem pronta com antecedência: o compartilhamento do celular precisa responder logo ao toque
+    clearTimeout(CARD.pngT);
+    CARD.pngT = setTimeout(() => { if (view === 'card') cardPng().catch(() => {}); }, 1500);
+  }
+  function paintCardThumb(d) {
+    const t = $('#cardThumb'), v = CARD.photoUrl || initials(d.nome);
+    $('#cardPhotoRm').hidden = !CARD.photoUrl;
+    if (t.dataset.v === v) return;
+    t.dataset.v = v;
+    t.innerHTML = CARD.photoUrl ? `<img src="${esc(CARD.photoUrl)}" alt="">` : esc(v);
+  }
+  function paintCardActions(d) {
+    const cp = $('#cardCopyWa'), nfcBtn = $('#cardNfc'), info = $('#cardNfcInfo');
+    const hasNfc = 'NDEFReader' in window, link = cardNfcLink(d);
+    cp.disabled = !d.waLink;
+    nfcBtn.hidden = !hasNfc;
+    nfcBtn.disabled = !link;
+    info.hidden = hasNfc;
+    if (hasNfc || info.dataset.link === link) return;
+    info.dataset.link = link;
+    info.innerHTML = `<p>Gravar NFC funciona no Chrome para Android. No iPhone, use o app gratuito NXP TagWriter para gravar este link:</p>${link
+      ? `<div class="card-link"><code>${esc(link)}</code><button type="button" class="btn ghost sm" data-copy-nfc>Copiar</button></div>`
+      : '<p>Informe um WhatsApp ou e-mail válido para ter o link.</p>'}`;
+  }
+
+  /* ----- editor ----- */
+  function fillCardForm() {
+    const c = prefs.card || {}, d = cardData();
+    $('#cardNome').value = d.nome;
+    $('#cardCargo').value = d.cargo;
+    $('#cardEmpresa').value = d.empresa;
+    $('#cardEmail').value = d.email;
+    $('#cardCidade').value = d.cidade;
+    $('#cardFone').value = maskPhone(d.fone);
+    $('#cardMsg').value = c.msg || '';
+    $$('[data-show]', cardForm).forEach((b) => { b.checked = d.show[b.dataset.show]; });
+    setErr($('#fCardFone'), ''); setErr($('#fCardEmail'), '');
+    CARD.live = ''; $('#cardLive').textContent = '';
+  }
+  // final = saiu do campo; enquanto digita, só atualiza um aviso que já estava na tela
+  function validateCard(final) {
+    const d = cardData(), fF = $('#fCardFone'), fE = $('#fCardEmail');
+    const typed = onlyDigits($('#cardFone').value);
+    const foneMsg = typed && !d.wa && (final || fF.classList.contains('invalid')) ? 'Informe DDD e número, como (54) 99999-9999.' : '';
+    const mailMsg = d.email && !d.emailOk && (final || fE.classList.contains('invalid')) ? 'Confira o formato do e-mail.' : '';
+    setErr(fF, foneMsg);
+    setErr(fE, mailMsg);
+    const live = [foneMsg, mailMsg].filter(Boolean).join(' ');
+    if (live !== CARD.live) { CARD.live = live; $('#cardLive').textContent = live; }
+  }
+  cardForm.addEventListener('submit', (e) => e.preventDefault());
+  cardForm.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'cardFone') {
+      // Reaplica a máscara mantendo o cursor depois do mesmo número de dígitos
+      const pos = t.selectionStart == null ? t.value.length : t.selectionStart;
+      const n = onlyDigits(t.value.slice(0, pos)).length;
+      t.value = maskPhone(t.value);
+      let i = 0;
+      for (let k = 0; i < t.value.length && k < n; i++) if (/\d/.test(t.value[i])) k++;
+      try { if (document.activeElement === t) t.setSelectionRange(i, i); } catch (_) { /* noop */ }
+      cardEdit().fone = onlyDigits(t.value);
+      validateCard(false);
+    } else if (t.dataset.card) {
+      cardEdit()[t.dataset.card] = t.value;
+      if (t.id === 'cardEmail') validateCard(false);
+    } else return;
+    saveCard();
+    scheduleCard();
+  });
+  cardForm.addEventListener('change', (e) => {
+    const k = e.target.dataset.show;
+    if (!k) return;
+    cardEdit().show[k] = e.target.checked;
+    saveCard();
+    renderCard();
+  });
+  cardForm.addEventListener('focusout', (e) => { if (e.target.id === 'cardFone' || e.target.id === 'cardEmail') validateCard(true); });
+  function setCardQr(type) {
+    const c = cardEdit();
+    if (c.qr === type) return;
+    c.qr = type;
+    saveCard();
+    trackCatalogEvent('card_qr_type', { type });
+    renderCard();
+  }
+  cardView.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b || b.disabled) return;
+    if (b.dataset.tema) { cardEdit().tema = b.dataset.tema === 'claro' ? 'claro' : 'navy'; saveCard(); renderCard(); }
+    else if (b.dataset.qr) setCardQr(b.dataset.qr === 'contato' ? 'contato' : 'whatsapp');
+    else if (b.hasAttribute('data-qr-retry')) retryQr();
+    else if (b.hasAttribute('data-copy-nfc')) copyText(cardNfcLink(cardData()), 'Link copiado.');
+    else if (b.id === 'cardPresent') openPresent(b);
+    else if (b.id === 'cardShareBtn') cardShare();
+    else if (b.id === 'cardPng') cardDownloadPng();
+    else if (b.id === 'cardVcf') cardDownloadVcf();
+    else if (b.id === 'cardCopyWa') { const d = cardData(); if (d.waLink) copyText(d.waLink, 'Link do WhatsApp copiado.'); }
+    else if (b.id === 'cardNfc') cardNfcWrite();
+    else if (b.id === 'cardPhotoRm') removeCardPhoto();
+  });
+
+  /* ----- foto: recorte quadrado central, 512 px, JPEG 0,85; blob no IndexedDB 'dm-cartao' ----- */
+  const loadImage = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+  function setCardPhoto(blob) {
+    if (CARD.photoUrl) URL.revokeObjectURL(CARD.photoUrl);
+    CARD.photoUrl = blob ? URL.createObjectURL(blob) : '';
+  }
+  async function squarePhoto(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const im = await loadImage(url);
+      const w = im.naturalWidth, h = im.naturalHeight, s = Math.min(w, h);
+      if (!s) throw new Error('imagem vazia');
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 512;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 512, 512); // PNG transparente não vira fundo preto no JPEG
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(im, (w - s) / 2, (h - s) / 2, s, s, 0, 0, 512, 512);
+      const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.85));
+      if (!blob) throw new Error('jpeg');
+      return blob;
+    } finally { URL.revokeObjectURL(url); }
+  }
+  $('#cardPhoto').addEventListener('change', async (e) => {
+    const inp = e.target, f = inp.files && inp.files[0];
+    if (!f || !me) return;
+    const uid = me.uid;
+    try {
+      const blob = await squarePhoto(f);
+      if (!me || me.uid !== uid) return;
+      setCardPhoto(blob);
+      renderCard();
+      try { await CARD_DB.put(uid, blob); toast('Foto atualizada.'); }
+      catch (err) { toast('Foto aplicada, mas este navegador não a guardou: ela some ao fechar a página.'); }
+    } catch (err) { toast('Não foi possível usar esta foto. Tente outra imagem.'); }
+    finally { inp.value = ''; }
+  });
+  function removeCardPhoto() {
+    setCardPhoto(null);
+    renderCard();
+    CARD_DB.del(me.uid).catch(() => {});
+    toast('Foto removida.');
+    $('#cardPhoto').focus(); // o botão "Remover foto" sumiu
+  }
+  function loadCardPhoto() {
+    if (CARD.photoLoaded) return;
+    CARD.photoLoaded = true;
+    const uid = me.uid;
+    CARD_DB.get(uid).then((b) => {
+      if (!(b instanceof Blob) || !me || me.uid !== uid || CARD.photoUrl) return;
+      setCardPhoto(b);
+      renderCard();
+    }).catch(() => {});
+  }
+
+  /* ----- imagem PNG 1080 × 1350: mesmas proporções do CSS (1 --u = 10,8 px) ----- */
+  const F_TITLE = 'Montserrat, "Segoe UI", system-ui, sans-serif', F_TEXT = '"Open Sans", "Segoe UI", system-ui, sans-serif';
+  const brandImgs = new Map();
+  // Logo e MED PRO: as mesmas imagens das variáveis --logo e --medpro (data URI embutido pelo build)
+  function cssImage(name) {
+    if (!brandImgs.has(name)) {
+      const m = /url\(\s*["']?([^"')]+)["']?\s*\)/.exec(getComputedStyle(document.documentElement).getPropertyValue(name));
+      const src = m ? m[1] : '';
+      brandImgs.set(name, /^data:image\//.test(src) ? loadImage(src).catch(() => null) : Promise.resolve(null));
+    }
+    return brandImgs.get(name);
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+  function ellipsize(ctx, text, max) {
+    if (ctx.measureText(text).width <= max) return text;
+    let t = text;
+    while (t.length > 1 && ctx.measureText(t + '…').width > max) t = t.slice(0, -1);
+    return t + '…';
+  }
+  function wrapText(ctx, text, max) {
+    const lines = [];
+    let cur = '';
+    for (const w of String(text).split(/\s+/)) {
+      const t = cur ? `${cur} ${w}` : w;
+      if (cur && ctx.measureText(t).width > max) { lines.push(cur); cur = w; } else cur = t;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function drawIcon(ctx, d, x, y, size, color) {
+    if (typeof Path2D !== 'function') return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(size / 24, size / 24);
+    ctx.strokeStyle = color; ctx.lineWidth = 1.75; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.stroke(new Path2D(d));
+    ctx.restore();
+  }
+  async function drawCard(md) {
+    if (document.fonts && document.fonts.load) {
+      await Promise.allSettled(['700 64px Montserrat', '300 36px Montserrat', '400 32px "Open Sans"', '600 30px "Open Sans"'].map((f) => document.fonts.load(f)));
+      try { await document.fonts.ready; } catch (e) { /* noop */ }
+    }
+    let qr = null;
+    if (!md.hint) { try { await loadQr(); qr = qrMatrix(md.qrText); } catch (e) { qr = null; } }
+    const [logo, medpro, photo] = await Promise.all([cssImage('--logo'), cssImage('--medpro'), CARD.photoUrl ? loadImage(CARD.photoUrl).catch(() => null) : null]);
+    const W = 1080, H = 1350, u = W / 100, PAD = 6.667 * u, navy = md.theme === 'navy';
+    const ink = navy ? '#ffffff' : '#1e2c4f', icoColor = navy ? '#8bb8e8' : '#1e2c4f', cx = W / 2;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    // Fundo e brilho azul-claro (mesmo radial-gradient do CSS)
+    ctx.fillStyle = navy ? '#1e2c4f' : '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    const glow = ctx.createRadialGradient(W * 0.85, H * 0.1, 0, W * 0.85, H * 0.1, 90 * u);
+    glow.addColorStop(0, `rgba(139, 184, 232, ${navy ? 0.35 : 0.22})`);
+    glow.addColorStop(1, 'rgba(139, 184, 232, 0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+    // Logo (recolorido em azul-marinho no tema claro, como a máscara do CSS) e MED PRO no canto
+    if (logo && logo.naturalWidth) {
+      const bw = 20.83 * u, bh = 5.556 * u, k = Math.min(bw / logo.naturalWidth, bh / logo.naturalHeight);
+      const w = logo.naturalWidth * k, h = logo.naturalHeight * k;
+      let src = logo;
+      if (!navy) {
+        src = document.createElement('canvas');
+        src.width = logo.naturalWidth; src.height = logo.naturalHeight;
+        const t = src.getContext('2d');
+        t.drawImage(logo, 0, 0);
+        t.globalCompositeOperation = 'source-in';
+        t.fillStyle = '#1e2c4f';
+        t.fillRect(0, 0, src.width, src.height);
+      }
+      ctx.drawImage(src, PAD, PAD + (bh - h) / 2, w, h);
+    }
+    if (medpro && medpro.naturalWidth) {
+      const w = 5.37 * u;
+      ctx.drawImage(medpro, W - PAD - w, 0, w, w * medpro.naturalHeight / medpro.naturalWidth);
+    }
+    // Foto circular com anel branco (ou iniciais)
+    const pr = 10.185 * u, cy = PAD + (5.556 + 5.37) * u + pr;
+    ctx.save();
+    if (!navy) { ctx.shadowColor = 'rgba(20, 32, 60, .25)'; ctx.shadowBlur = 2.5 * u; ctx.shadowOffsetY = 0.6 * u; }
+    ctx.beginPath(); ctx.arc(cx, cy, pr + 0.926 * u, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff'; ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, pr, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = '#8bb8e8'; ctx.fillRect(cx - pr, cy - pr, pr * 2, pr * 2);
+    if (photo) ctx.drawImage(photo, cx - pr, cy - pr, pr * 2, pr * 2);
+    ctx.restore();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (!photo) { ctx.fillStyle = '#1e2c4f'; ctx.font = `700 ${7.4 * u}px ${F_TITLE}`; ctx.fillText(md.ini, cx, cy); }
+    // Nome (Montserrat 700, uma linha) e cargo · empresa (Montserrat 300)
+    let y = cy + pr + 3.7 * u;
+    const nameH = 5.926 * u * 1.15;
+    ctx.fillStyle = ink;
+    ctx.font = `700 ${5.926 * u}px ${F_TITLE}`;
+    ctx.fillText(ellipsize(ctx, md.nome, W - PAD * 2), cx, y + nameH / 2);
+    y += nameH;
+    if (md.sub) {
+      const lh = 3.333 * u * 1.2;
+      y += u;
+      ctx.globalAlpha = 0.85;
+      ctx.font = `300 ${3.333 * u}px ${F_TITLE}`;
+      for (const ln of wrapText(ctx, md.sub, W - PAD * 2)) { ctx.fillText(ln, cx, y + lh / 2); y += lh; }
+      ctx.globalAlpha = 1;
+    }
+    // Linhas com ícone: telefone, e-mail, cidade
+    if (md.rows.length) {
+      const fs = 2.963 * u, ic = 3.333 * u, gap = 1.48 * u, lh = fs * 1.2;
+      y += 4 * u;
+      ctx.font = `400 ${fs}px ${F_TEXT}`;
+      md.rows.forEach((row, i) => {
+        if (i) y += 1.85 * u;
+        const t = ellipsize(ctx, row.t, W - PAD * 2 - ic - gap), x0 = (W - (ic + gap + ctx.measureText(t).width)) / 2, mid = y + lh / 2;
+        drawIcon(ctx, CARD_ICO[row.k], x0, mid - ic / 2, ic, icoColor);
+        ctx.fillStyle = ink;
+        ctx.textAlign = 'left';
+        ctx.fillText(t, x0 + ic + gap, mid);
+        ctx.textAlign = 'center';
+        y += lh;
+      });
+    }
+    // QR Code num quadro branco arredondado (ou o aviso no lugar dele)
+    const box = 37 * u, capH = 2.78 * u * 1.2, bx = (W - box) / 2;
+    const by = qr ? H - PAD - capH - 1.6 * u - box : H - PAD - box;
+    if (qr) {
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, bx, by, box, box, 2.963 * u);
+      ctx.fill();
+      if (!navy) { ctx.strokeStyle = '#bcbcbc'; ctx.lineWidth = 2; ctx.stroke(); }
+      const mod = Math.floor((box - 2 * 2.6 * u) / qr.n), ox = Math.round(bx + (box - mod * qr.n) / 2), oy = Math.round(by + (box - mod * qr.n) / 2);
+      ctx.fillStyle = '#1e2c4f';
+      for (let r = 0; r < qr.n; r++) for (let c = 0; c < qr.n; c++) if (qr.dark(r, c)) ctx.fillRect(ox + c * mod, oy + r * mod, mod, mod);
+      ctx.fillStyle = ink;
+      ctx.font = `600 ${2.78 * u}px ${F_TEXT}`;
+      ctx.fillText(md.caption, cx, H - PAD - capH / 2);
+    } else {
+      const fs = 2.9 * u, lh = fs * 1.35;
+      ctx.strokeStyle = ink; ctx.lineWidth = 0.3 * u; ctx.setLineDash([1.2 * u, 1.2 * u]);
+      roundRect(ctx, bx, by, box, box, 2.963 * u);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = ink;
+      ctx.font = `400 ${fs}px ${F_TEXT}`;
+      const lines = wrapText(ctx, md.hint || 'QR Code indisponível no momento.', box - 6 * u);
+      lines.forEach((ln, i) => ctx.fillText(ln, cx, by + box / 2 + (i - (lines.length - 1) / 2) * lh));
+    }
+    return cv;
+  }
+  async function cardPng() {
+    const md = cardModel(cardData()), key = `${JSON.stringify(md)}|${CARD.photoUrl}|${!!window.qrcode}`;
+    if (CARD.png && CARD.png.key === key) return CARD.png.blob;
+    const cv = await drawCard(md);
+    const blob = await new Promise((res) => cv.toBlob(res, 'image/png'));
+    if (!blob) throw new Error('png');
+    CARD.png = { key, blob };
+    return blob;
+  }
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; a.hidden = true;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  /* ----- ações ----- */
+  async function cardDownloadPng() {
+    if (CARD.busyPng) return;
+    CARD.busyPng = true;
+    try {
+      downloadBlob(await cardPng(), `cartao-${cardFileName(cardData().nome)}.png`);
+      trackCatalogEvent('card_download', { kind: 'png' });
+    } catch (e) { toast('Não foi possível gerar a imagem neste navegador.'); }
+    finally { CARD.busyPng = false; }
+  }
+  function cardDownloadVcf() {
+    const d = cardData();
+    downloadBlob(new Blob([cardVcf(d)], { type: 'text/vcard;charset=utf-8' }), `${cardFileName(d.nome)}.vcf`);
+    trackCatalogEvent('card_download', { kind: 'vcf' });
+  }
+  const cardShareText = (d) => [d.nome, cardModel(d).sub, d.waLink ? `WhatsApp: ${d.waLink}` : '', d.show.email && d.emailOk ? `E-mail: ${d.email}` : ''].filter(Boolean).join('\n');
+  // Sistema com arquivos (imagem + .vcf; ou só a imagem) → sistema com texto → diálogo com os downloads
+  async function cardShare() {
+    if (CARD.sharing) return;
+    CARD.sharing = true;
+    try {
+      const d = cardData(), fn = cardFileName(d.nome), title = `${d.nome} · ${d.empresa || 'Dellamed'}`;
+      if (navigator.share && navigator.canShare) {
+        try {
+          const png = new File([await cardPng()], `cartao-${fn}.png`, { type: 'image/png' });
+          const vcf = new File([cardVcf(d)], `${fn}.vcf`, { type: 'text/vcard' });
+          const files = navigator.canShare({ files: [png, vcf] }) ? [png, vcf] : navigator.canShare({ files: [png] }) ? [png] : null;
+          if (files) {
+            await navigator.share({ files, title });
+            trackCatalogEvent('card_share', { method: files.length > 1 ? 'arquivos' : 'imagem' });
+            return;
+          }
+        } catch (e) { if (e && e.name === 'AbortError') return; /* sem arquivos: tenta o texto */ }
+      }
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text: cardShareText(d) });
+          trackCatalogEvent('card_share', { method: 'texto' });
+          return;
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      cardShareDialog(d);
+    } finally { CARD.sharing = false; }
+  }
+  function cardShareDialog(d) {
+    openDialog({
+      title: 'Compartilhar cartão',
+      body: `<p class="dlg-sub">Este navegador não envia o cartão direto. Baixe a imagem ou o contato e envie pelo aplicativo que preferir.</p>
+        <div class="pc-actions">
+          <button type="button" class="btn primary block" id="csPng">Baixar imagem</button>
+          <button type="button" class="btn ghost block" id="csVcf">Salvar contato (.vcf)</button>
+          ${d.waLink ? '<button type="button" class="btn ghost block" id="csWa">Copiar link do WhatsApp</button>' : ''}
+        </div>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }]
+    });
+    $('#csPng').addEventListener('click', cardDownloadPng);
+    $('#csVcf').addEventListener('click', cardDownloadVcf);
+    const wa = $('#csWa');
+    if (wa) wa.addEventListener('click', () => copyText(d.waLink, 'Link do WhatsApp copiado.'));
+  }
+  // Web NFC (Chrome no Android): grava o link do WhatsApp (ou mailto:) numa etiqueta; 30 s para aproximar
+  async function cardNfcWrite() {
+    const d = cardData(), link = cardNfcLink(d);
+    if (!link || !('NDEFReader' in window)) return;
+    const ctrl = new AbortController();
+    let timedOut = false, mine = true, done = false;
+    const timer = setTimeout(() => { timedOut = true; ctrl.abort(); }, 30000);
+    openDialog({
+      title: 'Gravar em etiqueta NFC',
+      body: `<p class="dlg-sub">Aproxime a etiqueta NFC (NTAG213/215/216) da parte de trás do celular.</p>
+        <p class="dlg-note">${d.waLink ? 'Quem encostar o celular na etiqueta abre uma conversa com você no WhatsApp.' : 'Sem WhatsApp válido, a etiqueta abre um e-mail para você.'}</p>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }],
+      onClose: () => { mine = false; clearTimeout(timer); if (!done) ctrl.abort(); }
+    });
+    let result = 'ok';
+    try {
+      await new window.NDEFReader().write({ records: [{ recordType: 'url', data: link }] }, { signal: ctrl.signal });
+      toast(d.waLink ? 'Etiqueta gravada! Qualquer celular com NFC abre seu WhatsApp ao encostar.' : 'Etiqueta gravada! Qualquer celular com NFC abre um e-mail para você ao encostar.');
+    } catch (e) {
+      const name = e && e.name;
+      if (name === 'AbortError' && !timedOut) { result = ''; } // a pessoa cancelou
+      else {
+        result = 'erro';
+        toast(name === 'NotAllowedError' ? 'Permissão de NFC negada'
+          : name === 'NotSupportedError' ? 'Este aparelho não grava NFC'
+          : name === 'AbortError' ? 'Tempo esgotado. Tente de novo.'
+          : 'Não consegui gravar. Verifique se a etiqueta não está protegida e tente de novo.');
+      }
+    } finally {
+      done = true;
+      clearTimeout(timer);
+      if (mine) closeDialog();
+    }
+    if (result) trackCatalogEvent('card_nfc_write', { result });
+  }
+
+  /* ----- apresentação: tela cheia (ou camada fixa), foco preso, Esc/toque para sair, tela sempre acesa ----- */
+  // Registrado antes do modalLayer: a barra (tipo de QR) e "Tentar de novo" não fecham; qualquer outro toque fecha
+  cardShowEl.addEventListener('click', (e) => {
+    if (e.target.closest('#cardShowClose')) return;
+    const q = e.target.closest('[data-qr]'), rt = e.target.closest('[data-qr-retry]');
+    if (!q && !rt && !e.target.closest('.card-show-bar')) return;
+    e.stopImmediatePropagation();
+    if (q) setCardQr(q.dataset.qr === 'contato' ? 'contato' : 'whatsapp');
+    else if (rt) retryQr();
+  });
+  const cardShowLayer = modalLayer(cardShowEl, cardShowEl, () => [V.shell], (on) => {
+    document.body.classList.toggle('presenting', on);
+    keepAwake(on);
+    if (on) return;
+    const el = $('.vcard', $('#cardShowCard'));
+    if (el) cardRO.unobserve(el);
+    $('#cardShowCard').innerHTML = '';
+    if (document.fullscreenElement === cardShowEl) { CARD.fs = false; document.exitFullscreen().catch(() => {}); }
+  });
+  function openPresent(from) {
+    if (cardShowLayer.isOpen()) return;
+    cardShowLayer.open(from);
+    renderCard();
+    $('#cardShowClose').focus();
+    trackCatalogEvent('card_present');
+    if (document.fullscreenEnabled && cardShowEl.requestFullscreen) {
+      cardShowEl.requestFullscreen().then(() => {
+        if (cardShowLayer.isOpen()) CARD.fs = true; else document.exitFullscreen().catch(() => {});
+      }).catch(() => { /* sem tela cheia: a camada fixa já cobre a tela */ });
+    }
+  }
+  // Esc na tela cheia: o navegador sai dela primeiro; a apresentação fecha junto
+  document.addEventListener('fullscreenchange', () => {
+    if (CARD.fs && document.fullscreenElement !== cardShowEl) { CARD.fs = false; cardShowLayer.close(); }
+  });
+  async function keepAwake(on) {
+    const cur = CARD.wake;
+    if (!on) { CARD.wake = null; if (cur) cur.release().catch(() => {}); return; }
+    if (cur || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+    try {
+      const w = await navigator.wakeLock.request('screen');
+      if (!cardShowLayer.isOpen() || CARD.wake) { w.release().catch(() => {}); return; }
+      CARD.wake = w;
+      w.addEventListener('release', () => { if (CARD.wake === w) CARD.wake = null; });
+    } catch (e) { /* bateria fraca, aba oculta ou sem permissão: segue sem */ }
+  }
+  // O sistema solta a trava ao esconder a aba: pede de novo na volta
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && cardShowLayer.isOpen()) keepAwake(true); });
+
+  /* ----- entrar e sair da tela ----- */
+  function openCardView() {
+    fillCardForm();
+    loadCardPhoto();
+    ensureQr();
+    renderCard();
+    window.scrollTo(0, 0);
+    $('#cardH').focus({ preventScroll: true });
+    trackCatalogEvent('card_open');
+  }
+  function leaveCard() {
+    if (view !== 'card') return;
+    cardShowLayer.close(false);
+    clearTimeout(CARD.t); clearTimeout(CARD.pngT);
+    CARD.t = CARD.pngT = null;
+  }
+  // Sair da conta: os dados continuam no aparelho (são da pessoa); a tela e a foto em memória são descartadas
+  function clearCardMemory() {
+    cardShowLayer.close(false);
+    clearTimeout(CARD.t); clearTimeout(CARD.pngT);
+    setCardPhoto(null);
+    CARD.photoLoaded = false; CARD.png = null; CARD.qrCache.clear(); CARD.live = '';
+    $$('.vcard').forEach((el) => cardRO.unobserve(el));
+    ['#cardPreview', '#cardShowCard', '#cardThumb', '#cardNfcInfo', '#cardLive'].forEach((s) => { const el = $(s); el.innerHTML = ''; delete el.dataset.v; delete el.dataset.link; });
+    cardForm.reset();
+  }
 
   /* ================= início ================= */
   async function restoreSession(s) {
