@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-0HEiw+DUaja7eQxn4PI/6bs1JW0u+dXNf9VNqO9e0Nc=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://xrsivxdtfliejbosprns.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-4T2UaullJPMoge1PQqeDylrOkYOuN2FnjztSRHdODko=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -181,8 +181,36 @@
   .menu .who b { display: block; font-size: 14px; color: var(--navy); }
   .menu button { width: 100%; height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; text-align: left; color: var(--ink); cursor: pointer; }
   .menu button:hover { background: var(--light); }
-  /* "Painel" (só admin do Supabase): no menu da conta apenas no celular; computador e tablet usam o item do menu lateral/gaveta */
-  @media (min-width: 768px) { .menu .menu-admin { display: none; } }
+  /* "Gerenciar" (só admin do Supabase ou gestão de emergência aberta): no menu da conta apenas no celular; computador e tablet usam o grupo do menu lateral/gaveta */
+  .menu[data-from="tab"] { max-height: calc(100vh - var(--tab-h) - 24px - var(--safe-b)); overflow-y: auto; }
+  .menu-ger { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--hair); }
+  .menu-h { padding: 4px 10px 4px; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .menu .menu-ger button { display: flex; align-items: center; gap: 10px; }
+  .menu .menu-ger .ico { color: var(--navy); }
+  .menu .menu-ger .int-n { margin-left: auto; }
+  .menu .menu-ger button[aria-current="true"] { background: rgba(139, 184, 232, .2); color: var(--navy); font-weight: 600; }
+  @media (min-width: 768px) { .menu .menu-ger { display: none; } }
+  /* Grupo "Gerenciar" no menu lateral/gaveta */
+  .nav-group { display: grid; gap: 2px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .12); }
+  .nav-h { margin: 0 12px 4px; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--silver); }
+  .nav-exit { display: none; margin-top: auto; }
+  /* Gestão de emergência sem login no site (body.ger-only): só a marca, o grupo "Gerenciar" e "Voltar ao login" */
+  body.ger-only .side-nav > :not(.nav-group), body.ger-only .side .me, body.ger-only #intBtn, body.ger-only .tabbar, body.ger-only #pwChangeBtn { display: none !important; }
+  body.ger-only .nav-group { margin-top: 0; padding-top: 0; border-top: 0; }
+  body.ger-only .nav-exit { display: flex; }
+  .avatar svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  /* Gestão (#/gerenciar/… e #/emergencia): o módulo painel.js é dono do conteúdo de #gerView e #gerBar; o site só posiciona */
+  .ger-main { min-height: 100vh; min-height: 100dvh; padding: 28px max(32px, calc((100% - 1176px) / 2)) calc(40px + var(--ger-bar-h, 0px)); }
+  .ger-bar { position: fixed; z-index: 24; left: var(--side-w); right: 0; bottom: 0; padding: 0 var(--safe-r) var(--safe-b) 0; background: var(--white); }
+  .ger-bar:empty { display: none; }
+  body.ger-on .shell > .medpro { display: none; } /* a tag MED PRO não cobre as ações do topo da gestão */
+  .ger-state { display: grid; justify-items: center; gap: 14px; max-width: 460px; margin: 10vh auto 0; padding: 32px 28px; border-radius: 18px; background: var(--white); box-shadow: var(--card-shadow); text-align: center; color: var(--ink-2); }
+  .ger-state h2 { font-size: 20px; font-weight: 700; }
+  .ger-state h2:focus { outline: none; }
+  .ger-state > .warn-ico { width: 28px; height: 28px; color: var(--graphite); }
+  .ger-spin { width: 28px; height: 28px; border: 3px solid var(--light); border-top-color: var(--navy); border-radius: 50%; animation: ger-spin .8s linear infinite; }
+  @keyframes ger-spin { to { transform: rotate(360deg); } }
+  body.ger-on > .toast-wrap { bottom: calc(28px + var(--ger-bar-h, 0px)); } /* aviso acima da barra de publicação */
   .main-col { margin-left: var(--side-w); min-width: 0; }
   .topbar { display: none; }
   .menu-btn { display: none; }
@@ -519,6 +547,7 @@
   .reader .toast-wrap { bottom: 24px; }
   .toast { max-width: 100%; padding: 12px 20px; border-radius: 999px; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 600; text-align: center; box-shadow: 0 16px 34px -12px rgba(20, 32, 60, .6); opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
   .reader .toast { background: var(--white); color: var(--navy); }
+  .toast[data-kind="err"] { background: var(--graphite); color: var(--white); }
   .toast.show { opacity: 1; transform: none; }
   .toast:empty { padding: 0; box-shadow: none; }
   .share-row { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -825,6 +854,9 @@
     .r-panel { position: fixed; z-index: 20; top: 0; right: 0; bottom: 0; width: min(400px, 92vw); padding-right: var(--safe-r); border-left: 0; border-radius: 18px 0 0 18px; box-shadow: -24px 0 60px -24px rgba(20, 32, 60, .55); transform: translateX(104%); visibility: hidden; transition: transform .28s cubic-bezier(.3, .7, .2, 1), visibility 0s linear .28s; }
     .r-panel.open { transform: none; visibility: visible; transition: transform .28s cubic-bezier(.3, .7, .2, 1); }
     .rp-head { padding-top: 14px; }
+    /* Gestão: sem menu lateral fixo, a barra de publicação ocupa a largura toda */
+    .ger-main { min-height: calc(100vh - var(--bar-h)); min-height: calc(100dvh - var(--bar-h)); padding: 20px 24px calc(32px + var(--ger-bar-h, 0px)); }
+    .ger-bar { left: 0; padding-left: var(--safe-l); }
   }
   /* Tablet em retrato (768–1023) e celular: uma capa no destaque; lista em duas linhas por catálogo */
   @media (max-width: 1023px) {
@@ -855,6 +887,14 @@
     .wrap { padding: 4px 16px calc(var(--tab-h) + 32px + var(--safe-b)); }
     .tabbar { display: grid; }
     .toast-wrap { bottom: calc(var(--tab-h) + 14px + var(--safe-b)); }
+    /* Gestão: a barra de publicação fica logo acima das abas; sem abas (emergência sem login), rente à área segura */
+    .ger-main { padding: 16px 16px calc(var(--tab-h) + 24px + var(--safe-b) + var(--ger-bar-h, 0px)); }
+    .ger-bar { bottom: calc(var(--tab-h) + var(--safe-b)); padding-bottom: 0; }
+    body.ger-only .ger-main { padding-bottom: calc(24px + var(--ger-bar-h, 0px)); }
+    body.ger-only .ger-bar { bottom: 0; padding-bottom: var(--safe-b); }
+    body.ger-on > .toast-wrap { bottom: calc(var(--tab-h) + 14px + var(--safe-b) + var(--ger-bar-h, 0px)); }
+    body.ger-only > .toast-wrap { bottom: calc(14px + var(--ger-bar-h, 0px)); }
+    .ger-state { margin-top: 6vh; padding: 24px 18px; border-radius: 14px; }
     .greet { margin-top: 12px; }
     .greet h1 { font-size: 20px; }
     .hero { grid-template-columns: minmax(0, 1fr); padding: 24px 20px; border-radius: 14px; }
@@ -961,6 +1001,7 @@
     .hs-area.pulse .product-hotspot, dialog.panel, .pc-media.loading { animation: none; }
     .hs-txt, .hs-area { transition: none; }
     .bento { scroll-snap-type: none; }
+    .ger-spin { animation-duration: 2.4s; }
   }
 </style>
 
@@ -1080,15 +1121,30 @@
         <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
       </div>
-      <!-- Só admin do Supabase: abre o painel (admin.html) nesta mesma aba, com a mesma sessão -->
-      <button class="nav-i" type="button" data-nav="painel" data-admin-entry hidden><span class="ico" data-ico="ajustes"></span><span class="nav-t">Painel</span></button>
+      <!-- Gerenciar: só admin do Supabase (ou gestão de emergência aberta); a gestão (painel.js) abre dentro do site -->
+      <div class="nav-group" role="group" aria-labelledby="gerNavH" data-admin-entry hidden>
+        <p class="nav-h" id="gerNavH">Gerenciar</p>
+        <button class="nav-i" type="button" data-ger="catalogos"><span class="ico" data-ico="book"></span><span class="nav-t">Catálogos</span><span class="int-n" data-ger-n="catalogos" hidden></span></button>
+        <button class="nav-i" type="button" data-ger="produtos"><span class="ico" data-ico="tag"></span><span class="nav-t">Produtos</span><span class="int-n" data-ger-n="produtos" hidden></span></button>
+        <button class="nav-i" type="button" data-ger="pessoas"><span class="ico" data-ico="users"></span><span class="nav-t">Pessoas</span><span class="int-n" data-ger-n="pessoas" hidden></span></button>
+        <button class="nav-i" type="button" data-ger="config"><span class="ico" data-ico="ajustes"></span><span class="nav-t">Configurações</span><span class="int-n" data-ger-n="config" hidden></span></button>
+      </div>
     </nav>
+    <!-- Só na gestão de emergência sem login no site (body.ger-only) -->
+    <button class="nav-i nav-exit" type="button" id="gerExitBtn"><span class="ico" data-ico="back"></span><span class="nav-t">Voltar ao login</span></button>
     <button class="me" id="userBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="side"><span class="avatar" data-avatar></span><span class="u-text"><span class="u-name" id="uName"></span><span class="u-role" id="uRole"></span></span><span class="ico me-more" data-ico="more"></span></button>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
   <div class="menu" id="userMenu" hidden>
     <p class="who"><b id="mName"></b><span id="mEmail"></span></p>
-    <button type="button" class="menu-admin" id="adminMenuBtn" data-admin-entry hidden>Painel</button>
+    <!-- Gerenciar no celular (computador e tablet: grupo do menu lateral/gaveta) -->
+    <div class="menu-ger" role="group" aria-labelledby="gerMenuH" data-admin-entry hidden>
+      <p class="menu-h" id="gerMenuH">Gerenciar</p>
+      <button type="button" data-ger="catalogos"><span class="ico" data-ico="book"></span>Catálogos<span class="int-n" data-ger-n="catalogos" hidden></span></button>
+      <button type="button" data-ger="produtos"><span class="ico" data-ico="tag"></span>Produtos<span class="int-n" data-ger-n="produtos" hidden></span></button>
+      <button type="button" data-ger="pessoas"><span class="ico" data-ico="users"></span>Pessoas<span class="int-n" data-ger-n="pessoas" hidden></span></button>
+      <button type="button" data-ger="config"><span class="ico" data-ico="ajustes"></span>Configurações<span class="int-n" data-ger-n="config" hidden></span></button>
+    </div>
     <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
@@ -1259,7 +1315,18 @@
         </section>
       </div>
     </main>
+    <!-- Gestão (#/gerenciar/<seção> e #/emergencia): #gerView é o host.root do painel.js (vazio; o site só escreve nele antes de start: carregando/erro) -->
+    <main class="ger-main" id="viewGer" hidden>
+      <div class="ger-state" id="gerNote" hidden>
+        <h2 id="gerNoteH" tabindex="-1">A gestão já está aberta</h2>
+        <p>Você já entrou na gestão com o seu login. O acesso de emergência não é necessário.</p>
+        <a class="btn primary" href="#/gerenciar">Ir para Gerenciar</a>
+      </div>
+      <section id="gerView" aria-label="Gerenciar"></section>
+    </main>
   </div>
+  <!-- Barra de publicação do painel.js (host.bar): fixa embaixo, acima das abas no celular -->
+  <div class="ger-bar" id="gerBar" hidden></div>
   <nav class="tabbar" id="tabbar" aria-label="Atalhos">
     <button class="tab" type="button" data-tab="inicio" aria-current="true"><span class="ico" data-ico="home"></span><span>Início</span></button>
     <button class="tab" type="button" data-tab="buscar"><span class="ico" data-ico="search"></span><span>Buscar</span></button>
@@ -1870,7 +1937,8 @@
     user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg>',
     copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
     panel: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14.5 4.5v15M17 8.5h1M17 11.5h1"/></svg>',
-    ajustes: '<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>'
+    ajustes: '<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>',
+    users: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M15.5 4.8a3.5 3.5 0 0 1 0 6.4M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>'
   };
   const WARN = `<span class="warn-ico" aria-hidden="true">${I.warn}</span>`;
   $('#icoSearch').innerHTML = I.search;
@@ -2208,26 +2276,36 @@
 
   // Chaves trocadas no painel: recarrega dados.bin com a chave-raiz; se ainda falhar, pede para entrar de novo
   let rotating = null, rotatedAt = 0;
+  // Chave-raiz nova (chave_conteudo) que ainda não abriu dados.bin (ex.: publicação ainda chegando ao site): usada na próxima tentativa
+  let NEXT_ROOT = null;
+  // Recarrega dados.bin (catálogos, busca e produtos) e redesenha a tela atual. Caminho único de keysRotated e da publicação na gestão.
+  // fresh: login Supabase confere o perfil e busca a chave-raiz atual antes de reabrir (a guardada pode ter sido trocada). → false quando saiu (perfil inativo)
+  async function reloadData(fresh) {
+    let key = NEXT_ROOT || ROOT;
+    if (fresh && me.auth === 'supabase') {
+      const chk = await supaCheck(me.uid);
+      if (!chk.perfil) { logout({ msg: MSG_BLOCKED }); return false; }
+      if (chk.key) key = NEXT_ROOT = chk.key;
+    }
+    await unlockData(key);
+    NEXT_ROOT = null;
+    clearAllImages();
+    rerenderCurrent();
+    return true;
+  }
+  // Falha que significa acesso trocado (chave, dados ou sessão): sai com "Seu acesso foi atualizado". → true quando saiu
+  function reloadGone(e) {
+    if (isDecryptFail(e) || e.status === 404 || (me && me.auth === 'supabase' && (e.status === 400 || e.status === 401))) { logout({ msg: MSG_EXPIRED }); return true; }
+    return false;
+  }
   function keysRotated(err) {
     if (err && err.gen != null && err.gen !== DATA_GEN) return null; // pedido anterior à última recarga: ignora
     if (rotating || !me) return rotating;
     if (Date.now() - rotatedAt < 60000) { logout({ msg: MSG_EXPIRED }); return null; }
     rotating = (async () => {
-      try {
-        // Login Supabase: confere o perfil e busca a chave-raiz atual antes de reabrir (a guardada pode ter sido trocada)
-        let key = ROOT;
-        if (me.auth === 'supabase') {
-          const chk = await supaCheck(me.uid);
-          if (!chk.perfil) { logout({ msg: MSG_BLOCKED }); return; }
-          if (chk.key) key = chk.key;
-        }
-        await unlockData(key);
-        rotatedAt = Date.now();
-        clearAllImages();
-        rerenderCurrent();
-      } catch (e) {
-        if (isDecryptFail(e) || e.status === 404 || (me && me.auth === 'supabase' && (e.status === 400 || e.status === 401))) logout({ msg: MSG_EXPIRED });
-      } finally { rotating = null; }
+      try { if (await reloadData(true)) rotatedAt = Date.now(); }
+      catch (e) { reloadGone(e); }
+      finally { rotating = null; }
     })();
     return rotating;
   }
@@ -2479,15 +2557,21 @@
   try { bc = new BroadcastChannel('dm'); bc.onmessage = (e) => { if (e.data && e.data.t === 'sair' && me) logout({ broadcast: false }); }; } catch (e) { bc = null; }
 
   /* ================= vistas e rotas ================= */
-  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader'), card: $('#viewCard') };
+  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader'), card: $('#viewCard'), ger: $('#viewGer') };
   let view = '';
   function showOnly(name) {
     if (name !== 'shelf') { drawer.close(false); setMenu(false); }
     if (name !== 'card') leaveCard(name);
     V.login.hidden = name !== 'login';
-    V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card');
-    V.shelf.hidden = name === 'card';
+    V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card' || name === 'ger');
+    V.shelf.hidden = name === 'card' || name === 'ger';
     V.card.hidden = name !== 'card';
+    V.ger.hidden = name !== 'ger';
+    $('#gerBar').hidden = name !== 'ger'; // a barra de publicação só aparece na gestão
+    // Gestão de emergência sem login no site: só o shell com "Gerenciar" e "Voltar ao login"
+    document.body.classList.toggle('ger-on', name === 'ger');
+    document.body.classList.toggle('ger-only', name === 'ger' && !me);
+    $('#logoutBtn').textContent = me ? 'Sair' : 'Voltar ao login';
     V.reader.hidden = name !== 'reader';
     // Com o leitor aberto, a prateleira por baixo sai da ordem de foco e da árvore de acessibilidade
     V.shell.inert = name === 'reader';
@@ -2500,6 +2584,7 @@
     syncNav();
     const tabHome = $('#tabbar [data-tab="inicio"]'), tabCard = $('#tabbar [data-tab="cartao"]');
     if (name === 'card') { tabHome.removeAttribute('aria-current'); tabCard.setAttribute('aria-current', 'true'); }
+    else if (name === 'ger') { tabHome.removeAttribute('aria-current'); tabCard.removeAttribute('aria-current'); }
     else { tabHome.setAttribute('aria-current', 'true'); tabCard.removeAttribute('aria-current'); }
   }
   let lastRoute = '#/prateleira';
@@ -2508,17 +2593,35 @@
     try { if (location.hash === h) route(); else location.hash = h; }
     catch (e) { route(h); }
   }
+  // Troca a rota sem criar entrada no histórico (o "voltar" não cai de novo no redirecionamento)
+  function redirect(h) {
+    lastRoute = h;
+    try { history.replaceState(null, '', h); } catch (e) { /* noop */ }
+    route(h);
+  }
   function route(forced) {
     const h = forced || location.hash || lastRoute;
-    if (!me) { closeReader(); showOnly('login'); return; }
     // Endereço de produto: #/catalogo/<id>/<página>?produto=<SKU>
     const qi = h.indexOf('?');
     const parts = (qi >= 0 ? h.slice(0, qi) : h).replace(/^#\/?/, '').split('/');
+    // Gestão: #/emergencia (com ou sem login) e, com a gestão aberta em emergência, as seções #/gerenciar/…
+    const gerEmerg = parts[0] === 'emergencia' || (parts[0] === 'gerenciar' && GER.mode === 'emergency');
+    if (!me) {
+      closeReader();
+      if (gerEmerg) routeGer(parts); else showOnly('login');
+      return;
+    }
     const m = qi >= 0 ? /(?:^|&)produto=([^&]*)/.exec(h.slice(qi + 1)) : null;
     let sku = '';
     if (m) { try { sku = decodeURIComponent(m[1].replace(/\+/g, ' ')); } catch (e) { sku = m[1]; } }
     // Saindo da edição do cartão com alterações não concluídas: pergunta antes (a URL volta para a edição)
     if (!(parts[0] === 'cartao' && parts[1] === 'editar') && cardLeaveBlocked(h)) return;
+    // Gestão: só admin do Supabase (acesso antigo tem papel ''); os demais voltam à prateleira sem carregar painel.js
+    if (parts[0] === 'gerenciar' || parts[0] === 'emergencia') {
+      if (!gerEmerg && me.papel !== 'admin') { redirect('#/prateleira'); return; }
+      routeGer(parts);
+      return;
+    }
     if (parts[0] === 'catalogo' && parts[1]) {
       let id = parts[1];
       try { id = decodeURIComponent(id); } catch (e) { /* mantém */ }
@@ -2549,10 +2652,11 @@
     if (b) { b.focus(); return; }
     const g = $('#greet'); g.setAttribute('tabindex', '-1'); g.focus();
   }
-  // Do cartão para a prateleira na hora (menu lateral, gaveta e abas continuam o próprio clique depois).
+  // Do cartão ou da gestão para a prateleira na hora (menu lateral, gaveta e abas continuam o próprio clique depois).
   // Devolve false quando a edição do cartão tem alterações não concluídas (o diálogo pergunta e o clique para aqui).
+  // Gestão com alterações não publicadas: sai sem perguntar (elas ficam na barra enquanto a página estiver aberta)
   function toShelf() {
-    if (view !== 'card') return true;
+    if (view !== 'card' && view !== 'ger') return true;
     if (cardLeaveBlocked('#/prateleira')) return false;
     lastRoute = '#/prateleira';
     try { history.pushState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
@@ -2916,7 +3020,10 @@
   function startSession(prof) {
     // auth: 'legacy' (acessos.json; sessões antigas sem o campo) ou 'supabase' (id = null; uid = id do usuário no Supabase)
     // papel: papel bruto do perfil no Supabase (role continua o mapeado: admin → interno); acesso antigo: ''
-    me = { uid: prof.u || prof.id, id: prof.id, name: prof.n || '', role: prof.r, company: prof.c || '', email: prof.e || '', auth: prof.auth === 'supabase' ? 'supabase' : 'legacy' };
+    const uid = prof.u || prof.id;
+    // Novo login (onSessionNeeded) com OUTRA conta enquanto a gestão está aberta: tranca a gestão e recarrega já com a sessão nova
+    if (GER.uid && GER.uid !== uid) { gerLock(); location.reload(); return; }
+    me = { uid, id: prof.id, name: prof.n || '', role: prof.r, company: prof.c || '', email: prof.e || '', auth: prof.auth === 'supabase' ? 'supabase' : 'legacy' };
     me.papel = me.auth === 'supabase' ? String(prof.p || '') : '';
     if (me.auth === 'legacy') rememberLegacyUid();
     loadPrefs();
@@ -2928,7 +3035,7 @@
     $('#mName').textContent = me.name;
     $('#mEmail').textContent = me.email;
     $('#pwChangeBtn').hidden = me.auth !== 'supabase';
-    $$('[data-admin-entry]').forEach((el) => { el.hidden = me.papel !== 'admin'; }); // "Painel": menu lateral/gaveta e menu da conta (celular)
+    syncGerEntries(); // "Gerenciar": menu lateral/gaveta e menu da conta (celular)
     $('#legacyNote').hidden = me.auth !== 'legacy' || legacyNoteClosed();
     $('#rShareTxt').textContent = me.role === 'cliente' ? 'Compartilhar' : 'Enviar ao cliente';
     // Cartão: item do menu lateral/gaveta (com lápis), aba central do celular e faixa "Seu cartão" do início
@@ -2949,6 +3056,7 @@
   async function logout(opts = {}) {
     if (loggingOut) return;
     loggingOut = true;
+    gerLock(); // gestão aberta: cofre, token e segredos saem da memória (também na saída por outra aba, evento storage ou aviso "sair")
     flushPrefs();
     clearCardMemory(); // os dados do cartão ficam no aparelho; só a tela e a foto em memória são descartadas
     // Login Supabase: encerra a sessão única no servidor (só a aba que pediu; as outras recebem o aviso "sair" ou o evento storage de "dm.auth" e só limpam)
@@ -2972,17 +3080,164 @@
     $$('[data-menu-trigger]').forEach((b) => b.setAttribute('aria-expanded', String(!!open && b === menuFrom)));
   }
   $$('[data-menu-trigger]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setMenu($('#userMenu').hidden || menuFrom !== b, b); }));
-  $('#logoutBtn').addEventListener('click', () => logout());
+  $('#logoutBtn').addEventListener('click', () => signOut());
   $('#pwChangeBtn').addEventListener('click', () => { const from = menuFrom; setMenu(false); openPwChange(from); });
-  $('#adminMenuBtn').addEventListener('click', () => { setMenu(false); openAdmin(); });
-  // "Painel" (só admin do Supabase): admin.html nesta mesma aba, que reaproveita a sessão única (P.auth) sem pedir senha.
-  // Edição do cartão com alterações não concluídas: pergunta antes (como qualquer saída do cartão) e fica no site.
-  function openAdmin() {
-    if (!me || me.papel !== 'admin') return;
-    if (cardLeaveBlocked('#/prateleira')) return;
-    flushPrefs();
-    location.assign('admin.html');
+  // Itens "Gerenciar" do menu da conta (celular)
+  $('#userMenu').addEventListener('click', (e) => {
+    const g = e.target.closest('[data-ger]'); if (!g) return;
+    setMenu(false);
+    navigate('#/gerenciar/' + g.dataset.ger);
+  });
+
+  /* ================= gestão dentro do site (painel.js sob demanda; contrato em CONTRATO-painel.md) =================
+     #/gerenciar/<seção>: admin do Supabase (modo 'unified', mesma sessão P.auth). #/emergencia: com ou sem login (modo 'emergency',
+     senha mestra). O módulo é carregado uma vez, start(host) uma vez; depois cada rota só chama show(seção). */
+  const GER_SECTIONS = ['catalogos', 'produtos', 'pessoas', 'config'];
+  // mode: modo em que start foi chamado ('' = ainda não); ready: promessa de load + start; uid: conta que abriu; seq: última rota pedida
+  const GER = { mode: '', ready: null, uid: '', section: '', seq: 0 };
+  let painelLoad = null;
+  function loadPainel() {
+    if (window.DellamedPainel) return Promise.resolve(window.DellamedPainel);
+    if (painelLoad) return painelLoad;
+    const s = document.createElement('script');
+    painelLoad = new Promise((res, rej) => {
+      s.src = 'painel.js?v=132289d1';
+      s.integrity = 'sha384-AincAX0mNUtcOl6UlQImYgxiW1beXSFCD8GnJCln2tNQ8D5vWP667RmDzPof9awB';
+      s.async = true;
+      s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
+      s.onerror = () => rej(new Error('painel indisponível'));
+      document.head.appendChild(s);
+    }).catch((e) => { painelLoad = null; s.remove(); throw e; }); // falhou: "Tentar de novo" cria outro <script>
+    return painelLoad;
   }
+  const gerPending = () => { try { return !!(GER.ready && window.DellamedPainel && window.DellamedPainel.hasPending()); } catch (e) { return false; } };
+  function gerLock() { try { if (window.DellamedPainel) window.DellamedPainel.lock(); } catch (e) { /* noop */ } }
+  // Grupo "Gerenciar": admin do Supabase, ou quem abriu a gestão de emergência nesta aba (inclusive sem login)
+  function syncGerEntries() {
+    const on = GER.mode === 'emergency' || (!!me && me.papel === 'admin');
+    $$('[data-admin-entry]').forEach((el) => { el.hidden = !on; });
+  }
+  function setGerCount(section, n) {
+    if (!GER_SECTIONS.includes(section)) return;
+    const v = Math.max(0, Math.floor(Number(n) || 0));
+    $$(`[data-ger-n="${section}"]`).forEach((el) => { el.textContent = v ? fmtN(v) : ''; el.hidden = !v; });
+  }
+  function gerHost(mode) {
+    return {
+      P,
+      mode,
+      user: me ? { uid: me.uid, email: me.email, nome: me.name, papel: me.papel || '' } : null,
+      root: $('#gerView'),
+      bar: $('#gerBar'),
+      navigate: (section) => { if (GER_SECTIONS.includes(section)) navigate('#/gerenciar/' + section); },
+      setCount: setGerCount,
+      toast: (msg, kind) => toast(msg, kind),
+      onPublished: gerPublished,
+      onSessionNeeded: gerSessionNeeded,
+      signOut,
+      goEmergency: () => { location.hash = '#/emergencia'; }
+    };
+  }
+  // Rota da gestão (o roteador já conferiu o papel): #/gerenciar sem seção válida → Catálogos
+  function routeGer(parts) {
+    const emerg = parts[0] === 'emergencia';
+    const sec = GER_SECTIONS.includes(parts[1]) ? parts[1] : '';
+    if (!emerg && !sec) { redirect('#/gerenciar/catalogos'); return; }
+    closeReader();
+    GER.section = sec; // antes de showOnly: marca o item do menu
+    if (!me) { // emergência sem login: shell mínimo (marca, "Gerenciar" e "Voltar ao login")
+      $$('[data-avatar]').forEach((a) => { a.innerHTML = I.lock; });
+      $('#mName').textContent = 'Gestão de emergência';
+      $('#mEmail').textContent = 'Sem login no site';
+      $('#avatarBtn').setAttribute('aria-label', 'Menu da gestão');
+    }
+    showOnly('ger');
+    gerOpen(emerg ? 'emergency' : GER.mode || 'unified', sec);
+  }
+  function gerStart(mode) {
+    if (GER.ready) return GER.ready;
+    const root = $('#gerView');
+    GER.mode = mode; GER.uid = me ? me.uid : '';
+    syncGerEntries();
+    root.innerHTML = '<div class="ger-state" role="status"><span class="ger-spin" aria-hidden="true"></span><p>Abrindo a gestão…</p></div>';
+    const job = loadPainel().then(async (api) => {
+      root.innerHTML = ''; // a partir daqui o conteúdo é do módulo
+      await api.start(gerHost(mode));
+      return api;
+    });
+    GER.ready = job;
+    job.catch(() => { if (GER.ready !== job) return; GER.ready = null; GER.mode = ''; GER.uid = ''; syncGerEntries(); });
+    return job;
+  }
+  async function gerOpen(mode, section) {
+    const seq = ++GER.seq, root = $('#gerView'), note = $('#gerNote');
+    // Gestão já aberta com o login (unified) e a pessoa foi para #/emergencia: só avisa, com o link para Gerenciar
+    const clash = mode === 'emergency' && GER.mode === 'unified';
+    note.hidden = !clash; root.hidden = clash;
+    if (clash) { $('#gerBar').hidden = true; $('#gerNoteH').focus({ preventScroll: true }); return; }
+    let api;
+    try { api = await gerStart(mode); }
+    catch (e) {
+      if (seq !== GER.seq || view !== 'ger') return;
+      root.innerHTML = `<div class="ger-state" role="alert">${WARN}<p>Não foi possível carregar a gestão. Verifique a internet e tente de novo.</p><button class="btn primary" type="button">Tentar de novo</button></div>`;
+      $('button', root).addEventListener('click', () => route());
+      return;
+    }
+    if (seq !== GER.seq || view !== 'ger' || !section) return;
+    try { api.show(section); } catch (e) { toast('Não foi possível abrir esta seção da gestão.', 'err'); }
+  }
+  // Publicado na gestão: recarrega catálogos, busca e produtos com a chave-raiz atual (keysRotated: busca antes a chave nova em chave_conteudo).
+  // O site publicado pode demorar um pouco para receber os arquivos novos: tenta de novo algumas vezes e confere mais uma vez depois.
+  let gerPubJob = Promise.resolve(), gerPubT = null;
+  function gerPublished(info, tries = 0) {
+    const fresh = !!(info && info.keysRotated);
+    gerPubJob = gerPubJob.then(async () => {
+      if (!me) return; // emergência sem login: não há prateleira para atualizar
+      if (rotating) await rotating;
+      clearTimeout(gerPubT);
+      try {
+        if (!(await reloadData(fresh))) return;
+        if (!tries) gerPubT = setTimeout(() => gerPublished({ keysRotated: false }, 9), 90000);
+      } catch (e) {
+        if (offlineErr(e)) { toast('Publicado. Os catálogos desta tela atualizam quando a conexão voltar.'); return; }
+        if ((isDecryptFail(e) || e.status === 404) && tries < 4) { gerPubT = setTimeout(() => gerPublished({ keysRotated: false }, tries + 1), 45000); return; }
+        if (!reloadGone(e)) toast('Não foi possível atualizar os catálogos nesta tela. Recarregue a página.', 'err');
+      }
+    });
+    return gerPubJob;
+  }
+  // Sessão caiu durante a gestão: login do site sem apagar nada; depois de entrar, startSession → route() volta à rota atual
+  function gerSessionNeeded() {
+    if (view === 'login') return;
+    flushPrefs();
+    showOnly('login');
+    showLoginPart('login');
+    hideNet();
+    loginAlert('Sua sessão expirou. Entre novamente para continuar na gestão.');
+    if (me && me.email) $('#loginEmail').value = me.email;
+    setLoginReady(true);
+    $('#loginPass').value = '';
+    $(me && me.email ? '#loginPass' : '#loginEmail').focus();
+  }
+  // "Sair" (site e módulo) e "Voltar ao login" (emergência sem login): alterações não publicadas pedem confirmação
+  function signOut() {
+    setMenu(false);
+    const go = () => {
+      gerLock();
+      if (me) { logout(); return; }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+      location.reload();
+    };
+    if (!gerPending()) { go(); return; }
+    openDialog({
+      title: 'Há alterações não publicadas. Sair mesmo assim?',
+      body: '<p class="dlg-sub">As alterações que ainda não foram publicadas serão perdidas.</p>',
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Sair mesmo assim', kind: 'primary', onClick: () => { dlg._ret = null; go(); } }]
+    });
+  }
+  $('#gerExitBtn').addEventListener('click', () => { drawer.close(false); signOut(); });
+  // Altura da barra de publicação: a gestão e o aviso (toast) ficam livres dela
+  new ResizeObserver(() => { document.documentElement.style.setProperty('--ger-bar-h', `${$('#gerBar').offsetHeight || 0}px`); }).observe($('#gerBar'));
 
   /* ================= conta: trocar senha (só login Supabase) ================= */
   function openPwChange(from) {
@@ -3073,11 +3328,11 @@
     return api;
   }
   const side = $('#side'), menuBtn = $('#menuBtn');
-  const drawer = modalLayer(side, $('#scrim'), () => [$('#mainCol'), $('#tabbar'), $('.shell > .medpro')], (on) => {
+  const drawer = modalLayer(side, $('#scrim'), () => [$('#mainCol'), $('#tabbar'), $('#gerBar'), $('.shell > .medpro')], (on) => {
     menuBtn.setAttribute('aria-expanded', String(on));
     document.body.classList.toggle('drawer-open', on);
   });
-  menuBtn.addEventListener('click', () => { setMenu(false); drawer.open(menuBtn); const f = $('.nav-i', side); if (f) f.focus(); });
+  menuBtn.addEventListener('click', () => { setMenu(false); drawer.open(menuBtn); const f = $$('.nav-i', side).find((x) => x.getClientRects().length); if (f) f.focus(); }); // primeiro item visível (emergência sem login: "Gerenciar")
   $('#sideClose').addEventListener('click', () => drawer.close());
   onMq(deskMq, () => { if (deskMq.matches) drawer.close(false); setMenu(false); });
   onMq(mobileMq, () => { if (mobileMq.matches) drawer.close(false); setMenu(false); applyView(); });
@@ -3216,8 +3471,11 @@
     syncNav();
   }
   function syncNav() {
-    const cur = view === 'card' ? 'cartao' : filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
+    const cur = view === 'card' ? 'cartao' : view === 'ger' ? '' : filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
     $$('#side [data-nav]').forEach((b) => { if (b.dataset.nav === cur) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+    // Gerenciar (menu lateral/gaveta e menu da conta): seção aberta da gestão
+    const ger = view === 'ger' ? GER.section : '';
+    $$('[data-ger]').forEach((b) => { if (ger && b.dataset.ger === ger) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
   }
   function setFilter(k) {
     filter = k;
@@ -3229,11 +3487,12 @@
     setFilter(b.dataset.k);
     const again = $(`#chips [data-k="${cssq(filter)}"]`); if (again) again.focus();
   });
-  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel), Meu cartão e Painel (admin.html, só admin)
+  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel), Meu cartão e Gerenciar (gestão, só admin)
   side.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-ger]');
+    if (g) { drawer.close(false); navigate('#/gerenciar/' + g.dataset.ger); return; }
     const b = e.target.closest('[data-nav]'); if (!b) return;
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
-    if (nav === 'painel') { drawer.close(false); openAdmin(); return; }
     if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'interesses') { drawer.close(); openInterests(); return; }
     if (!toShelf()) { drawer.close(false); return; } // no cartão, Início, Catálogos e Favoritos voltam à prateleira antes de agir
@@ -3596,10 +3855,11 @@
     if (dlg._onClose) { const f = dlg._onClose; dlg._onClose = null; f(); }
     const r = dlg._ret; dlg._ret = null; if (r && r.isConnected && typeof r.focus === 'function') r.focus();
   });
-  // Aviso curto: a região viva fica sempre no documento (só a aparência some)
-  function toast(msg) {
+  // Aviso curto: a região viva fica sempre no documento (só a aparência some). kind 'err' (gestão): grafite
+  function toast(msg, kind) {
     const t = $('#toast');
     clearTimeout(t._t); clearTimeout(t._t2);
+    t.dataset.kind = kind === 'err' ? 'err' : '';
     t.textContent = msg;
     t.classList.add('show');
     t._t = setTimeout(() => { t.classList.remove('show'); t._t2 = setTimeout(() => { t.textContent = ''; }, 300); }, 3200);
@@ -5788,6 +6048,7 @@
     if (aviso) loginAlert(aviso);
     try { await loadAccess(); }
     catch (e) {
+      if (/^#\/?emergencia(?:[/?]|$)/.test(location.hash)) { route(); return; } // gestão de emergência não depende de acessos.json
       showNet(e instanceof NetError ? MSG_OFFLINE : 'Não foi possível carregar a página de acesso agora.', boot);
       return;
     }
