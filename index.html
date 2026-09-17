@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-4T2UaullJPMoge1PQqeDylrOkYOuN2FnjztSRHdODko=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-cfXMDoo0NwkP9oDnjxziBwpUYbwZX5/eCEL2re1GJUU=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -71,8 +71,6 @@
   .ico { display: inline-grid; place-items: center; flex: none; }
   .ico svg, .icon-btn svg, .arrow svg, .btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; flex: none; }
   .logo { display: block; background: var(--logo) left center / contain no-repeat; height: 40px; width: 150px; flex: none; }
-  .medpro { position: absolute; top: 0; right: 40px; z-index: 26; width: 44px; aspect-ratio: 570 / 1280; background: var(--medpro) center / contain no-repeat; pointer-events: none; }
-  @media (min-width: 1200px) { .reader:not(.panel-off) > .medpro { right: 364px; } } /* não cobre o cabeçalho do painel "Nesta página" */
   @media (max-width: 1199px) { .hero .btn, .bento .btn { min-height: 44px; } } /* alvo de toque confortável */
   .lines { margin: 0; font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--white); white-space: nowrap; }
   .lines span { opacity: .55; padding: 0 6px; }
@@ -142,13 +140,42 @@
   .secure { display: inline; }
   .secure svg { display: inline-block; width: 14px; height: 14px; margin-right: 5px; vertical-align: -2px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
   .pw-actions { display: flex; justify-content: flex-start; margin-top: -8px; }
+  /* ---------- cadastro próprio (#/cadastro): mesmos campos, avisos e botões do login ---------- */
+  .signup-cta { font-size: 13px; color: var(--ink-2); text-align: center; }
+  .contact.contact-sm { font-size: 12px; margin-top: -8px; }
+  .field-opt { font-weight: 400; color: var(--ink-2); }
+  .select { position: relative; }
+  .field select { width: 100%; height: 46px; padding: 0 44px 0 14px; border: 1px solid var(--line-ui); border-radius: 10px; background: var(--white); color: var(--ink); font-size: 16px; -webkit-appearance: none; appearance: none; cursor: pointer; }
+  .field select:focus { outline: 2px solid var(--navy); outline-offset: 2px; border-color: var(--navy); }
+  .field select:disabled { background: var(--light); color: var(--ink-2); cursor: default; }
+  .field.invalid select { border: 2px solid var(--graphite); }
+  .select > .ico { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--navy); pointer-events: none; }
+  .field-note { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; font-size: 12px; font-weight: 600; color: var(--graphite); }
+  .pw-meter { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .pw-meter i { height: 4px; border-radius: 2px; background: var(--light); }
+  .pw-meter[data-level="1"] i:first-child { background: var(--graphite); }
+  .pw-meter[data-level="2"] i:nth-child(-n+2) { background: var(--sky); }
+  .pw-meter[data-level="3"] i { background: var(--navy); }
+  .pw-meter-t { font-size: 12px; color: var(--ink-2); }
+  .pw-meter-t b { color: var(--navy); font-weight: 600; }
+  .check.check-terms { align-items: flex-start; line-height: 1.45; }
+  .check.check-terms input { flex: none; margin: 1px 0 0; }
+  .terms-read { justify-self: start; margin-top: -8px; }
+  .terms-list { margin: 0; padding-left: 18px; display: grid; gap: 8px; font-size: 13px; line-height: 1.55; color: var(--ink); }
+  .terms-list b { color: var(--navy); }
+  .done-ico { width: 48px; height: 48px; border-radius: 50%; background: rgba(139, 184, 232, .25); color: var(--navy); }
+  .done-ico svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .su-email { color: var(--navy); font-weight: 600; overflow-wrap: anywhere; }
 
   /* ---------- área logada: menu lateral + coluna de conteúdo ---------- */
   .shell { position: relative; min-height: 100vh; min-height: 100dvh; background: var(--light); }
   .side { position: fixed; z-index: 30; top: 0; bottom: 0; left: 0; width: var(--side-w); display: flex; flex-direction: column; padding: 20px 14px calc(14px + var(--safe-b)) calc(14px + var(--safe-l)); background: var(--navy); color: var(--white); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(139, 184, 232, .4) transparent; }
   .side:focus { outline: none; }
   .side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; margin: 0 0 20px 10px; }
-  .side .logo { height: 34px; width: 128px; }
+  .side .logo { display: block; height: 34px; width: 128px; }
+  .side-home { display: block; margin: 0 0 0 -6px; padding: 5px 6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+  .side-home:hover { background: var(--hover-dark); }
+  .side-home:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
   .side-close { display: none; }
   .side-nav { display: grid; gap: 2px; }
   .nav-i { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: rgba(255, 255, 255, .78); font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
@@ -203,7 +230,6 @@
   .ger-main { min-height: 100vh; min-height: 100dvh; padding: 28px max(32px, calc((100% - 1176px) / 2)) calc(40px + var(--ger-bar-h, 0px)); }
   .ger-bar { position: fixed; z-index: 24; left: var(--side-w); right: 0; bottom: 0; padding: 0 var(--safe-r) var(--safe-b) 0; background: var(--white); }
   .ger-bar:empty { display: none; }
-  body.ger-on .shell > .medpro { display: none; } /* a tag MED PRO não cobre as ações do topo da gestão */
   .ger-state { display: grid; justify-items: center; gap: 14px; max-width: 460px; margin: 10vh auto 0; padding: 32px 28px; border-radius: 18px; background: var(--white); box-shadow: var(--card-shadow); text-align: center; color: var(--ink-2); }
   .ger-state h2 { font-size: 20px; font-weight: 700; }
   .ger-state h2:focus { outline: none; }
@@ -808,7 +834,6 @@
     .search kbd { display: none; }
     .search input { padding-right: 16px; }
     .wrap { padding: 4px 24px 56px; }
-    .shell > .medpro { right: 16px; width: 32px; }
     .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .bento[data-n="3"] > .tile.cont { grid-column: 1 / -1; }
     .hero { padding: 30px 32px; min-height: 0; }
@@ -823,6 +848,8 @@
     .link { min-height: 44px; padding: 10px 6px; }
     .check { min-height: 44px; }
     .check input { width: 20px; height: 20px; }
+    .check.check-terms { min-height: 0; padding: 4px 0; }
+    .terms-read { margin-top: -12px; }
     .spread { padding: 8px; }
     .int-rm { width: 44px; height: 44px; }
     /* iOS: campos com menos de 16px disparam zoom automático */
@@ -837,7 +864,6 @@
     .r-top #rShare .txt, .r-top .int-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .r-top .int-btn { padding: 0 12px; }
     .zoom-level { display: none; }
-    .reader > .medpro { right: 16px; width: 32px; }
     .bar { position: fixed; z-index: 9; left: 50%; bottom: calc(10px + var(--safe-b)); transform: translateX(-50%); gap: 2px; max-width: calc(100vw - 12px); padding: 3px 4px; border-radius: 999px; background: rgba(30, 44, 79, .96); border: 1px solid var(--line-soft); box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .65); }
     .bar .grp.left { display: flex; }
     .counter, .jump { min-width: 84px; width: auto; }
@@ -874,7 +900,6 @@
     .login-brand .logo { height: 40px; width: 150px; }
     .login-hero h1 { font-size: 24px; margin: 14px 0 0; }
     .login-hero p, .login-brand .tagline, .login-brand .lines { display: none; }
-    .login-brand .medpro { width: 32px; right: 16px; }
     .login-panel { justify-content: flex-start; padding: 20px 16px 40px; }
     .login-panel form, .login-panel .stack-login { padding: 24px 18px; }
   }
@@ -953,7 +978,6 @@
     .empty { padding: 36px 18px; border-radius: 14px; }
     /* Leitor */
     .r-top { padding: 0 8px 0 calc(6px + var(--safe-l)); gap: 4px; }
-    .reader > .medpro { display: none; }
     .back { width: 44px; padding: 0; justify-content: center; }
     .back .txt, .pill-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .panel-btn { padding: 0 10px; gap: 4px; }
@@ -1039,7 +1063,6 @@
       <p>Consulte, folheie e compartilhe os catálogos oficiais, sempre na versão mais recente.</p>
     </div>
     <p class="tagline"><b>Saúde e bem-estar</b> para todos.</p>
-    <span class="medpro" aria-hidden="true"></span>
   </div>
   <div class="login-panel">
     <form id="loginForm" novalidate>
@@ -1057,7 +1080,8 @@
         <button type="button" class="link" id="toForgot">Esqueci minha senha</button>
       </div>
       <button class="btn primary block" type="submit" id="loginSubmit" disabled>Carregando…</button>
-      <p class="contact" data-contact="Não tem acesso? Fale com o marketing:" hidden></p>
+      <p class="signup-cta">Não tem conta? <a class="link" href="#/cadastro" id="toSignup">Cadastre-se</a></p>
+      <p class="contact contact-sm" data-contact="Dúvidas? Fale com o marketing:" hidden></p>
     </form>
     <form id="forgotForm" novalidate hidden>
       <h2 id="forgotH" tabindex="-1">Esqueci minha senha</h2>
@@ -1100,6 +1124,45 @@
       <p class="contact" data-contact="Dúvidas? Fale com o marketing:" hidden></p>
       <button type="button" class="link" id="actBack" style="justify-self:center">Voltar para o login</button>
     </div>
+    <!-- Cadastro próprio (#/cadastro): só e-mail @dellamed.com.br; a conta nasce pendente e o marketing aprova -->
+    <form id="signupForm" novalidate hidden>
+      <p class="label-caps">Cadastro</p>
+      <h2 id="signupH" tabindex="-1">Crie sua conta</h2>
+      <p class="sub">Para a equipe Dellamed. Use o seu e-mail corporativo: depois da confirmação, o marketing aprova o acesso.</p>
+      <div class="alert error" id="signupAlert" role="alert" hidden></div>
+      <div class="field" id="fSuNome"><label class="field-label" for="suNome">Nome completo</label><input id="suNome" data-su="nome" type="text" autocomplete="name" maxlength="120" required><em class="err" id="errSuNome" hidden></em></div>
+      <div class="field" id="fSuEmail"><label class="field-label" for="suEmail">E-mail corporativo</label><input id="suEmail" data-su="email" type="email" autocomplete="email" inputmode="email" placeholder="nome@dellamed.com.br" maxlength="120" required><em class="err" id="errSuEmail" hidden></em></div>
+      <div class="field" id="fSuWa"><label class="field-label" for="suWa">WhatsApp <span class="field-opt">(opcional)</span></label><input id="suWa" data-su="wa" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="(00) 00000-0000" maxlength="16"><em class="err" id="errSuWa" hidden></em></div>
+      <div class="field" id="fSuSetor"><label class="field-label" for="suSetor">Setor</label>
+        <div class="select"><select id="suSetor" data-su="setor" required disabled><option value="">Carregando os setores…</option></select><span class="ico" data-ico="more" aria-hidden="true"></span></div>
+        <p class="field-note" id="suSetorNote" role="status" hidden><span id="suSetorMsg"></span><button type="button" class="link" id="suSetorRetry">Tentar de novo</button></p>
+        <em class="err" id="errSuSetor" hidden></em>
+      </div>
+      <div class="field" id="fSuPass"><label class="field-label" for="suPass">Senha</label>
+        <div class="pw"><input id="suPass" data-su="pass" type="password" autocomplete="new-password" required><button type="button" class="pw-toggle ico" id="suPwToggle" aria-label="Mostrar senha" aria-pressed="false"></button></div>
+        <div class="pw-meter" id="suMeter" data-level="0" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p class="pw-meter-t" id="suMeterTxt" aria-live="polite">Use pelo menos 12 caracteres, sem partes do seu e-mail.</p>
+        <em class="err" id="errSuPass" hidden></em>
+      </div>
+      <div class="field" id="fSuPass2"><label class="field-label" for="suPass2">Confirmar senha</label>
+        <div class="pw"><input id="suPass2" data-su="pass2" type="password" autocomplete="new-password" required><button type="button" class="pw-toggle ico" id="suPwToggle2" aria-label="Mostrar senha" aria-pressed="false"></button></div>
+        <em class="err" id="errSuPass2" hidden></em>
+      </div>
+      <div class="field" id="fSuTerms"><label class="check check-terms"><input type="checkbox" id="suTerms" data-su="termos" required> <span>Li e aceito os termos de uso e a política de privacidade</span></label><em class="err" id="errSuTerms" hidden></em></div>
+      <button type="button" class="link terms-read" id="suTermsLink">Ler os termos de uso e a política de privacidade</button>
+      <button class="btn primary block" type="submit" id="signupSubmit">Criar conta</button>
+      <p class="signup-cta">Já tenho conta · <button type="button" class="link" id="suToLogin">Entrar</button></p>
+    </form>
+    <!-- Cadastro enviado ("Confira seu e-mail") ou e-mail confirmado com o pedido em análise -->
+    <div class="stack-login" id="signupMsgView" hidden>
+      <span class="ico done-ico" data-ico="check" aria-hidden="true"></span>
+      <p class="label-caps" id="suMsgCaps">Cadastro enviado</p>
+      <h2 id="suMsgH" tabindex="-1">Confira seu e-mail</h2>
+      <p class="sub" id="suMsgText"></p>
+      <p class="alert ok" id="suMsgNote">Não chegou em alguns minutos? Confira também a caixa de spam.</p>
+      <p class="contact contact-sm" data-contact="Dúvidas? Fale com o marketing:" hidden></p>
+      <button type="button" class="btn primary block" id="suMsgBack">Voltar ao login</button>
+    </div>
     <p class="login-foot"><span class="secure" id="secureNote"></span></p>
   </div>
 </section>
@@ -1109,7 +1172,7 @@
   <!-- Menu lateral: fixo no computador, gaveta no tablet (o celular usa a barra de abas) -->
   <aside class="side" id="side" aria-label="Menu" tabindex="-1">
     <div class="side-head">
-      <span class="logo" role="img" aria-label="Dellamed"></span>
+      <button class="side-home" id="sideHome" type="button" aria-label="Dellamed — ir para o Início"><span class="logo" aria-hidden="true"></span></button>
       <button class="icon-btn side-close" id="sideClose" type="button" aria-label="Fechar o menu"><span class="ico" data-ico="close"></span></button>
     </div>
     <nav class="side-nav" aria-label="Seções">
@@ -1334,7 +1397,6 @@
     <button class="tab" type="button" data-tab="interesses" data-int-btn="Interesses"><span class="ico" data-ico-heart></span><span>Interesses</span><span class="int-n" data-int-count data-hide0 hidden>0</span></button>
     <button class="tab" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="tab"><span class="ico" data-ico="user"></span><span>Conta</span></button>
   </nav>
-  <span class="medpro" aria-hidden="true"></span>
 </div>
 
 <!-- Cartão em apresentação: fora do #shell (que fica inerte enquanto ela está aberta) -->
@@ -1391,7 +1453,6 @@
     <button class="pill-btn" id="rShare" type="button"><span class="ico" id="icoShare"></span><span class="txt" id="rShareTxt">Compartilhar</span></button>
     <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos e texto das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
   </header>
-  <span class="medpro" aria-hidden="true"></span>
   <div class="r-body">
     <nav class="thumbs" id="thumbs" hidden aria-label="Miniaturas das páginas"></nav>
     <main class="stage" id="stage">
@@ -1749,6 +1810,9 @@
       signOut: (token) => supaFetch('/auth/v1/logout?scope=local', { method: 'POST', token }).catch(() => null), // sai só deste aparelho
       // Envia o e-mail de "criar nova senha"; o link volta para redirectTo com os tokens no endereço
       recover: (email, redirectTo) => supaFetch('/auth/v1/recover?redirect_to=' + encodeURIComponent(redirectTo), { method: 'POST', body: { email: normEmail(email) } }),
+      // Cadastro próprio (só e-mail @dellamed.com.br, conferido também no banco). data = { nome, whatsapp, setor_id, aceite, aceite_versao }.
+      // O Supabase manda o e-mail de confirmação; o link volta para redirectTo com #access_token=…&type=signup
+      signUp: (email, password, data, redirectTo) => supaFetch('/auth/v1/signup?redirect_to=' + encodeURIComponent(redirectTo), { method: 'POST', body: { email: normEmail(email), password, data } }),
       user: (token) => supaFetch('/auth/v1/user', { token }),
       setPassword: (token, password) => supaFetch('/auth/v1/user', { method: 'PUT', token, body: { password } }),
       rpc: (token, name, args) => supaFetch('/rest/v1/rpc/' + name, { method: 'POST', token, body: args || {} }),
@@ -1956,6 +2020,8 @@
   $$('[data-ico-heart]').forEach((s) => { s.innerHTML = I.heart; });
   $('#pwToggle').innerHTML = I.eye;
   $('#pwToggle2').innerHTML = I.eye;
+  $('#suPwToggle').innerHTML = I.eye;
+  $('#suPwToggle2').innerHTML = I.eye;
   $('#netIco').innerHTML = I.warn;
   $('#secureNote').innerHTML = `${I.lock}Acesso restrito. Os catálogos ficam criptografados e só abrem com uma senha válida.`;
 
@@ -1968,6 +2034,7 @@
   const MSG_EXPIRED = 'Seu acesso foi atualizado. Entre novamente.';
   const MSG_OFFLINE = 'Sem conexão com a internet.';
   const MSG_BLOCKED = 'Seu acesso ainda não foi liberado ou está bloqueado. Fale com o marketing.';
+  const MSG_PENDING = 'Seu cadastro está aguardando aprovação do marketing.';
   const MSG_CONFIG = 'Seu acesso está sendo configurado. Tente novamente em alguns minutos.';
   const MSG_LINK = "Este link expirou ou já foi usado. Use 'Esqueci minha senha' para receber outro.";
   let ACCESS = null, ROOT = null, SLOT = null, CATALOGS = [], KEYS = new Map();
@@ -2284,7 +2351,7 @@
     let key = NEXT_ROOT || ROOT;
     if (fresh && me.auth === 'supabase') {
       const chk = await supaCheck(me.uid);
-      if (!chk.perfil) { logout({ msg: MSG_BLOCKED }); return false; }
+      if (!chk.perfil) { logout({ msg: blockedMsg(chk.row) }); return false; }
       if (chk.key) key = NEXT_ROOT = chk.key;
     }
     await unlockData(key);
@@ -2519,11 +2586,28 @@
     await Promise.race([P.auth.signOut(), wait(3000)]);
   }
   const SUPA_ROLES = ['cliente', 'representante', 'interno'];
-  // Perfil ativo da própria pessoa (RLS: só a linha dela) ou null
-  async function supaPerfil(token, uid) {
-    const rows = await P.supa.select(token, 'perfis', 'id=eq.' + encodeURIComponent(uid) + '&select=nome,email,empresa,papel,ativo');
-    const p = Array.isArray(rows) ? rows[0] : null;
-    return p && p.ativo === true ? p : null;
+  // Linha do perfil da própria pessoa (RLS: só a linha dela), ativa ou não, ou null.
+  // situacao/motivo_recusa (cadastro próprio): se as colunas ainda não existem no banco (HTTP 400), lê só as de antes, uma vez por página
+  let perfilCadastroCols = true;
+  async function supaPerfilRow(token, uid) {
+    const q = 'id=eq.' + encodeURIComponent(uid) + '&select=nome,email,empresa,papel,ativo';
+    let rows = null;
+    if (perfilCadastroCols) {
+      try { rows = await P.supa.select(token, 'perfis', q + ',situacao,motivo_recusa'); }
+      catch (err) { if (err.status !== 400) throw err; perfilCadastroCols = false; }
+    }
+    if (!perfilCadastroCols) rows = await P.supa.select(token, 'perfis', q);
+    return Array.isArray(rows) ? rows[0] || null : null;
+  }
+  // Aviso do login para perfil sem acesso: cadastro pendente, recusado (com o motivo) ou bloqueado
+  function blockedMsg(row) {
+    const sit = row ? row.situacao : '';
+    if (sit === 'pendente') return MSG_PENDING;
+    if (sit === 'recusado') {
+      const why = String(row.motivo_recusa || '').trim();
+      return `Seu pedido de acesso não foi aprovado.${why ? ` Motivo: ${why}` : ''} Em caso de dúvida, fale com o marketing.`;
+    }
+    return MSG_BLOCKED;
   }
   // Chave-raiz (base64) liberada pelo banco para perfis ativos; null = sem perfil ativo ou ainda não configurada
   async function supaChave(token) {
@@ -2542,8 +2626,8 @@
   async function supaCheck(uid) {
     const tok = await supaToken(), s = P.auth.load();
     if (!s || !s.uid || (uid && s.uid !== uid)) throw authErr('session_changed');
-    const perfil = await supaPerfil(tok, s.uid);
-    if (!perfil) return { perfil: null, key: null };
+    const row = await supaPerfilRow(tok, s.uid), perfil = row && row.ativo === true ? row : null;
+    if (!perfil) return { perfil: null, key: null, row };
     const k = await supaChave(tok);
     const kh = k ? await keyHash(k) : '';
     if (!k || kh === KH) return { perfil, key: null };
@@ -2608,7 +2692,11 @@
     const gerEmerg = parts[0] === 'emergencia' || (parts[0] === 'gerenciar' && GER.mode === 'emergency');
     if (!me) {
       closeReader();
-      if (gerEmerg) routeGer(parts); else showOnly('login');
+      if (gerEmerg) { routeGer(parts); return; }
+      showOnly('login');
+      // #/cadastro: formulário de cadastro no mesmo cartão do login; saindo dessa rota (voltar do navegador), volta ao "Entrar"
+      if (parts[0] === 'cadastro') openSignup();
+      else if (loginPart === 'signup' || loginPart === 'signupMsg') showLoginPart('login');
       return;
     }
     const m = qi >= 0 ? /(?:^|&)produto=([^&]*)/.exec(h.slice(qi + 1)) : null;
@@ -2672,8 +2760,9 @@
   /* ================= login ================= */
   const loginForm = $('#loginForm'), forgotForm = $('#forgotForm');
   const setupForm = $('#setupForm'), activateView = $('#activateView');
+  const signupForm = $('#signupForm'), signupMsgView = $('#signupMsgView');
   function setErr(fieldEl, msg) {
-    const em = $('.err', fieldEl), inp = $('input', fieldEl);
+    const em = $('.err', fieldEl), inp = $('input, select', fieldEl);
     fieldEl.classList.toggle('invalid', !!msg);
     em.hidden = !msg;
     em.innerHTML = msg ? `${WARN}<span>${esc(msg)}</span>` : '';
@@ -2683,7 +2772,7 @@
     }
     return !msg;
   }
-  function focusFirstInvalid(form) { const f = $('.field.invalid input', form); if (f) f.focus(); }
+  function focusFirstInvalid(form) { const f = $('.field.invalid input, .field.invalid select', form); if (f) f.focus(); }
   const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
   function loginAlert(msg) { const a = $('#loginAlert'); a.innerHTML = msg ? `${WARN}<span>${esc(msg)}</span>` : ''; a.hidden = !msg; }
   let netRetry = null;
@@ -2691,9 +2780,12 @@
   function hideNet() { $('#netBox').hidden = true; netRetry = null; }
   $('#netRetry').addEventListener('click', () => { const f = netRetry; hideNet(); if (f) f(); });
   function setLoginReady(ready, label) { const b = $('#loginSubmit'); b.disabled = !ready; b.textContent = label || (ready ? 'Entrar' : 'Carregando…'); }
+  let loginPart = 'login'; // parte visível do cartão do login: login | forgot | setup | activate | signup | signupMsg
   function showLoginPart(name) {
+    loginPart = name;
     loginForm.hidden = name !== 'login'; forgotForm.hidden = name !== 'forgot';
     setupForm.hidden = name !== 'setup'; activateView.hidden = name !== 'activate';
+    signupForm.hidden = name !== 'signup'; signupMsgView.hidden = name !== 'signupMsg';
   }
   function setPwVisible(btnEl, inputs, show) {
     inputs.forEach((i) => { i.type = show ? 'text' : 'password'; });
@@ -2746,7 +2838,7 @@
       try { await P.auth.signIn(email, pass, remember); signed = true; }
       catch (err) {
         if (offlineErr(err)) { showNet(MSG_OFFLINE, retry); return; }
-        if (err.code === 'email_not_confirmed') { loginAlert('Confirme seu e-mail pelo link do convite.'); return; }
+        if (err.code === 'email_not_confirmed') { loginAlert('Confirme seu e-mail pelo link que enviamos antes de entrar.'); return; }
         if (!(err.code === 'invalid_credentials' || err.status === 400)) supaErr = err; // limite de tentativas ou servidor fora: tenta o antigo e, se falhar, avisa
       }
       if (signed) {
@@ -2799,8 +2891,8 @@
     try {
       const tok = await supaToken(), s = P.auth.load();
       if (!s || !s.uid) throw authErr('no_session');
-      const perfil = await supaPerfil(tok, s.uid);
-      if (!perfil) { await supaSignOut(); loginAlert(MSG_BLOCKED); return false; }
+      const row = await supaPerfilRow(tok, s.uid), perfil = row && row.ativo === true ? row : null;
+      if (!perfil) { await supaSignOut(); loginAlert(blockedMsg(row)); return false; } // cadastro pendente, recusado ou acesso bloqueado
       const k = await supaChave(tok);
       if (!k) { drop(); loginAlert(MSG_CONFIG); return false; }
       KH = await keyHash(k);
@@ -2866,6 +2958,233 @@
     ok.textContent = 'Se esse e-mail tiver acesso, você vai receber um link para criar uma nova senha em alguns minutos. Confira também o spam.';
     ok.hidden = false;
   });
+
+  /* ================= cadastro próprio (#/cadastro) =================
+     Só e-mail @dellamed.com.br (o banco confere de novo e recusa o resto). A conta nasce pendente: o Supabase manda o link de confirmação,
+     o marketing aprova no painel. Setores vêm da tabela "setores" (leitura anônima). Nada fica guardado no aparelho. */
+  const TERMOS_VERSAO = '2026-09';
+  const SIGNUP_DOMAIN = /^[^\s@]+@dellamed\.com\.br$/i;
+  const SU = { busy: false, setores: null, loading: null };
+  const suField = { nome: '#fSuNome', email: '#fSuEmail', wa: '#fSuWa', setor: '#fSuSetor', pass: '#fSuPass', pass2: '#fSuPass2', termos: '#fSuTerms' };
+  function signupAlert(msg) { const a = $('#signupAlert'); a.innerHTML = msg ? `${WARN}<span>${esc(msg)}</span>` : ''; a.hidden = !msg; }
+  // Força da senha (só orienta; as regras obrigatórias são o mínimo de 12 caracteres e não conter o e-mail). level: 0 vazio, 1 fraca, 2 boa, 3 forte
+  function suPwInfo(pwd) {
+    if (!pwd) return { level: 0, problem: 'Crie uma senha.' };
+    if (pwd.length < 12) return { level: 1, problem: 'Use pelo menos 12 caracteres.' };
+    const low = P.normTxt(pwd), local = P.normTxt($('#suEmail').value.trim().split('@')[0]);
+    if ([local, ...local.split(/[^a-z0-9]+/)].some((w) => w.length >= 3 && low.includes(w))) return { level: 1, problem: 'A senha não pode conter o seu e-mail.' };
+    const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(pwd)).length;
+    let pts = (pwd.length >= 12 ? 1 : 0) + (pwd.length >= 16 ? 1 : 0) + (kinds >= 2 ? 1 : 0) + (kinds >= 3 ? 1 : 0) + (new Set(pwd).size >= 8 ? 1 : 0);
+    if (/(.)\1{2,}/.test(pwd) || /(0123|1234|2345|3456|4567|5678|6789|abcd|qwer|asdf|senha|dellamed|password)/i.test(pwd)) pts -= 2;
+    return { level: pts >= 4 ? 3 : pts >= 2 ? 2 : 1, problem: '' };
+  }
+  function paintSuMeter() {
+    const info = suPwInfo($('#suPass').value), m = $('#suMeter'), t = $('#suMeterTxt');
+    m.dataset.level = String(info.level);
+    const html = !info.level ? 'Use pelo menos 12 caracteres, sem partes do seu e-mail.'
+      : `Força da senha: <b>${['', 'fraca', 'boa', 'forte'][info.level]}</b>${info.problem ? ` · ${esc(info.problem)}` : info.level === 1 ? ' · use letras, números e símbolos' : ''}`;
+    if (t.innerHTML !== html) t.innerHTML = html;
+    return info;
+  }
+  // final = saiu do campo ou enviou; enquanto digita, só atualiza um aviso que já estava na tela
+  function suValidate(key, final) {
+    const field = $(suField[key]);
+    if (!final && !field.classList.contains('invalid')) return true;
+    let msg = '';
+    if (key === 'nome') {
+      const v = $('#suNome').value.trim().replace(/\s+/g, ' ');
+      msg = !v ? 'Informe o seu nome completo.' : v.length < 3 ? 'O nome precisa ter pelo menos 3 letras.' : v.length > 120 ? 'Use no máximo 120 caracteres.' : '';
+    } else if (key === 'email') {
+      const v = $('#suEmail').value.trim();
+      msg = !v ? 'Informe o seu e-mail corporativo.' : !emailOk(v) ? 'Confira o formato do e-mail.' : !SIGNUP_DOMAIN.test(v) ? 'Use o seu e-mail @dellamed.com.br' : '';
+    } else if (key === 'wa') {
+      const d = onlyDigits($('#suWa').value);
+      msg = d && (d.length < 10 || d.length > 11) ? 'Informe DDD e número, como (54) 99999-9999.' : '';
+    } else if (key === 'setor') {
+      msg = SU.loading ? 'Aguarde a lista de setores carregar.' : !SU.setores ? 'Não foi possível carregar os setores. Use “Tentar de novo”.' : !$('#suSetor').value ? 'Escolha o seu setor.' : '';
+    } else if (key === 'pass') {
+      msg = suPwInfo($('#suPass').value).problem;
+    } else if (key === 'pass2') {
+      const v = $('#suPass2').value;
+      msg = !v ? 'Repita a senha.' : v !== $('#suPass').value ? 'As duas senhas não são iguais.' : '';
+    } else if (key === 'termos') {
+      msg = $('#suTerms').checked ? '' : 'Aceite os termos de uso e a política de privacidade para continuar.';
+    }
+    return setErr(field, msg);
+  }
+  // Setores ativos (leitura anônima, sem token), em ordem; falha → aviso com "Tentar de novo"
+  function loadSetores() {
+    if (SU.setores) return Promise.resolve(SU.setores);
+    if (SU.loading) return SU.loading;
+    const sel = $('#suSetor');
+    sel.disabled = true;
+    sel.innerHTML = '<option value="">Carregando os setores…</option>';
+    $('#suSetorNote').hidden = true;
+    const job = P.supa.select(undefined, 'setores', 'select=id,nome,ordem&ativo=is.true&order=ordem.asc,nome.asc').then((rows) => {
+      const list = (Array.isArray(rows) ? rows : []).filter((r) => r && Number.isInteger(r.id) && typeof r.nome === 'string' && r.nome.trim());
+      if (!list.length) throw new Error('sem setores');
+      SU.setores = list;
+      sel.innerHTML = '<option value="">Selecione o seu setor</option>' + list.map((r) => `<option value="${r.id}">${esc(r.nome.trim())}</option>`).join('');
+      sel.disabled = false;
+      return list;
+    }).catch((err) => {
+      sel.innerHTML = '<option value="">Setores indisponíveis</option>';
+      $('#suSetorMsg').textContent = offlineErr(err) ? `${MSG_OFFLINE}` : 'Não foi possível carregar os setores.';
+      $('#suSetorNote').hidden = false;
+      return null;
+    }).finally(() => {
+      if (SU.loading === job) SU.loading = null;
+      if ($('#fSuSetor').classList.contains('invalid')) suValidate('setor', true);
+    });
+    SU.loading = job;
+    return job;
+  }
+  $('#suSetorRetry').addEventListener('click', () => { loadSetores().then((list) => { if (list) $('#suSetor').focus(); }); });
+  function openSignup() {
+    if (loginPart === 'signup' || loginPart === 'signupMsg') return;
+    hideNet();
+    signupAlert('');
+    showLoginPart('signup');
+    loadSetores();
+    $('#signupH').focus();
+  }
+  // "Já tenho conta · Entrar" e "Voltar ao login": sai de #/cadastro sem recarregar (o voltar do navegador reabre o cadastro)
+  function signupToLogin() {
+    lastRoute = '#/prateleira';
+    if (/^#\/?cadastro/.test(location.hash)) { try { history.pushState(null, '', location.pathname + location.search); } catch (e) { /* noop */ } }
+    showLoginPart('login');
+    $('#loginH').focus();
+  }
+  $('#suToLogin').addEventListener('click', signupToLogin);
+  $('#suMsgBack').addEventListener('click', signupToLogin);
+  wirePwToggle($('#suPwToggle'), [$('#suPass')]);
+  wirePwToggle($('#suPwToggle2'), [$('#suPass2')]);
+  // mode 'sent' (cadastro enviado) ou 'confirmed' (link do e-mail aberto, pedido em análise)
+  function showSignupMsg(mode, email) {
+    const sent = mode === 'sent';
+    $('#suMsgCaps').textContent = sent ? 'Cadastro enviado' : 'Cadastro';
+    $('#suMsgH').textContent = sent ? 'Confira seu e-mail' : 'E-mail confirmado!';
+    $('#suMsgText').innerHTML = sent
+      ? `Enviamos um link de confirmação para <span class="su-email">${esc(email)}</span>. Depois de confirmar, seu pedido vai para aprovação do marketing. Você recebe um e-mail quando o acesso for liberado.`
+      : 'Seu pedido de acesso está em análise. Você recebe um e-mail quando for liberado.';
+    $('#suMsgNote').hidden = !sent;
+    hideNet();
+    showLoginPart('signupMsg');
+    $('#suMsgH').focus();
+  }
+  function openTerms() {
+    openDialog({
+      title: 'Termos de uso e privacidade',
+      body: `<p class="dlg-sub">Versão ${esc(TERMOS_VERSAO)} · Prateleira de Catálogos Dellamed</p>
+        <ul class="terms-list">
+          <li><b>Dados coletados:</b> nome, e-mail corporativo, WhatsApp (opcional) e setor.</li>
+          <li><b>Uso:</b> apenas para liberar o seu acesso aos catálogos da Dellamed e montar o seu cartão de visita digital.</li>
+          <li><b>Acesso:</b> pessoal e aprovado pelo marketing, que pode revogá-lo a qualquer momento.</li>
+          <li><b>Seus direitos (LGPD, Lei nº 13.709/2018):</b> para consultar, corrigir ou pedir a remoção dos seus dados, fale com o marketing da Dellamed.</li>
+        </ul>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }, { label: 'Li e aceito', kind: 'primary', onClick: () => { $('#suTerms').checked = true; suValidate('termos', false); } }]
+    });
+  }
+  $('#suTermsLink').addEventListener('click', openTerms);
+  // Máscara do WhatsApp e avisos atualizados enquanto digita
+  signupForm.addEventListener('input', (e) => {
+    const t = e.target, key = t.dataset.su;
+    if (!key) return;
+    if (key === 'wa') remaskPhone(t);
+    if (key === 'pass' || key === 'email') { paintSuMeter(); suValidate('pass', false); }
+    if (key === 'pass') suValidate('pass2', false);
+    suValidate(key, false);
+  });
+  signupForm.addEventListener('change', (e) => {
+    const key = e.target.dataset.su;
+    if (key === 'setor' || key === 'termos') suValidate(key, key === 'setor');
+  });
+  // Ao sair de um campo preenchido: confere (campo vazio só é cobrado ao enviar)
+  signupForm.addEventListener('focusout', (e) => {
+    const t = e.target, key = t.dataset.su;
+    if (!key || key === 'setor' || key === 'termos' || !t.value) return;
+    suValidate(key, true);
+  });
+  // Erros do Supabase no cadastro → mensagem para a pessoa (e o campo, quando é a senha)
+  function signupErrMsg(err) {
+    const code = String((err && err.code) || ''), text = String((err && err.message) || '');
+    if (offlineErr(err)) return `${MSG_OFFLINE} Confira e tente de novo.`;
+    if (code === 'signup_disabled' || /signups? not allowed/i.test(text)) return 'O cadastro ainda não está liberado. Fale com o marketing.';
+    if (err.status === 429 || /rate_limit/.test(code)) return 'Muitas tentativas. Aguarde alguns minutos.';
+    if (code === 'weak_password' || (err.status === 422 && /password/i.test(text))) return 'password';
+    return 'Não foi possível concluir o cadastro. Confira se o e-mail é @dellamed.com.br e se todos os campos estão preenchidos.';
+  }
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (SU.busy) return;
+    signupAlert('');
+    paintSuMeter();
+    const oks = Object.keys(suField).map((k) => suValidate(k, true));
+    if (oks.includes(false)) { focusFirstInvalid(signupForm); return; }
+    const email = P.normEmail($('#suEmail').value), pass = $('#suPass').value;
+    const data = { nome: $('#suNome').value.trim().replace(/\s+/g, ' '), whatsapp: onlyDigits($('#suWa').value), setor_id: Number($('#suSetor').value), aceite: 'true', aceite_versao: TERMOS_VERSAO };
+    const redirectTo = /(^|\.)github\.io$/i.test(location.hostname) ? RESET_URL : location.origin + location.pathname;
+    const b = $('#signupSubmit');
+    SU.busy = true; b.disabled = true; b.textContent = 'Criando a conta…';
+    try {
+      try { await P.supa.signUp(email, pass, data, redirectTo); }
+      catch (err) {
+        // E-mail já cadastrado (quando o Supabase avisa): mesma resposta neutra de sucesso
+        if (!(err && (err.code === 'user_already_exists' || err.code === 'email_exists'))) {
+          const msg = signupErrMsg(err);
+          if (msg === 'password') { setErr($('#fSuPass'), 'Essa senha não foi aceita. Use uma senha mais longa, misturando letras, números e símbolos.'); $('#suPass').focus(); }
+          else { signupAlert(msg); $('#signupH').focus(); }
+          return;
+        }
+      }
+      trackCatalogEvent('auth_signup_request');
+      $('#loginEmail').value = email;
+      signupForm.reset();
+      if (SU.setores) $('#suSetor').value = '';
+      setPwVisible($('#suPwToggle'), [$('#suPass')], false);
+      setPwVisible($('#suPwToggle2'), [$('#suPass2')], false);
+      Object.values(suField).forEach((s) => setErr($(s), ''));
+      paintSuMeter();
+      showSignupMsg('sent', email);
+    } finally { SU.busy = false; b.disabled = false; b.textContent = 'Criar conta'; }
+  });
+
+  /* ----- link de confirmação do cadastro (#access_token=…&type=signup|email) -----
+     Não pede senha nova: adota a sessão, confere o próprio perfil. Aprovado e ativo → entra como no login; pendente → aviso e encerra a sessão. */
+  async function signupConfirmed(link) {
+    const retry = () => signupConfirmed(link);
+    const tokens = { access_token: link.access_token, refresh_token: link.refresh_token, expires_in: link.expires_in };
+    showLoginPart('login');
+    hideNet(); loginAlert('');
+    loginBusy = true;
+    setLoginReady(false, 'Verificando o acesso…');
+    try {
+      let row = null, s = null;
+      try {
+        await P.auth.adopt(tokens, false);
+        s = P.auth.load();
+        if (!s || !s.uid) throw authErr('no_session');
+        if (s.email) $('#loginEmail').value = s.email;
+        row = await supaPerfilRow(await supaToken(), s.uid);
+      } catch (err) {
+        if (offlineErr(err)) showNet(MSG_OFFLINE, retry);
+        else if (err && (err.status === 401 || err.status === 403)) { P.auth.clear(); loginAlert('Este link de confirmação expirou ou já foi usado. Se você já confirmou o e-mail, entre com o seu e-mail e senha.'); }
+        else loginAlert('Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.');
+        $('#loginH').focus();
+        return;
+      }
+      trackCatalogEvent('auth_signup_confirmed');
+      if (row && row.ativo === true && row.situacao !== 'pendente' && row.situacao !== 'recusado') {
+        loginBusy = false;
+        if (await supaEnter(false, retry)) trackCatalogEvent('auth_login', { method: 'supabase' });
+        else $('#loginH').focus();
+        return;
+      }
+      await supaSignOut(s.uid); // sem acesso ainda: não deixa sessão aberta no aparelho
+      if (!row || row.situacao === 'pendente' || !row.situacao) showSignupMsg('confirmed');
+      else { loginAlert(blockedMsg(row)); $('#loginH').focus(); }
+    } finally { loginBusy = false; setLoginReady(true); }
+  }
 
   /* ================= primeiro acesso: criar a senha e gerar o código de ativação ================= */
   /* Mesma tela para o link do e-mail do Supabase (setupState.mode = 'link', type 'invite' | 'recovery'): cria a senha e entra direto */
@@ -3101,8 +3420,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=132289d1';
-      s.integrity = 'sha384-AincAX0mNUtcOl6UlQImYgxiW1beXSFCD8GnJCln2tNQ8D5vWP667RmDzPof9awB';
+      s.src = 'painel.js?v=27ffad6c';
+      s.integrity = 'sha384-FGmLZ95OKatNnFgDrXgihSTsV2tmL8tYIcwLEywAEEnXLirCoYabzcIpSAtBBqfu';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -3328,12 +3647,13 @@
     return api;
   }
   const side = $('#side'), menuBtn = $('#menuBtn');
-  const drawer = modalLayer(side, $('#scrim'), () => [$('#mainCol'), $('#tabbar'), $('#gerBar'), $('.shell > .medpro')], (on) => {
+  const drawer = modalLayer(side, $('#scrim'), () => [$('#mainCol'), $('#tabbar'), $('#gerBar')], (on) => {
     menuBtn.setAttribute('aria-expanded', String(on));
     document.body.classList.toggle('drawer-open', on);
   });
   menuBtn.addEventListener('click', () => { setMenu(false); drawer.open(menuBtn); const f = $$('.nav-i', side).find((x) => x.getClientRects().length); if (f) f.focus(); }); // primeiro item visível (emergência sem login: "Gerenciar")
   $('#sideClose').addEventListener('click', () => drawer.close());
+  $('#sideHome').addEventListener('click', () => $('#side [data-nav="inicio"]').click()); // logo = botão Início
   onMq(deskMq, () => { if (deskMq.matches) drawer.close(false); setMenu(false); });
   onMq(mobileMq, () => { if (mobileMq.matches) drawer.close(false); setMenu(false); applyView(); });
 
@@ -5074,7 +5394,9 @@
     t: null, pngT: null, png: null, photoUrl: '', photoLoaded: false, photoGen: 0,
     qrJob: null, qrFail: false, qrCache: new Map(), live: '', fs: false, wake: null, sharing: false, busyPng: false,
     // mode: 'view' | 'edit' | ''; draft: dados em edição (null fora dela); draftPhoto: undefined = sem troca, null = remover, Blob = nova
-    mode: '', draft: null, draftBase: '', draftPhoto: undefined, draftUrl: '', saving: false
+    mode: '', draft: null, draftBase: '', draftPhoto: undefined, draftUrl: '', saving: false,
+    // perfil: { nome, email, fone } do perfil no Supabase, sugestão para quem ainda não tem cartão salvo (só em memória); perfilJob: leitura em andamento
+    perfil: null, perfilJob: null
   };
   const cardView = $('#viewCard'), cardForm = $('#cardForm'), cardShowEl = $('#cardShow');
 
@@ -5089,6 +5411,15 @@
     const r = d.slice(2), cut = r.length > 8 ? 5 : 4;
     return `(${d.slice(0, 2)}) ${r.length > 4 ? `${r.slice(0, cut)}-${r.slice(cut)}` : r}`;
   }
+  // Reaplica a máscara enquanto a pessoa digita, mantendo o cursor depois do mesmo número de dígitos (cartão e cadastro)
+  function remaskPhone(t) {
+    const pos = t.selectionStart == null ? t.value.length : t.selectionStart;
+    const n = onlyDigits(t.value.slice(0, pos)).length;
+    t.value = maskPhone(t.value);
+    let i = 0;
+    for (let k = 0; i < t.value.length && k < n; i++) if (/\d/.test(t.value[i])) k++;
+    try { if (document.activeElement === t) t.setSelectionRange(i, i); } catch (_) { /* noop */ }
+  }
   // E.164 sem o "+": 10 ou 11 dígitos ganham o 55; válido com 12 ou 13 dígitos
   function cardPhone(v) {
     let d = onlyDigits(v);
@@ -5097,16 +5428,18 @@
   }
   const fmtPhone = (d) => (d.startsWith('55') ? `+55 ${maskPhone(d.slice(2))}` : `+${d}`);
   // Dados em uso: o rascunho (na edição) ou o cartão salvo; o que estiver vazio vem da sessão (nome, perfil, e-mail)
+  // Sem cartão salvo (login Supabase): nome, e-mail e WhatsApp do perfil entram como sugestão (CARD.perfil), gravados só em "Concluir"
   function cardData() {
     const c = CARD.draft || prefs.card || {}, sh = c.show || {};
-    const nome = String(c.nome || '').trim() || me.name;
+    const pf = (!prefs.card && CARD.perfil) || {};
+    const nome = String(c.nome || '').trim() || pf.nome || me.name;
     const d = {
       nome,
       cargo: String(c.cargo != null ? c.cargo : ROLE[me.role] || '').trim(),
       empresa: String(c.empresa != null ? c.empresa : 'Dellamed').trim(),
-      email: String(c.email != null ? c.email : me.email || '').trim(),
+      email: String(c.email != null ? c.email : pf.email || me.email || '').trim(),
       cidade: String(c.cidade || '').trim(),
-      fone: c.fone || '',
+      fone: c.fone || (CARD.draft ? '' : pf.fone || ''), // na edição, a sugestão já entrou no rascunho (beginCardEdit)
       tema: c.tema === 'claro' ? 'claro' : 'navy',
       qr: c.qr === 'contato' ? 'contato' : 'whatsapp',
       show: { fone: sh.fone !== false, email: sh.email !== false, cidade: sh.cidade !== false, cargo: sh.cargo !== false }
@@ -5261,6 +5594,7 @@
       if (!me || me.uid !== uid) return;
       let changed = !!fresh;
       if (!cardDirty && JSON.stringify(data || null) !== JSON.stringify(prefs.card || null)) { prefs.card = data || undefined; changed = true; }
+      if (!prefs.card) cardPrefill(); // nem neste aparelho nem na conta: sugestão a partir do perfil
       if (fresh && gen === CARD.photoGen) setCardPhoto(photo);
       else if (needPhoto && photo && gen === CARD.photoGen && !CARD.photoUrl) { setCardPhoto(photo); changed = true; }
       if (!changed) return;
@@ -5270,9 +5604,30 @@
     }).catch(() => { /* segue com o que já está na tela */ });
   }
 
+  // Perfil do Supabase (nome, whatsapp, email) para sugerir o cartão de quem ainda não salvou nenhum. Nunca grava nada nem sobrescreve cartão existente
+  function cardPrefill() {
+    if (!cardSyncOn() || prefs.card || CARD.perfil || CARD.perfilJob) return;
+    const uid = me.uid;
+    CARD.perfilJob = (async () => {
+      try {
+        const rows = await P.supa.select(await supaToken(), 'perfis', 'id=eq.' + encodeURIComponent(uid) + '&select=nome,whatsapp,email');
+        const p = Array.isArray(rows) ? rows[0] : null;
+        if (!me || me.uid !== uid) return;
+        CARD.perfil = p ? { nome: String(p.nome || '').trim().slice(0, 80), email: String(p.email || '').trim().slice(0, 120), fone: onlyDigits(p.whatsapp).slice(0, 11) } : {};
+        if (prefs.card) return;
+        if (CARD.draft && !cardEditDirty()) { beginCardEdit(); fillCardForm(); }
+        CARD.png = null;
+        renderCard();
+      } catch (e) {
+        if (e && e.status === 400 && me && me.uid === uid) CARD.perfil = {}; // coluna whatsapp ainda não criada: não tenta de novo
+      } finally { CARD.perfilJob = null; }
+    })();
+  }
+
   /* ----- rascunho da edição ----- */
   function beginCardEdit() {
     CARD.draft = normCard(prefs.card || {});
+    if (!prefs.card && CARD.perfil && CARD.perfil.fone) CARD.draft.fone = CARD.perfil.fone; // sugestão do perfil (não conta como alteração)
     CARD.draftBase = JSON.stringify(CARD.draft);
     CARD.draftPhoto = undefined;
     setCardPhoto(null, true);
@@ -5523,13 +5878,7 @@
     const t = e.target, c = CARD.draft;
     if (!c) return;
     if (t.id === 'cardFone') {
-      // Reaplica a máscara mantendo o cursor depois do mesmo número de dígitos
-      const pos = t.selectionStart == null ? t.value.length : t.selectionStart;
-      const n = onlyDigits(t.value.slice(0, pos)).length;
-      t.value = maskPhone(t.value);
-      let i = 0;
-      for (let k = 0; i < t.value.length && k < n; i++) if (/\d/.test(t.value[i])) k++;
-      try { if (document.activeElement === t) t.setSelectionRange(i, i); } catch (_) { /* noop */ }
+      remaskPhone(t);
       c.fone = onlyDigits(t.value);
       validateCard(false);
     } else if (t.dataset.card) {
@@ -5959,7 +6308,7 @@
     clearTimeout(CARD.t); clearTimeout(CARD.pngT);
     endCardEdit();
     setCardPhoto(null);
-    CARD.mode = ''; CARD.photoLoaded = false; CARD.png = null; CARD.qrCache.clear(); CARD.live = '';
+    CARD.mode = ''; CARD.photoLoaded = false; CARD.png = null; CARD.qrCache.clear(); CARD.live = ''; CARD.perfil = null;
     CARD_SYNC.state = ''; CARD_SYNC.pulledAt = 0; // envio em andamento termina sozinho (confere me.uid)
     $$('.vcard').forEach((el) => cardRO.unobserve(el));
     ['#cardPreview', '#cardEditPreview', '#cardShowCard', '#cardThumb', '#cardPrevAv', '#cardPrevName', '#cardStripAv', '#cardStripName', '#cardLive', '#cardStatus'].forEach((s) => { const el = $(s); el.innerHTML = ''; delete el.dataset.v; });
@@ -5969,6 +6318,7 @@
   /* ================= início ================= */
   // Sessão do Supabase guardada: renova o token (P.auth), confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
   // Sem internet (ou servidor fora), segue com a chave guardada, como o acesso antigo.
+  let blockedNote = MSG_BLOCKED; // aviso de 'blocked' no login (cadastro pendente, recusado ou acesso bloqueado)
   async function supaRestore(s, rec) {
     // Migração (uma vez): slot gravado antes da sessão única, com os tokens (at/rt/ea/uid/em) → P.auth, e os campos saem do slot
     if (rec.at != null || rec.rt != null || rec.ea != null || rec.uid != null || rec.em != null) {
@@ -5985,7 +6335,7 @@
     SLOT = s.slot; // chave trocada no painel: supaCheck grava a nova neste slot
     try {
       const chk = await supaCheck(s.u);
-      if (!chk.perfil) { await supaSignOut(s.u); await clearStoredSession(); return { status: 'blocked' }; }
+      if (!chk.perfil) { blockedNote = blockedMsg(chk.row); await supaSignOut(s.u); await clearStoredSession(); return { status: 'blocked' }; }
       Object.assign(s, supaProf(chk.perfil, P.auth.load() || { uid: s.u, email: s.e }));
       updateStoredProfile(s);
       return { key: chk.key };
@@ -6050,12 +6400,15 @@
     catch (e) {
       if (/^#\/?emergencia(?:[/?]|$)/.test(location.hash)) { route(); return; } // gestão de emergência não depende de acessos.json
       showNet(e instanceof NetError ? MSG_OFFLINE : 'Não foi possível carregar a página de acesso agora.', boot);
+      if (/^#\/?cadastro(?:[/?]|$)/.test(location.hash)) route(); // o cadastro também não depende de acessos.json
       return;
     }
     renderContacts();
     if (accessTooNew()) { loginAlert(MSG_UPDATE); setLoginReady(false, 'Entrar'); return; }
     const link = linkTokens;
     linkTokens = null;
+    // Confirmação do cadastro (type signup/email): não pede senha nova; convite e recuperação: criar a senha
+    if (link && link.access_token && (link.type === 'signup' || link.type === 'email')) { sweepSlots(); await signupConfirmed(link); return; }
     if (link && link.access_token) { sweepSlots(); setLoginReady(true); openLinkSetup(link); return; }
     if (link && link.error) loginAlert(MSG_LINK);
     const s = readSession();
@@ -6066,7 +6419,7 @@
       if (r === 'net') showNet(MSG_OFFLINE, boot);
       else if (r === 'erro') showNet('Não foi possível abrir os catálogos agora.', boot);
       else if (r === 'expired') loginAlert(MSG_EXPIRED);
-      else if (r === 'blocked') loginAlert(MSG_BLOCKED);
+      else if (r === 'blocked') loginAlert(blockedNote);
       else if (r === 'version') loginAlert(MSG_UPDATE);
     }
     // Sessão única do Supabase (P.auth) sem sessão do site: entra direto (bloqueio e chave não configurada aparecem aqui no login)

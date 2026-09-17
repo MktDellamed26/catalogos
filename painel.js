@@ -218,6 +218,25 @@
   .dmp .legacy-body { margin-top: 14px; }
   .dmp .legacy .selbar { justify-self: start; }
   .dmp .legacy .list-card { box-shadow: 0 0 0 1px var(--hair); }
+  /* Pessoas: "Pedidos de acesso" (cadastro pelo site) e selos na lista */
+  .dmp .sec-title .badge { margin-left: 8px; vertical-align: middle; }
+  .dmp .cell .badge { margin-left: 6px; color: var(--navy); font-size: 11px; vertical-align: 1px; }
+  .dmp .req-when { font-size: 12px; color: var(--ink-2); }
+  /* Configurações: cartão "Cadastro de pessoas" (link, aprovação automática e setores) */
+  .dmp .cad-link { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+  .dmp .cad-link .field { flex: 1 1 320px; min-width: 0; }
+  .dmp .cad-link .field input { color: var(--navy); }
+  .dmp .set-list { display: grid; margin: 0; padding: 0; list-style: none; }
+  .dmp .set-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(150px, 1fr) 64px 84px minmax(170px, auto); align-items: center; gap: 8px 12px; }
+  .dmp .set-head { padding: 0 0 8px; border-bottom: 1px solid var(--hair); font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+  .dmp .set-row { padding: 10px 0; border-bottom: 1px solid var(--hair); }
+  .dmp .set-row.dirty { box-shadow: inset 3px 0 0 var(--sky); padding-left: 10px; }
+  .dmp .set-row .set-lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .dmp .set-row.off .set-name input { color: var(--ink-2); }
+  .dmp .set-ativo { display: flex; align-items: center; gap: 8px; }
+  .dmp .set-save { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  .dmp .set-msg { font-size: 12px; color: var(--ink-2); }
+  .dmp .set-add { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(150px, 1fr) auto; align-items: end; gap: 8px 12px; padding: 14px; border-radius: 14px; background: var(--light); }
 
   /* ---------- Configurações: cartões ---------- */
   .dmp .cfg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
@@ -339,6 +358,15 @@
     .dmp .rw.user-grid { grid-template-columns: 32px minmax(0, 1fr) auto; grid-template-areas: "sel who who" ". comp role" ". status status" "acts acts acts"; }
     .dmp .rw.sb-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "who who" "comp role" "status status" "acts acts"; }
     .dmp .legacy .list-card { box-shadow: none; }
+    .dmp .set-head { display: none; }
+    .dmp .set-row.set-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name name" "papel papel" "ativo order" "save save"; }
+    .dmp .set-name { grid-area: name; }
+    .dmp .set-papel { grid-area: papel; }
+    .dmp .set-ativo { grid-area: ativo; }
+    .dmp .set-order { grid-area: order; }
+    .dmp .set-save { grid-area: save; }
+    .dmp .set-row .set-lbl { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+    .dmp .set-add { grid-template-columns: minmax(0, 1fr); }
     .dmp .u-sel { align-self: center; }
     .dmp .rw.prod-grid { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "sku areas" "name name" "cat cat" "acts acts"; }
     .dmp .rw.prod-grid > .rw-acts { justify-content: flex-start; }
@@ -1532,7 +1560,7 @@
     if (busy || !vault) return;
     const bs = $$('[data-reload]', H.root); bs.forEach((b) => { b.disabled = true; });
     try {
-      await reloadVault(); setTab(tab); toast('Dados atualizados.'); refreshStage(); // por último: o aviso de áreas descartadas tem prioridade
+      await reloadVault(); if (sb) cadReset(); setTab(tab); toast('Dados atualizados.'); refreshStage(); // por último: o aviso de áreas descartadas tem prioridade
       if (sb) { sbSyncKey(); loadPeople().then(sbRepaint); } // outro administrador pode ter trocado a chave ou as pessoas
     }
     catch (e) { if (!e.locked) alertBox('Não foi possível atualizar', errText(e).replace(' Nada foi alterado no site.', '')); }
@@ -1559,7 +1587,7 @@
     $('#pn-repoLabel').textContent = repo.label() || 'não informado';
     lastAct = Date.now(); showStale(false); authLost = false;
     setTab(tab); refreshStage(); paintUnify();
-    if (sb) sbSyncKey(); else sbFromAuth(); // acesso unificado: sessão já conferida; emergência: usa a sessão do aparelho (se for admin)
+    if (sb) { sbSyncKey(); loadPendingCount(); } else sbFromAuth(); // acesso unificado: sessão já conferida (e contagem dos pedidos de acesso no menu); emergência: usa a sessão do aparelho (se for admin)
   }
   function setTab(t) {
     tab = t;
@@ -1595,7 +1623,7 @@
     };
     put('catalogos', vault ? vault.catalogs.length : 0);
     put('produtos', vault ? Object.keys(vault.products || {}).length : 0);
-    put('pessoas', vault ? vault.users.length + (sb && people ? people.length : 0) : 0); // acessos antigos + pessoas do Supabase (quando conectado)
+    put('pessoas', vault && sb && pendN ? pendN : 0); // pedidos de acesso pendentes (cadastro pelo site)
   }
   // Primeiros passos: aparece enquanto faltar contato do marketing, catálogo ou pessoa (o passo 4 é opcional e não mantém o cartão aberto)
   function firstStepsHtml() {
@@ -2037,13 +2065,23 @@
   let sbChain = Promise.resolve(); // sincronizações da chave, uma depois da outra
   let people = null, peopleErr = '', peopleJob = null, peopleSeq = 0; // perfis do Supabase (null = ainda não carregados)
   let secretsInfo = null, secretsJob = null; // situação do acesso unificado: { active, at } | { err } | null (não verificada)
+  // Cadastro pelo site (05-cadastro.sql): pedidos pendentes (contagem do menu), setores, aprovação automática.
+  // cadMissing: as tabelas/colunas do cadastro ainda não existem no Supabase (os blocos mostram MSG_CAD_SQL; o resto de Pessoas segue normal)
+  let pendN = null, pendJob = null, pendAt = 0;
+  let setores = null, setoresErr = '', setoresJob = null;
+  let cadAuto = null, cadAutoErr = '', cadAutoJob = null, cadMissing = false;
   const sbAuthErr = (msg) => { const e = userErr(msg); e.status = 401; return e; };
   const MSG_SESSION = 'A sessão terminou. Entre com e-mail e senha em Configurações → Acesso unificado.';
+  function cadReset() {
+    setores = null; setoresErr = ''; setoresJob = null;
+    cadAuto = null; cadAutoErr = ''; cadAutoJob = null; cadMissing = false;
+  }
   // Fim do estado da sessão no painel (não mexe na sessão do aparelho)
   function sbEnd() {
     sbGen++; peopleSeq++;
     sb = null; secretsInfo = null; secretsJob = null;
     people = null; peopleErr = ''; peopleJob = null;
+    pendN = null; pendJob = null; cadReset();
     sbRepaint();
   }
   // Chamada autenticada. Sem sessão no aparelho ou token recusado (401): o painel esquece a sessão
@@ -2251,6 +2289,8 @@
     else if (tab === 'cfg' && $('#pn-cfgUnify')) {
       const card = $('#pn-cfgUnify'), typing = card.contains(document.activeElement) && document.activeElement.matches('input');
       if (!(typing && !sb && $('#pn-unifyLogin', card))) card.innerHTML = unifyCardHtml(); // não apaga o que está sendo digitado
+      const cad = $('#pn-cfgCad');
+      if (cad && (cad.dataset.on !== String(!!sb) || (sb && cadMissing && !$('[data-cad="reload"]', cad)))) paintCadCard(); // entrou/saiu da sessão ou o cadastro não existe
       paintSbWarn();
     }
   }
@@ -2317,12 +2357,113 @@
     if (!sb) return Promise.resolve();
     const seq = ++peopleSeq;
     peopleErr = '';
-    peopleJob = sbCall((t) => P.supa.select(t, 'perfis', 'select=id,email,nome,empresa,papel,ativo,criado_em&order=nome.asc'))
-      .then((rows) => { if (seq === peopleSeq) people = Array.isArray(rows) ? rows : []; })
+    // Com as colunas do cadastro; se ainda não existem (05-cadastro.sql não rodou), a lista vem só com as colunas de antes
+    peopleJob = sbCall(async (t) => {
+      try { return { rows: await P.supa.select(t, 'perfis', `select=${PERSON_COLS},${CAD_COLS}&order=nome.asc`), cad: true }; }
+      catch (e) { if (!cadMissingErr(e)) throw e; console.warn(e); return { rows: await P.supa.select(t, 'perfis', `select=${PERSON_COLS}&order=nome.asc`), cad: false }; }
+    })
+      .then((r) => {
+        if (seq !== peopleSeq) return;
+        people = Array.isArray(r.rows) ? r.rows : [];
+        cadMissing = !r.cad;
+        pendN = r.cad ? requestsOf(people).length : 0;
+      })
       .catch((e) => { console.error(e); if (seq === peopleSeq) { peopleErr = sbErrText(e); if (people) toast(peopleErr); } })
       .finally(() => { if (seq === peopleSeq) peopleJob = null; });
     return peopleJob;
   }
+
+  /* ---------- cadastro pelo site: pedidos de acesso, setores e aprovação automática (05-cadastro.sql) ----------
+     perfis.origem 'convite' | 'cadastro', perfis.situacao 'pendente' | 'aprovado' | 'recusado'; RPCs admin_aprovar_cadastro / admin_recusar_cadastro;
+     função "avisos" { tipo: 'decisao', id } manda o e-mail da decisão ({ ok: true } | { ok: false, motivo: 'smtp' }). */
+  const PERSON_COLS = 'id,email,nome,empresa,papel,ativo,criado_em';
+  const CAD_COLS = 'whatsapp,setor_id,origem,situacao,motivo_recusa';
+  const CAD_LINK = 'https://mktdellamed26.github.io/catalogos/#/cadastro';
+  const MSG_CAD_SQL = 'Rode o script 05-cadastro.sql no Supabase para ativar o cadastro.';
+  const SETOR_ROLES = ['cliente', 'representante', 'interno']; // setores nunca sugerem "admin"
+  const PEND_EVERY = 5 * 60 * 1000;
+  // Tabela, coluna ou função do cadastro ainda não criada no Supabase
+  const cadMissingErr = (e) => !!e && (e.status === 404 || ['42P01', '42703', '42883', 'PGRST202', 'PGRST204', 'PGRST205'].includes(String(e.code || ''))
+    || (e.status === 400 && /column|does not exist|schema cache/i.test(e.message || '')));
+  const cadErrText = (e) => (e && e.userMessage ? e.userMessage : isNotAdminErr(e) ? MSG_NOT_ADMIN : cadMissingErr(e) ? MSG_CAD_SQL : sbErrText(e));
+  const setorErrText = (e) => (e && (e.status === 409 || e.code === '23505') ? 'Já existe um setor com esse nome.' : cadErrText(e));
+  const isRequest = (p) => p.origem === 'cadastro' && p.situacao === 'pendente';
+  const requestsOf = (list) => (list || []).filter(isRequest).sort((a, b) => String(b.criado_em || '').localeCompare(String(a.criado_em || '')));
+  const setorOf = (id) => (id == null ? null : (setores || []).find((s) => s.id === id) || null);
+  const sortSetores = () => { if (setores) setores.sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || String(a.nome).localeCompare(String(b.nome), 'pt-BR')); };
+  // WhatsApp guardado só com números → +55 (54) 99999-9999
+  function fmtWhats(v) {
+    const d = String(v || '').replace(/\D/g, '');
+    if (!d) return '';
+    const cc = (d.length === 12 || d.length === 13) && d.startsWith('55') ? '+55 ' : '';
+    const r = cc ? d.slice(2) : d;
+    return r.length === 10 || r.length === 11 ? `${cc}(${r.slice(0, 2)}) ${r.slice(2, -4)}-${r.slice(-4)}` : d;
+  }
+  const agoText = (iso) => {
+    const t = Date.parse(iso || ''); if (!t) return '';
+    const days = Math.floor((Date.now() - t) / 86400000);
+    return days <= 0 ? 'hoje' : days === 1 ? 'há 1 dia' : `há ${days.toLocaleString('pt-BR')} dias`;
+  };
+  // Contagem leve dos pedidos pendentes (menu do site): ao abrir a gestão, a cada 5 minutos e quando a janela volta ao foco
+  function loadPendingCount() {
+    if (!sb || !vault) return Promise.resolve();
+    if (pendJob) return pendJob;
+    const gen = sbGen;
+    pendAt = Date.now();
+    const job = sbCall((t) => P.supa.select(t, 'perfis', 'select=id&situacao=eq.pendente&origem=eq.cadastro'))
+      .then((rows) => {
+        if (gen !== sbGen) return;
+        const n = Array.isArray(rows) ? rows.length : 0;
+        pendN = n;
+        // A lista de Pessoas já carregada ficou diferente (pedido novo, decisão de outro administrador ou o script acabou de rodar): recarrega
+        if (people && !peopleJob && (cadMissing || requestsOf(people).length !== n)) loadPeople().then(sbRepaint);
+        else paintNav();
+      })
+      .catch((e) => {
+        if (gen !== sbGen) return;
+        if (cadMissingErr(e)) { pendN = 0; cadMissing = true; paintNav(); } else console.error(e);
+      })
+      .finally(() => { if (pendJob === job) pendJob = null; });
+    pendJob = job;
+    return job;
+  }
+  setInterval(() => { if (vault && sb && document.visibilityState !== 'hidden') loadPendingCount(); }, PEND_EVERY);
+  window.addEventListener('focus', () => { if (vault && sb && Date.now() - pendAt > 30000) loadPendingCount(); });
+  function loadSetores() {
+    if (!sb) return Promise.resolve();
+    if (setoresJob) return setoresJob;
+    const gen = sbGen;
+    setoresErr = '';
+    const job = sbCall((t) => P.supa.select(t, 'setores', 'select=id,nome,papel,ordem,ativo&order=ordem.asc,nome.asc'))
+      .then((rows) => { if (gen === sbGen) { setores = Array.isArray(rows) ? rows : []; sortSetores(); } })
+      .catch((e) => { console.error(e); if (gen === sbGen) { if (cadMissingErr(e)) cadMissing = true; setoresErr = cadErrText(e); } })
+      .finally(() => { if (setoresJob === job) setoresJob = null; });
+    setoresJob = job;
+    return job;
+  }
+  function loadCadAuto() {
+    if (!sb) return Promise.resolve();
+    if (cadAutoJob) return cadAutoJob;
+    const gen = sbGen;
+    cadAutoErr = '';
+    const job = sbCall((t) => P.supa.select(t, 'ajustes_cadastro', 'id=eq.1&select=aprovacao_automatica'))
+      .then((rows) => { if (gen === sbGen) cadAuto = !!(Array.isArray(rows) && rows[0] && rows[0].aprovacao_automatica); })
+      .catch((e) => { console.error(e); if (gen === sbGen) { if (cadMissingErr(e)) cadMissing = true; cadAutoErr = cadErrText(e); } })
+      .finally(() => { if (cadAutoJob === job) cadAutoJob = null; });
+    cadAutoJob = job;
+    return job;
+  }
+  // E-mail da decisão (função "avisos"): true = enviado; 'smtp' = e-mail não configurado; false = não enviado
+  async function notifyDecision(id) {
+    try {
+      const r = await sbCall((t) => P.supa.fn(t, 'avisos', { tipo: 'decisao', id }));
+      if (r && r.ok === true) return true;
+      return r && r.motivo === 'smtp' ? 'smtp' : false;
+    } catch (e) { console.error(e); return false; }
+  }
+  const decisionToast = (lead, sent) => toast(sent === true ? `${lead} Avisamos por e-mail.`
+    : sent === 'smtp' ? `${lead} O e-mail de aviso não foi enviado (e-mail não configurado).`
+    : `${lead} O e-mail de aviso não foi enviado.`, sent === true ? 'ok' : undefined);
 
   /* ================= pessoas =================
      "Pessoas": perfis do Supabase (convidar, editar, bloquear, reenviar acesso, remover).
@@ -2338,12 +2479,14 @@
   const selected = new Set();
   const matcher = () => { const q = norm(userQ); return (s) => !q || norm(s).includes(q); };
   const visibleUsers = () => { const hit = matcher(); return vault.users.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((u) => hit(`${u.name} ${u.email} ${u.company}`)); };
-  const visiblePeople = () => { const hit = matcher(); return (people || []).filter((p) => hit(`${p.nome || ''} ${p.email || ''} ${p.empresa || ''}`)); };
+  // Lista "Pessoas" sem os pedidos pendentes (esses ficam no bloco "Pedidos de acesso")
+  const visiblePeople = () => { const hit = matcher(); return (people || []).filter((p) => !isRequest(p) && hit(`${p.nome || ''} ${p.email || ''} ${p.empresa || ''}`)); };
   function renderUsers() {
     const box = $('#pn-tabUsers'); if (!vault) return;
     box.innerHTML = `${pageHead('users', '<button class="btn primary" id="pn-inviteBtn" type="button">+ Convidar pessoa</button>')}
       <div data-sb-warn-slot hidden></div>
       <div id="pn-sbConnectSlot" hidden></div>
+      <section class="stack" id="pn-uReq" aria-labelledby="pn-uReqH" hidden><h2 class="sec-title" id="pn-uReqH">Pedidos de acesso<span class="badge" id="pn-uReqN" hidden></span></h2><div id="pn-uReqList"></div></section>
       <div class="tiles" id="pn-uTiles"></div>
       <div class="toolbar">
         <div class="search"><span class="ico">${ICO.search}</span><input class="input" id="pn-uq" type="search" placeholder="Buscar nome, e-mail ou empresa" value="${esc(userQ)}" aria-label="Buscar pessoas" aria-describedby="pn-uCount"></div>
@@ -2388,24 +2531,61 @@
   const SELF_TIP = 'Você não pode bloquear nem remover a própria conta.';
   function personRowHtml(p) {
     const me = !!sb && p.id === sb.uid, name = p.nome || p.email, off = me ? ` disabled title="${SELF_TIP}"` : '';
+    const refused = p.situacao === 'recusado', st = setorOf(p.setor_id);
+    const motivo = refused && p.motivo_recusa ? `Motivo: ${p.motivo_recusa}` : '';
+    const status = refused ? `<span class="status off"${motivo ? ` title="${esc(motivo)}"` : ''}>Recusado</span>${motivo ? `<br><span class="muted">${esc(motivo)}</span>` : ''}`
+      : p.ativo ? '<span class="status on">Ativo</span>' : '<span class="status off">Bloqueado</span>';
+    // Recusado: "Aprovar mesmo assim" no lugar de Bloquear/Desbloquear e sem "Reenviar acesso"
+    const middle = refused
+      ? '<button class="btn primary sm" type="button" data-k="approve" data-sb-act="approve">Aprovar mesmo assim</button>'
+      : `<button class="btn ghost sm" type="button" data-k="block" data-sb-act="${p.ativo ? 'block' : 'unblock'}"${off}>${p.ativo ? 'Bloquear' : 'Desbloquear'}</button><button class="btn ghost sm" type="button" data-k="resend" data-sb-act="resend">Reenviar acesso</button>`;
     return `<li class="rw sb-grid" data-row="sb:${esc(p.id)}">
-      <div class="u-who cell"><span class="avatar" aria-hidden="true">${esc(initials(name))}</span><div><b>${esc(name)}${me ? ' (você)' : ''}</b><span>${esc(p.email)}</span></div></div>
-      <div class="u-comp"><span class="cell-l">Empresa:</span> ${esc(p.empresa || '—')}</div>
+      <div class="u-who cell"><span class="avatar" aria-hidden="true">${esc(initials(name))}</span><div><b>${esc(name)}${me ? ' (você)' : ''}${p.origem === 'cadastro' ? '<span class="badge" title="Pediu acesso pelo cadastro do site">Cadastro</span>' : ''}</b><span>${esc(p.email)}</span></div></div>
+      <div class="u-comp"><span class="cell-l">Empresa:</span> ${esc(p.empresa || '—')}${st ? `<br><span class="muted">Setor: ${esc(st.nome)}</span>` : ''}</div>
       <div class="u-role"><span class="chip-role">${esc(ROLE[p.papel] || p.papel || '—')}</span></div>
-      <div class="u-status">${p.ativo ? '<span class="status on">Ativo</span>' : '<span class="status off">Bloqueado</span>'}</div>
-      <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-sb-act="edit">Editar</button><button class="btn ghost sm" type="button" data-k="block" data-sb-act="${p.ativo ? 'block' : 'unblock'}"${off}>${p.ativo ? 'Bloquear' : 'Desbloquear'}</button><button class="btn ghost sm" type="button" data-k="resend" data-sb-act="resend">Reenviar acesso</button><button class="btn ghost sm" type="button" data-k="remove" data-sb-act="remove"${off}>Remover</button></div>
+      <div class="u-status">${status}</div>
+      <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-sb-act="edit">Editar</button>${middle}<button class="btn ghost sm" type="button" data-k="remove" data-sb-act="remove"${off}>Remover</button></div>
     </li>`;
+  }
+  // Pedido de acesso pendente (bloco "Pedidos de acesso"): setor, WhatsApp, perfil sugerido pelo setor e há quanto tempo pediu
+  function requestRowHtml(p) {
+    const name = p.nome || p.email, st = setorOf(p.setor_id), whats = fmtWhats(p.whatsapp);
+    const papel = (st && st.papel) || p.papel;
+    return `<li class="rw sb-grid" data-row="sb:${esc(p.id)}">
+      <div class="u-who cell"><span class="avatar" aria-hidden="true">${esc(initials(name))}</span><div><b>${esc(name)}</b><span>${esc(p.email)}</span></div></div>
+      <div class="u-comp"><span class="cell-l">Setor:</span> ${esc(st ? st.nome : p.setor_id == null ? '—' : setores ? 'setor removido' : '…')}${whats ? `<br><span class="cell-l">WhatsApp:</span> <span class="muted">${esc(whats)}</span>` : ''}</div>
+      <div class="u-role"><span class="cell-l">Sugerido:</span> <span class="chip-role">${esc(ROLE[papel] || papel || '—')}</span></div>
+      <div class="u-status"><span class="status wait"${p.criado_em ? ` title="Pedido em ${esc(fmtDateTime(p.criado_em))}"` : ''}>Aguardando</span>${p.criado_em ? `<br><span class="req-when">${esc(agoText(p.criado_em))}</span>` : ''}</div>
+      <div class="rw-acts"><button class="btn primary sm" type="button" data-k="approve" data-sb-act="approve">Aprovar</button><button class="btn ghost sm" type="button" data-k="refuse" data-sb-act="refuse">Recusar</button></div>
+    </li>`;
+  }
+  function renderRequests() {
+    const box = $('#pn-uReq'), list = $('#pn-uReqList'); if (!box || !list) return;
+    box.hidden = !sb;
+    const n = $('#pn-uReqN'), reqs = people && !cadMissing ? requestsOf(people) : [];
+    n.hidden = !reqs.length; n.textContent = reqs.length.toLocaleString('pt-BR');
+    if (!sb) { list.innerHTML = ''; return; }
+    keepFocus(() => {
+      list.innerHTML = !people
+        ? `<div class="empty">${peopleErr ? esc(peopleErr) : 'Carregando os pedidos…'}</div>`
+        : cadMissing ? `<div class="alert warn" role="status">${esc(MSG_CAD_SQL)}</div>`
+        : reqs.length ? `<div class="list-card">
+          <div class="rows-head sb-grid" aria-hidden="true"><span>Pessoa</span><span>Setor e WhatsApp</span><span>Perfil sugerido</span><span>Pedido</span></div>
+          <ul class="rows" aria-label="Pedidos de acesso">${reqs.map(requestRowHtml).join('')}</ul></div>`
+        : '<div class="empty">Nenhum pedido pendente.</div>';
+    });
   }
   // Atualiza aviso, cartão de conexão, blocos, contagem e as duas listas (o campo de busca não é recriado)
   function renderUserRows() {
     const wrap = $('#pn-uTable'); if (!wrap || !vault) return;
-    const all = vault.users, list = visibleUsers(), ppl = people || [], shown = visiblePeople();
+    const all = vault.users, list = visibleUsers(), ppl = (people || []).filter((p) => !isRequest(p)), shown = visiblePeople();
     const loaded = !!(sb && people), blocked = ppl.filter((p) => !p.ativo).length, q = userQ.trim();
     for (const uid of [...selected]) if (!all.some((u) => u.uid === uid)) selected.delete(uid);
     paintSbWarn();
     const slot = $('#pn-sbConnectSlot');
     if (slot.dataset.on !== String(!!sb)) { slot.dataset.on = String(!!sb); slot.hidden = !!sb; slot.innerHTML = sb ? '' : sbConnectCardHtml(); }
     $('#pn-uPeople').hidden = !sb;
+    renderRequests();
     $('#pn-uCount').textContent = [
       loaded && (q ? `${plural(shown.length, 'pessoa encontrada', 'pessoas encontradas')} de ${ppl.length}` : plural(ppl.length, 'pessoa', 'pessoas')),
       all.length > 0 && (q ? `${plural(list.length, 'acesso antigo encontrado', 'acessos antigos encontrados')} de ${all.length}` : plural(all.length, 'acesso antigo', 'acessos antigos'))
@@ -2422,7 +2602,7 @@
         : `<div class="empty">${ppl.length ? 'Ninguém encontrado com essa busca.' : 'Ninguém no novo acesso ainda. Clique em “+ Convidar pessoa”.'}</div>`;
     });
     // Acessos antigos: quem já tem perfil no Supabase com o mesmo e-mail não mostra "Convidar"
-    const moved = new Set(ppl.map((p) => P.normEmail(p.email)));
+    const moved = new Set((people || []).map((p) => P.normEmail(p.email)));
     $('#pn-uLegacyBox').hidden = !all.length;
     $('#pn-uLegacyN').textContent = all.length.toLocaleString('pt-BR');
     const sa = $('[data-selall]', $('#pn-selBar'));
@@ -2441,6 +2621,7 @@
     });
     paintSelection();
     if (sb && !people && !peopleJob && !peopleErr) loadPeople().then(sbRepaint); // primeira vez nesta sessão
+    if (sb && !cadMissing && !setores && !setoresJob && !setoresErr) loadSetores().then(sbRepaint); // nomes dos setores (pedidos, lista e edição)
   }
   // Formulário de pessoa (convite e edição). noMail: sem o campo de e-mail (no Supabase o e-mail é o login e não muda aqui)
   const personFields = (u, noMail) => `
@@ -2476,18 +2657,35 @@
       }]
     });
   }
+  // Setor no formulário da pessoa: setores ativos + o atual (mesmo desativado)
+  const setorOptions = (cur) => `<option value="">Sem setor</option>${(setores || []).filter((s) => s.ativo || s.id === cur)
+    .map((s) => `<option value="${s.id}" ${s.id === cur ? 'selected' : ''}>${esc(s.nome)}${s.ativo ? '' : ' (desativado)'}</option>`).join('')}`;
   function editPersonDialog(p) {
+    const cad = !cadMissing && 'situacao' in p; // colunas do cadastro presentes nesta lista
+    const origin = cad && p.origem === 'cadastro'
+      ? `<p class="muted">Pediu acesso pelo cadastro do site${p.situacao === 'recusado' ? ` · recusado${p.motivo_recusa ? `: ${esc(p.motivo_recusa)}` : ''}` : p.situacao === 'pendente' ? ' · aguardando aprovação' : ''}.</p>` : '';
+    const cadFields = cad ? `
+      <label class="field" id="pn-fWhats"><span class="field-label">WhatsApp (com DDD; só números)</span><input id="pn-nWhats" inputmode="numeric" autocomplete="off" maxlength="20" value="${esc(p.whatsapp || '')}" placeholder="5554999999999"><em class="err" hidden></em></label>
+      <label class="field"><span class="field-label">Setor</span><select id="pn-nSetor">${setorOptions(p.setor_id)}</select></label>` : '';
     openDialog({
       title: 'Editar pessoa',
-      body: `<p class="muted">${esc(p.email)} · o e-mail é o login da pessoa e não muda aqui.</p>${personFields({ name: p.nome, company: p.empresa, role: p.papel }, true)}`,
+      body: `<p class="muted">${esc(p.email)} · o e-mail é o login da pessoa e não muda aqui.</p>${origin}${personFields({ name: p.nome, company: p.empresa, role: p.papel }, true)}${cadFields}`,
       actions: [{ label: 'Cancelar', kind: 'ghost' }, {
         label: 'Salvar', kind: 'primary',
         onClick: async () => {
           const f = readPerson(null, true); if (!f) return false;
+          const patch = { nome: f.name, empresa: f.company, papel: f.role };
+          if (cad) {
+            const w = $('#pn-nWhats').value.replace(/\D/g, ''), wp = w && (w.length < 10 || w.length > 13) ? 'Informe DDD e número (com ou sem o DDI 55), por exemplo 5554999999999.' : '';
+            setFieldErr($('#pn-fWhats'), wp);
+            if (wp) return false;
+            const sv = $('#pn-nSetor').value;
+            patch.whatsapp = w; patch.setor_id = sv ? Number(sv) : null;
+          }
           if (sb && p.id === sb.uid && f.role !== 'admin') { dlgErr('Você não pode tirar o perfil de administrador da própria conta.'); return false; }
           let rows;
-          try { rows = await sbCall((t) => P.supa.update(t, 'perfis', `id=eq.${encodeURIComponent(p.id)}`, { nome: f.name, empresa: f.company, papel: f.role })); }
-          catch (e) { console.error(e); dlgErr(sbErrText(e)); return false; }
+          try { rows = await sbCall((t) => P.supa.update(t, 'perfis', `id=eq.${encodeURIComponent(p.id)}`, patch)); }
+          catch (e) { console.error(e); dlgErr(cadErrText(e)); return false; }
           if (!Array.isArray(rows) || !rows.length) { dlgErr('Nada foi salvo: a pessoa não foi encontrada ou esta conta não pode alterar perfis.'); return false; }
           toast('Pessoa atualizada.');
           loadPeople().then(sbRepaint);
@@ -2510,10 +2708,69 @@
     return ok;
   }
   function personAction(p, act, btn) {
-    if (act === 'edit') editPersonDialog(p);
+    const withSetores = (fn) => { // abre o diálogo com os nomes dos setores já carregados (quando o cadastro existe)
+      if (!sb || cadMissing || setores) { fn(p); return; }
+      btn.disabled = true;
+      loadSetores().then(() => { if (btn.isConnected) btn.disabled = false; fn(p); });
+    };
+    if (act === 'edit') withSetores(editPersonDialog);
+    else if (act === 'approve') withSetores(approveDialog);
+    else if (act === 'refuse') refuseDialog(p);
     else if (act === 'block' || act === 'unblock') setBlocked(p, act === 'block');
     else if (act === 'resend') resendAccess(p, btn);
     else if (act === 'remove') removeSbPerson(p);
+  }
+  // Aprovar pedido de acesso (ou "Aprovar mesmo assim" para quem foi recusado): perfil sugerido pelo setor, com aviso para Administrador
+  function approveDialog(p) {
+    const name = p.nome || p.email, st = setorOf(p.setor_id), refused = p.situacao === 'recusado';
+    const def = st && ROLE[st.papel] ? st.papel : ROLE[p.papel] && p.papel !== 'admin' ? p.papel : 'cliente';
+    openDialog({
+      title: refused ? `Aprovar ${name} mesmo assim` : `Aprovar ${name}`,
+      body: `<p class="muted">${esc(p.email)}${st ? ` · Setor: ${esc(st.nome)}` : ''}${p.whatsapp ? ` · WhatsApp: ${esc(fmtWhats(p.whatsapp))}` : ''}</p>
+        ${refused ? `<p class="muted">Este pedido foi recusado${p.motivo_recusa ? `. Motivo: ${esc(p.motivo_recusa)}` : ''}.</p>` : ''}
+        <label class="field"><span class="field-label">Perfil de acesso</span><select id="pn-apRole">${Object.entries(ROLE).map(([k, l]) => `<option value="${k}" ${k === def ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        ${st ? `<p class="muted">Sugerido pelo setor: ${esc(ROLE[st.papel] || st.papel)}.</p>` : ''}
+        <div class="alert error" id="pn-apAdminWarn" role="alert" hidden><b>Atenção:</b> o perfil Administrador dá acesso total à gestão (catálogos, produtos, pessoas, configurações e os segredos do acesso unificado). Escolha só para quem cuida da Prateleira.</div>
+        <p class="muted">A pessoa passa a entrar na Prateleira e recebe um e-mail avisando.</p>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
+        label: 'Aprovar', kind: 'primary',
+        onClick: async () => {
+          const role = $('#pn-apRole').value;
+          if (!ROLE[role]) return false;
+          try { await sbCall((t) => P.supa.rpc(t, 'admin_aprovar_cadastro', { p_id: p.id, p_papel: role })); }
+          catch (e) { console.error(e); dlgErr(cadErrText(e)); return false; }
+          decisionToast('Acesso liberado.', await notifyDecision(p.id));
+          loadPeople().then(sbRepaint);
+          return true;
+        }
+      }]
+    });
+    const sel = $('#pn-apRole'), warn = $('#pn-apAdminWarn');
+    const paint = () => { warn.hidden = sel.value !== 'admin'; };
+    sel.addEventListener('change', paint); paint();
+  }
+  // Recusar pedido de acesso: motivo opcional (até 300 caracteres, com contador)
+  function refuseDialog(p) {
+    const name = p.nome || p.email, MAX = 300;
+    openDialog({
+      title: `Recusar ${name}`,
+      body: `<p class="muted">${esc(p.email)}. A pessoa não entra na Prateleira e recebe um e-mail avisando da decisão. Dá para aprovar depois, se precisar.</p>
+        <label class="field" id="pn-fRcMotivo"><span class="field-label">Motivo (opcional)</span><textarea id="pn-rcMotivo" rows="3" maxlength="${MAX}" aria-describedby="pn-rcCount"></textarea><em class="err" hidden></em></label>
+        <p class="muted" id="pn-rcCount">0/${MAX}</p>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
+        label: 'Recusar', kind: 'danger',
+        onClick: async () => {
+          const motivo = $('#pn-rcMotivo').value.trim().slice(0, MAX);
+          try { await sbCall((t) => P.supa.rpc(t, 'admin_recusar_cadastro', { p_id: p.id, p_motivo: motivo })); }
+          catch (e) { console.error(e); dlgErr(cadErrText(e)); return false; }
+          decisionToast('Pedido recusado.', await notifyDecision(p.id));
+          loadPeople().then(sbRepaint);
+          return true;
+        }
+      }]
+    });
+    const ta = $('#pn-rcMotivo'), count = $('#pn-rcCount');
+    ta.addEventListener('input', () => { count.textContent = `${ta.value.length.toLocaleString('pt-BR')}/${MAX}`; });
   }
   async function setBlocked(p, block) {
     if (sb && p.id === sb.uid) return;
@@ -2984,6 +3241,7 @@
       <div data-sb-warn-slot hidden></div>
       <div class="cfg-grid">
           <section class="card stack span2" id="pn-cfgUnify" aria-labelledby="pn-cfgUnifyH">${unifyCardHtml()}</section>
+          <section class="card stack span2" id="pn-cfgCad" aria-labelledby="pn-cfgCadH"></section>
           <section class="card stack" aria-labelledby="pn-cfgAtivH">
             <div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.mail}</span><h2 id="pn-cfgAtivH">Contatos do marketing</h2></div>
             <p class="muted">Aparecem nas telas de entrar e de ajuda do site, para quem precisa de ajuda com o acesso. O site mostra um botão para cada contato preenchido.</p>
@@ -3029,8 +3287,171 @@
       else if (a === 'recrypt') recryptAll();
       else forgetToken();
     };
+    bindCadCard($('#pn-cfgCad'));
+    paintCadCard();
     paintSbWarn();
     if (sb && !secretsInfo) loadSecretsInfo();
+  }
+
+  /* ---------- Configurações: cartão "Cadastro de pessoas" (link do cadastro, aprovação automática e setores) ----------
+     Cada setor salva sozinho (nome, perfil sugerido, ativo); a ordem é gravada na hora ao subir/descer. Setores não são apagados: desative. */
+  const setorRoleOptions = (cur) => SETOR_ROLES.map((k) => `<option value="${k}" ${k === cur ? 'selected' : ''}>${ROLE[k]}</option>`).join('');
+  function setorRowHtml(s, i, n) {
+    const id = esc(s.id), nm = esc(s.nome);
+    return `<li class="set-row set-grid${s.ativo ? '' : ' off'}" data-set="${id}" data-row="set:${id}">
+      <label class="field set-name"><span class="field-label set-lbl">Nome do setor</span><input data-f="nome" data-k="nome" maxlength="60" autocomplete="off" value="${nm}"></label>
+      <label class="field set-papel"><span class="field-label set-lbl">Perfil sugerido</span><select data-f="papel" data-k="papel">${setorRoleOptions(s.papel)}</select></label>
+      <div class="set-ativo"><span class="field-label set-lbl" aria-hidden="true">Ativo</span><label class="switch"><input type="checkbox" role="switch" data-f="ativo" data-k="ativo" aria-label="Setor ${nm} ativo no cadastro" ${s.ativo ? 'checked' : ''}><span></span></label></div>
+      <div class="order set-order"><button class="mini" type="button" data-cad="up" data-k="up" aria-label="Subir ${nm}" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="mini" type="button" data-cad="down" data-k="down" aria-label="Descer ${nm}" ${i === n - 1 ? 'disabled' : ''}>${ICO.down}</button></div>
+      <div class="set-save"><button class="btn ghost sm" type="button" data-cad="save" data-k="save" disabled>Salvar</button><span class="set-msg" role="status"></span></div>
+    </li>`;
+  }
+  function cadCardHtml() {
+    const head = `<div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="pn-cfgCadH">Cadastro de pessoas</h2></div>
+      <p class="muted">Quem tem e-mail @dellamed.com.br pode pedir acesso pelo site. Os pedidos aparecem em Pessoas → Pedidos de acesso.</p>
+      <div class="cad-link"><label class="field"><span class="field-label">Link do cadastro no site</span><input id="pn-cadLink" readonly value="${esc(CAD_LINK)}"></label><button class="btn ghost" type="button" id="pn-cadCopy" data-cad="copy">Copiar link</button></div>`;
+    if (!sb) return `${head}<p class="muted">Entre com e-mail e senha (cartão “Acesso unificado”) para ver a aprovação automática e os setores.</p>`;
+    if (cadMissing) return `${head}<div class="alert warn" role="status">${esc(MSG_CAD_SQL)}<div class="row"><button class="btn ghost sm" type="button" data-cad="reload">Tentar de novo</button></div></div>`;
+    const retry = '<div class="row"><button class="btn ghost sm" type="button" data-cad="reload">Tentar de novo</button></div>';
+    const auto = cadAuto === null
+      ? (cadAutoErr ? `<div class="alert error" role="alert">${esc(cadAutoErr)}${retry}</div>` : '<p class="muted">Carregando…</p>')
+      : `<div class="row"><span class="muted" id="pn-cadAutoState">${cadAuto ? 'Ligada' : 'Desligada'}</span><label class="switch"><input type="checkbox" role="switch" id="pn-cadAuto" aria-labelledby="pn-cadAutoH" aria-describedby="pn-cadAutoD" ${cadAuto ? 'checked' : ''}><span></span></label></div>`;
+    const list = !setores
+      ? (setoresErr ? `<div class="alert error" role="alert">${esc(setoresErr)}${retry}</div>` : '<p class="muted">Carregando os setores…</p>')
+      : `${setores.length ? `<div class="set-head set-grid" aria-hidden="true"><span>Setor</span><span>Perfil sugerido</span><span>Ativo</span><span>Ordem</span><span></span></div>
+        <ul class="set-list" id="pn-setList" aria-label="Setores">${setores.map((s, i) => setorRowHtml(s, i, setores.length)).join('')}</ul>` : '<div class="empty">Nenhum setor ainda. Adicione o primeiro abaixo.</div>'}
+        <form class="set-add" id="pn-setAdd" novalidate>
+          <label class="field" id="pn-fSetNew"><span class="field-label">Novo setor</span><input id="pn-setNewName" maxlength="60" autocomplete="off" placeholder="Ex.: Compras"><em class="err" hidden></em></label>
+          <label class="field"><span class="field-label">Perfil sugerido</span><select id="pn-setNewPapel">${setorRoleOptions('interno')}</select></label>
+          <button class="btn primary" type="submit" id="pn-setAddBtn">Adicionar setor</button>
+        </form>`;
+    return `${head}
+      <ul class="sec-list"><li class="sec-row"><div><h3 id="pn-cadAutoH">Aprovação automática</h3><p class="muted" id="pn-cadAutoD">E-mails @dellamed.com.br confirmados entram sem aprovação, com o papel do setor. Recomendado deixar desligado.</p></div>${auto}</li></ul>
+      <div class="stack"><div><h3>Setores</h3><p class="muted">Aparecem na tela de cadastro, nesta ordem. Cada setor sugere um perfil (nunca Administrador). Para tirar um setor do cadastro, desative: quem já está nele continua igual.</p></div>${list}</div>`;
+  }
+  // Redesenha o cartão sem perder o que foi digitado nos setores (linhas alteradas e o "Novo setor")
+  function paintCadCard() {
+    const card = $('#pn-cfgCad'); if (!card) return;
+    card.dataset.on = String(!!sb);
+    const drafts = $$('.set-row.dirty', card).map((li) => ({ id: li.dataset.set, nome: $('[data-f="nome"]', li).value, papel: $('[data-f="papel"]', li).value, ativo: $('[data-f="ativo"]', li).checked }));
+    const newName = $('#pn-setNewName', card) ? $('#pn-setNewName', card).value : '', newPapel = $('#pn-setNewPapel', card) ? $('#pn-setNewPapel', card).value : '';
+    keepFocus(() => { card.innerHTML = cadCardHtml(); });
+    for (const d of drafts) {
+      const li = $(`.set-row[data-set="${CSS.escape(d.id)}"]`, card); if (!li) continue;
+      $('[data-f="nome"]', li).value = d.nome; $('[data-f="papel"]', li).value = d.papel; $('[data-f="ativo"]', li).checked = d.ativo;
+      li.classList.add('dirty'); $('[data-cad="save"]', li).disabled = false;
+    }
+    if (newName && $('#pn-setNewName', card)) $('#pn-setNewName', card).value = newName;
+    if (newPapel && $('#pn-setNewPapel', card)) $('#pn-setNewPapel', card).value = newPapel;
+    if (sb && !cadMissing && ((cadAuto === null && !cadAutoErr && !cadAutoJob) || (!setores && !setoresErr && !setoresJob))) {
+      Promise.all([loadCadAuto(), loadSetores()]).then(() => { if (tab === 'cfg') paintCadCard(); });
+    }
+  }
+  function bindCadCard(card) {
+    if (!card) return;
+    card.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-cad]'); if (!b || b.disabled) return;
+      const a = b.dataset.cad, li = b.closest('.set-row');
+      if (a === 'copy') copyText($('#pn-cadLink'));
+      else if (a === 'reload') { cadReset(); paintCadCard(); if (people) loadPeople().then(sbRepaint); }
+      else if (a === 'save' && li) saveSetor(li, b);
+      else if ((a === 'up' || a === 'down') && li) moveSetor(Number(li.dataset.set), a === 'up' ? -1 : 1);
+    });
+    const dirty = (e) => {
+      const li = e.target.closest('.set-row'); if (!li || !e.target.dataset.f) return;
+      li.classList.add('dirty'); $('[data-cad="save"]', li).disabled = false; $('.set-msg', li).textContent = '';
+    };
+    card.addEventListener('input', dirty);
+    card.addEventListener('change', (e) => { if (e.target.matches('#pn-cadAuto')) saveCadAuto(e.target); else dirty(e); });
+    card.addEventListener('submit', (e) => { if (e.target.matches('#pn-setAdd')) { e.preventDefault(); addSetor(); } });
+  }
+  async function saveCadAuto(input) {
+    const on = input.checked;
+    if (on && !(await confirmBox('Ligar a aprovação automática?', '<p>Quem se cadastrar com e-mail @dellamed.com.br e confirmar o e-mail entra na Prateleira sem passar pela sua aprovação, com o perfil sugerido pelo setor.</p><p>O recomendado é deixar desligado e aprovar cada pedido.</p>', 'Ligar'))) { input.checked = false; return; }
+    input.disabled = true;
+    try {
+      const rows = await sbCall((t) => P.supa.update(t, 'ajustes_cadastro', 'id=eq.1', { aprovacao_automatica: on, atualizado_em: new Date().toISOString() }));
+      if (!Array.isArray(rows) || !rows.length) throw userErr('Nada foi salvo: esta conta não pode alterar os ajustes do cadastro.');
+      cadAuto = !!rows[0].aprovacao_automatica;
+      toast(cadAuto ? 'Aprovação automática ligada.' : 'Aprovação automática desligada.');
+    } catch (e) {
+      console.error(e);
+      input.checked = !on;
+      if (cadMissingErr(e)) { cadMissing = true; paintCadCard(); }
+      alertBox('Não foi possível salvar', cadErrText(e));
+    } finally {
+      if (input.isConnected) { input.disabled = false; const s = $('#pn-cadAutoState'); if (s) s.textContent = input.checked ? 'Ligada' : 'Desligada'; }
+    }
+  }
+  const setorNameProblem = (nome, exceptId) => (nome.length < 2 ? 'Informe o nome do setor.'
+    : (setores || []).some((x) => x.id !== exceptId && norm(x.nome) === norm(nome)) ? 'Já existe um setor com esse nome.' : '');
+  async function saveSetor(li, btn) {
+    const id = Number(li.dataset.set), s = (setores || []).find((x) => x.id === id); if (!s) return;
+    const nome = $('[data-f="nome"]', li).value.trim().replace(/\s+/g, ' '), papel = $('[data-f="papel"]', li).value, ativo = $('[data-f="ativo"]', li).checked;
+    const msg = $('.set-msg', li), prob = setorNameProblem(nome, id) || (SETOR_ROLES.includes(papel) ? '' : 'Escolha o perfil sugerido.');
+    if (prob) { msg.textContent = prob; $('[data-f="nome"]', li).focus(); return; }
+    btn.disabled = true; msg.textContent = 'Salvando…';
+    try {
+      const rows = await sbCall((t) => P.supa.update(t, 'setores', `id=eq.${id}`, { nome, papel, ativo }));
+      if (!Array.isArray(rows) || !rows.length) throw userErr('Nada foi salvo: o setor não foi encontrado ou esta conta não pode alterar setores.');
+      Object.assign(s, rows[0]);
+    } catch (e) {
+      console.error(e);
+      if (li.isConnected) { btn.disabled = false; msg.textContent = setorErrText(e); }
+      return;
+    }
+    if (!li.isConnected) return;
+    li.classList.remove('dirty'); li.classList.toggle('off', !s.ativo);
+    $('[data-f="nome"]', li).value = s.nome;
+    msg.textContent = 'Salvo.';
+    toast(`Setor “${s.nome}” salvo.`);
+    if (tab === 'users') sbRepaint();
+  }
+  let setoresMoving = false;
+  async function moveSetor(id, dir) {
+    if (setoresMoving || !setores) return;
+    const list = setores.slice(), i = list.findIndex((x) => x.id === id), j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    // Ordem em passos de 10; só grava os setores cuja ordem muda (normalmente os dois trocados)
+    const changes = list.map((s, k) => ({ s, ordem: (k + 1) * 10 })).filter((c) => c.s.ordem !== c.ordem);
+    setoresMoving = true;
+    $$('#pn-setList [data-cad="up"], #pn-setList [data-cad="down"]').forEach((b) => { b.disabled = true; });
+    try {
+      for (const c of changes) {
+        const rows = await sbCall((t) => P.supa.update(t, 'setores', `id=eq.${c.s.id}`, { ordem: c.ordem }));
+        if (!Array.isArray(rows) || !rows.length) throw userErr('A ordem não foi salva: o setor não foi encontrado ou esta conta não pode alterar setores.');
+        c.s.ordem = c.ordem;
+      }
+      toast('Ordem dos setores salva.');
+    } catch (e) { console.error(e); alertBox('Não foi possível mudar a ordem', setorErrText(e)); }
+    finally {
+      setoresMoving = false;
+      sortSetores();
+      paintCadCard();
+      const row = $(`#pn-setList [data-set="${id}"]`);
+      if (row && !row.contains(document.activeElement)) { const b = $(`[data-cad="${dir < 0 ? 'up' : 'down'}"]:not(:disabled)`, row) || $('[data-cad]:not(:disabled)', row); if (b) b.focus(); }
+    }
+  }
+  async function addSetor() {
+    const f = $('#pn-fSetNew'), input = $('#pn-setNewName'), btn = $('#pn-setAddBtn');
+    const nome = input.value.trim().replace(/\s+/g, ' '), papel = $('#pn-setNewPapel').value;
+    const prob = setorNameProblem(nome, null);
+    setFieldErr(f, prob);
+    if (prob || !SETOR_ROLES.includes(papel)) { input.focus(); return; }
+    const ordem = (setores || []).reduce((m, s) => Math.max(m, s.ordem || 0), 0) + 10;
+    btn.disabled = true;
+    let rows;
+    try { rows = await sbCall((t) => P.supa.upsert(t, 'setores', { nome, papel, ordem, ativo: true }, 'nome')); }
+    catch (e) { console.error(e); if (btn.isConnected) { btn.disabled = false; setFieldErr(f, setorErrText(e)); } return; }
+    const row = Array.isArray(rows) ? rows[0] : null;
+    if (!row) { if (btn.isConnected) { btn.disabled = false; setFieldErr(f, 'Nada foi salvo: esta conta não pode criar setores.'); } return; }
+    setores = (setores || []).filter((s) => s.id !== row.id).concat(row);
+    sortSetores();
+    if (input.isConnected) input.value = '';
+    paintCadCard();
+    toast(`Setor “${row.nome}” adicionado.`);
+    const ni = $(`#pn-setList [data-set="${row.id}"] [data-f="nome"]`); if (ni) ni.focus();
   }
   async function saveAtiv() {
     const email = $('#pn-ativEmail').value.trim(), whats = $('#pn-ativWhats').value.replace(/\D/g, ''), wp = whatsProblem(whats);
