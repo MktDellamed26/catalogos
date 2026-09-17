@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-cfXMDoo0NwkP9oDnjxziBwpUYbwZX5/eCEL2re1GJUU=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-6TXuerNrMnVvxUvlQrkSlK4d8LdjxR9EU3LHHVfE/vE=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -1128,10 +1128,10 @@
     <form id="signupForm" novalidate hidden>
       <p class="label-caps">Cadastro</p>
       <h2 id="signupH" tabindex="-1">Crie sua conta</h2>
-      <p class="sub">Para a equipe Dellamed. Use o seu e-mail corporativo: depois da confirmação, o marketing aprova o acesso.</p>
+      <p class="sub">Para a equipe Dellamed. Depois do cadastro, o marketing aprova o seu acesso.</p>
       <div class="alert error" id="signupAlert" role="alert" hidden></div>
       <div class="field" id="fSuNome"><label class="field-label" for="suNome">Nome completo</label><input id="suNome" data-su="nome" type="text" autocomplete="name" maxlength="120" required><em class="err" id="errSuNome" hidden></em></div>
-      <div class="field" id="fSuEmail"><label class="field-label" for="suEmail">E-mail corporativo</label><input id="suEmail" data-su="email" type="email" autocomplete="email" inputmode="email" placeholder="nome@dellamed.com.br" maxlength="120" required><em class="err" id="errSuEmail" hidden></em></div>
+      <div class="field" id="fSuEmail"><label class="field-label" for="suEmail">E-mail</label><input id="suEmail" data-su="email" type="email" autocomplete="email" inputmode="email" placeholder="nome@dellamed.com.br" maxlength="120" required><em class="err" id="errSuEmail" hidden></em></div>
       <div class="field" id="fSuWa"><label class="field-label" for="suWa">WhatsApp <span class="field-opt">(opcional)</span></label><input id="suWa" data-su="wa" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="(00) 00000-0000" maxlength="16"><em class="err" id="errSuWa" hidden></em></div>
       <div class="field" id="fSuSetor"><label class="field-label" for="suSetor">Setor</label>
         <div class="select"><select id="suSetor" data-su="setor" required disabled><option value="">Carregando os setores…</option></select><span class="ico" data-ico="more" aria-hidden="true"></span></div>
@@ -2963,7 +2963,7 @@
      Só e-mail @dellamed.com.br (o banco confere de novo e recusa o resto). A conta nasce pendente: o Supabase manda o link de confirmação,
      o marketing aprova no painel. Setores vêm da tabela "setores" (leitura anônima). Nada fica guardado no aparelho. */
   const TERMOS_VERSAO = '2026-09';
-  const SIGNUP_DOMAIN = /^[^\s@]+@dellamed\.com\.br$/i;
+  const SIGNUP_DOMAIN = null; // trava de domínio no site (regra de verdade fica no banco; null = qualquer e-mail)
   const SU = { busy: false, setores: null, loading: null };
   const suField = { nome: '#fSuNome', email: '#fSuEmail', wa: '#fSuWa', setor: '#fSuSetor', pass: '#fSuPass', pass2: '#fSuPass2', termos: '#fSuTerms' };
   function signupAlert(msg) { const a = $('#signupAlert'); a.innerHTML = msg ? `${WARN}<span>${esc(msg)}</span>` : ''; a.hidden = !msg; }
@@ -2996,7 +2996,7 @@
       msg = !v ? 'Informe o seu nome completo.' : v.length < 3 ? 'O nome precisa ter pelo menos 3 letras.' : v.length > 120 ? 'Use no máximo 120 caracteres.' : '';
     } else if (key === 'email') {
       const v = $('#suEmail').value.trim();
-      msg = !v ? 'Informe o seu e-mail corporativo.' : !emailOk(v) ? 'Confira o formato do e-mail.' : !SIGNUP_DOMAIN.test(v) ? 'Use o seu e-mail @dellamed.com.br' : '';
+      msg = !v ? 'Informe o seu e-mail.' : !emailOk(v) ? 'Confira o formato do e-mail.' : (SIGNUP_DOMAIN && !SIGNUP_DOMAIN.test(v)) ? 'Use o seu e-mail @dellamed.com.br' : '';
     } else if (key === 'wa') {
       const d = onlyDigits($('#suWa').value);
       msg = d && (d.length < 10 || d.length > 11) ? 'Informe DDD e número, como (54) 99999-9999.' : '';
@@ -3077,7 +3077,7 @@
       title: 'Termos de uso e privacidade',
       body: `<p class="dlg-sub">Versão ${esc(TERMOS_VERSAO)} · Prateleira de Catálogos Dellamed</p>
         <ul class="terms-list">
-          <li><b>Dados coletados:</b> nome, e-mail corporativo, WhatsApp (opcional) e setor.</li>
+          <li><b>Dados coletados:</b> nome, e-mail, WhatsApp (opcional) e setor.</li>
           <li><b>Uso:</b> apenas para liberar o seu acesso aos catálogos da Dellamed e montar o seu cartão de visita digital.</li>
           <li><b>Acesso:</b> pessoal e aprovado pelo marketing, que pode revogá-lo a qualquer momento.</li>
           <li><b>Seus direitos (LGPD, Lei nº 13.709/2018):</b> para consultar, corrigir ou pedir a remoção dos seus dados, fale com o marketing da Dellamed.</li>
@@ -3112,7 +3112,7 @@
     if (code === 'signup_disabled' || /signups? not allowed/i.test(text)) return 'O cadastro ainda não está liberado. Fale com o marketing.';
     if (err.status === 429 || /rate_limit/.test(code)) return 'Muitas tentativas. Aguarde alguns minutos.';
     if (code === 'weak_password' || (err.status === 422 && /password/i.test(text))) return 'password';
-    return 'Não foi possível concluir o cadastro. Confira se o e-mail é @dellamed.com.br e se todos os campos estão preenchidos.';
+    return 'Não foi possível concluir o cadastro. Confira os campos e tente de novo; se continuar, fale com o marketing.';
   }
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
