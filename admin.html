@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-g5l57tyf/Pb259jqLotJ1GSzQu3XaMC2G/DFe9n1Cn8=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-n9qWuc3YvoN9oApeZ8WEhUWBtt3tY1aKNNFvOY49SL0=' 'sha256-IwuHoWXKYiKHNfV9UAm0CHg84vgeht5Xrzot+yLac1I=' https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -164,6 +164,7 @@
   .topbar, .menu-btn, .bar-m { display: none; }
   .content { max-width: 1240px; margin: 0 auto; padding: 28px 32px 120px; overflow-x: clip; }
   .banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 12px 10px 16px; border-radius: 14px; background: rgba(139, 184, 232, .3); color: var(--navy); font-weight: 600; font-size: 13px; margin-bottom: 18px; }
+  .unify-bar { margin-bottom: 18px; } /* aviso "acesso unificado desatualizado" acima das abas */
   .tab { display: grid; gap: 18px; }
   .tab > * { min-width: 0; }
   /* Cabeçalho de cada área: título no padrão da marca (primeira frase 700, o resto 300), descrição e ação principal */
@@ -515,7 +516,7 @@
     <div class="login-brand">
       <div class="login-top">
         <span class="logo" role="img" aria-label="Dellamed"></span>
-        <a class="btn ghost-w sm" href="./" target="_blank" rel="noopener">Ver o site</a>
+        <a class="btn ghost-w sm" href="./">Ver o site</a>
       </div>
       <div class="login-hero">
         <span class="pill-dark">Painel da Prateleira</span>
@@ -525,8 +526,25 @@
       <p class="tagline"><b>Saúde e bem-estar</b> para todos.</p>
     </div>
     <div class="login-panel">
-      <form class="stack" id="loginForm" novalidate>
-        <p class="label-caps" id="lgEyebrow">Área dos administradores</p>
+      <!-- Entrada padrão: a mesma conta do site (Supabase). O cofre abre com os segredos guardados para os administradores. -->
+      <form class="stack" id="authForm" novalidate>
+        <p class="label-caps">Área dos administradores</p>
+        <h2>Entrar no Painel</h2>
+        <p class="muted">Use o e-mail e a senha da sua conta de administrador, a mesma do site.</p>
+        <div class="alert error" id="auErr" role="alert" hidden></div>
+        <div class="stack" id="auFields">
+          <label class="field" id="fAuMail"><span class="field-label">E-mail</span><input id="auMail" type="email" autocomplete="username" spellcheck="false"><em class="err" hidden></em></label>
+          <label class="field" id="fAuPw"><span class="field-label">Senha</span><input id="auPw" type="password" autocomplete="current-password" spellcheck="false"><em class="err" hidden></em></label>
+          <label class="check"><input type="checkbox" id="auKeep"> Manter conectado neste computador</label>
+          <button class="btn primary block" type="submit" id="auBtn">Entrar</button>
+          <button class="link" type="button" id="auForgot">Esqueci minha senha</button>
+          <button class="link" type="button" id="auEmerg" data-au="emerg">Usar senha mestra (emergência)</button>
+        </div>
+        <p class="muted" id="auBusy" role="status" hidden>Abrindo o painel…</p>
+      </form>
+      <!-- Emergência: senha mestra, token do GitHub e chave de recuperação (e a primeira configuração) -->
+      <form class="stack" id="loginForm" novalidate hidden>
+        <p class="label-caps" id="lgEyebrow">Acesso de emergência</p>
         <h2 id="lgTitle">Entrar no painel</h2>
         <p class="muted" id="lgSub">Digite a senha mestra dos administradores.</p>
         <div class="alert error" id="lgErr" role="alert" hidden></div>
@@ -549,6 +567,7 @@
         <button class="btn primary block" type="submit" id="lgBtn">Entrar</button>
         <button class="link" type="button" id="lgNewTok">Informar outro token neste computador</button>
         <button class="link" type="button" id="lgRecover">Entrar com a chave de recuperação</button>
+        <button class="link" type="button" id="lgBack">Entrar com e-mail e senha</button>
       </form>
       <p class="login-foot">Área restrita aos administradores da Dellamed. O painel se bloqueia sozinho depois de 30 minutos sem uso.</p>
     </div>
@@ -571,14 +590,14 @@
       </div>
       <p class="nav-h">Atalhos</p>
       <div class="side-links">
-        <a class="nav-i" href="./" target="_blank" rel="noopener"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span><span class="nav-t">Ver o site</span></a>
+        <a class="nav-i" href="./"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span><span class="nav-t">Ver o site</span></a>
         <button class="nav-i" type="button" id="reloadBtn" data-reload><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11A8 8 0 0 0 5.6 6.4L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.4 4.6L20 16"/><path d="M20 20v-4h-4"/></svg></span><span class="nav-t">Atualizar dados</span></button>
       </div>
       <div class="side-foot">
         <p class="label-caps">Repositório</p>
         <p class="repo" id="repoLabel">Área restrita aos administradores</p>
         <p class="side-note">O site atualiza de 1 a 3 minutos depois de cada publicação.</p>
-        <button class="btn ghost-w sm block" type="button" id="lockBtn" data-lock>Sair</button>
+        <button class="btn ghost-w sm block" type="button" id="lockBtn" data-lock>Sair (também do site neste computador)</button>
       </div>
     </aside>
     <div class="scrim" id="scrim" hidden></div>
@@ -588,12 +607,13 @@
         <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
         <span class="logo" role="img" aria-label="Dellamed"></span>
         <p class="bar-title" id="barTitle">Catálogos</p>
-        <a class="icon-btn bar-m" href="./" target="_blank" rel="noopener" aria-label="Ver o site" title="Ver o site"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="icon-btn bar-m" href="./" aria-label="Ver o site" title="Ver o site"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <button class="icon-btn bar-m" type="button" data-reload aria-label="Atualizar dados" title="Atualizar dados"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11A8 8 0 0 0 5.6 6.4L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.4 4.6L20 16"/><path d="M20 20v-4h-4"/></svg></button>
-        <button class="pill-btn" type="button" id="lockBtnTop" data-lock>Sair</button>
+        <button class="pill-btn" type="button" id="lockBtnTop" data-lock aria-label="Sair (também do site neste computador)" title="Sair (também do site neste computador)">Sair</button>
       </header>
       <main class="content" id="content">
         <div class="banner" id="staleBar" role="status" hidden><span>Outro administrador publicou alterações.</span><button class="btn primary sm" type="button" id="staleBtn">Atualizar</button></div>
+        <div class="alert error unify-bar" id="unifyBar" role="alert" hidden>O acesso unificado ficou desatualizado. Entre com e-mail e senha e clique em “Unificar acesso”.<div class="row"><button class="btn primary sm" type="button" id="unifyBarBtn">Abrir Acesso unificado</button></div></div>
         <section class="tab" id="tabCats" role="tabpanel" aria-labelledby="tb-cats" tabindex="-1"></section>
         <section class="tab" id="tabProds" role="tabpanel" aria-labelledby="tb-prods" tabindex="-1" hidden></section>
         <section class="tab" id="tabUsers" role="tabpanel" aria-labelledby="tb-users" tabindex="-1" hidden></section>
@@ -987,7 +1007,61 @@
       }
     };
 
+    /* ---------- Sessão única do Supabase neste aparelho (site e painel usam a mesma) ----------
+       Guardada em "dm.auth" (localStorage quando "manter conectado"; sessionStorage caso contrário).
+       A renovação usa Web Locks para duas abas/páginas não gastarem o mesmo refresh token. */
+    const AUTH_KEY = 'dm.auth';
+    const auth = {
+      load() {
+        try {
+          const raw = localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY);
+          const s = raw ? JSON.parse(raw) : null;
+          return s && s.refresh_token ? s : null;
+        } catch (e) { return null; }
+      },
+      save(sess, keep) {
+        const prev = auth.load();
+        const k = keep === undefined ? !!(prev && prev.keep) : !!keep;
+        const user = sess.user || {};
+        const rec = {
+          access_token: sess.access_token,
+          refresh_token: sess.refresh_token,
+          expires_at: Date.now() + (Number(sess.expires_in) || 3600) * 1000,
+          uid: user.id || (prev && prev.uid) || '',
+          email: user.email || (prev && prev.email) || '',
+          keep: k
+        };
+        try {
+          (k ? localStorage : sessionStorage).setItem(AUTH_KEY, JSON.stringify(rec));
+          (k ? sessionStorage : localStorage).removeItem(AUTH_KEY);
+        } catch (e) { /* armazenamento indisponível: a sessão vale só nesta página */ }
+        return rec;
+      },
+      clear() { try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (e) { /* noop */ } },
+      async signIn(email, password, keep) { return auth.save(await supa.signIn(email, password), keep); },
+      // Tokens vindos do link de convite/recuperação
+      async adopt(tokens, keep) { const user = await supa.user(tokens.access_token); return auth.save(Object.assign({}, tokens, { user }), keep); },
+      // Token de acesso válido (renova quando falta 1 minuto). null = sem sessão.
+      async token() {
+        const fresh = (s) => s && s.expires_at - Date.now() > 60000;
+        let s = auth.load();
+        if (!s) return null;
+        if (fresh(s)) return s.access_token;
+        const run = async () => {
+          s = auth.load();
+          if (!s) return null;
+          if (fresh(s)) return s.access_token; // outra aba ou página já renovou
+          try { return auth.save(await supa.refresh(s.refresh_token), s.keep).access_token; }
+          catch (e) { if (e.status === 400 || e.status === 401 || e.status === 403) auth.clear(); throw e; }
+        };
+        return navigator.locks && navigator.locks.request ? navigator.locks.request('dm-auth-refresh', run) : run();
+      },
+      async signOut() { const s = auth.load(); auth.clear(); if (s) await supa.signOut(s.access_token); },
+      KEY: AUTH_KEY
+    };
+
     return {
+      auth,
       SUPA, supa,
       CARD_PREFIX, CARD_MAX, CARD_PHOTO_MAX, cleanCard, makeCardCode, readCardCode, sealCard, openCard,
       sealProdutos, openProdutos, skuKey, validHotspot,
@@ -1052,6 +1126,9 @@
   const PDF_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const PDF_WORKER_SRI = 'sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2';
   const IDLE_MS = 30 * 60 * 1000;
+  // Acesso unificado: bloqueio por inatividade nesta aba (não entra sozinho de novo) e aviso de segredos desatualizados neste computador
+  const IDLEKEY = 'dm.admin.idle', UNIFY_STALE_KEY = 'dm.admin.unify.stale';
+  const SITE_URL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? new URL('./', location.href).href : 'https://mktdellamed26.github.io/catalogos/';
 
   /* ================= repositório no GitHub (API REST) ================= */
   function detectRepo() {
@@ -1200,6 +1277,15 @@
   async function openSlot(secret, slot) { if (!slot) return null; try { return await P.open(await slotKey(secret, slot.s, slot.it), P.b64d(slot.w), 'slot'); } catch (e) { return null; } }
   async function encryptVault(v, k, sl) { return JSON.stringify({ v: 2, slots: sl, d: P.b64e(await P.seal(k.key, JSON.stringify(v), 'cofre')) }); }
   async function decryptVault(meta, k) { return JSON.parse(td.decode(await P.open(k.key, P.b64d(meta.d), 'cofre'))); }
+  // Abre o cofre v2 com a chave do cofre já obtida (senha mestra, chave de recuperação ou acesso unificado) e vira o estado atual.
+  // isCurrent(): falso quando o pedido ficou velho (painel bloqueado no meio) — nada muda. Falha ao decifrar: lança o erro.
+  let openedBy = ''; // 'unified' | 'master' | 'recovery' | 'setup' ('' = cofre fechado)
+  async function openVaultWithKey(meta, kraw, isCurrent = () => true) {
+    const k = await importVk(kraw);
+    const v = await decryptVault(meta, k);
+    if (!isCurrent()) { k.raw.fill(0); throw cancelErr(); }
+    forget(); vk = k; slots = meta.slots; vault = v; vaultFmt = 2;
+  }
 
   // Token do GitHub neste computador: cifrado com uma chave derivada (HKDF) da chave do cofre — abre tanto pela senha mestra quanto pela chave de recuperação.
   async function tokenKey(k) {
@@ -1374,6 +1460,7 @@
           if (opts.onDone) opts.onDone(); // depois do envio e antes de redesenhar a barra de alterações
           pg.close();
           if (vault.contentKey !== keyBefore) sbKeyChanged(); // toda troca da chave-raiz (remover pessoa, senha mestra, recriptografar, bloquear/remover no Supabase)
+          if (keyChanged) syncSecrets({ key: true }); // chave do cofre nova (configurar, senha mestra, recuperação, cofre v1 → v2): acesso unificado
           return true;
         } catch (e) {
           if (e.conflict && !retried && opts.retry !== false && !e.maybeDone) {
@@ -1650,7 +1737,7 @@
   function setMode(m, askToken) {
     mode = m;
     const setup = m === 'setup', rec = m === 'recovery';
-    $('#lgEyebrow').textContent = setup ? 'Primeira configuração' : 'Área dos administradores';
+    $('#lgEyebrow').textContent = setup ? 'Primeira configuração' : 'Acesso de emergência';
     $('#lgTitle').textContent = setup ? 'Configurar a Prateleira' : rec ? 'Entrar com a chave de recuperação' : 'Entrar no painel';
     $('#lgSub').textContent = setup
       ? 'Crie a senha mestra dos administradores (pelo menos 20 caracteres) e informe o token do GitHub. Sem a senha mestra ou a chave de recuperação não é possível abrir o cofre.'
@@ -1680,13 +1767,18 @@
         try { localStorage.setItem(REPOKEY, JSON.stringify(cfg)); } catch (e) { /* noop */ }
         nojekyllOk = false;
         detectMode();
+        syncSecrets({ repo: true }); // acesso unificado: repositório novo
       } }]
     });
   }
   async function detectMode() {
     lgMsg('');
     if (!repo.label()) { setMode('login'); lgMsg('Abra este painel pelo endereço do site no GitHub Pages ou informe o repositório.'); return; }
-    try { setMode((await repo.read(VAULT)) ? 'login' : 'setup'); }
+    try {
+      const m = (await repo.read(VAULT)) ? 'login' : 'setup';
+      setMode(m);
+      if (m === 'setup' && !vault && !auBusyOn && !$('#scrLogin').hidden) showView('emergency'); // sem cofre: só a primeira configuração serve
+    }
     catch (e) { setMode('login', true); lgMsg(`Não consegui ler o repositório ${repo.label()}. Se ele for privado, informe o token; senão, confira o endereço e a internet.`); }
   }
   function forget() { vault = null; if (vk) vk.raw.fill(0); vk = null; slots = null; legacyKey = null; vaultSha = null; }
@@ -1724,7 +1816,9 @@
         vault = { v: 2, contentKey: P.b64e(P.rand(32)), keyRev: 1, siteSalt: P.b64e(P.rand(16)), users: [], catalogs: [], products: {}, hotspots: [], settings: { contato: CONTATO_PADRAO, comercial: { whatsapp: '', email: '', mensagem: MSG_COMERCIAL } } };
         if (!(await publish('Configurando a Prateleira', () => ({ vk: k, slots: sl }), { retry: false }))) { vault = null; return; }
         clearLogin();
+        openedBy = 'setup';
         enterMain();
+        syncSecrets({ token: true, repo: true }); // a chave do cofre já foi enviada por publish(); completa o acesso unificado
         showRecoveryKey(rk, 'Prateleira configurada. Agora guarde a chave de recuperação.');
         return;
       }
@@ -1734,9 +1828,7 @@
         if (rec && !slot) { lgMsg('Este cofre ainda não tem chave de recuperação. Entre com a senha mestra.'); return; }
         const kraw = await openSlot(rec ? canonRecovery(pw) : pw, slot);
         if (!kraw) { lgMsg(rec ? 'Chave de recuperação incorreta.' : 'Senha mestra incorreta.'); return; }
-        const k = await importVk(kraw);
-        const v = await decryptVault(meta, k);
-        forget(); vk = k; slots = meta.slots; vault = v; vaultFmt = 2;
+        await openVaultWithKey(meta, kraw);
       } else {
         if (rec) { lgMsg('Este cofre ainda não tem chave de recuperação. Entre com a senha mestra.'); return; }
         const key = await P.aesKey(await P.deriveBits(pw, P.b64d(meta.s), P.iters(meta.it)), ['encrypt', 'decrypt']);
@@ -1753,7 +1845,9 @@
       vaultSha = await repo.vaultSha();
       const weak = !rec && !!masterProblem(pw);
       clearLogin();
+      openedBy = rec ? 'recovery' : 'master';
       enterMain();
+      if (typed) syncSecrets({ token: true }); // token novo neste computador: acesso unificado
       if (rec) changeMasterDialog('recovery');
       else if (weak) weakMasterDialog();
     } catch (x) {
@@ -1775,30 +1869,197 @@
     });
   }
 
+  /* ================= acesso unificado: entrar com e-mail e senha (sessão P.auth, a mesma do site) =================
+     Login → perfil admin + ativo → admin_segredos_ler { chave_cofre, token_github, repo } → cofre aberto com a chave do cofre.
+     A senha mestra e a chave de recuperação continuam valendo só como emergência (#loginForm). */
+  let auBusyOn = false, unlockSeq = 0;
+  const MSG_NOT_ADMIN = 'Esta conta não é administradora.';
+  const MSG_NOT_UNIFIED = 'O acesso unificado ainda não foi ativado. Entre uma vez com a senha mestra (emergência) e clique em “Unificar acesso” em Configurações.';
+  const MSG_BAD_VK = 'A chave guardada no Supabase não abre o cofre atual. Entre com a senha mestra e clique em “Unificar acesso” de novo.';
+  const MSG_OFFLINE = 'Sem conexão. Verifique a internet e tente de novo.';
+  const idleLocked = () => { try { return sessionStorage.getItem(IDLEKEY) === '1'; } catch (e) { return false; } };
+  const setIdleLocked = (on) => { try { if (on) sessionStorage.setItem(IDLEKEY, '1'); else sessionStorage.removeItem(IDLEKEY); } catch (e) { /* noop */ } };
+  // Qual formulário aparece na tela de entrar: 'auth' (e-mail e senha) ou 'emergency' (senha mestra / chave de recuperação / configurar)
+  function showView(v) {
+    $('#authForm').hidden = v !== 'auth';
+    $('#loginForm').hidden = v !== 'emergency';
+  }
+  // Mensagem do formulário de e-mail e senha; extra.emerg: botão da emergência; extra.site: link "Ir para o site"
+  function auMsg(msg, kind = 'error', extra = {}) {
+    const e = $('#auErr');
+    e.className = 'alert ' + kind; e.hidden = !msg;
+    const acts = (extra.emerg ? '<button class="btn primary sm" type="button" data-au="emerg">Usar senha mestra (emergência)</button>' : '') + (extra.site ? '<a class="btn ghost sm" href="./">Ir para o site</a>' : '');
+    e.innerHTML = msg ? esc(msg) + (acts ? `<div class="row">${acts}</div>` : '') : '';
+  }
+  function auBusy(on, text) {
+    auBusyOn = on;
+    $('#auFields').hidden = on; $('#auBusy').hidden = !on;
+    if (text) $('#auBusy').textContent = text;
+  }
+  // Prepara o formulário: e-mail da sessão deste aparelho (se houver), senha vazia
+  function resetAuthForm() {
+    const s = P.auth.load();
+    if (s && s.email && !$('#auMail').value) $('#auMail').value = s.email;
+    $('#auKeep').checked = !!(s && s.keep);
+    $('#auPw').value = '';
+    setFieldErr($('#fAuMail'), ''); setFieldErr($('#fAuPw'), '');
+  }
+  // Campos de e-mail e senha (tela de entrar, cartão "Acesso unificado" e diálogo): um validador só. Devolve { email, pw } ou null.
+  function readAuthFields(fMail, fPw, needPw = true) {
+    const email = P.normEmail($('input', fMail).value), pw = fPw ? $('input', fPw).value : '';
+    setFieldErr(fMail, !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : '');
+    if (fPw) setFieldErr(fPw, needPw && !pw ? 'Digite a senha.' : '');
+    if (!email || !emailOk(email) || (needPw && !pw)) return null;
+    return { email, pw };
+  }
+  // Erro ao entrar com e-mail e senha (P.auth.signIn)
+  function authErrText(e) {
+    if (e && e.userMessage) return e.userMessage;
+    if (!e || !e.status) return MSG_OFFLINE;
+    if (e.code === 'email_not_confirmed') return 'Confirme o e-mail desta conta antes de entrar.';
+    if (e.status === 400) return 'E-mail ou senha incorretos.';
+    return sbErrText(e);
+  }
+  const isNotAdminErr = (e) => !!e && (e.code === '42501' || e.status === 403);
+  const secretsComplete = (s) => !!(s && s.chave_cofre && s.token_github && s.repo);
+  const readSecrets = async (t) => { const s = await P.supa.rpc(t, 'admin_segredos_ler', {}); return Array.isArray(s) ? s[0] || null : s; };
+
+  // Abre o painel pela sessão P.auth. auto: entrada silenciosa ao carregar a página (sem sessão, não mostra erro).
+  async function unifiedOpen(auto) {
+    const seq = ++unlockSeq, current = () => seq === unlockSeq && !vault;
+    let stage = 'supa', entered = false;
+    auMsg(''); auBusy(true, auto ? 'Abrindo o painel…' : 'Verificando…');
+    try {
+      const t = await P.auth.token(), rec = P.auth.load();
+      if (!current()) return;
+      if (!t || !rec) { if (!auto) auMsg('A sessão terminou. Entre de novo com e-mail e senha.'); return; }
+      if (!(await sbIsAdmin(t, rec.uid))) { if (current()) auMsg(MSG_NOT_ADMIN, 'error', { site: true }); return; }
+      const s = await readSecrets(t);
+      if (!current()) return;
+      if (!secretsComplete(s)) { auMsg(MSG_NOT_UNIFIED, 'warn', { emerg: true }); return; }
+      let r = null;
+      try { r = JSON.parse(s.repo); } catch (e) { r = null; }
+      if (!r || !r.owner || !r.repo) throw userErr('O repositório guardado no Supabase está incompleto. Entre com a senha mestra e clique em “Unificar acesso” de novo.');
+      stage = 'github';
+      cfg = { owner: String(r.owner), repo: String(r.repo), branch: String(r.branch || 'main') };
+      try { localStorage.setItem(REPOKEY, JSON.stringify(cfg)); } catch (e) { /* noop */ }
+      nojekyllOk = false;
+      token = s.token_github;
+      const raw = await repo.read(VAULT);
+      if (!current()) return;
+      if (!raw) throw userErr(`O cofre não foi encontrado no repositório ${repo.label()}. Entre com a senha mestra e clique em “Unificar acesso” de novo.`);
+      stage = 'vault';
+      const meta = JSON.parse(td.decode(raw));
+      if (meta.v !== 2) throw userErr(MSG_BAD_VK);
+      try { await openVaultWithKey(meta, P.b64d(s.chave_cofre), current); }
+      catch (e) { if (e.cancelled) throw e; throw userErr(MSG_BAD_VK); }
+      stage = 'github';
+      const info = await repo.check();
+      if (seq !== unlockSeq) return;
+      if (!info.permissions || !info.permissions.push) throw userErr('O token do GitHub guardado no Supabase não tem permissão de escrita no repositório. Entre com a senha mestra, informe um token novo e clique em “Unificar acesso”.');
+      vaultSha = await repo.vaultSha();
+      if (seq !== unlockSeq) return;
+      sbGen++; sb = { uid: rec.uid, email: rec.email };
+      secretsInfo = { active: true, at: s.atualizado_em || '' };
+      setUnifyStale(false); // os segredos guardados acabaram de abrir o cofre
+      openedBy = 'unified'; entered = true;
+      resetAuthForm();
+      enterMain();
+    } catch (e) {
+      if (seq !== unlockSeq || e.cancelled) return;
+      console.error(e);
+      if (e.userMessage) auMsg(e.userMessage, 'error', { emerg: true });
+      else if (stage === 'supa') {
+        if (!e.status) auMsg(MSG_OFFLINE);
+        else if (isNotAdminErr(e)) auMsg(MSG_NOT_ADMIN, 'error', { site: true });
+        else if (e.status === 401 || !P.auth.load()) auMsg('A sessão terminou. Entre de novo com e-mail e senha.');
+        else auMsg(sbErrText(e));
+      } else if (e.network) auMsg(MSG_OFFLINE);
+      else if (e.status === 401) auMsg('O token do GitHub guardado no Supabase é inválido ou expirou. Entre com a senha mestra, informe um token novo e clique em “Unificar acesso”.', 'error', { emerg: true });
+      else auMsg(errText(e).replace(' Nada foi alterado no site.', ''), 'error', { emerg: true });
+    } finally {
+      // Não entrou: nada fica na memória (cofre aberto por esta tentativa e token vindo do Supabase)
+      if (!entered && seq === unlockSeq) { if (vault && !openedBy) forget(); if (!vault) token = ''; }
+      if (seq === unlockSeq) auBusy(false);
+    }
+  }
+  $('#authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (auBusyOn) return;
+    auMsg('');
+    const f = readAuthFields($('#fAuMail'), $('#fAuPw'));
+    if (!f) return;
+    const btn = $('#auBtn');
+    btn.disabled = true; btn.textContent = 'Entrando…';
+    try { await P.auth.signIn(f.email, f.pw, $('#auKeep').checked); }
+    catch (x) { console.error(x); auMsg(authErrText(x)); $('#auPw').value = ''; return; }
+    finally { btn.disabled = false; btn.textContent = 'Entrar'; }
+    $('#auPw').value = '';
+    setIdleLocked(false); // digitou a senha: a entrada automática volta a valer nesta aba
+    unifiedOpen(false);
+  });
+  $('#authForm').addEventListener('click', (e) => { if (e.target.closest('[data-au="emerg"]')) openEmergency(); });
+  function openEmergency() {
+    unlockSeq++; auBusy(false); auMsg('');
+    showView('emergency');
+    detectMode().then(() => { if (!$('#loginForm').hidden) $('#lgPw').focus(); });
+  }
+  $('#lgBack').addEventListener('click', () => { lgMsg(''); showView('auth'); resetAuthForm(); if ($('#auMail').value) $('#auPw').focus(); else $('#auMail').focus(); });
+  // "Esqueci minha senha": e-mail do Supabase com o link para criar uma senha nova (volta para o site)
+  $('#auForgot').addEventListener('click', async () => {
+    auMsg('');
+    setFieldErr($('#fAuPw'), '');
+    const f = readAuthFields($('#fAuMail'), null, false);
+    if (!f) { $('#auMail').focus(); return; }
+    const b = $('#auForgot'); b.disabled = true;
+    try { await P.supa.recover(f.email, SITE_URL); auMsg('Se este e-mail tiver uma conta, você vai receber um link para criar uma nova senha. Confira também a caixa de spam.', 'ok'); }
+    catch (x) { console.error(x); auMsg(!x.status ? MSG_OFFLINE : x.status === 429 ? 'Muitos pedidos seguidos. Espere alguns minutos e tente de novo.' : 'Se este e-mail tiver uma conta, você vai receber um link para criar uma nova senha. Confira também a caixa de spam.', x.status && x.status !== 429 ? 'ok' : 'error'); }
+    finally { b.disabled = false; }
+  });
+
   /* ================= sair, bloqueio automático e dados desatualizados ================= */
+  // Fecha o cofre e volta para "Entrar no Painel". Não encerra a sessão P.auth (quem encerra é o "Sair").
   function lock(msg) {
-    clearStage(); forget(); token = '';
-    sbEnd(false); sbWarn = ''; // sessão do Supabase só na memória e no sessionStorage desta aba: sair e o bloqueio automático apagam
+    unlockSeq++; authLost = false;
+    clearStage(); forget(); token = ''; openedBy = '';
+    sbEnd(); sbWarn = ''; // estado da sessão só na memória do painel; a sessão do aparelho (P.auth) continua
     dropImageCache(); resetEditor();
     Object.values(TABS).forEach((t) => { $(t.panel).innerHTML = ''; });
     closeDialog(); hideModal(cf); if (!busy) hideModal(pgd);
-    showStale(false);
-    show('login');
-    detectMode().then(() => { if (msg) lgMsg(msg, 'warn'); });
+    showStale(false); paintUnify();
+    show('login'); showView('auth'); auBusy(false); resetAuthForm();
+    auMsg(msg || '', 'warn');
+    detectMode(); // prepara o formulário de emergência
   }
-  // "Sair" do menu lateral e da barra superior
+  // "Sair" do menu lateral e da barra superior: também encerra a sessão do site neste computador
   $$('[data-lock]').forEach((b) => b.addEventListener('click', async () => {
     if (busy) { toast('Espere a publicação terminar.'); return; }
     const n = stageCount();
     if (n && !(await confirmBox('Sair sem publicar?', `<p>Há ${plural(n, 'alteração não publicada', 'alterações não publicadas')}. Se sair agora, elas serão descartadas.</p>`, 'Sair e descartar', true))) return;
+    P.auth.signOut().catch(() => {}); // apaga a sessão local na hora; o aviso ao Supabase segue em segundo plano
+    $('#auMail').value = '';
     lock();
   }));
   let lastAct = Date.now();
   ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((ev) => window.addEventListener(ev, () => { lastAct = Date.now(); }, { passive: true, capture: true }));
+  // Sessão do aparelho apagada (ou trocada por outra conta) em outra aba ou no site: o painel bloqueia assim que puder
+  let authLost = false;
+  function checkAuthLost() {
+    if (!authLost || !vault || busy) return;
+    lock('A sessão deste computador foi encerrada. Entre de novo para continuar.');
+  }
+  window.addEventListener('storage', (e) => {
+    if (e.key !== P.auth.KEY && e.key !== null) return;
+    const s = P.auth.load();
+    if (!vault || (s && (!sb || s.uid === sb.uid))) return;
+    authLost = true; checkAuthLost();
+  });
   setInterval(() => {
+    checkAuthLost();
     if (!vault || busy || Date.now() - lastAct < IDLE_MS) return;
     const lost = stageCount() ? ' As alterações não publicadas foram descartadas.' : '';
-    lock('O painel foi bloqueado depois de 30 minutos sem uso.' + lost + ' Entre de novo para continuar.');
+    setIdleLocked(true); // nesta aba, só volta digitando a senha (sem entrada automática)
+    lock('O painel foi bloqueado depois de 30 minutos sem uso.' + lost + ' Digite a senha de novo para continuar.');
   }, 30000);
   function showStale(on) { $('#staleBar').hidden = !on; }
   let staleAt = 0;
@@ -1831,7 +2092,7 @@
     cats: { panel: '#tabCats', render: renderCats, title: 'Catálogos', head: 'Catálogos.', sub: 'Publique e organize', desc: 'Arraste o PDF para publicar. “No site”, selo “Novo” e ordem entram na barra de alterações e vão para o site quando você publicar.' },
     prods: { panel: '#tabProds', render: renderProds, title: 'Produtos', head: 'Produtos.', sub: 'Cadastre e marque nas páginas', desc: 'Os produtos aparecem na busca do site; as áreas marcadas ligam a foto na página do catálogo ao produto.' },
     users: { panel: '#tabUsers', render: renderUsers, title: 'Pessoas', head: 'Pessoas.', sub: 'Convide e gerencie acessos', desc: 'Cada pessoa recebe um convite por e-mail e cria a própria senha pelo link; ninguém mais conhece a senha.' },
-    cfg: { panel: '#tabCfg', render: renderCfg, title: 'Configurações', head: 'Configurações.', sub: 'Contatos e segurança', desc: 'Acesso das pessoas (Supabase), contatos do marketing e comercial e a segurança do cofre dos administradores.' }
+    cfg: { panel: '#tabCfg', render: renderCfg, title: 'Configurações', head: 'Configurações.', sub: 'Contatos e segurança', desc: 'Acesso unificado dos administradores, contatos do marketing e comercial e a segurança do cofre.' }
   };
   const TAB_IDS = Object.keys(TABS);
   // Cabeçalho da área (desenhado junto com a aba) e bloco de resumo com número
@@ -1840,9 +2101,9 @@
   function enterMain() {
     show('main');
     $('#repoLabel').textContent = repo.label() || 'Repositório não informado';
-    lastAct = Date.now(); showStale(false);
-    setTab(tab); refreshStage();
-    if (sb) sbSyncKey(); else sbResume(); // cofre desbloqueado: volta a sessão desta aba (se houver) e confere a chave dos catálogos
+    lastAct = Date.now(); showStale(false); authLost = false;
+    setTab(tab); refreshStage(); paintUnify();
+    if (sb) sbSyncKey(); else sbFromAuth(); // acesso unificado: sessão já conferida; emergência: usa a sessão do aparelho (se for admin)
   }
   function setTab(t, focusTab) {
     tab = t;
@@ -1887,7 +2148,7 @@
     return `<section class="card steps-card" aria-labelledby="stepsH"><h2 id="stepsH">Primeiros passos</h2><p class="muted">Siga esta ordem para colocar a Prateleira no ar.</p><ol class="steps">
       ${li(contacts, 1, 'Contatos do marketing', 'O e-mail ou WhatsApp do marketing que aparece nas telas de entrar e de ajuda do site.', 'cfg', 'Preencher contatos')}
       ${li(cats, 2, 'Catálogos', 'Arraste os PDFs. O painel converte, protege e publica.', 'cat', 'Adicionar catálogo')}
-      ${li(hasPeople, 3, 'Pessoas', 'Conecte o Supabase e convide pessoas', 'user', sb ? 'Convidar pessoa' : 'Conectar o Supabase')}
+      ${li(hasPeople, 3, 'Pessoas', 'Convide as pessoas para entrar com e-mail e senha', 'user', sb ? 'Convidar pessoa' : 'Entrar com e-mail e senha')}
       ${li(prods, 4, 'Produtos e áreas (opcional)', 'Cadastre os produtos e marque nas páginas dos catálogos onde cada um aparece.', 'prods', 'Abrir Produtos')}
     </ol></section>`;
   }
@@ -1895,7 +2156,7 @@
     if (step === 'cfg') { setTab('cfg'); const f = $('#ativEmail'); if (f) f.focus(); }
     else if (step === 'cat') pickPdf(null);
     else if (step === 'prods') setTab('prods');
-    else { setTab('users'); inviteDialog(); } // sem Supabase conectado, o convite abre antes o "Entrar no Supabase"
+    else { setTab('users'); inviteDialog(); } // sem sessão de administrador, o convite abre antes o "Entrar com e-mail e senha"
   }
 
   /* ================= catálogos ================= */
@@ -2301,71 +2562,39 @@
     return { files };
   }
 
-  /* ================= Supabase: sessão do administrador (só nesta aba) =================
-     Conta do próprio administrador no Supabase (perfis.papel = admin e ativo). O token fica na memória e o refresh token no
-     sessionStorage desta aba: depois de recarregar a página, a sessão volta quando o cofre é desbloqueado. Sair do painel, o bloqueio
-     automático e "Sair do Supabase" apagam os dois. Toda chamada pega o token por sbToken() (uma renovação por vez). */
-  const SBKEY = 'dm.admin.supabase';
-  let sb = null;                   // { token, refresh, exp, uid, email }
+  /* ================= Supabase: sessão do administrador (P.auth, a mesma do site neste computador) =================
+     A sessão é a do aparelho (P.auth: "dm.auth"), compartilhada com o site. O painel só guarda na memória quem ela é depois de conferir
+     o perfil (perfis.papel = admin e ativo): sb = { uid, email }. Todo token vem de P.auth.token() (renovação única com Web Locks).
+     O "Sair" do painel encerra a sessão P.auth; o bloqueio automático só esquece sb. */
+  let sb = null;                   // { uid, email } — sessão P.auth conferida como administradora
   let sbGen = 0;                   // muda a cada fim de sessão: respostas atrasadas de uma sessão anterior são ignoradas
-  let sbJob = null, sbTimer = null;
   let sbWarn = '';                 // aviso persistente em Pessoas e Configurações (chave dos catálogos não sincronizada)
   let sbChain = Promise.resolve(); // sincronizações da chave, uma depois da outra
   let people = null, peopleErr = '', peopleJob = null, peopleSeq = 0; // perfis do Supabase (null = ainda não carregados)
-  const sbStore = (r) => { try { if (r) sessionStorage.setItem(SBKEY, r); else sessionStorage.removeItem(SBKEY); } catch (e) { /* noop */ } };
-  const sbStored = () => { try { return sessionStorage.getItem(SBKEY) || ''; } catch (e) { return ''; } };
+  let secretsInfo = null, secretsJob = null; // situação do acesso unificado: { active, at } | { err } | null (não verificada)
   const sbAuthErr = (msg) => { const e = userErr(msg); e.status = 401; return e; };
-  function sbSet(s) {
-    const u = s.user || {};
-    sb = { token: s.access_token, refresh: s.refresh_token, exp: Date.now() + (+s.expires_in || 3600) * 1000, uid: u.id || (sb && sb.uid) || '', email: u.email || (sb && sb.email) || '' };
-    sbStore(sb.refresh);
-    clearTimeout(sbTimer);
-    sbTimer = setTimeout(sbAutoRefresh, Math.max(5000, sb.exp - Date.now() - 120000)); // renova 2 minutos antes de vencer
-  }
-  // Token válido: renova 1 minuto antes de vencer. Uma renovação por vez (quem chega durante a renovação espera a mesma promessa).
-  function sbToken(force) {
-    if (!sb) return Promise.reject(sbAuthErr('Conecte o Supabase para continuar.'));
-    if (!force && Date.now() < sb.exp - 60000) return Promise.resolve(sb.token);
-    if (!sbJob) {
-      const gen = sbGen;
-      sbJob = P.supa.refresh(sb.refresh).then((s) => {
-        if (gen !== sbGen || !sb) throw sbAuthErr('A conexão com o Supabase foi encerrada.');
-        sbSet(s);
-        return sb.token;
-      }, (e) => {
-        // refresh token recusado (vencido, revogado ou já usado): a sessão acaba; sem internet ou Supabase instável: só repassa o erro
-        if (gen === sbGen && e.status && e.status !== 429 && e.status < 500) { sbEnd(false); throw sbAuthErr('A conexão com o Supabase expirou. Clique em “Entrar no Supabase” e conecte de novo.'); }
-        throw e;
-      }).finally(() => { if (gen === sbGen) sbJob = null; });
-    }
-    return sbJob;
-  }
-  async function sbAutoRefresh() {
-    if (!sb) return;
-    try { await sbToken(true); }
-    catch (e) {
-      if (!sb) { if (vault) toast('A conexão com o Supabase expirou. Entre de novo em Configurações.'); return; }
-      sbTimer = setTimeout(sbAutoRefresh, 30000); // sem internet: tenta de novo
-    }
-  }
-  // Fim da sessão desta aba. revoke: também encerra a sessão no Supabase ("Sair do Supabase")
-  function sbEnd(revoke) {
-    const old = sb;
+  const MSG_SESSION = 'A sessão terminou. Entre com e-mail e senha em Configurações → Acesso unificado.';
+  // Fim do estado da sessão no painel (não mexe na sessão do aparelho)
+  function sbEnd() {
     sbGen++; peopleSeq++;
-    sb = null; sbJob = null; clearTimeout(sbTimer); sbTimer = null; sbStore('');
+    sb = null; secretsInfo = null; secretsJob = null;
     people = null; peopleErr = ''; peopleJob = null;
-    if (revoke && old) P.supa.signOut(old.token);
     sbRepaint();
   }
-  // Chamada autenticada; 401 (token recusado) encerra a sessão desta aba
+  // Chamada autenticada. Sem sessão no aparelho ou token recusado (401): o painel esquece a sessão
   async function sbCall(fn) {
-    try { return await fn(await sbToken()); }
-    catch (e) { if (e.status === 401 && sb) sbEnd(false); throw e; }
+    const gen = sbGen;
+    let t;
+    try { t = await P.auth.token(); }
+    catch (e) { if (e.status && !P.auth.load()) { if (sb && gen === sbGen) sbEnd(); throw sbAuthErr(MSG_SESSION); } throw e; }
+    if (!t) { if (sb && gen === sbGen) sbEnd(); throw sbAuthErr(MSG_SESSION); }
+    try { return await fn(t); }
+    catch (e) { if (e.status === 401 && sb && gen === sbGen) sbEnd(); throw e; }
   }
   function sbErrText(e) {
     if (e && e.userMessage) return e.userMessage;
     if (!e || !e.status) return 'Sem conexão com o Supabase. Verifique a internet e tente de novo.';
-    if (e.status === 401 || e.status === 403) return 'A conexão com o Supabase expirou ou esta conta não tem permissão de administrador. Clique em “Entrar no Supabase” e conecte de novo.';
+    if (e.status === 401 || e.status === 403) return 'A sessão terminou ou esta conta não tem permissão de administrador. Entre com e-mail e senha em Configurações → Acesso unificado.';
     if (e.status === 429) return 'O Supabase limitou a quantidade de pedidos. Espere alguns minutos e tente de novo.';
     if (e.status >= 500) return 'O Supabase está instável agora. Espere alguns minutos e tente de novo.';
     const detail = e.message && !/^HTTP \d+$/.test(e.message) ? ` (${e.message})` : '';
@@ -2374,45 +2603,44 @@
   // Erros da função "pessoas": vale o código HTTP (P.supa.fn não lê o campo "erro" da resposta)
   const sbFnErr = (e, acao) => (e && e.status === 409 && acao === 'convidar' ? 'Este e-mail já tem acesso. Use Reenviar acesso.'
     : e && e.status === 404 ? "A função 'pessoas' ainda não foi publicada no Supabase." : sbErrText(e));
-  async function sbIsAdmin(s) {
-    const rows = await P.supa.select(s.access_token, 'perfis', `id=eq.${encodeURIComponent((s.user || {}).id || '')}&select=papel,ativo`);
+  async function sbIsAdmin(t, uid) {
+    const rows = await P.supa.select(t, 'perfis', `id=eq.${encodeURIComponent(uid || '')}&select=papel,ativo`);
     const r = Array.isArray(rows) ? rows[0] : null;
     return !!(r && r.papel === 'admin' && r.ativo === true);
   }
-  // Entrar com a conta do próprio administrador: só segue se o perfil for admin e ativo
-  async function sbConnect(email, password) {
+  function sbAdopt(rec) { sbGen++; sb = { uid: rec.uid, email: rec.email }; sbAfterConnect(); }
+  // Entrar com e-mail e senha com o painel aberto (cartão "Acesso unificado" e diálogo): a sessão vale também para o site.
+  // Conta que não é administradora: a sessão fica (a pessoa pode usar o site), mas o painel não a usa.
+  async function sbConnect(email, password, keep) {
     const gen = sbGen;
-    const s = await P.supa.signIn(email, password);
-    let ok = false;
-    try { ok = await sbIsAdmin(s); } catch (e) { P.supa.signOut(s.access_token); throw e; }
-    if (!ok) { P.supa.signOut(s.access_token); throw userErr('Esta conta não é administradora.'); }
-    if (gen !== sbGen || !vault) { P.supa.signOut(s.access_token); throw cancelErr(); } // o painel foi bloqueado no meio
-    sbSet(s);
-    sbAfterConnect();
+    const rec = await P.auth.signIn(email, password, keep);
+    setIdleLocked(false);
+    if (!(await sbIsAdmin(rec.access_token, rec.uid))) throw userErr(MSG_NOT_ADMIN);
+    if (gen !== sbGen || !vault) throw cancelErr(); // o painel foi bloqueado no meio
+    sbAdopt(rec);
   }
-  // Página recarregada nesta aba: o refresh token guardado volta a sessão quando o cofre é desbloqueado (enterMain)
-  async function sbResume() {
-    const r = sbStored(); if (!r || sb) return;
+  // Cofre aberto pela emergência: usa a sessão que já existe neste computador (por exemplo, a do site), se for de administrador
+  async function sbFromAuth() {
+    if (sb || !P.auth.load()) return;
     const gen = sbGen;
     try {
-      const s = await P.supa.refresh(r);
-      if (gen === sbGen && !sb) sbStore(s.refresh_token); // o refresh token anterior deixou de valer (o Supabase troca a cada renovação)
-      const ok = await sbIsAdmin(s);
-      if (gen !== sbGen || !vault || sb) return;
-      if (!ok) { P.supa.signOut(s.access_token); sbStore(''); return; }
-      sbSet(s);
-      sbAfterConnect();
-    } catch (e) { console.error(e); if (e.status) sbStore(''); }
+      const t = await P.auth.token(), rec = P.auth.load();
+      if (!t || !rec) return;
+      const ok = await sbIsAdmin(t, rec.uid);
+      if (gen !== sbGen || !vault || sb || !ok) return;
+      sbAdopt(rec);
+    } catch (e) { console.error(e); }
   }
   function sbAfterConnect() {
     sbRepaint();
     sbSyncKey();
     loadPeople().then(sbRepaint);
+    if (!secretsInfo) loadSecretsInfo();
   }
 
   /* ---------- chave dos catálogos no Supabase ----------
-     Quem entra pelo Supabase recebe a chave-raiz (vault.contentKey) pela RPC chave_conteudo. O painel confere ao conectar, ao desbloquear
-     o cofre já conectado e em "Atualizar dados", e grava (definir_chave) depois de toda publicação que troca a chave-raiz (publish). */
+     Quem entra pelo Supabase recebe a chave-raiz (vault.contentKey) pela RPC chave_conteudo. O painel confere ao entrar, ao desbloquear
+     o cofre com a sessão já conferida e em "Atualizar dados", e grava (definir_chave) depois de toda publicação que troca a chave-raiz (publish). */
   function sbSyncKey() {
     const run = sbChain.then(sbSyncOnce);
     sbChain = run.catch(() => {});
@@ -2438,13 +2666,13 @@
   // Chamado por publish() quando a chave-raiz mudou
   function sbKeyChanged() {
     if (sb) sbSyncKey();
-    else sbSetWarn('A chave dos catálogos mudou e o Supabase não foi atualizado. Conecte o Supabase para sincronizar: até lá, quem usa o novo acesso fica sem abrir os catálogos.');
+    else sbSetWarn('A chave dos catálogos mudou e o Supabase não foi atualizado. Entre com e-mail e senha para sincronizar: até lá, quem usa o novo acesso fica sem abrir os catálogos.');
   }
-  // Antes de uma troca da chave-raiz sem Supabase conectado. true = seguir agora. "Conectar agora" abre o "Entrar no Supabase" e
-  // resume(conectou) roda quando esse diálogo termina (para repetir a ação).
+  // Antes de uma troca da chave-raiz sem sessão de administrador. true = seguir agora. "Entrar agora" abre o "Entrar com e-mail e senha" e
+  // resume(entrou) roda quando esse diálogo termina (para repetir a ação).
   async function sbRotationGate(resume) {
     if (sb) return true;
-    const r = await confirmBox('Conecte o Supabase antes', '<p>Conecte o Supabase antes de trocar as chaves. Sem isso, quem usa o novo acesso fica sem abrir os catálogos até você conectar.</p>', 'Conectar agora', false, 'Continuar mesmo assim');
+    const r = await confirmBox('Entre com e-mail e senha antes', '<p>Entre com a sua conta de administrador antes de trocar as chaves. Sem isso, quem usa o novo acesso fica sem abrir os catálogos e o acesso unificado fica desatualizado até você entrar.</p>', 'Entrar agora', false, 'Continuar mesmo assim');
     if (r === 'alt') return true;
     if (r === true) sbConnectDialog(resume);
     return false;
@@ -2457,59 +2685,163 @@
     });
   }
   function sbSetWarn(msg) { sbWarn = msg; paintSbWarn(); }
-  // Cartão "Acesso das pessoas (Supabase)" em Configurações e cartão de conexão em Pessoas
-  const sbCardHtml = () => `<div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="cfgSbH">Acesso das pessoas (Supabase)</h2></div>
-    <p class="muted">As pessoas entram no site com e-mail e senha pelo Supabase. Conecte a sua conta de administrador do Supabase para convidar e gerenciar pessoas e manter a chave dos catálogos sincronizada. A conexão vale só para esta aba e termina quando você sai do painel.</p>
-    <p><span class="status ${sb ? 'on' : 'off'} sb-status" id="sbStatus">${sb ? `Conectado como ${esc(sb.email)}` : 'Desconectado'}</span></p>
-    <div class="row">${sb ? '<button class="btn ghost" type="button" id="sbSignOut" data-sb="signout">Sair do Supabase</button>' : '<button class="btn primary" type="button" id="sbConnect" data-sb="connect">Entrar no Supabase</button>'}</div>`;
-  const sbConnectCardHtml = () => `<section class="card stack" aria-labelledby="sbConnH"><div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="sbConnH">Conecte o Supabase para convidar e gerenciar pessoas</h2></div>
-    <p class="muted">Entre com a sua conta de administrador do Supabase. A conexão vale só para esta aba do navegador.</p>
-    <button class="btn primary" type="button" data-sb="connect">Entrar no Supabase</button></section>`;
-  // Redesenha o que depende da conexão (contagem do menu e a aba aberta), sem recriar campos em edição
+
+  /* ---------- acesso unificado: segredos dos administradores no Supabase ----------
+     admin_segredos_ler() → { chave_cofre, token_github, repo, atualizado_em }; admin_segredos_salvar(p_chave_cofre, p_token_github, p_repo)
+     (null mantém o valor atual). Gravados por "Unificar acesso" e, sozinhos, depois de trocar a chave do cofre (publish), de informar um
+     token novo (emergência) e de alterar o repositório. Sem sessão ou com erro: aviso #unifyBar até unificar de novo. */
+  const unifyStale = () => { try { return localStorage.getItem(UNIFY_STALE_KEY) === '1'; } catch (e) { return false; } };
+  function setUnifyStale(on) {
+    try { if (on) localStorage.setItem(UNIFY_STALE_KEY, '1'); else localStorage.removeItem(UNIFY_STALE_KEY); } catch (e) { /* noop */ }
+    paintUnify();
+  }
+  function paintUnify() { $('#unifyBar').hidden = !(vault && unifyStale()); }
+  $('#unifyBarBtn').addEventListener('click', () => { setTab('cfg'); const c = $('#cfgUnify'); if (c) { c.scrollIntoView({ block: 'start' }); const f = $('input, button', c); if (f) f.focus(); } });
+  let secretsChain = Promise.resolve();
+  // what: { key, token, repo } (o que mudou). Os valores são lidos agora (o painel pode ser bloqueado antes do envio).
+  // explicit ("Unificar acesso"): devolve o erro em vez de acender o aviso. Resolve { ok, err }.
+  function syncSecrets(what) {
+    const args = {
+      p_chave_cofre: what.key && vk && vaultFmt === 2 ? P.b64e(vk.raw) : null,
+      p_token_github: what.token && token ? token : null,
+      p_repo: what.repo && cfg.owner && cfg.repo ? JSON.stringify({ owner: cfg.owner, repo: cfg.repo, branch: cfg.branch || 'main' }) : null
+    };
+    const all = !!(args.p_chave_cofre && args.p_token_github && args.p_repo);
+    const run = secretsChain.then(async () => {
+      if (!args.p_chave_cofre && !args.p_token_github && !args.p_repo) return { ok: false, err: userErr('Nada para salvar: abra o cofre e confira o token e o repositório.') };
+      try {
+        const t = await P.auth.token();
+        if (!t) throw sbAuthErr(MSG_SESSION);
+        await P.supa.rpc(t, 'admin_segredos_salvar', args);
+      } catch (e) {
+        console.error(e);
+        if (!what.explicit) setUnifyStale(true);
+        return { ok: false, err: e };
+      }
+      if (all) { secretsInfo = { active: true, at: new Date().toISOString() }; setUnifyStale(false); }
+      else if (secretsInfo && !secretsInfo.err) secretsInfo = { active: secretsInfo.active, at: new Date().toISOString() };
+      sbRepaint();
+      return { ok: true };
+    });
+    secretsChain = run.catch(() => {});
+    return run;
+  }
+  function loadSecretsInfo() {
+    if (!sb || secretsJob) return secretsJob || Promise.resolve();
+    const gen = sbGen;
+    const job = sbCall(readSecrets)
+      .then((s) => { if (gen === sbGen) secretsInfo = { active: secretsComplete(s), at: (s && s.atualizado_em) || '' }; })
+      .catch((e) => { console.error(e); if (gen === sbGen) secretsInfo = { err: isNotAdminErr(e) ? MSG_NOT_ADMIN : sbErrText(e) }; })
+      .finally(() => { if (secretsJob === job) secretsJob = null; if (gen === sbGen) sbRepaint(); });
+    secretsJob = job;
+    return job;
+  }
+  const fmtDayTime = (iso) => { const d = new Date(iso), z = (n) => String(n).padStart(2, '0'); return `${z(d.getDate())}/${z(d.getMonth() + 1)} às ${z(d.getHours())}:${z(d.getMinutes())}`; };
+  // "Unificar acesso": grava a chave do cofre, o token do GitHub e o repositório de agora
+  async function unifyNow(btn) {
+    if (!vk || vaultFmt !== 2) { alertBox('Ainda não dá para unificar', 'O cofre ainda está no formato antigo. Publique qualquer alteração (por exemplo, “Salvar e publicar” em Contatos do marketing) e tente de novo.'); return; }
+    if (!token) { alertBox('Ainda não dá para unificar', 'O token do GitHub não está aberto nesta sessão. Saia e entre com a senha mestra informando o token.'); return; }
+    if (btn) btn.disabled = true;
+    const r = await syncSecrets({ key: true, token: true, repo: true, explicit: true });
+    if (btn && btn.isConnected) btn.disabled = false;
+    if (r.ok) toast('Acesso unificado. Da próxima vez, entre só com e-mail e senha.');
+    else alertBox('Não foi possível unificar o acesso', isNotAdminErr(r.err) ? MSG_NOT_ADMIN : sbErrText(r.err));
+  }
+  // Cartão "Acesso unificado" (Configurações)
+  function unifyCardHtml() {
+    const i = secretsInfo;
+    const status = !sb ? '<span class="status off" id="unifyStatus">Não verificado</span>'
+      : !i ? '<span class="status wait" id="unifyStatus">Verificando…</span>'
+      : i.err ? `<span class="status off" id="unifyStatus">Não verificado</span> <span class="muted">${esc(i.err)}</span> <button class="link" type="button" data-sb="secrets">Tentar de novo</button>`
+      : i.active ? `<span class="status on" id="unifyStatus">Ativo${i.at ? ` — atualizado em ${esc(fmtDayTime(i.at))}` : ''}</span>`
+      : '<span class="status off" id="unifyStatus">Não ativado</span>';
+    const emergency = openedBy && openedBy !== 'unified';
+    const who = sb ? `<p class="muted">Conectado como <b>${esc(sb.email)}</b>. A mesma sessão vale para o site neste computador.</p>` : '';
+    const action = sb
+      ? (emergency ? '<div class="row"><button class="btn primary" type="button" id="unifyBtn" data-sb="unify">Unificar acesso</button></div>' : '')
+      : `<form class="stack" id="unifyLogin" novalidate>
+          <p class="muted">Entre com a sua conta de administrador (e-mail e senha) para ver a situação${emergency ? ' e unificar o acesso' : ''}, convidar e gerenciar pessoas.</p>
+          <div class="grid2">
+            <label class="field" id="fUnMail"><span class="field-label">E-mail</span><input id="unMail" type="email" autocomplete="username" spellcheck="false"><em class="err" hidden></em></label>
+            <label class="field" id="fUnPw"><span class="field-label">Senha</span><input id="unPw" type="password" autocomplete="current-password" spellcheck="false"><em class="err" hidden></em></label>
+          </div>
+          <label class="check"><input type="checkbox" id="unKeep"> Manter conectado neste computador</label>
+          <div class="alert error" id="unErr" role="alert" hidden></div>
+          <div class="row"><button class="btn primary" type="submit" id="unBtn">Entrar</button></div>
+        </form>`;
+    return `<div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="cfgUnifyH">Acesso unificado</h2></div>
+      <p class="muted">Os administradores entram no painel com o mesmo e-mail e senha do site. A chave do cofre, o token do GitHub e o repositório ficam guardados no Supabase, só para administradores. A senha mestra e a chave de recuperação continuam valendo para emergências.</p>
+      <p>${status}</p>
+      ${who}${action}
+      <p class="muted">Recomendado: ative a verificação em duas etapas nas contas de administrador.</p>`;
+  }
+  const sbConnectCardHtml = () => `<section class="card stack" aria-labelledby="sbConnH"><div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.users}</span><h2 id="sbConnH">Entre com e-mail e senha para convidar e gerenciar pessoas</h2></div>
+    <p class="muted">Use a sua conta de administrador, a mesma do site. A sessão vale também para o site neste computador.</p>
+    <button class="btn primary" type="button" data-sb="connect">Entrar com e-mail e senha</button></section>`;
+  // Redesenha o que depende da sessão (contagem do menu e a aba aberta), sem recriar campos em edição
   function sbRepaint() {
     if (!vault) return;
     paintNav();
     if (tab === 'users') renderUserRows();
-    else if (tab === 'cfg' && $('#cfgSb')) { $('#cfgSb').innerHTML = sbCardHtml(); paintSbWarn(); }
+    else if (tab === 'cfg' && $('#cfgUnify')) {
+      const card = $('#cfgUnify'), typing = card.contains(document.activeElement) && document.activeElement.matches('input');
+      if (!(typing && !sb && $('#unifyLogin', card))) card.innerHTML = unifyCardHtml(); // não apaga o que está sendo digitado
+      paintSbWarn();
+    }
   }
   // Botões [data-sb] das abas Pessoas e Configurações (um manipulador só)
   function onSbClick(e) {
     const b = e.target.closest('[data-sb]'); if (!b) return false;
     const a = b.dataset.sb;
     if (a === 'connect') sbConnectDialog();
-    else if (a === 'signout') { sbEnd(true); toast('Desconectado do Supabase.'); }
+    else if (a === 'unify') unifyNow(b);
+    else if (a === 'secrets') { secretsInfo = null; loadSecretsInfo(); sbRepaint(); }
     else if (a === 'retry') {
-      if (!sb) sbConnectDialog(); // ao conectar, a chave é sincronizada
+      if (!sb) sbConnectDialog(); // ao entrar, a chave é sincronizada
       else { b.disabled = true; sbSyncKey().then((ok) => { b.disabled = false; if (ok) toast('Chave dos catálogos sincronizada com o Supabase.'); }); }
     } else if (a === 'reload') { const job = loadPeople(); sbRepaint(); job.then(sbRepaint); }
     return true;
   }
-  // "Entrar no Supabase". then(conectou): opcional; roda quando o diálogo termina (conectou ou cancelou) para continuar o que pediu a conexão
+  // Entrar com e-mail e senha no cartão "Acesso unificado" (formulário #unifyLogin)
+  async function onUnifyLogin(e) {
+    if (!e.target.matches('#unifyLogin')) return;
+    e.preventDefault();
+    const f = readAuthFields($('#fUnMail'), $('#fUnPw')); if (!f) return;
+    const btn = $('#unBtn'), box = $('#unErr');
+    btn.disabled = true; box.hidden = true;
+    try { await sbConnect(f.email, f.pw, $('#unKeep').checked); }
+    catch (x) {
+      if (x.cancelled) return;
+      console.error(x);
+      if (btn.isConnected) { btn.disabled = false; box.textContent = authErrText(x); box.hidden = false; $('#unPw').value = ''; }
+      return;
+    }
+    toast(`Conectado como ${sb ? sb.email : f.email}.`);
+  }
+  // "Entrar com e-mail e senha" em diálogo (Pessoas, aviso antes de trocar chaves). then(entrou): opcional; roda quando o diálogo termina
   function sbConnectDialog(then) {
     let done = false;
     const fin = (ok) => { if (!done) { done = true; if (then) then(ok); } };
     openDialog({
-      title: 'Entrar no Supabase', locked: !!then,
-      body: `<p class="muted">Use a sua própria conta de administrador do Supabase (e-mail e senha). A conexão vale só para esta aba e termina quando você sai do painel.</p>
+      title: 'Entrar com e-mail e senha', locked: !!then,
+      body: `<p class="muted">Use a sua conta de administrador, a mesma do site. A sessão vale também para o site neste computador.</p>
         <label class="field" id="fSbMail"><span class="field-label">E-mail</span><input id="sbMail" type="email" autocomplete="username" spellcheck="false"><em class="err" hidden></em></label>
-        <label class="field" id="fSbPw"><span class="field-label">Senha</span><input id="sbPw" type="password" autocomplete="current-password" spellcheck="false"><em class="err" hidden></em></label>`,
+        <label class="field" id="fSbPw"><span class="field-label">Senha</span><input id="sbPw" type="password" autocomplete="current-password" spellcheck="false"><em class="err" hidden></em></label>
+        <label class="check"><input type="checkbox" id="sbKeep"> Manter conectado neste computador</label>`,
       actions: [{ label: 'Cancelar', kind: 'ghost', onClick: () => { fin(false); } }, {
         label: 'Entrar', kind: 'primary',
         onClick: async () => {
-          const email = P.normEmail($('#sbMail').value), pw = $('#sbPw').value;
-          setFieldErr($('#fSbMail'), !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : '');
-          setFieldErr($('#fSbPw'), pw ? '' : 'Digite a senha.');
-          if (!email || !emailOk(email) || !pw) return false;
+          const f = readAuthFields($('#fSbMail'), $('#fSbPw')); if (!f) return false;
           dlgErr('');
-          try { await sbConnect(email, pw); }
+          try { await sbConnect(f.email, f.pw, $('#sbKeep').checked); }
           catch (e) {
             if (e.cancelled) return false;
             console.error(e);
-            dlgErr(e.userMessage || (e.code === 'email_not_confirmed' ? 'Confirme o e-mail desta conta antes de entrar.' : e.status === 400 ? 'E-mail ou senha incorretos.' : sbErrText(e)));
+            dlgErr(authErrText(e));
             $('#sbPw').value = '';
             return false;
           }
-          toast(`Conectado ao Supabase como ${sb.email || email}.`);
+          toast(`Conectado como ${sb.email || f.email}.`);
           fin(true);
           return true;
         }
@@ -2613,7 +2945,7 @@
       loaded && (q ? `${plural(shown.length, 'pessoa encontrada', 'pessoas encontradas')} de ${ppl.length}` : plural(ppl.length, 'pessoa', 'pessoas')),
       all.length > 0 && (q ? `${plural(list.length, 'acesso antigo encontrado', 'acessos antigos encontrados')} de ${all.length}` : plural(all.length, 'acesso antigo', 'acessos antigos'))
     ].filter(Boolean).join(' · ');
-    $('#uTiles').innerHTML = tileHtml('Pessoas ativas', loaded ? ppl.length - blocked : '—', loaded ? plural(ppl.length, 'pessoa no novo acesso', 'pessoas no novo acesso') : sb ? 'carregando…' : 'conecte o Supabase', 'navy')
+    $('#uTiles').innerHTML = tileHtml('Pessoas ativas', loaded ? ppl.length - blocked : '—', loaded ? plural(ppl.length, 'pessoa no novo acesso', 'pessoas no novo acesso') : sb ? 'carregando…' : 'entre com e-mail e senha', 'navy')
       + tileHtml('Bloqueadas', loaded ? blocked : '—', loaded ? 'sem acesso até desbloquear' : '')
       + tileHtml('Acessos antigos', all.length, all.length ? 'convide para o novo acesso' : 'ninguém no acesso antigo', 'sky');
     if (sb) keepFocus(() => {
@@ -3182,7 +3514,7 @@
     box.innerHTML = `${pageHead('cfg')}
       <div data-sb-warn-slot hidden></div>
       <div class="cfg-grid">
-          <section class="card stack span2" id="cfgSb" aria-labelledby="cfgSbH">${sbCardHtml()}</section>
+          <section class="card stack span2" id="cfgUnify" aria-labelledby="cfgUnifyH">${unifyCardHtml()}</section>
           <section class="card stack" aria-labelledby="cfgAtivH">
             <div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.mail}</span><h2 id="cfgAtivH">Contatos do marketing</h2></div>
             <p class="muted">Aparecem nas telas de entrar e de ajuda do site, para quem precisa de ajuda com o acesso. O site mostra um botão para cada contato preenchido.</p>
@@ -3203,7 +3535,7 @@
             <div class="card-head"><span class="card-ico" aria-hidden="true">${ICO.shield}</span><h2 id="cfgSecH">Segurança</h2></div>
             ${hasR ? '' : '<div class="alert error sec-alert"><b>Crie a chave de recuperação.</b> Ela abre o painel se a senha mestra for esquecida. Sem ela e sem a senha mestra, todos os acessos precisam ser recriados.<div class="row"><button class="btn primary sm" type="button" data-cfg="recovery">Criar chave de recuperação</button></div></div>'}
             <ul class="sec-list">
-              <li class="sec-row"><div><h3>Senha mestra</h3><p class="muted">Todos os administradores usam a mesma senha mestra. Troque quando alguém deixar de ser administrador.</p></div>
+              <li class="sec-row"><div><h3>Senha mestra</h3><p class="muted">Todos os administradores usam a mesma senha mestra. Troque quando alguém deixar de ser administrador.</p>${openedBy === 'unified' ? '<p class="muted" id="masterNote">Agora a senha mestra serve só para emergências (o painel foi aberto com e-mail e senha). Se ela tiver menos de 20 caracteres, contiver “Dellamed”, “Prateleira”, “senha”, “admin” ou anos, ou não misturar três tipos de caractere, troque-a aqui.</p>' : ''}</div>
                 <div class="row"><button class="btn ghost" type="button" data-cfg="master">Trocar senha mestra</button></div></li>
               ${hasR ? '<li class="sec-row"><div><h3>Chave de recuperação</h3><p class="muted">Abre o painel se a senha mestra for esquecida. Ao gerar uma nova, a atual deixa de valer.</p></div><div class="row"><button class="btn ghost" type="button" data-cfg="recovery">Gerar nova chave de recuperação</button></div></li>' : ''}
               <li class="sec-row"><div><h3>Backup do cofre</h3><p class="muted">O backup é o cofre exatamente como está no GitHub, criptografado. Ele só abre com a senha mestra ou com a chave de recuperação.</p></div>
@@ -3217,8 +3549,9 @@
       </div>`;
     $('#saveAtiv').addEventListener('click', saveAtiv);
     $('#saveCom').addEventListener('click', saveCom);
+    box.onsubmit = onUnifyLogin; // entrar com e-mail e senha no cartão "Acesso unificado"
     box.onclick = (e) => {
-      if (onSbClick(e)) return; // Entrar / Sair do Supabase e "Tentar de novo" do aviso
+      if (onSbClick(e)) return; // "Unificar acesso", situação do acesso unificado e "Tentar de novo" do aviso
       const b = e.target.closest('[data-cfg]'); if (!b) return;
       const a = b.dataset.cfg;
       if (a === 'recovery') createRecovery();
@@ -3228,6 +3561,7 @@
       else forgetToken();
     };
     paintSbWarn();
+    if (sb && !secretsInfo) loadSecretsInfo();
   }
   async function saveAtiv() {
     const email = $('#ativEmail').value.trim(), whats = $('#ativWhats').value.replace(/\D/g, ''), wp = whatsProblem(whats);
@@ -3275,7 +3609,7 @@
   }
   // Trocar a senha mestra: chave do cofre nova, compartimento m novo, chave de recuperação nova e chave-raiz nova.
   // Tudo em variáveis locais; os valores globais só mudam depois de publicar com sucesso.
-  // keep: { a, b, all } devolve o que foi digitado quando o diálogo reabre depois do "Entrar no Supabase" (sbRotationGate)
+  // keep: { a, b, all } devolve o que foi digitado quando o diálogo reabre depois do "Entrar com e-mail e senha" (sbRotationGate)
   function changeMasterDialog(forced, keep) {
     const legacyN = rotationFileCount(rotationTargets(vault, false)), allN = rotationFileCount(vault.catalogs);
     openDialog({
@@ -3347,7 +3681,9 @@
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
     window.PainelPrateleira = { useRepo(a) { repo = a; nojekyllOk = false; detectMode(); }, addCatalog };
   }
-  show('login');
-  detectMode();
+  show('login'); showView('auth'); resetAuthForm();
+  detectMode(); // prepara o formulário de emergência (e mostra a primeira configuração quando não há cofre)
+  // Sessão deste computador (por exemplo, já entrou no site): abre o painel sem perguntar nada — menos depois do bloqueio por inatividade
+  if (P.auth.load() && !idleLocked()) unifiedOpen(true);
 })();
 </script>

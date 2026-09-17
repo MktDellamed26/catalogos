@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-en+ORXRXiybid6XucXqWWA+jSfgOXoAuskO3x7VK57g=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://xrsivxdtfliejbosprns.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-0HEiw+DUaja7eQxn4PI/6bs1JW0u+dXNf9VNqO9e0Nc=' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://xrsivxdtfliejbosprns.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -181,6 +181,8 @@
   .menu .who b { display: block; font-size: 14px; color: var(--navy); }
   .menu button { width: 100%; height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; text-align: left; color: var(--ink); cursor: pointer; }
   .menu button:hover { background: var(--light); }
+  /* "Painel" (só admin do Supabase): no menu da conta apenas no celular; computador e tablet usam o item do menu lateral/gaveta */
+  @media (min-width: 768px) { .menu .menu-admin { display: none; } }
   .main-col { margin-left: var(--side-w); min-width: 0; }
   .topbar { display: none; }
   .menu-btn { display: none; }
@@ -1078,12 +1080,15 @@
         <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
       </div>
+      <!-- Só admin do Supabase: abre o painel (admin.html) nesta mesma aba, com a mesma sessão -->
+      <button class="nav-i" type="button" data-nav="painel" data-admin-entry hidden><span class="ico" data-ico="ajustes"></span><span class="nav-t">Painel</span></button>
     </nav>
     <button class="me" id="userBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="side"><span class="avatar" data-avatar></span><span class="u-text"><span class="u-name" id="uName"></span><span class="u-role" id="uRole"></span></span><span class="ico me-more" data-ico="more"></span></button>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
   <div class="menu" id="userMenu" hidden>
     <p class="who"><b id="mName"></b><span id="mEmail"></span></p>
+    <button type="button" class="menu-admin" id="adminMenuBtn" data-admin-entry hidden>Painel</button>
     <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
@@ -1704,7 +1709,61 @@
       }
     };
 
+    /* ---------- Sessão única do Supabase neste aparelho (site e painel usam a mesma) ----------
+       Guardada em "dm.auth" (localStorage quando "manter conectado"; sessionStorage caso contrário).
+       A renovação usa Web Locks para duas abas/páginas não gastarem o mesmo refresh token. */
+    const AUTH_KEY = 'dm.auth';
+    const auth = {
+      load() {
+        try {
+          const raw = localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY);
+          const s = raw ? JSON.parse(raw) : null;
+          return s && s.refresh_token ? s : null;
+        } catch (e) { return null; }
+      },
+      save(sess, keep) {
+        const prev = auth.load();
+        const k = keep === undefined ? !!(prev && prev.keep) : !!keep;
+        const user = sess.user || {};
+        const rec = {
+          access_token: sess.access_token,
+          refresh_token: sess.refresh_token,
+          expires_at: Date.now() + (Number(sess.expires_in) || 3600) * 1000,
+          uid: user.id || (prev && prev.uid) || '',
+          email: user.email || (prev && prev.email) || '',
+          keep: k
+        };
+        try {
+          (k ? localStorage : sessionStorage).setItem(AUTH_KEY, JSON.stringify(rec));
+          (k ? sessionStorage : localStorage).removeItem(AUTH_KEY);
+        } catch (e) { /* armazenamento indisponível: a sessão vale só nesta página */ }
+        return rec;
+      },
+      clear() { try { localStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(AUTH_KEY); } catch (e) { /* noop */ } },
+      async signIn(email, password, keep) { return auth.save(await supa.signIn(email, password), keep); },
+      // Tokens vindos do link de convite/recuperação
+      async adopt(tokens, keep) { const user = await supa.user(tokens.access_token); return auth.save(Object.assign({}, tokens, { user }), keep); },
+      // Token de acesso válido (renova quando falta 1 minuto). null = sem sessão.
+      async token() {
+        const fresh = (s) => s && s.expires_at - Date.now() > 60000;
+        let s = auth.load();
+        if (!s) return null;
+        if (fresh(s)) return s.access_token;
+        const run = async () => {
+          s = auth.load();
+          if (!s) return null;
+          if (fresh(s)) return s.access_token; // outra aba ou página já renovou
+          try { return auth.save(await supa.refresh(s.refresh_token), s.keep).access_token; }
+          catch (e) { if (e.status === 400 || e.status === 401 || e.status === 403) auth.clear(); throw e; }
+        };
+        return navigator.locks && navigator.locks.request ? navigator.locks.request('dm-auth-refresh', run) : run();
+      },
+      async signOut() { const s = auth.load(); auth.clear(); if (s) await supa.signOut(s.access_token); },
+      KEY: AUTH_KEY
+    };
+
     return {
+      auth,
       SUPA, supa,
       CARD_PREFIX, CARD_MAX, CARD_PHOTO_MAX, cleanCard, makeCardCode, readCardCode, sealCard, openCard,
       sealProdutos, openProdutos, skuKey, validHotspot,
@@ -1810,7 +1869,8 @@
     grid: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
     user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg>',
     copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>',
-    panel: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14.5 4.5v15M17 8.5h1M17 11.5h1"/></svg>'
+    panel: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14.5 4.5v15M17 8.5h1M17 11.5h1"/></svg>',
+    ajustes: '<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>'
   };
   const WARN = `<span class="warn-ico" aria-hidden="true">${I.warn}</span>`;
   $('#icoSearch').innerHTML = I.search;
@@ -2157,7 +2217,7 @@
         // Login Supabase: confere o perfil e busca a chave-raiz atual antes de reabrir (a guardada pode ter sido trocada)
         let key = ROOT;
         if (me.auth === 'supabase') {
-          const chk = await supaCheck();
+          const chk = await supaCheck(me.uid);
           if (!chk.perfil) { logout({ msg: MSG_BLOCKED }); return; }
           if (chk.key) key = chk.key;
         }
@@ -2232,7 +2292,10 @@
     favOps.clear(); interestOps.clear(); prefsDirty = false; cardDirty = false;
   }
   window.addEventListener('storage', (e) => {
-    if (!me || e.key !== prefsKey()) return;
+    if (!me) return;
+    // Sessão única do Supabase (P.auth) encerrada em outra aba ou no painel: sai também, sem encerrar de novo no servidor
+    if ((e.key === P.auth.KEY || e.key === null) && me.auth === 'supabase' && !P.auth.load()) { logout({ broadcast: false }); return; }
+    if (e.key !== prefsKey()) return;
     const st = normPrefs(readStoredPrefs());
     prefs.favorites = applyFavOps(st.favorites);
     prefs.progress = mergeProgress(st.progress, prefs.progress);
@@ -2334,10 +2397,11 @@
     await clearStoredSession();
     const exp = Date.now() + (remember ? 30 * 864e5 : 12 * 36e5);
     const slot = P.randHex(16), supa = prof.auth === 'supabase';
-    // Login Supabase: os tokens (AUTH.record) ficam no mesmo registro da chave-raiz, com a mesma validade
-    try { await IDB.put(slot, { key: rootKey, exp, keep: !!remember, ...(supa ? AUTH.record() : {}) }); }
+    // Login Supabase: os tokens ficam só na sessão única (P.auth); o slot guarda a marca auth e o resumo da chave-raiz (kh)
+    try { await IDB.put(slot, { key: rootKey, exp, keep: !!remember, ...(supa ? { auth: 'supabase', kh: KH } : {}) }); }
     catch (e) { return; } // sem IndexedDB: não guarda nada (a pessoa entra a cada visita)
-    const rec = JSON.stringify({ id: prof.id, av: Number(ACCESS.v) || 1, u: prof.u, n: prof.n, r: prof.r, c: prof.c || '', e: prof.e, slot, exp, auth: supa ? 'supabase' : 'legacy' });
+    // p = papel bruto do perfil no Supabase (admin → item "Painel"); o acesso antigo não tem
+    const rec = JSON.stringify({ id: prof.id, av: Number(ACCESS.v) || 1, u: prof.u, n: prof.n, r: prof.r, c: prof.c || '', e: prof.e, slot, exp, auth: supa ? 'supabase' : 'legacy', ...(supa ? { p: prof.p || '' } : {}) });
     const st = store(remember ? 'localStorage' : 'sessionStorage');
     try { st.setItem(SKEY, rec); SLOT = slot; } catch (e) { IDB.del(slot).catch(() => {}); }
   }
@@ -2352,71 +2416,29 @@
   // Nome, perfil e e-mail atualizados (login Supabase) no registro da sessão guardada, sem mudar a validade
   function updateStoredProfile(s) {
     for (const st of [store('sessionStorage'), store('localStorage')]) {
-      try { const o = JSON.parse(st.getItem(SKEY)); if (o && o.slot === s.slot) st.setItem(SKEY, JSON.stringify({ ...o, n: s.n, r: s.r, c: s.c, e: s.e })); } catch (e) { /* noop */ }
+      try { const o = JSON.parse(st.getItem(SKEY)); if (o && o.slot === s.slot) st.setItem(SKEY, JSON.stringify({ ...o, n: s.n, r: s.r, c: s.c, e: s.e, p: s.p || '' })); } catch (e) { /* noop */ }
     }
   }
 
-  /* ================= login Supabase: sessão de tokens (um lugar só) =================
-     AUTH.s = { access_token, refresh_token, expires_at, uid, email, kh } — em memória e no registro do IndexedDB do slot da sessão
-     (campos auth/at/rt/ea/uid/em/kh ao lado de key/exp/keep). kh = resumo da chave-raiz, para saber se ela mudou.
-     getToken() renova quando faltam 60 s ou menos, com um pedido por vez; os tokens renovados voltam para o mesmo slot. */
+  /* ================= login Supabase: sessão única do aparelho (P.auth, compartilhada com o painel) =================
+     Os tokens ficam só em P.auth ("dm.auth": localStorage com "Manter conectado", sessionStorage sem). P.auth.token() renova
+     com Web Locks (duas abas ou o painel não gastam o mesmo refresh token) e limpa a sessão quando o Supabase a recusa.
+     O slot do IndexedDB guarda só key/exp/keep + auth: 'supabase' e kh (resumo da chave-raiz, em KH, para saber se ela mudou). */
   const RESET_URL = 'https://mktdellamed26.github.io/catalogos/';
   const wait = (ms) => new Promise((res) => setTimeout(res, ms, ''));
-  const jwtExp = (t) => { try { return Number(JSON.parse(atob(String(t).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp) * 1000 || 0; } catch (e) { return 0; } };
-  const AUTH = {
-    s: null, job: null,
-    // r = resposta do login/renovação ou tokens do link: { access_token, refresh_token, expires_in, user? }
-    set(r) {
-      const old = this.s || {}, u = (r && r.user) || {};
-      this.s = {
-        access_token: r.access_token, refresh_token: r.refresh_token,
-        expires_at: jwtExp(r.access_token) || Date.now() + (Number(r.expires_in) || 3600) * 1000,
-        uid: u.id || old.uid || '', email: P.normEmail(u.email || old.email || ''), kh: old.kh || ''
-      };
-      return this.s;
-    },
-    fromRecord(rec) {
-      this.job = null;
-      this.s = rec && rec.auth === 'supabase' && rec.rt && rec.uid ? { access_token: rec.at || '', refresh_token: rec.rt, expires_at: Number(rec.ea) || 0, uid: rec.uid, email: rec.em || '', kh: rec.kh || '' } : null;
-      return this.s;
-    },
-    record() { const s = this.s; return s ? { auth: 'supabase', at: s.access_token, rt: s.refresh_token, ea: s.expires_at, uid: s.uid, em: s.email, kh: s.kh || '' } : {}; },
-    clear() { this.s = null; this.job = null; },
-    async persist() {
-      if (!SLOT || !this.s) return;
-      try { const rec = await IDB.get(SLOT); if (rec && rec.key) await IDB.put(SLOT, { ...rec, ...this.record() }); } catch (e) { /* segue só em memória */ }
-    },
-    getToken() {
-      const s = this.s;
-      if (!s) { const e = new Error('sem sessão'); e.status = 401; e.code = 'no_session'; return Promise.reject(e); }
-      if (s.expires_at - Date.now() > 60000) return Promise.resolve(s.access_token);
-      if (!this.job) {
-        const job = (async () => {
-          // O token de renovação muda a cada uso: se outra aba já renovou, usa o que ela gravou
-          if (SLOT) {
-            try {
-              const rec = await IDB.get(SLOT);
-              if (rec && rec.auth === 'supabase' && rec.rt && rec.rt !== s.refresh_token && Number(rec.ea) - Date.now() > 60000 && this.s === s) { this.fromRecord(rec); return this.s.access_token; }
-            } catch (e) { /* noop */ }
-          }
-          const r = await P.supa.refresh(s.refresh_token);
-          if (this.s !== s) { const e = new Error('sessão trocada'); e.status = 401; throw e; }
-          this.set(r);
-          await this.persist();
-          return this.s.access_token;
-        })();
-        this.job = job;
-        job.then(() => {}, () => {}).then(() => { if (this.job === job) this.job = null; });
-      }
-      return this.job;
-    }
-  };
-  // Encerra no Supabase sem travar a saída (sem internet, só descarta os tokens)
-  async function supaSignOut() {
-    if (!AUTH.s) return;
-    const t = await Promise.race([AUTH.getToken().catch(() => ''), wait(3000)]);
-    AUTH.clear();
-    if (t) await Promise.race([P.supa.signOut(t), wait(3000)]);
+  let KH = ''; // resumo da chave-raiz aberta nesta sessão (login Supabase)
+  const authErr = (code) => { const e = new Error('sem sessão'); e.status = 401; e.code = code; return e; };
+  // Token de acesso válido para qualquer pedido ao Supabase; sem sessão → erro 401 (mesmo tratamento de token recusado)
+  async function supaToken() {
+    const t = await P.auth.token();
+    if (!t) throw authErr('no_session');
+    return t;
+  }
+  // Encerra no Supabase sem travar a saída (sem internet, só descarta a sessão). uid: não encerra a sessão de outra conta aberta no painel
+  async function supaSignOut(uid) {
+    const s = P.auth.load();
+    if (!s || (uid && s.uid && s.uid !== uid)) return;
+    await Promise.race([P.auth.signOut(), wait(3000)]);
   }
   const SUPA_ROLES = ['cliente', 'representante', 'interno'];
   // Perfil ativo da própria pessoa (RLS: só a linha dela) ou null
@@ -2431,23 +2453,25 @@
     return typeof k === 'string' && k.trim() ? k.trim() : null;
   }
   const keyHash = async (b64) => P.hex(await P.sha256('chave|' + b64)).slice(0, 16);
-  // Perfil do Supabase no formato do pacote de acessos.json ({ id, u, n, r, c, e }); admin usa as telas da equipe interna
+  // Perfil do Supabase no formato do pacote de acessos.json ({ id, u, n, r, c, e }); admin usa as telas da equipe interna. p = papel bruto (admin → "Painel")
   function supaProf(perfil, s) {
     const papel = perfil.papel === 'admin' ? 'interno' : perfil.papel;
     const email = String(perfil.email || s.email || '').trim();
-    return { id: null, u: s.uid, n: String(perfil.nome || '').trim() || email, r: SUPA_ROLES.includes(papel) ? papel : 'cliente', c: perfil.empresa || '', e: email, auth: 'supabase' };
+    return { id: null, u: s.uid, n: String(perfil.nome || '').trim() || email, r: SUPA_ROLES.includes(papel) ? papel : 'cliente', c: perfil.empresa || '', e: email, p: String(perfil.papel || ''), auth: 'supabase' };
   }
   // Sessão aberta: confere o perfil e a chave atuais. → { perfil | null, key: CryptoKey nova quando a chave mudou, senão null }
-  async function supaCheck() {
-    const tok = await AUTH.getToken();
-    const perfil = await supaPerfil(tok, AUTH.s.uid);
+  // uid: dono esperado da sessão única (outra conta entrou no painel neste aparelho → erro 401 'session_changed')
+  async function supaCheck(uid) {
+    const tok = await supaToken(), s = P.auth.load();
+    if (!s || !s.uid || (uid && s.uid !== uid)) throw authErr('session_changed');
+    const perfil = await supaPerfil(tok, s.uid);
     if (!perfil) return { perfil: null, key: null };
     const k = await supaChave(tok);
     const kh = k ? await keyHash(k) : '';
-    if (!k || kh === AUTH.s.kh) return { perfil, key: null };
+    if (!k || kh === KH) return { perfil, key: null };
     const key = await P.aesKey(P.b64d(k), ['decrypt']);
-    AUTH.s.kh = kh;
-    if (SLOT) { try { const rec = await IDB.get(SLOT); if (rec && rec.key) await IDB.put(SLOT, { ...rec, ...AUTH.record(), key }); } catch (e) { /* noop */ } }
+    KH = kh;
+    if (SLOT) { try { const rec = await IDB.get(SLOT); if (rec && rec.key) await IDB.put(SLOT, { ...rec, kh, key }); } catch (e) { /* noop */ } }
     return { perfil, key };
   }
 
@@ -2613,15 +2637,16 @@
     loginBusy = true; b.disabled = true; b.textContent = 'Verificando o acesso…';
     try {
       // 1) Acesso novo (Supabase). Credencial não reconhecida → acesso antigo (acessos.json e código provisório), sem mudanças nele
-      let sess = null, supaErr = null;
-      try { sess = await P.supa.signIn(email, pass); }
+      //    A sessão vai para P.auth (a mesma do painel), guardada no aparelho conforme "Manter conectado"
+      let signed = false, supaErr = null;
+      try { await P.auth.signIn(email, pass, remember); signed = true; }
       catch (err) {
         if (offlineErr(err)) { showNet(MSG_OFFLINE, retry); return; }
         if (err.code === 'email_not_confirmed') { loginAlert('Confirme seu e-mail pelo link do convite.'); return; }
         if (!(err.code === 'invalid_credentials' || err.status === 400)) supaErr = err; // limite de tentativas ou servidor fora: tenta o antigo e, se falhar, avisa
       }
-      if (sess) {
-        if (await supaEnter(sess, remember, retry)) trackCatalogEvent('auth_login', { method: 'supabase' });
+      if (signed) {
+        if (await supaEnter(remember, retry)) trackCatalogEvent('auth_login', { method: 'supabase' });
         return;
       }
       // 2) Acesso antigo
@@ -2662,22 +2687,26 @@
     startSession(prof);
     return true;
   }
-  // Login Supabase (formulário ou link do e-mail): perfil ativo → chave dos catálogos → openWithRoot
-  async function supaEnter(sess, remember, retry) {
-    const s = AUTH.set(sess);
+  // Login Supabase com a sessão já em P.auth (formulário, link do e-mail ou sessão única aberta no painel): perfil ativo → chave dos catálogos → openWithRoot
+  // auto = entrada automática pela sessão única: falhas não apagam P.auth (só perfil inativo encerra a sessão)
+  async function supaEnter(remember, retry, auto) {
+    const drop = () => { if (!auto) P.auth.clear(); };
+    KH = '';
     try {
-      if (!s.uid) { const u = await P.supa.user(s.access_token); s.uid = u.id; s.email = P.normEmail(u.email); }
-      const perfil = await supaPerfil(s.access_token, s.uid);
+      const tok = await supaToken(), s = P.auth.load();
+      if (!s || !s.uid) throw authErr('no_session');
+      const perfil = await supaPerfil(tok, s.uid);
       if (!perfil) { await supaSignOut(); loginAlert(MSG_BLOCKED); return false; }
-      const k = await supaChave(s.access_token);
-      if (!k) { AUTH.clear(); loginAlert(MSG_CONFIG); return false; }
-      s.kh = await keyHash(k);
+      const k = await supaChave(tok);
+      if (!k) { drop(); loginAlert(MSG_CONFIG); return false; }
+      KH = await keyHash(k);
       const ok = await openWithRoot(supaProf(perfil, s), k, remember, retry);
-      if (!ok) AUTH.clear();
+      if (!ok) drop();
       return ok;
     } catch (err) {
-      AUTH.clear();
+      drop();
       if (offlineErr(err)) showNet(MSG_OFFLINE, retry);
+      else if (auto && (err.status === 400 || err.status === 401 || err.status === 403)) loginAlert(MSG_EXPIRED);
       else loginAlert('Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.');
       return false;
     }
@@ -2861,9 +2890,22 @@
     const user = u && u.id ? u : { id: st.uid, email: st.email };
     if (user.email) $('#loginEmail').value = user.email;
     showLoginPart('login');
-    const sess = { access_token: st.link.access_token, refresh_token: st.link.refresh_token, expires_in: st.link.expires_in, user };
+    // Tokens do link → sessão única (P.auth.adopt). "Manter conectado" só quando marcado no login (padrão: desmarcado → sessionStorage)
+    const tokens = { access_token: st.link.access_token, refresh_token: st.link.refresh_token, expires_in: st.link.expires_in };
+    let adopted = false;
     const enter = async () => {
-      if (!(await supaEnter(sess, $('#loginRemember').checked, enter))) { $('#loginH').focus(); return; }
+      const keep = $('#loginRemember').checked;
+      if (!adopted) {
+        try { await P.auth.adopt(tokens, keep); adopted = true; }
+        catch (err) {
+          if (offlineErr(err)) showNet(MSG_OFFLINE, enter);
+          else if (err && (err.status === 401 || err.status === 403)) loginAlert(MSG_LINK);
+          else loginAlert('Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.');
+          $('#loginH').focus();
+          return;
+        }
+      }
+      if (!(await supaEnter(keep, enter))) { adopted = !!P.auth.load(); $('#loginH').focus(); return; }
       trackCatalogEvent('auth_login', { method: 'supabase' });
       toast('Senha criada. Bem-vindo(a)!');
     };
@@ -2873,8 +2915,10 @@
 
   function startSession(prof) {
     // auth: 'legacy' (acessos.json; sessões antigas sem o campo) ou 'supabase' (id = null; uid = id do usuário no Supabase)
+    // papel: papel bruto do perfil no Supabase (role continua o mapeado: admin → interno); acesso antigo: ''
     me = { uid: prof.u || prof.id, id: prof.id, name: prof.n || '', role: prof.r, company: prof.c || '', email: prof.e || '', auth: prof.auth === 'supabase' ? 'supabase' : 'legacy' };
-    if (me.auth === 'legacy') { AUTH.clear(); rememberLegacyUid(); }
+    me.papel = me.auth === 'supabase' ? String(prof.p || '') : '';
+    if (me.auth === 'legacy') rememberLegacyUid();
     loadPrefs();
     setSound(typeof prefs.sound === 'boolean' ? prefs.sound : !coarse, false);
     $$('[data-avatar]').forEach((a) => { a.textContent = initials(me.name); });
@@ -2884,6 +2928,7 @@
     $('#mName').textContent = me.name;
     $('#mEmail').textContent = me.email;
     $('#pwChangeBtn').hidden = me.auth !== 'supabase';
+    $$('[data-admin-entry]').forEach((el) => { el.hidden = me.papel !== 'admin'; }); // "Painel": menu lateral/gaveta e menu da conta (celular)
     $('#legacyNote').hidden = me.auth !== 'legacy' || legacyNoteClosed();
     $('#rShareTxt').textContent = me.role === 'cliente' ? 'Compartilhar' : 'Enviar ao cliente';
     // Cartão: item do menu lateral/gaveta (com lápis), aba central do celular e faixa "Seu cartão" do início
@@ -2906,8 +2951,8 @@
     loggingOut = true;
     flushPrefs();
     clearCardMemory(); // os dados do cartão ficam no aparelho; só a tela e a foto em memória são descartadas
-    // Login Supabase: encerra no servidor (só a aba que pediu; as outras recebem o aviso "sair" e limpam)
-    if (me && me.auth === 'supabase' && opts.broadcast !== false) await supaSignOut(); else AUTH.clear();
+    // Login Supabase: encerra a sessão única no servidor (só a aba que pediu; as outras recebem o aviso "sair" ou o evento storage de "dm.auth" e só limpam)
+    if (me && me.auth === 'supabase') { if (opts.broadcast !== false) await supaSignOut(me.uid); else P.auth.clear(); }
     await clearStoredSession();
     if (opts.broadcast !== false && bc) { try { bc.postMessage({ t: 'sair' }); } catch (e) { /* noop */ } }
     clearAllImages(true);
@@ -2929,6 +2974,15 @@
   $$('[data-menu-trigger]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); setMenu($('#userMenu').hidden || menuFrom !== b, b); }));
   $('#logoutBtn').addEventListener('click', () => logout());
   $('#pwChangeBtn').addEventListener('click', () => { const from = menuFrom; setMenu(false); openPwChange(from); });
+  $('#adminMenuBtn').addEventListener('click', () => { setMenu(false); openAdmin(); });
+  // "Painel" (só admin do Supabase): admin.html nesta mesma aba, que reaproveita a sessão única (P.auth) sem pedir senha.
+  // Edição do cartão com alterações não concluídas: pergunta antes (como qualquer saída do cartão) e fica no site.
+  function openAdmin() {
+    if (!me || me.papel !== 'admin') return;
+    if (cardLeaveBlocked('#/prateleira')) return;
+    flushPrefs();
+    location.assign('admin.html');
+  }
 
   /* ================= conta: trocar senha (só login Supabase) ================= */
   function openPwChange(from) {
@@ -2959,7 +3013,7 @@
     if (!pwd) { focusFirstInvalid(dlg); return false; }
     const btn = $('.dlg-actions .btn.primary', dlg), al = $('#pcAlert');
     btn.disabled = true; btn.textContent = 'Salvando…'; al.hidden = true;
-    try { await P.supa.setPassword(await AUTH.getToken(), pwd); }
+    try { await P.supa.setPassword(await supaToken(), pwd); }
     catch (err) {
       btn.disabled = false; btn.textContent = 'Salvar senha';
       if (err && err.code === 'same_password') { setErr($('#fPc1'), 'Use uma senha diferente da atual.'); $('#pcNew').focus(); }
@@ -3175,10 +3229,11 @@
     setFilter(b.dataset.k);
     const again = $(`#chips [data-k="${cssq(filter)}"]`); if (again) again.focus();
   });
-  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel) e Meu cartão
+  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel), Meu cartão e Painel (admin.html, só admin)
   side.addEventListener('click', (e) => {
     const b = e.target.closest('[data-nav]'); if (!b) return;
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
+    if (nav === 'painel') { drawer.close(false); openAdmin(); return; }
     if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'interesses') { drawer.close(); openInterests(); return; }
     if (!toShelf()) { drawer.close(false); return; } // no cartão, Início, Catálogos e Favoritos voltam à prateleira antes de agir
@@ -4872,7 +4927,7 @@
       try {
         for (;;) {
           const ver = CARD_SYNC.ver, meta = syncMeta();
-          const tok = await AUTH.getToken();
+          const tok = await supaToken();
           const local = await localCard.load();
           if (!me || me.uid !== uid) return;
           if (meta.pf !== false) { // foto antes da linha: outro aparelho nunca vê tem_foto sem o arquivo
@@ -4899,7 +4954,7 @@
     if (CARD_SYNC.busy || cardEditDirty() || (!force && Date.now() - CARD_SYNC.pulledAt < 15000)) return local;
     const uid = me.uid, ver = CARD_SYNC.ver, meta = syncMeta();
     try {
-      const tok = await AUTH.getToken();
+      const tok = await supaToken();
       const rows = await P.supa.select(tok, 'cartoes', 'user_id=eq.' + encodeURIComponent(uid) + '&select=dados,tem_foto,atualizado_em');
       if (!me || me.uid !== uid) return local;
       CARD_SYNC.pulledAt = Date.now();
@@ -5652,21 +5707,45 @@
   }
 
   /* ================= início ================= */
-  // Sessão do Supabase guardada: renova o token, confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
+  // Sessão do Supabase guardada: renova o token (P.auth), confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
   // Sem internet (ou servidor fora), segue com a chave guardada, como o acesso antigo.
   async function supaRestore(s, rec) {
-    if (!AUTH.fromRecord(rec)) { await clearStoredSession(); return { status: 'nokey' }; }
-    SLOT = s.slot; // renovações de token gravam neste slot
+    // Migração (uma vez): slot gravado antes da sessão única, com os tokens (at/rt/ea/uid/em) → P.auth, e os campos saem do slot
+    if (rec.at != null || rec.rt != null || rec.ea != null || rec.uid != null || rec.em != null) {
+      if (rec.rt && !P.auth.load()) {
+        // expires_in 0 viraria 3600 em P.auth.save (|| 3600): o piso de 1 ms faz o token vencido ser renovado no primeiro uso
+        P.auth.save({ access_token: rec.at || '', refresh_token: rec.rt, expires_in: Math.max(0.001, ((Number(rec.ea) || 0) - Date.now()) / 1000), user: { id: rec.uid, email: rec.em } }, !!rec.keep);
+      }
+      const { at, rt, ea, uid, em, ...rest } = rec;
+      rec = rest;
+      try { await IDB.put(s.slot, rec); } catch (e) { /* segue: os campos antigos saem na próxima abertura (P.auth existente nunca é sobrescrita) */ }
+    }
+    if (!P.auth.load()) { await clearStoredSession(); return { status: 'nokey' }; } // saiu no painel ou em outra aba
+    KH = rec.kh || '';
+    SLOT = s.slot; // chave trocada no painel: supaCheck grava a nova neste slot
     try {
-      const chk = await supaCheck();
-      if (!chk.perfil) { await supaSignOut(); await clearStoredSession(); return { status: 'blocked' }; }
-      Object.assign(s, supaProf(chk.perfil, AUTH.s));
+      const chk = await supaCheck(s.u);
+      if (!chk.perfil) { await supaSignOut(s.u); await clearStoredSession(); return { status: 'blocked' }; }
+      Object.assign(s, supaProf(chk.perfil, P.auth.load() || { uid: s.u, email: s.e }));
       updateStoredProfile(s);
       return { key: chk.key };
     } catch (e) {
-      if (!offlineErr(e) && (e.status === 400 || e.status === 401 || e.status === 403)) { AUTH.clear(); await clearStoredSession(); return { status: 'expired' }; }
+      // Sessão recusada (P.auth.token já a apagou) ou de outra conta (session_changed: a sessão única fica para a entrada automática)
+      if (!offlineErr(e) && (e.status === 400 || e.status === 401 || e.status === 403)) { await clearStoredSession(); return { status: 'expired' }; }
       return { key: null };
     }
+  }
+  // Sem sessão do site, mas com a sessão única aberta neste aparelho (ex.: entrou no painel): entra direto, como depois do login
+  async function supaAutoEnter() {
+    const a = P.auth.load();
+    if (!a) return false;
+    loginBusy = true;
+    setLoginReady(false, 'Verificando o acesso…');
+    try {
+      const ok = await supaEnter(!!a.keep, boot, true);
+      if (ok) trackCatalogEvent('auth_login', { method: 'sessao' });
+      return ok;
+    } finally { loginBusy = false; }
   }
   async function restoreSession(s) {
     let key = null, rec = null;
@@ -5691,7 +5770,7 @@
       return 'erro';
     }
     SLOT = s.slot;
-    startSession({ id: s.id, u: s.u, n: s.n, r: s.r, c: s.c, e: s.e, auth: s.auth });
+    startSession({ id: s.id, u: s.u, n: s.n, r: s.r, c: s.c, e: s.e, p: s.p, auth: s.auth });
     return 'ok';
   }
   // Link do e-mail (#access_token=…&type=invite|recovery ou #error…): lido uma vez, antes do roteador, e retirado do endereço
@@ -5729,6 +5808,8 @@
       else if (r === 'blocked') loginAlert(MSG_BLOCKED);
       else if (r === 'version') loginAlert(MSG_UPDATE);
     }
+    // Sessão única do Supabase (P.auth) sem sessão do site: entra direto (bloqueio e chave não configurada aparecem aqui no login)
+    if ((!s || r === 'nokey' || r === 'expired') && P.auth.load() && await supaAutoEnter()) { sweepSlots(); return; }
     sweepSlots();
     setLoginReady(r !== 'version', r === 'version' ? 'Entrar' : '');
     route();
