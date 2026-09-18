@@ -314,6 +314,43 @@
   .dmp .secret { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 22px; letter-spacing: .08em; color: var(--navy); background: var(--light); padding: 10px 14px; border-radius: 10px; user-select: all; overflow-wrap: anywhere; }
   .dmp .secret.long { width: 100%; border: 0; resize: none; font-size: 17px; letter-spacing: .04em; }
 
+  /* ---------- Produtos: base de produtos (planilha mestre) e marcação automática ---------- */
+  .dmp .imp-card h2 { font-size: 18px; }
+  .dmp .imp-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  .dmp .imp-state { font-size: 13px; color: var(--ink-2); }
+  .dmp .imp-state b { color: var(--navy); }
+  .dmp .drop.sm { padding: 14px 18px; }
+  .dmp .drop.sm .drop-ico { width: 40px; height: 40px; }
+  .dmp .drop.sm .drop-ico svg { width: 20px; height: 20px; }
+  .dmp .imp-map { display: grid; gap: 10px; max-height: 44vh; overflow: auto; padding-right: 4px; }
+  .dmp .imp-map .field { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; }
+  .dmp .imp-map .field-label { font-size: 13px; }
+  .dmp .imp-map select { height: 38px; }
+  .dmp .imp-sum { display: grid; gap: 8px; }
+  .dmp .imp-sum > details { border: 1px solid var(--hair); border-radius: 12px; background: var(--white); }
+  .dmp .imp-sum > details > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--navy); list-style: none; }
+  .dmp .imp-sum > details > summary::-webkit-details-marker { display: none; }
+  .dmp .imp-sum > details[open] > summary { border-bottom: 1px solid var(--hair); }
+  .dmp .imp-n { font-family: var(--font-title); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .dmp .imp-list { display: grid; gap: 6px; margin: 0; padding: 10px 12px; max-height: 240px; overflow: auto; list-style: none; font-size: 12px; }
+  .dmp .imp-list li { padding: 6px 8px; border-radius: 8px; background: var(--light); overflow-wrap: anywhere; }
+  .dmp .imp-list b { color: var(--navy); }
+  .dmp .imp-dif { display: block; color: var(--ink-2); }
+  .dmp .imp-list select.input { margin-top: 6px; height: 36px; padding: 0 10px; font-size: 13px; }
+  .dmp .scan-groups { display: grid; gap: 14px; max-height: 460px; overflow: auto; padding-right: 2px; }
+  .dmp .scan-cat { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .dmp .scan-cat > legend { padding: 0 0 6px; font-family: var(--font-title); font-size: 13px; font-weight: 700; color: var(--navy); }
+  .dmp .scan-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .dmp .scan-it { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; padding: 10px 12px; border: 1px solid var(--hair); border-radius: 12px; background: var(--white); }
+  .dmp .scan-it > input { width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--navy); grid-row: span 3; }
+  .dmp .scan-t { font-size: 13px; font-weight: 600; color: var(--navy); overflow-wrap: anywhere; }
+  .dmp .scan-s { font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .dmp .scan-s mark { background: rgba(139, 184, 232, .55); color: var(--navy); border-radius: 3px; padding: 0 2px; }
+  .dmp .scan-conf { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+  .dmp .scan-conf.alta { background: var(--sky); color: var(--navy); }
+  .dmp .scan-conf.media { background: var(--light); color: var(--ink-2); border: 1px solid var(--silver); }
+  .dmp .scan-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+
   /* =================== responsivo =================== */
   /* Tablet e celular (< 1200): alvos de toque maiores (o menu, a gaveta e a barra de abas são do site) */
   @media (max-width: 1199px) {
@@ -393,6 +430,8 @@
     .dmp .dlg-actions { flex-direction: column-reverse; padding: 12px 18px calc(16px + var(--safe-b)); }
     .dmp .dlg-actions .btn { width: 100%; height: auto; min-height: 44px; white-space: normal; }
     .dmp .grid2 { grid-template-columns: minmax(0, 1fr); }
+    .dmp .imp-map .field { grid-template-columns: minmax(0, 1fr); }
+    .dmp .scan-groups { max-height: none; }
     .dmp .secret { font-size: 18px; }
   }
   @media (max-width: 479px) {
@@ -508,6 +547,7 @@
       <section class="dm-sec" id="pn-tabCfg" data-section="config" aria-label="Configurações" tabindex="-1" hidden></section>
     </div>
     <input type="file" id="pn-pdfInput" accept="application/pdf,.pdf" hidden>
+    <input type="file" id="pn-xlsInput" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden>
   </div>`;
   const BAR_HTML = `
   <div class="stagebar" id="pn-stageBar" role="region" aria-label="Alterações não publicadas" hidden>
@@ -840,15 +880,27 @@
     const c = d.catalogs.find((x) => x.id === h.catalogId);
     return !!c && h.page <= (c.pages || 0) && !!(d.products || {})[h.product] && P.validHotspot(h);
   }
-  const hasSpotsIn = (d, id) => (d.hotspots || []).some((h) => h.catalogId === id) || Object.values(d.products || {}).some((p) => p.image && p.image.catalogId === id);
-  // Tira as áreas (e as imagens de produto) de um catálogo: todas (maxPage 0) ou só as das páginas acima de maxPage. Devolve quantas áreas saíram.
+  const hasSpotsIn = (d, id) => (d.hotspots || []).some((h) => h.catalogId === id) || (d.pageLinks || []).some((l) => l.catalogId === id) || Object.values(d.products || {}).some((p) => p.image && p.image.catalogId === id);
+  // Tira as áreas, as ligações sem área (pageLinks) e as imagens de produto de um catálogo: todas (maxPage 0) ou só as das páginas acima de maxPage. Devolve quantas saíram.
   function dropCatalogSpots(d, id, maxPage) {
     withProd(d);
     const out = (r) => r.catalogId === id && r.page > maxPage;
-    const before = d.hotspots.length;
+    const before = d.hotspots.length + (d.pageLinks || []).length;
     d.hotspots = d.hotspots.filter((h) => !out(h));
+    if (d.pageLinks) d.pageLinks = d.pageLinks.filter((l) => !out(l));
+    if (d.descartes) d.descartes = d.descartes.filter((k) => { const [c, pg] = k.split('|'); return !(c === id && +pg > maxPage); });
     for (const p of Object.values(d.products)) if (p.image && out(p.image)) delete p.image;
-    return before - d.hotspots.length;
+    return before - d.hotspots.length - (d.pageLinks || []).length;
+  }
+  // Ligação produto ↔ página sem área: P.validPageLink (protocolo) ou, se ainda não existir, a mesma conferência aqui
+  const linkOk = (l) => (typeof P.validPageLink === 'function' ? P.validPageLink(l)
+    : !!l && typeof l.catalogId === 'string' && !!l.catalogId && Number.isInteger(l.page) && l.page >= 1 && typeof l.product === 'string' && !!l.product);
+  const linkKey = (r) => `${r.catalogId}|${r.page}|${r.product}`;
+  // A ligação cabe nos dados: catálogo e página existem, o produto existe e não há área do mesmo produto na mesma página
+  function linkFits(d, l) {
+    const c = d.catalogs.find((x) => x.id === l.catalogId);
+    return !!c && l.page <= (c.pages || 0) && !!(d.products || {})[l.product] && linkOk(l)
+      && !(d.hotspots || []).some((h) => h.catalogId === l.catalogId && h.page === l.page && h.product === l.product);
   }
   // produtos.bin (chave-raiz): todos os produtos (sem a imagem de catálogos ocultos) e só as áreas válidas dos catálogos visíveis
   async function produtosBin(d, root, visible) {
@@ -858,13 +910,22 @@
     for (const p of Object.values(d.products || {})) {
       const o = { sku: p.sku, name: p.name, category: p.category || '', benefit: p.benefit || '', capacity: p.capacity || '', description: p.description || '', url: p.url || '' };
       if (p.image && onPage(p.image) && P.validHotspot({ ...p.image, product: p.sku })) o.image = boxOf(p.image);
+      const fi = P.cleanFicha(p.ficha); // ficha técnica da planilha mestre (o site mostra na ficha do produto)
+      if (fi) o.ficha = fi;
       products[p.sku] = o;
     }
     const hotspots = (d.hotspots || []).filter((h) => products[h.product] && onPage(h) && P.validHotspot(h))
       .map((h) => ({ id: h.id, catalogId: h.catalogId, page: h.page, product: h.product, x: h.x, y: h.y, width: h.width, height: h.height }));
+    // Produtos na página sem área: sem repetir e sem duplicar uma área do mesmo produto na mesma página
+    const seen = new Set(hotspots.map(linkKey)), pageLinks = [];
+    for (const l of d.pageLinks || []) {
+      const k = linkKey(l);
+      if (seen.has(k) || !products[l.product] || !onPage(l) || !linkOk(l)) continue;
+      seen.add(k); pageLinks.push({ catalogId: l.catalogId, page: l.page, product: l.product, auto: !!l.auto });
+    }
     const com = (d.settings || {}).comercial || {};
     const comercial = { whatsapp: com.whatsapp || '', email: com.email || '', mensagem: com.mensagem || MSG_COMERCIAL };
-    return P.sealProdutos(root, { v: 1, comercial, products: sortKeys(products), hotspots });
+    return P.sealProdutos(root, { v: 1, comercial, products: sortKeys(products), hotspots, pageLinks });
   }
   async function coreFiles(d, k, sl, pg) {
     const root = await P.aesKey(P.b64d(d.contentKey), ['encrypt']);
@@ -1003,6 +1064,10 @@
   let stagedOrder = null;         // lista de ids na ordem desejada
   // Áreas de produto: operações por id da área (área nova ou alterada; null = removida) e imagem do produto por SKU (null = sem imagem)
   const stagedSpots = new Map(), stagedImages = new Map();
+  // Planilha mestre: produtos a gravar por SKU ({ sku, name, category, ficha }) e sugestões de marcação descartadas ("catálogo|página|SKU")
+  const stagedProds = new Map(), stagedDrops = new Set();
+  // Produto ligado à página SEM área (pageLinks): "catálogo|página|SKU" → ligação nova, ou null = removida
+  const stagedLinks = new Map();
   let spotLost = 0;               // operações ignoradas na última aplicação (catálogo, página ou produto sumiram)
   function applyStaged(d, onlyCatalogs) {
     for (const [k, val] of stagedFlags) { const [id, f] = k.split('|'); const c = d.catalogs.find((x) => x.id === id); if (c) c[f] = val; }
@@ -1010,7 +1075,7 @@
       const rest = d.catalogs.filter((c) => !stagedOrder.includes(c.id)).sort((a, b) => a.order - b.order);
       [...stagedOrder.map((id) => d.catalogs.find((c) => c.id === id)).filter(Boolean), ...rest].forEach((c, i) => { c.order = i + 1; });
     }
-    if (!onlyCatalogs) applySpotStaged(d);
+    if (!onlyCatalogs) { applyProdStaged(d); applySpotStaged(d); applyLinkStaged(d); applyDropStaged(d); }
     return d;
   }
   // Reaplica cada operação no rascunho conferindo de novo catálogo, página e produto (o rascunho pode ter vindo de outro administrador)
@@ -1039,24 +1104,28 @@
   const viewImage = (sku) => (stagedImages.has(sku) ? stagedImages.get(sku) : ((vault.products || {})[sku] || {}).image || null);
   // Tira da barra o que já não muda nada (igual ao publicado) e, com aviso, o que não cabe mais nos dados
   function pruneSpotOps() {
-    const prods = vault.products || {}, spots = vault.hotspots || [];
+    const vd = viewData(), prods = vd.products, spots = vault.hotspots || []; // produtos da planilha ainda na barra também valem
     let lost = 0;
     for (const [id, h] of [...stagedSpots]) {
       const cur = spots.find((x) => x.id === id);
-      if (h && !spotFits(vault, h)) { stagedSpots.delete(id); lost++; }
+      if (h && !spotFits(vd, h)) { stagedSpots.delete(id); lost++; }
       else if (h ? cur && sameSpot(cur, h) : !cur) stagedSpots.delete(id);
     }
     for (const [sku, im] of [...stagedImages]) {
       const p = prods[sku];
-      if (!p || (im && !spotFits(vault, { ...im, product: sku }))) { stagedImages.delete(sku); if (im) lost++; }
+      if (!p || (im && !spotFits(vd, { ...im, product: sku }))) { stagedImages.delete(sku); if (im) lost++; }
       else if (im ? p.image && sameBox(p.image, im) : !p.image) stagedImages.delete(sku);
     }
+    lost += pruneLinkOps(vd);
     if (lost) toast(`${plural(lost, 'área de produto não publicada foi descartada', 'áreas de produto não publicadas foram descartadas')}: o catálogo, a página ou o produto não existem mais.`);
   }
   // Tira as operações preparadas que combinam com o teste (usado quando um produto ou catálogo é removido)
   function dropStaged(test) {
     for (const [id, h] of [...stagedSpots]) if (h && test(h)) stagedSpots.delete(id);
     for (const [sku, im] of [...stagedImages]) if (im && test({ ...im, product: sku })) stagedImages.delete(sku);
+    for (const [k, l] of [...stagedLinks]) if (l && test(l)) stagedLinks.delete(k);
+    for (const k of [...stagedDrops]) { const [catalogId, page, product] = k.split('|'); if (test({ catalogId, page: +page, product })) stagedDrops.delete(k); }
+    for (const sku of [...stagedProds.keys()]) if (test({ product: sku, catalogId: '', page: 0, onlyProduct: true })) stagedProds.delete(sku);
   }
   function stageCount() {
     if (!vault) return 0;
@@ -1070,12 +1139,16 @@
       const want = viewCatalogs().map((c) => c.id).join();
       if (now === want) stagedOrder = null;
     }
+    pruneProdOps();
     pruneSpotOps();
-    return stagedFlags.size + (stagedOrder ? 1 : 0) + stagedSpots.size + stagedImages.size;
+    return stagedFlags.size + (stagedOrder ? 1 : 0) + stagedSpots.size + stagedImages.size + stagedProds.size + stagedLinks.size + stagedDrops.size;
   }
   function refreshStage() {
     const n = stageCount(), cats = stagedFlags.size + (stagedOrder ? 1 : 0);
-    const parts = [cats && plural(cats, 'alteração nos catálogos', 'alterações nos catálogos'), stagedSpots.size && plural(stagedSpots.size, 'área de produto', 'áreas de produto'),
+    const parts = [cats && plural(cats, 'alteração nos catálogos', 'alterações nos catálogos'), stagedProds.size && plural(stagedProds.size, 'ficha de produto da planilha', 'fichas de produtos da planilha'),
+      stagedSpots.size && plural(stagedSpots.size, 'área de produto', 'áreas de produto'),
+      stagedLinks.size && plural(stagedLinks.size, 'ligação de produto à página (sem área)', 'ligações de produtos às páginas (sem área)'),
+      stagedDrops.size && plural(stagedDrops.size, 'sugestão descartada', 'sugestões descartadas'),
       stagedImages.size && plural(stagedImages.size, 'imagem de produto', 'imagens de produto')].filter(Boolean);
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}` : parts[0];
     $('#pn-stageBar').hidden = !n || !vault;
@@ -1084,7 +1157,7 @@
     $('#pn-stagePublish').disabled = busy;
     paintNav();
   }
-  function clearStage() { stagedFlags.clear(); stagedOrder = null; stagedSpots.clear(); stagedImages.clear(); refreshStage(); }
+  function clearStage() { stagedFlags.clear(); stagedOrder = null; stagedSpots.clear(); stagedImages.clear(); stagedProds.clear(); stagedLinks.clear(); stagedDrops.clear(); refreshStage(); }
   // Depois de publicar ou descartar, redesenha a aba que mostra alterações preparadas
   const renderStagedTab = () => { if (tab === 'cats') renderCats(); else if (tab === 'prods') renderProds(); };
   $('#pn-stageDiscard').addEventListener('click', () => { clearStage(); renderStagedTab(); toast('Alterações descartadas.'); });
@@ -1505,7 +1578,7 @@
     unlockSeq++; authLost = false;
     clearStage(); forget(); token = ''; openedBy = ''; openedMode = '';
     sbEnd(); sbWarn = ''; // estado da sessão só na memória do painel; a sessão do aparelho (P.auth) continua
-    dropImageCache(); resetEditor();
+    dropImageCache(); resetEditor(); resetImportState();
     Object.values(TABS).forEach((t) => { $(t.panel).innerHTML = ''; });
     closeDialog(); hideModal(cf); if (!busy) hideModal(pgd);
     showStale(false); paintUnify(); paintNav();
@@ -1654,11 +1727,13 @@
   // Páginas e miniaturas abertas no editor de áreas: cache pequeno (o mais recente fica no fim); o que sai do cache é revogado
   const pageCache = new Map(); // `${id}:${v}:${início da chave}:${arquivo}` → Promise<[blob URL de cada imagem do arquivo]>
   const PAGE_CACHE_MAX = 6;    // ≈ 4 blocos de páginas + as miniaturas
+  const searchCache = new Map(); // `${id}:${v}:${início da chave}` → Promise<[texto de cada página]> (busca.bin decifrado, só na memória)
   const revokeAll = (p) => p.then((urls) => urls.forEach((u) => URL.revokeObjectURL(u)), () => {});
   // Único ponto que revoga as imagens decifradas (capas, páginas e miniaturas): ao recarregar o cofre e ao sair
   function dropImageCache() {
     coverUrls.forEach((p) => p.then((u) => u && URL.revokeObjectURL(u))); coverUrls.clear();
     pageCache.forEach(revokeAll); pageCache.clear();
+    searchCache.clear(); // texto das páginas decifrado para a marcação automática
   }
   function packedImages(c, p) {
     const kb = catKeyB64(c), k = `${c.id}:${c.v || 1}:${kb.slice(0, 12)}:${p}`;
@@ -1765,8 +1840,9 @@
   }
   // Para a confirmação de remover catálogo: quantas áreas de produto (publicadas ou preparadas) se perdem junto
   function spotsLostHtml(id) {
-    const n = viewSpots().filter((h) => h.catalogId === id).length;
-    return n ? `<p>${plural(n, 'área de produto marcada', 'áreas de produto marcadas')} neste catálogo também ${n === 1 ? 'será apagada' : 'serão apagadas'}.</p>` : '';
+    const n = viewSpots().filter((h) => h.catalogId === id).length, nl = viewLinks().filter((l) => l.catalogId === id).length;
+    return (n ? `<p>${plural(n, 'área de produto marcada', 'áreas de produto marcadas')} neste catálogo também ${n === 1 ? 'será apagada' : 'serão apagadas'}.</p>` : '')
+      + (nl ? `<p>${plural(nl, 'produto ligado a página (sem área) também sai', 'produtos ligados a páginas (sem área) também saem')}.</p>` : '');
   }
   // Arrastar e soltar: com a gestão à vista, evita que o navegador abra o PDF; aceita o arquivo em qualquer lugar da seção Catálogos.
   // Com a gestão escondida (outra rota do site), nada é interceptado.
@@ -1872,7 +1948,8 @@
       return { files: conv.files };
     }, { cancel: true });
     if (ok) {
-      toast(opts.hidden ? 'Catálogo publicado oculto. Ligue “No site” quando estiver pronto.' : 'Catálogo publicado. O site atualiza em 1 a 3 minutos.');
+      keepTexts(c0, conv.texts); // a marcação automática usa o texto já extraído, sem baixar o busca.bin
+      toast(opts.hidden ?'Catálogo publicado oculto. Ligue “No site” quando estiver pronto.' : 'Catálogo publicado. O site atualiza em 1 a 3 minutos.');
       if (tab === 'cats') renderCats();
       oddPagesNotice(conv && conv.odd);
     }
@@ -1899,6 +1976,7 @@
       return { files: conv.files, deletes };
     }, { cancel: true, onDone: () => dropStaged((r) => r.catalogId === c.id && r.page > conv.pages) });
     if (ok) {
+      keepTexts(cNew, conv.texts);
       toast('Nova versão publicada.'); renderCats();
       const note = review ? `A nova versão tem ${plural(conv.pages, 'página', 'páginas')} (antes eram ${before}).${lost ? ` ${plural(lost, 'área de produto ficou', 'áreas de produto ficaram')} fora das páginas e ${lost === 1 ? 'foi removida' : 'foram removidas'}.` : ''} Abra este catálogo na aba Produtos e confira se as áreas continuam sobre os produtos certos.` : '';
       oddPagesNotice(conv && conv.odd, note);
@@ -1996,7 +2074,7 @@
       up.add(P.path.search(c.id), P.sealSearch(key, c, texts));
       pg.set('Terminando o envio das páginas…', 0.8);
       await up.done();
-      return { pages: n, ratio, files, th: Math.ceil(n / P.THUMB_CHUNK), odd };
+      return { pages: n, ratio, files, th: Math.ceil(n / P.THUMB_CHUNK), odd, texts };
     } finally {
       try { if (pdf) await pdf.destroy(); } catch (e) { /* noop */ }
       worker.terminate();
@@ -2830,10 +2908,10 @@
   let prodQ = '';
   const ed = { cat: '', page: 1, sel: '', draft: null, drag: null, seq: 0 }; // estado do editor de áreas (sobrevive ao redesenho da aba)
   const MIN_BOX = 2; // tamanho mínimo de uma área (% da página)
-  function resetEditor() { ed.sel = ''; ed.draft = null; ed.drag = null; ed.seq++; }
+  function resetEditor() { ed.sel = ''; ed.draft = null; ed.drag = null; ed.pendLink = null; ed.seq++; }
   const focusStage = () => { const st = $('#pn-hsStage'); if (st) st.focus(); };
-  const prodName = (sku) => { const p = (vault.products || {})[sku]; return p ? p.name : `${sku} (produto removido)`; };
-  const prodList = (q) => { q = norm(q); return Object.values(vault.products || {}).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((p) => !q || norm(`${p.sku} ${p.name} ${p.category}`).includes(q)); };
+  const prodName = (sku) => { const p = viewProducts()[sku]; return p ? p.name : `${sku} (produto removido)`; };
+  const prodList = (q) => { q = norm(q); return Object.values(viewProducts()).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).filter((p) => !q || norm(`${p.sku} ${p.name} ${p.category}`).includes(q)); };
   const skuTaken = (d, sku, except) => Object.values(d.products || {}).find((x) => x.sku !== except && P.skuKey(x.sku) === P.skuKey(sku));
   const httpsOk = (v) => { try { return new URL(v).protocol === 'https:'; } catch (e) { return false; } };
   const pct = (n) => n.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
@@ -2851,20 +2929,25 @@
       ${review.length ? `<div class="alert warn" id="pn-hsReview" role="status"><span class="badge">Conferir</span> Uma nova versão mudou o número de páginas. Confira as áreas de produto ${review.length === 1 ? 'deste catálogo' : 'destes catálogos'}:
         <div class="row">${review.map((c) => `<button class="btn ghost sm" type="button" data-review="${esc(c.id)}">${esc(c.title)}</button>`).join('')}</div></div>` : ''}
       <div class="tiles" id="pn-pTiles"></div>
+      ${baseCardHtml()}
       <div class="toolbar">
         <div class="search"><span class="ico">${ICO.search}</span><input class="input" id="pn-pq" type="search" placeholder="Buscar SKU, nome ou categoria" value="${esc(prodQ)}" aria-label="Buscar produtos" aria-describedby="pn-pCount"></div>
         <p class="count"><span id="pn-pCount" aria-live="polite"></span></p>
       </div>
       <div id="pn-pTable"></div>
+      ${scanCardHtml()}
       <div class="card stack hs-card" id="pn-hsEd"></div>`;
     let t = null;
     $('#pn-pq').addEventListener('input', (e) => { clearTimeout(t); const v = e.target.value; t = setTimeout(() => { prodQ = v; renderProdRows(); }, 200); });
     $('#pn-addProd').addEventListener('click', () => productDialog(null));
     $('#pn-pTable').addEventListener('click', (e) => {
       const b = e.target.closest('[data-act]'); if (!b) return;
-      const p = (vault.products || {})[b.closest('[data-row]').dataset.row]; if (!p) return;
+      const sku = b.closest('[data-row]').dataset.row;
+      if (stagedNew(sku)) { toast('Este produto veio da planilha e ainda não foi publicado. Publique as alterações para editar ou remover.'); return; }
+      const p = (vault.products || {})[sku]; if (!p) return;
       if (b.dataset.act === 'edit') productDialog(p); else removeProduct(p);
     });
+    bindBaseCard(); bindScanCard();
     const rv = $('#pn-hsReview');
     if (rv) rv.addEventListener('click', (e) => { const b = e.target.closest('[data-review]'); if (b) openCatalog(b.dataset.review); });
     renderProdRows(); renderEditor();
@@ -2872,14 +2955,16 @@
   // Atualiza só a tabela e a contagem (o campo de busca não é recriado)
   function renderProdRows() {
     const wrap = $('#pn-pTable'); if (!wrap || !vault) return;
-    const all = Object.keys(vault.products || {}).length, list = prodList(prodQ);
-    const spots = viewSpots(), cats = viewCatalogs();
+    const all = Object.keys(viewProducts()).length, list = prodList(prodQ);
+    const spots = viewSpots(), cats = viewCatalogs(), links = viewLinks();
+    const nLinks = new Map(); for (const l of links) nLinks.set(l.product, (nLinks.get(l.product) || 0) + 1);
     const count = new Map(); for (const h of spots) count.set(h.product, (count.get(h.product) || 0) + 1);
     $('#pn-pCount').textContent = prodQ.trim() ? `${plural(list.length, 'produto encontrado', 'produtos encontrados')} de ${all}` : plural(all, 'produto', 'produtos');
     // Blocos de resumo: áreas contadas como vão ficar depois de publicar (publicadas + preparadas)
     const withSpots = new Set(spots.filter((h) => cats.some((c) => c.id === h.catalogId)).map((h) => h.catalogId)).size;
     const review = cats.filter((c) => c.reviewHotspots).length;
     $('#pn-pTiles').innerHTML = tileHtml('Produtos', all, 'cadastrados') + tileHtml('Áreas marcadas', spots.length, 'nas páginas dos catálogos')
+      + tileHtml('Na página (sem área)', links.length, 'produtos ligados a páginas, esperando a área')
       + tileHtml('Catálogos com áreas', withSpots, `de ${plural(cats.length, 'catálogo', 'catálogos')}`)
       + tileHtml('<span class="badge">Conferir</span>', review, review ? 'catálogos com o número de páginas alterado' : 'nada para conferir', review ? 'navy' : '');
     keepFocus(() => {
@@ -2887,9 +2972,9 @@
         <div class="rows-head prod-grid" aria-hidden="true"><span>SKU</span><span>Produto</span><span>Categoria</span><span>Áreas marcadas</span><span></span></div>
         <ul class="rows" aria-label="Produtos">${list.map((p) => `<li class="rw prod-grid" data-row="${esc(p.sku)}">
           <div class="p-sku"><code>${esc(p.sku)}</code></div>
-          <div class="p-name"><p class="rw-title">${esc(p.name)}</p>${viewImage(p.sku) ? '<p class="rw-meta">com imagem</p>' : ''}</div>
+          <div class="p-name"><p class="rw-title">${esc(p.name)}</p>${prodMeta(p)}</div>
           <div class="p-cat"><span class="cell-l">Categoria:</span> ${esc(p.category || '—')}</div>
-          <div class="p-areas">${plural(count.get(p.sku) || 0, 'área', 'áreas')}</div>
+          <div class="p-areas">${plural(count.get(p.sku) || 0, 'área', 'áreas')}${nLinks.get(p.sku) ? `<br><span class="rw-meta">${plural(nLinks.get(p.sku), 'página sem área', 'páginas sem área')}</span>` : ''}</div>
           <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-act="edit" aria-label="Editar ${esc(p.name)}">Editar</button><button class="btn ghost sm" type="button" data-k="remove" data-act="remove" aria-label="Remover ${esc(p.name)}">Remover</button></div>
         </li>`).join('')}</ul></div>` : `<div class="empty">${all ? 'Nenhum produto encontrado com essa busca.' : 'Nenhum produto cadastrado ainda. Adicione o primeiro produto.'}</div>`;
     });
@@ -2954,12 +3039,16 @@
   }
   async function removeProduct(p) {
     const n = viewSpots().filter((h) => h.product === p.sku).length;
-    const areas = n ? ` ${plural(n, 'área marcada', 'áreas marcadas')} nas páginas dos catálogos também ${n === 1 ? 'sai' : 'saem'}.` : '';
+    const nl = viewLinks().filter((l) => l.product === p.sku).length;
+    const areas = (n ? ` ${plural(n, 'área marcada', 'áreas marcadas')} nas páginas dos catálogos também ${n === 1 ? 'sai' : 'saem'}.` : '')
+      + (nl ? ` ${plural(nl, 'ligação a página (sem área) também sai', 'ligações a páginas (sem área) também saem')}.` : '');
     if (!(await confirmBox(`Remover “${p.name}”?`, `<p>O produto sai da busca do site.${areas}</p><p>Esta ação não pode ser desfeita.</p>`, 'Remover produto', true))) return;
     const ok = await publish('Removendo o produto', (d) => {
       withProd(d);
       delete d.products[p.sku];
       d.hotspots = d.hotspots.filter((h) => h.product !== p.sku);
+      if (d.pageLinks) d.pageLinks = d.pageLinks.filter((l) => l.product !== p.sku);
+      if (d.descartes) d.descartes = d.descartes.filter((k) => k.split('|')[2] !== p.sku);
     }, { onDone: () => dropStaged((r) => r.product === p.sku) });
     if (ok) toast('Produto removido.');
     renderProdRows(); paintSpots();
@@ -3054,6 +3143,7 @@
     const c = edCat(), stage = $('#pn-hsStage'); if (!c || !stage) return;
     const page = clamp(Math.round(+n) || 1, 1, c.pages || 1);
     if (page !== ed.page) { ed.sel = ''; ed.draft = null; }
+    if (ed.pendLink && (ed.pendLink.catalogId !== c.id || ed.pendLink.page !== page)) ed.pendLink = null;
     ed.page = page;
     $('#pn-hsPage').value = page; $('#pn-hsPrev').disabled = page <= 1; $('#pn-hsNext').disabled = page >= c.pages;
     stage.setAttribute('aria-label', `Página ${page} de ${c.title}. Arraste sobre a página para marcar a área de um produto.`);
@@ -3100,7 +3190,7 @@
   // Página atual e páginas com áreas na tira de miniaturas
   function markThumbs() {
     const strip = $('#pn-hsThumbs'); if (!strip || !vault) return;
-    const has = new Set(viewSpots().filter((h) => h.catalogId === ed.cat).map((h) => h.page));
+    const has = new Set([...viewSpots(), ...viewLinks()].filter((h) => h.catalogId === ed.cat).map((h) => h.page));
     $$('.hs-th', strip).forEach((b) => {
       const n = +b.dataset.page;
       b.classList.toggle('has', has.has(n));
@@ -3125,18 +3215,21 @@
     }).join('') + (ed.draft ? '<div class="hs-rect is-new sel"></div>' : '');
     $$('.hs-rect[data-id]', rects).forEach((el, i) => placeBox(el, spots[i]));
     if (ed.draft) placeBox($('.hs-rect.is-new', rects), ed.draft);
+    const links = pageLinksHere();
     keepFocus(() => {
-      list.innerHTML = spots.length ? spots.map((h) => `<li class="${h.id === ed.sel ? 'sel' : ''}" data-row="${esc(h.id)}">
+      list.innerHTML = linksHtml(links) + (spots.length ? spots.map((h) => `<li class="${h.id === ed.sel ? 'sel' : ''}" data-row="${esc(h.id)}">
         <button type="button" class="hs-pick" data-k="sel" data-sa="sel" aria-pressed="${h.id === ed.sel}"><b>${esc(prodName(h.product))}</b><span>${esc(h.product)}${isImage(h) ? ' · imagem do produto' : ''}${stagedSpots.has(h.id) ? ' · não publicada' : ''}</span></button>
         <div class="actions"><button class="btn ghost sm" type="button" data-k="del" data-sa="del" aria-label="Remover a área de ${esc(prodName(h.product))}">Remover área</button></div>
         <details class="hs-menu"><summary>Mais opções</summary><div class="actions">
           <button class="btn ghost sm" type="button" data-k="prod" data-sa="prod">Trocar produto</button>
           <button class="btn ghost sm" type="button" data-k="img" data-sa="img" ${isImage(h) ? 'disabled' : ''}>Usar esta área como imagem do produto</button>
         </div></details>
-      </li>`).join('') : '<li class="muted">Nenhuma área nesta página. Arraste sobre a página para marcar a primeira.</li>';
+      </li>`).join('') : links.length ? '' : '<li class="muted">Nenhuma área nesta página. Arraste sobre a página para marcar a primeira.</li>');
     });
     const s = ed.sel && spots.find((h) => h.id === ed.sel);
-    $('#pn-hsStatus').textContent = s ? `Selecionada: ${prodName(s.product)} · posição ${pct(s.x)}% × ${pct(s.y)}% · tamanho ${pct(s.width)}% × ${pct(s.height)}%` : plural(spots.length, 'área nesta página', 'áreas nesta página');
+    $('#pn-hsStatus').textContent = ed.pendLink ? `Arraste sobre a foto de “${prodName(ed.pendLink.product)}” para marcar a área (Esc cancela).`
+      : s ? `Selecionada: ${prodName(s.product)} · posição ${pct(s.x)}% × ${pct(s.y)}% · tamanho ${pct(s.width)}% × ${pct(s.height)}%`
+      : plural(spots.length, 'área nesta página', 'áreas nesta página') + (links.length ? ` · ${plural(links.length, 'produto sem área', 'produtos sem área')}` : '');
     markThumbs();
   }
   // Nova caixa durante o arraste: desenhar, mover ou puxar um canto (o canto oposto fica parado)
@@ -3187,6 +3280,7 @@
   }
   // Teclado: setas movem 0,5%, Shift + setas mudam o tamanho, Delete remove, Esc tira a seleção
   function onStageKey(e) {
+    if (e.key === 'Escape' && ed.pendLink) { ed.pendLink = null; paintSpots(); return; }
     const h = ed.sel && spotById(ed.sel); if (!h) return;
     if (e.key === 'Escape') { ed.sel = ''; paintSpots(); return; }
     const d = { ArrowLeft: [-0.5, 0], ArrowRight: [0.5, 0], ArrowUp: [0, -0.5], ArrowDown: [0, 0.5] }[e.key];
@@ -3197,6 +3291,8 @@
     } else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removeSpot(h); }
   }
   function onSpotList(e) {
+    const lb = e.target.closest('[data-la]');
+    if (lb) { onLinkAction(lb.dataset.la, lb.closest('[data-link]').dataset.link); return; }
     const b = e.target.closest('[data-sa]'); if (!b) return;
     const h = spotById(b.closest('[data-row]').dataset.row); if (!h) return;
     const a = b.dataset.sa;
@@ -3207,6 +3303,15 @@
   }
   // Área nova (desenhada ou pelo botão): pergunta o produto; sem escolha, a área é descartada
   function askDraftProduct() {
+    // "Desenhar área" de um produto que já está na página (sem área): a área é dele, sem perguntar
+    const pl = ed.pendLink;
+    if (pl && pl.catalogId === ed.cat && pl.page === ed.page && ed.draft) {
+      const h = { id: P.randHex(6), catalogId: ed.cat, page: ed.page, product: pl.product, ...ed.draft };
+      ed.draft = null; ed.pendLink = null;
+      saveSpot(h, true); focusStage();
+      toast(`Área de “${prodName(h.product)}” marcada. Ela substitui a ligação sem área.`);
+      return;
+    }
     pickProduct('Qual produto está nesta área?', (sku) => {
       if (!ed.draft || !vault) return;
       const h = { id: P.randHex(6), catalogId: ed.cat, page: ed.page, product: sku, ...ed.draft };
@@ -3217,6 +3322,8 @@
   // Toda mudança de área vai para a barra de alterações (publicada junto com o resto)
   function saveSpot(h, recount) {
     stagedSpots.set(h.id, h); ed.sel = h.id;
+    // Área do mesmo produto na mesma página: a ligação sem área (pageLink) sai
+    if (h && viewLinks().some((l) => linkKey(l) === linkKey(h))) { stagedLinks.set(linkKey(h), null); recount = true; }
     refreshStage(); paintSpots();
     if (recount) renderProdRows();
   }
@@ -3231,6 +3338,755 @@
     stagedImages.set(h.product, boxOf(h));
     refreshStage(); paintSpots(); renderProdRows();
     toast(`Esta área vai ser a imagem de “${p.name}” no site depois de publicar.`);
+  }
+
+  /* ================= base de produtos (planilha mestre) e marcação automática =================
+     A planilha é lida 100% neste computador: o .xlsx é descompactado aqui (diretório central do ZIP + DecompressionStream)
+     e nada é enviado para fora; os dados só saem cifrados, na publicação normal (produtos.bin / cofre).
+     Cofre: products[SKU].ficha (P.cleanFicha), pageLinks [{ catalogId, page, product, auto }] e descartes ["catálogo|página|SKU"]
+     (sugestões recusadas; só no cofre, não vão para produtos.bin). */
+  const XLS_MAX = 8 * 1048576;          // acima disso, erro amigável (a leitura é toda na memória)
+  const ROWS_MAX = 20000;               // planilhas com mais linhas não são aceitas
+  const DROPS_MAX = 5000;               // sugestões descartadas guardadas no cofre
+  const MAPKEY = 'dm.admin.planilha';   // mapeamento de colunas escolhido na última importação (só os títulos das colunas, neste computador)
+  // Campos da planilha: [chave, rótulo, títulos de coluna reconhecidos (sem acento, sem espaço, minúsculas)]
+  const IMP_FIELDS = [
+    ['grupo', 'Grupo (linha)', ['grupo', 'linha', 'categoria', 'familia']],
+    ['sap', 'Código SAP', ['codigosap', 'codsap', 'sap', 'codigo', 'codigodoproduto']],
+    ['nome', 'Nome do produto', ['nomedoproduto', 'nome', 'produto', 'descricaodoproduto', 'descricao']],
+    ['med', 'Medidas da caixa unitária', ['medidascxunitaria', 'medidascaixaunitaria', 'medidasunitaria', 'medidas']],
+    ['peso', 'Peso bruto (kg)', ['pesobruto', 'peso']],
+    ['ean', 'EAN do produto', ['eanproduto', 'eanunitario', 'ean', 'gtin', 'codigodebarras']],
+    ['cxUn', 'Caixa master (unidades)', ['cxmasterunid', 'caixamasterunid', 'unidadesporcaixa', 'cxmaster', 'caixamaster']],
+    ['medCx', 'Medidas da caixa master', ['medidascxmaster', 'medidascaixamaster', 'medidasmaster']],
+    ['cubagem', 'Cubagem da caixa master (m³)', ['cubagemcxmaster', 'cubagemcaixamaster', 'cubagem', 'volumem']],
+    ['m1', 'Medida 1 (cm, para calcular a cubagem)', ['medida1', 'comprimento']],
+    ['m2', 'Medida 2 (cm)', ['medida2', 'largura']],
+    ['m3', 'Medida 3 (cm)', ['medida3', 'altura']],
+    ['pesoCx', 'Peso da caixa master (kg)', ['pesocxmaster', 'pesocaixamaster', 'pesomaster']],
+    ['eanCx', 'EAN da caixa master', ['eancxmaster', 'eancaixamaster', 'eanmaster', 'dun14', 'dun']],
+    ['inmetro', 'INMETRO', ['inmetro']],
+    ['anvisa', 'ANVISA', ['anvisa', 'registroanvisa', 'registromsanvisa']],
+    ['ncm', 'NCM', ['ncm']]
+  ];
+  // Rótulos da ficha no painel: o SAP entra explicitamente (o site não mostra o SAP, então ele não está em P.FICHA_CAMPOS)
+  const FICHA_LBL = new Map([['sap', 'Código SAP'], ...P.FICHA_CAMPOS.map(([k, l, u]) => [k, u ? `${l} (${u})` : l])]);
+  const impKey = (s) => norm(s).replace(/[^a-z0-9]+/g, '');
+  const isNA = (v) => /^(na|nao|naoaplicavel|naoseaplica|isento|semregistro)$/.test(impKey(v));
+  let lastImport = null;    // { em, arquivo, problemas: [texto] } — "Ver problemas" (só nesta sessão)
+  const scan = { props: [], ran: false, info: '' }; // sugestões da última varredura
+  function resetImportState() { lastImport = null; scan.props = []; scan.ran = false; scan.info = ''; }
+
+  /* ---------- produtos, ligações sem área e descartes: como vão ficar depois de publicar ---------- */
+  function viewProducts() {
+    const base = (vault && vault.products) || {};
+    if (!stagedProds.size) return base;
+    const out = { ...base };
+    for (const [sku, rec] of stagedProds) { const cur = out[sku] || {}; out[sku] = { ...cur, sku, name: rec.name, category: rec.category || cur.category || '', ficha: rec.ficha || cur.ficha }; }
+    return out;
+  }
+  const stagedNew = (sku) => stagedProds.has(sku) && !((vault && vault.products) || {})[sku];
+  const viewData = () => ({ catalogs: vault.catalogs, products: viewProducts(), hotspots: vault.hotspots || [] });
+  function viewLinks() {
+    const out = ((vault && vault.pageLinks) || []).filter((l) => !stagedLinks.has(linkKey(l)));
+    for (const l of stagedLinks.values()) if (l) out.push(l);
+    return out;
+  }
+  const viewDrops = () => new Set([...((vault && vault.descartes) || []), ...stagedDrops]);
+  function applyProdStaged(d) {
+    if (!stagedProds.size) return;
+    withProd(d);
+    for (const [sku, rec] of stagedProds) {
+      const cur = d.products[sku] || {};
+      const p = { ...cur, sku, name: rec.name, category: rec.category || cur.category || '' }; // benefit, capacity, description, url e image ficam como estão
+      if (rec.ficha) p.ficha = rec.ficha;
+      d.products[sku] = p;
+    }
+    d.products = sortKeys(d.products);
+  }
+  function applyLinkStaged(d) {
+    if (!stagedLinks.size) return;
+    let list = Array.isArray(d.pageLinks) ? d.pageLinks : [];
+    for (const [k, l] of stagedLinks) {
+      list = list.filter((x) => linkKey(x) !== k);
+      if (l && linkFits(d, l)) list.push({ catalogId: l.catalogId, page: l.page, product: l.product, auto: !!l.auto });
+      else if (l) spotLost++;
+    }
+    d.pageLinks = list;
+  }
+  function applyDropStaged(d) {
+    if (!stagedDrops.size) return;
+    const all = new Set(Array.isArray(d.descartes) ? d.descartes : []);
+    for (const k of stagedDrops) all.add(k);
+    d.descartes = [...all].slice(-DROPS_MAX);
+  }
+  // Tira da barra o que não muda nada: produto igual ao publicado, ligação que já existe (ou já saiu) e descarte já guardado
+  function pruneProdOps() {
+    const prods = vault.products || {};
+    for (const [sku, rec] of [...stagedProds]) { const cur = prods[sku]; if (cur && !diffProduct(cur, rec).length) stagedProds.delete(sku); }
+    const saved = new Set(vault.descartes || []);
+    for (const k of [...stagedDrops]) if (saved.has(k)) stagedDrops.delete(k);
+  }
+  function pruneLinkOps(vd) {
+    const pub = new Set((vault.pageLinks || []).map(linkKey)), spots = new Set(viewSpots().map(linkKey));
+    let lost = 0;
+    for (const [k, l] of [...stagedLinks]) {
+      if (l && (!linkFits(vd, l) || spots.has(k))) { stagedLinks.delete(k); if (!spots.has(k)) lost++; }
+      else if (l ? pub.has(k) : !pub.has(k)) stagedLinks.delete(k);
+    }
+    return lost;
+  }
+  // Diferenças campo a campo (o dia da importação, "em", não conta)
+  function diffProduct(cur, rec) {
+    const out = [];
+    if ((cur.name || '') !== (rec.name || '')) out.push(['Nome', cur.name || '', rec.name || '']);
+    if ((cur.category || '') !== (rec.category || '') && rec.category) out.push(['Categoria', cur.category || '', rec.category]);
+    const a = cur.ficha || {}, b = rec.ficha || {};
+    const keys = [...new Set([...FICHA_LBL.keys(), ...Object.keys(a), ...Object.keys(b)])].filter((k) => k !== 'em');
+    for (const k of keys) {
+      const va = a[k] == null ? '' : String(a[k]), vb = b[k] == null ? '' : String(b[k]);
+      if (va !== vb) out.push([FICHA_LBL.get(k) || k, va, vb]);
+    }
+    return out;
+  }
+  function prodMeta(p) {
+    const parts = [viewImage(p.sku) && 'com imagem', p.ficha && 'com ficha técnica', stagedNew(p.sku) ? 'da planilha · não publicado' : stagedProds.has(p.sku) && 'ficha atualizada · não publicada'].filter(Boolean);
+    return parts.length ? `<p class="rw-meta">${parts.join(' · ')}</p>` : '';
+  }
+
+  /* ---------- leitura do arquivo: ZIP (.xlsx) sem biblioteca e CSV ---------- */
+  function zipDir(buf) {
+    const u = new Uint8Array(buf), dv = new DataView(u.buffer, u.byteOffset, u.byteLength);
+    let eo = -1;
+    for (let i = u.length - 22; i >= 0 && i >= u.length - 22 - 65535; i--) if (dv.getUint32(i, true) === 0x06054b50) { eo = i; break; }
+    if (eo < 0) throw userErr('Este arquivo não parece uma planilha .xlsx. Abra no Excel e salve como “Pasta de Trabalho do Excel (.xlsx)”.');
+    const n = dv.getUint16(eo + 10, true);
+    let off = dv.getUint32(eo + 16, true);
+    if (off === 0xffffffff || n === 0xffff) throw userErr('Esta planilha usa um formato ZIP que não conseguimos ler aqui. Salve de novo como .xlsx ou como .csv.');
+    const files = new Map();
+    for (let i = 0; i < n && off + 46 <= u.length; i++) {
+      if (dv.getUint32(off, true) !== 0x02014b50) break;
+      const nl = dv.getUint16(off + 28, true), el = dv.getUint16(off + 30, true), cl = dv.getUint16(off + 32, true);
+      files.set(td.decode(u.subarray(off + 46, off + 46 + nl)), { method: dv.getUint16(off + 10, true), csize: dv.getUint32(off + 20, true), lho: dv.getUint32(off + 42, true) });
+      off += 46 + nl + el + cl;
+    }
+    return { u, dv, files };
+  }
+  async function zipText(z, name) {
+    const e = z.files.get(name); if (!e) return '';
+    const { u, dv } = z;
+    if (e.lho + 30 > u.length || dv.getUint32(e.lho, true) !== 0x04034b50) throw userErr('A planilha parece danificada (não foi possível ler o conteúdo). Salve de novo no Excel e tente outra vez.');
+    const start = e.lho + 30 + dv.getUint16(e.lho + 26, true) + dv.getUint16(e.lho + 28, true);
+    const data = u.subarray(start, start + e.csize);
+    if (e.method === 0) return td.decode(data);
+    if (e.method !== 8) throw userErr('Esta planilha usa uma compressão que não conseguimos ler aqui. Salve de novo como .xlsx ou como .csv.');
+    if (typeof DecompressionStream !== 'function') throw userErr('Este navegador não consegue abrir arquivos .xlsx. Atualize o navegador (Chrome, Edge ou Firefox recentes) ou salve a planilha como .csv.');
+    const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return td.decode(new Uint8Array(await new Response(stream).arrayBuffer()));
+  }
+  function xmlDoc(text) {
+    const d = new DOMParser().parseFromString(text, 'application/xml');
+    if (d.getElementsByTagName('parsererror').length) throw userErr('A planilha tem um conteúdo que não conseguimos ler. Salve de novo no Excel e tente outra vez.');
+    return d;
+  }
+  const tags = (el, name) => Array.from(el.getElementsByTagName(name));
+  // Texto de uma célula/string compartilhada: todos os <t>, menos os de pronúncia (<rPh>)
+  const runText = (el) => tags(el, 't').filter((t) => !t.parentNode || t.parentNode.nodeName !== 'rPh').map((t) => t.textContent).join('');
+  // "AB12" → 27 (coluna, a partir de 0)
+  const colIndex = (ref) => { let n = 0; for (const ch of String(ref)) { const c = ch.toUpperCase().charCodeAt(0); if (c < 65 || c > 90) break; n = n * 26 + c - 64; } return n - 1; };
+  async function readXlsx(buf) {
+    const z = zipDir(buf);
+    let sheet = '';
+    try { // primeira aba do workbook → arquivo da planilha (workbook.xml.rels)
+      const first = xmlDoc(await zipText(z, 'xl/workbook.xml')).getElementsByTagName('sheet')[0];
+      const rid = first && (first.getAttribute('r:id') || first.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id'));
+      for (const r of tags(xmlDoc(await zipText(z, 'xl/_rels/workbook.xml.rels')), 'Relationship')) {
+        if (rid && r.getAttribute('Id') === rid) { const t = r.getAttribute('Target') || ''; sheet = t.startsWith('/') ? t.slice(1) : 'xl/' + t.replace(/^\.\//, ''); }
+      }
+    } catch (e) { if (e.userMessage && !/danificada/.test(e.userMessage)) throw e; }
+    if (!z.files.has(sheet)) sheet = [...z.files.keys()].filter((k) => /^xl\/worksheets\/[^/]+\.xml$/.test(k)).sort()[0] || '';
+    if (!sheet) throw userErr('Não encontramos nenhuma aba com dados nesta planilha.');
+    const shared = z.files.has('xl/sharedStrings.xml') ? tags(xmlDoc(await zipText(z, 'xl/sharedStrings.xml')), 'si').map(runText) : [];
+    const rowsEl = tags(xmlDoc(await zipText(z, sheet)), 'row');
+    if (rowsEl.length > ROWS_MAX) throw userErr(`Esta planilha tem ${plural(rowsEl.length, 'linha', 'linhas')}; o limite é ${ROWS_MAX.toLocaleString('pt-BR')}. Deixe só os produtos e tente de novo.`);
+    const rows = [];
+    for (const r of rowsEl) {
+      const at = +r.getAttribute('r'), line = [];
+      for (const c of tags(r, 'c')) {
+        const ref = c.getAttribute('r'), i = ref ? colIndex(ref) : line.length, t = c.getAttribute('t');
+        let v = '';
+        if (t === 'inlineStr') { const is = c.getElementsByTagName('is')[0]; v = is ? runText(is) : ''; }
+        else {
+          const ve = c.getElementsByTagName('v')[0];
+          v = ve ? ve.textContent : '';
+          if (t === 's') v = shared[+v] || '';
+          else if (t === 'e') v = ''; // #N/D, #REF!…
+        }
+        if (i < 0 || i > 16383) continue;
+        while (line.length < i) line.push('');
+        line[i] = String(v).trim();
+      }
+      // linhas puladas (atributo r): mantém a numeração da planilha para as mensagens
+      if (at > 0) while (rows.length < at - 1) rows.push([]);
+      rows.push(line);
+    }
+    return rows;
+  }
+  // CSV: UTF-8 (com ou sem BOM) ou, se vier do Excel antigo, Windows-1252; separador ; , ou tabulação
+  function decodeText(buf) {
+    const txt = new TextDecoder('utf-8').decode(buf);
+    if (txt.indexOf(String.fromCharCode(65533)) < 0) return txt.charCodeAt(0) === 65279 ? txt.slice(1) : txt;
+    try { return new TextDecoder('windows-1252').decode(buf); } catch (e) { return txt; }
+  }
+  function readCsv(text) {
+    const first = text.slice(0, text.indexOf('\n') < 0 ? text.length : text.indexOf('\n'));
+    const sep = [';', ',', '\t'].map((s) => [s, first.split(s).length]).sort((a, b) => b[1] - a[1])[0][0];
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; continue; }
+      if (ch === '"' && !cell.trim()) { q = true; continue; }
+      if (ch === sep) { row.push(cell.trim()); cell = ''; continue; }
+      if (ch === '\n') {
+        row.push(cell.trim()); rows.push(row); row = []; cell = '';
+        if (rows.length > ROWS_MAX) throw userErr(`Esta planilha tem mais de ${ROWS_MAX.toLocaleString('pt-BR')} linhas. Deixe só os produtos e tente de novo.`);
+        continue;
+      }
+      if (ch !== '\r') cell += ch;
+    }
+    if (cell.trim() || row.length) { row.push(cell.trim()); rows.push(row); }
+    return rows;
+  }
+
+  /* ---------- cabeçalho e mapeamento das colunas ---------- */
+  function autoMap(head) {
+    const keys = head.map(impKey), pairs = [];
+    IMP_FIELDS.forEach(([f, , cands], fi) => keys.forEach((k, ci) => {
+      if (!k) return;
+      let best = 0;
+      cands.forEach((c, i) => {
+        const s = k === c ? 100 - i : c.length >= 4 && k.startsWith(c) ? 80 - i : c.length >= 4 && k.length >= 4 && c.startsWith(k) ? 70 - i : c.length >= 5 && k.includes(c) ? 60 - i : 0;
+        if (s > best) best = s;
+      });
+      if (best) pairs.push({ f, fi, ci, s: best });
+    }));
+    pairs.sort((a, b) => b.s - a.s || a.ci - b.ci || a.fi - b.fi); // empate: a primeira coluna (ex.: duas colunas "NCM")
+    const map = {}, used = new Set();
+    for (const p of pairs) if (map[p.f] === undefined && !used.has(p.ci)) { map[p.f] = p.ci; used.add(p.ci); }
+    return map;
+  }
+  // Linha de títulos: a que reconhece mais campos entre as 15 primeiras (nome e código contam mais)
+  function findHead(rows) {
+    let best = null;
+    for (let i = 0; i < Math.min(rows.length, 15); i++) {
+      const map = autoMap(rows[i] || []);
+      const n = Object.keys(map).length + (map.nome !== undefined ? 2 : 0) + (map.sap !== undefined ? 1 : 0);
+      if (n >= 4 && (!best || n > best.n)) best = { i, map, n };
+    }
+    return best;
+  }
+  // Mapeamento lembrado: título da coluna escolhida para cada campo ('' = não usar). Só vale se o título existir nesta planilha.
+  function savedMap(head, map) {
+    let s = null; try { s = JSON.parse(localStorage.getItem(MAPKEY) || 'null'); } catch (e) { s = null; }
+    if (!s || typeof s !== 'object') return map;
+    const keys = head.map(impKey), out = { ...map };
+    for (const [f] of IMP_FIELDS) {
+      if (!(f in s)) continue;
+      if (s[f] === '') { out[f] = -1; continue; }
+      const i = keys.indexOf(s[f]); if (i >= 0) out[f] = i;
+    }
+    return out;
+  }
+  function saveMap(head, map) {
+    const o = {}; for (const [f] of IMP_FIELDS) o[f] = map[f] >= 0 ? impKey(head[map[f]]) : '';
+    try { localStorage.setItem(MAPKEY, JSON.stringify(o)); } catch (e) { /* sem armazenamento: só não lembra */ }
+  }
+
+  /* ---------- linha → ficha ---------- */
+  // Número em formato brasileiro, com unidade junto: "15,5 kg", "0,160056 m³", "1.234,5", "22.4", "5.9E-2" (célula numérica do Excel).
+  // Peso em gramas ("800 gr", "95 g") vira kg.
+  function numBr(v) {
+    let s = String(v == null ? '' : v).trim();
+    if (!s || isNA(s)) return null;
+    if (/^-?\d+(\.\d+)?(e[+-]?\d+)?$/i.test(s)) return Number(s);
+    const g = /\d\s*(g|gr|grs|grama|gramas)\.?$/i.test(s) ? 1000 : 1;
+    s = s.replace(/[^\d,.-]/g, '');
+    if (!/\d/.test(s)) return null;
+    if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+    else if ((s.match(/\./g) || []).length > 1) s = s.replace(/\./g, '');
+    const n = Number(s) / g;
+    return isFinite(n) ? n : null;
+  }
+  // EAN: um ou mais códigos separados por barra; "Não aplicável" fica como texto (o site mostra a linha sem selo)
+  function eanValue(raw, max) {
+    const s = String(raw || '').trim();
+    if (!s || /^-+$/.test(s)) return { v: '', bad: false };
+    if (isNA(s)) return { v: s.slice(0, max), bad: false };
+    const parts = s.split(/[/;|]+/).map((x) => x.replace(/\D/g, '')).filter(Boolean);
+    if (parts.length && parts.every((x) => P.eanOk(x))) { const j = parts.join(' / '); return { v: j.length <= max ? j : parts[0], bad: false }; }
+    return { v: '', bad: true, raw: s };
+  }
+  function rowFicha(get, hoje) {
+    const ean = eanValue(get('ean'), 20), eanCx = eanValue(get('eanCx'), 40);
+    const dims = [numBr(get('m1')), numBr(get('m2')), numBr(get('m3'))], fromDims = dims.every((x) => x > 0) ? dims[0] * dims[1] * dims[2] / 1e6 : 0; // cm → m³
+    let cub = numBr(get('cubagem')), calc = false;
+    if (!(cub > 0) && fromDims) { cub = Math.round(fromDims * 1e6) / 1e6; calc = true; }
+    const f = P.cleanFicha({
+      grupo: get('grupo'), sap: get('sap'), ean: ean.v, eanCx: eanCx.v, med: get('med'), medCx: get('medCx'),
+      cxUn: numBr(get('cxUn')), peso: numBr(get('peso')), pesoCx: numBr(get('pesoCx')), cubagem: cub,
+      inmetro: get('inmetro'), anvisa: get('anvisa'), ncm: get('ncm'), em: hoje
+    });
+    const diverge = !calc && cub > 0 && fromDims > 0 && Math.abs(cub - fromDims) / fromDims > 0.1;
+    return { f, calc, ean, eanCx, diverge, cub, fromDims };
+  }
+  // Planilha + mapeamento → novos, atualizados, inalterados, linhas ignoradas e problemas (nada é gravado aqui)
+  function analyseSheet(rows, headIdx, map) {
+    const hoje = localDate(), prods = viewProducts();
+    const bySap = new Map(), byEan = new Map(), byName = new Map();
+    for (const p of Object.values(prods)) {
+      const fi = p.ficha || {};
+      for (const k of [P.skuKey(fi.sap), P.skuKey(p.sku)]) if (k && !bySap.has(k)) bySap.set(k, p.sku);
+      const e = String(fi.ean || '').split('/')[0].replace(/\D/g, '');
+      if (P.eanOk(e) && !byEan.has(e)) byEan.set(e, p.sku);
+      const n = P.skuKey(p.name); if (n && !byName.has(n)) byName.set(n, p.sku);
+    }
+    const r = { novos: [], atualizados: [], inalterados: [], ignoradas: [], problemas: [], calculadas: 0, recs: new Map() };
+    const seenSap = new Map(), seenSku = new Map();
+    for (let i = headIdx + 1; i < rows.length; i++) {
+      const row = rows[i] || [], ln = i + 1;
+      const get = (f) => (map[f] >= 0 ? String(row[map[f]] == null ? '' : row[map[f]]).trim() : '');
+      const sap = get('sap').replace(/\s+/g, ' '), nome = get('nome').replace(/\s+/g, ' ').slice(0, 120);
+      if (!sap && !nome) {
+        if (row.some((v) => String(v || '').trim())) r.ignoradas.push(`Linha ${ln}: ${get('grupo') ? `título do grupo “${get('grupo')}”` : 'sem código e sem nome'}`);
+        continue;
+      }
+      if (!nome) { r.problemas.push(`Linha ${ln}: sem nome do produto (código ${sap}). A linha não foi importada.`); continue; }
+      const x = rowFicha(get, hoje);
+      const eanDig = x.ean.v.split('/')[0].replace(/\D/g, '');
+      const sk = P.skuKey(sap);
+      if (sk && seenSap.has(sk)) { r.problemas.push(`Linha ${ln}: código SAP ${sap} repetido (já está na linha ${seenSap.get(sk)}). Só a primeira linha foi importada.`); continue; }
+      if (sk) seenSap.set(sk, ln);
+      let sku = sk && bySap.get(sk) || (P.eanOk(eanDig) && byEan.get(eanDig)) || byName.get(P.skuKey(nome)) || '';
+      const novo = !sku;
+      if (novo) {
+        if (!sk) { r.problemas.push(`Linha ${ln}: “${nome}” sem código SAP e sem produto cadastrado com o mesmo EAN ou nome. A linha não foi importada.`); continue; }
+        sku = sap.slice(0, 40);
+      }
+      if (seenSku.has(sku)) { r.problemas.push(`Linha ${ln}: “${nome}” corresponde ao mesmo produto da linha ${seenSku.get(sku)} (${sku}). Só a primeira linha foi importada.`); continue; }
+      seenSku.set(sku, ln);
+      if (x.ean.bad) r.problemas.push(`Linha ${ln}: EAN do produto inválido (“${x.ean.raw}”) em “${nome}”. O EAN ficou de fora.`);
+      if (x.eanCx.bad) r.problemas.push(`Linha ${ln}: EAN da caixa master inválido (“${x.eanCx.raw}”) em “${nome}”. Ficou de fora.`);
+      if (x.diverge) r.problemas.push(`Linha ${ln}: cubagem de “${nome}” (${x.cub.toLocaleString('pt-BR')} m³) difere mais de 10% das medidas (${(Math.round(x.fromDims * 1e6) / 1e6).toLocaleString('pt-BR')} m³).`);
+      if (x.calc) r.calculadas++;
+      const rec = { sku, name: nome, category: get('grupo').slice(0, 60), ficha: x.f, ln, calc: x.calc };
+      const cur = prods[sku];
+      if (novo) { rec.orig = nome; rec.name = readableName(nome); rec.mk = modelTokens(nome); r.novos.push(rec); r.recs.set(sku, rec); continue; }
+      // Produto que já existia: nome e categoria cuidados no painel prevalecem; a planilha só preenche o que estiver vazio e a ficha
+      rec.name = String(cur.name || '').trim() || rec.name;
+      rec.category = String(cur.category || '').trim() || rec.category;
+      const dif = diffProduct(cur, rec);
+      if (dif.length) { r.atualizados.push({ rec, dif }); r.recs.set(sku, rec); } else r.inalterados.push(rec);
+    }
+    r.pares = modelPairs(prods, seenSku, r.novos);
+    return r;
+  }
+  /* Casamento por MODELO (depois de SAP, EAN e nome; antes de criar produto novo).
+     Tokens de modelo: palavras com dígito (d40, d100, t40…) e as que vêm logo depois e mudam o modelo (pop, light, g, m…).
+     Candidato: produto do painel SEM ficha.sap, ainda não casado nesta importação, cujos tokens batem exatamente com os da linha.
+     Sem nenhum exato: linhas que contêm todos os tokens do produto ("D100" → D100 POP, D100 LIGHT), sem nada marcado. */
+  const MODEL_MOD = new Set(['pop', 'light', 'lite', 'plus', 'max', 'pro', 'slim', 'mini', 'top', 'flex', 'premium', 'basic', 'manual', 'eletrica', 'eletrico', 'digital',
+    'infantil', 'adulto', 'g', 'gg', 'm', 'p', 'pp', 'xg', 'xgg', 'eg', 'egg', 'u', 'pm', 'gm']);
+  function modelTokens(name) {
+    const w = foldTerm(name).split(' ').filter(Boolean), out = [];
+    for (let i = 0; i < w.length; i++) {
+      if (!/\d/.test(w[i])) continue;
+      out.push(w[i]);
+      for (let j = i + 1; j < w.length && !/\d/.test(w[j]) && MODEL_MOD.has(w[j]); j++) out.push(w[j]);
+    }
+    return [...new Set(out)].sort();
+  }
+  function modelPairs(prods, seenSku, novos) {
+    const pares = [];
+    for (const p of Object.values(prods)) {
+      if ((p.ficha && p.ficha.sap) || seenSku.has(p.sku)) continue;
+      const mk = modelTokens(p.name); if (!mk.length) continue;
+      const key = mk.join(' ');
+      let cands = novos.filter((x) => x.mk.join(' ') === key), exact = true;
+      if (!cands.length) { cands = novos.filter((x) => mk.every((t) => x.mk.includes(t))); exact = false; }
+      if (cands.length) pares.push({ p, cands: cands.slice(0, 20), exact });
+    }
+    // Vem marcado só quando é exato, único e a linha não é candidata de outro produto
+    const uses = new Map(); for (const pr of pares) for (const c of pr.cands) uses.set(c.ln, (uses.get(c.ln) || 0) + 1);
+    for (const pr of pares) pr.pre = pr.exact && pr.cands.length === 1 && uses.get(pr.cands[0].ln) === 1 ? pr.cands[0].ln : 0;
+    return pares;
+  }
+  // Nome em MAIÚSCULAS → legível ("COLAR CERVICAL - G" → "Colar Cervical - G"); tokens com dígito, siglas e tamanhos ficam como estão
+  const SIGLAS = new Set(['POP', 'LED', 'USB', 'PVC', 'EVA', 'LCD', 'TENS', 'ABS', 'PU', 'UV', 'DC', 'AC', 'PP', 'P', 'M', 'G', 'GG', 'XG', 'XGG', 'EG', 'EGG', 'U', 'PM', 'GM', 'EVA', 'SMS', 'TNT', 'ANVISA', 'INMETRO', 'II', 'III', 'IV']);
+  const MINUSC = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'com', 'para', 'em', 'a', 'o', 'as', 'os', 'sem', 'por', 'na', 'no', 'ao']);
+  function readableName(s) {
+    s = String(s || '').trim();
+    if (!s || /[a-zà-ÿ]/.test(s)) return s; // já tem minúsculas: fica como está
+    let first = true;
+    return s.replace(/[\p{L}\p{N}]+/gu, (w) => {
+      const low = w.toLocaleLowerCase('pt-BR'), was = first; first = false;
+      if (/\d/.test(w) || SIGLAS.has(w)) return w;
+      if (!was && MINUSC.has(low)) return low;
+      return low.charAt(0).toLocaleUpperCase('pt-BR') + low.slice(1);
+    });
+  }
+
+  /* ---------- fluxo: arquivo → conferência do mapeamento → resumo → barra de alterações ---------- */
+  async function importFile(file) {
+    if (!vault || !file) return;
+    if (busy) { toast('Espere a publicação terminar.'); return; }
+    const name = file.name || 'planilha';
+    const isX = /\.xlsx$/i.test(name) || /spreadsheetml/.test(file.type || ''), isCsv = !isX && (/\.csv$/i.test(name) || /csv/.test(file.type || ''));
+    if (!isX && !isCsv) { alertBox('Formato não aceito', 'Escolha a planilha em .xlsx (Excel) ou .csv. Arquivos .xls antigos: abra no Excel e salve como .xlsx.'); return; }
+    if (file.size > XLS_MAX) { alertBox('Planilha grande demais', `Este arquivo tem ${mb(file.size)} MB e o limite é 8 MB. Salve só a aba de produtos (sem imagens) e tente de novo.`); return; }
+    let rows;
+    try { const buf = await file.arrayBuffer(); rows = isX ? await readXlsx(buf) : readCsv(decodeText(buf)); }
+    catch (e) { console.error(e); alertBox('Não foi possível ler a planilha', e.userMessage || 'Confira se o arquivo abre normalmente no Excel e tente de novo.'); return; }
+    if (!vault) return;
+    const head = findHead(rows);
+    if (!head) { alertBox('Cabeçalho não encontrado', 'Não achamos a linha com os títulos das colunas (por exemplo “Código SAP” e “Nome do Produto”) nas primeiras linhas da planilha.'); return; }
+    mapDialog(name, rows, head.i, savedMap(rows[head.i], head.map));
+  }
+  function mapDialog(name, rows, hi, map) {
+    const head = rows[hi], nData = rows.slice(hi + 1).filter((r) => r.some((v) => String(v || '').trim())).length;
+    const colName = (h, i) => `${h ? h : '(sem título)'} · coluna ${i < 26 ? String.fromCharCode(65 + i) : String.fromCharCode(64 + Math.floor(i / 26)) + String.fromCharCode(65 + (i % 26))}`;
+    const opts = (sel) => `<option value="-1"${!(sel >= 0) ? ' selected' : ''}>não usar</option>` + head.map((h, i) => (h ? `<option value="${i}"${sel === i ? ' selected' : ''}>${esc(colName(h, i))}</option>` : '')).join('');
+    openDialog({
+      title: 'Conferir as colunas da planilha',
+      body: `<p class="muted"><b>${esc(name)}</b> · títulos na linha ${hi + 1} · ${plural(nData, 'linha de dados', 'linhas de dados')}. A leitura foi feita neste computador; nada foi enviado.</p>
+        <p class="muted">Confira de qual coluna vem cada campo e corrija se precisar. “Não usar” deixa o campo de fora. Sua escolha fica lembrada para a próxima importação.</p>
+        <div class="imp-map" id="pn-impMap">${IMP_FIELDS.map(([f, label]) => `<label class="field"><span class="field-label">${esc(label)}</span><select data-imp="${f}">${opts(map[f])}</select></label>`).join('')}</div>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
+        label: 'Ver o resumo', kind: 'primary',
+        onClick: () => {
+          const m = {}; $$('#pn-impMap select', dlg).forEach((s) => { m[s.dataset.imp] = +s.value; });
+          if (!(m.nome >= 0)) { dlgErr('Escolha a coluna do nome do produto.'); return false; }
+          if (!(m.sap >= 0)) { dlgErr('Escolha a coluna do código SAP (ele identifica cada produto).'); return false; }
+          saveMap(head, m);
+          summaryDialog(name, analyseSheet(rows, hi, m));
+          return true;
+        }
+      }]
+    });
+  }
+  const impList = (arr, fn) => `<ul class="imp-list">${arr.slice(0, 500).map(fn).join('')}${arr.length > 500 ? `<li>… e mais ${(arr.length - 500).toLocaleString('pt-BR')}.</li>` : ''}</ul>`;
+  const impSec = (title, arr, fn, open) => (arr.length ? `<details${open ? ' open' : ''}><summary><span>${title}</span><span class="imp-n">${arr.length.toLocaleString('pt-BR')}</span></summary>${impList(arr, fn)}</details>` : '');
+  const shortVal = (v) => esc(v === '' ? '—' : v.length > 60 ? v.slice(0, 60) + '…' : v);
+  // Um par "Produto do painel ↔ linha da planilha": seletor com "São diferentes" e "É o mesmo produto" (uma opção por linha candidata)
+  const rowLabel = (c) => `linha ${c.ln} · ${c.orig || c.name} · SAP ${c.sku}`;
+  function pairHtml(pr, i) {
+    const one = pr.cands.length === 1;
+    return `<li><b>${esc(pr.p.name)}</b> · SKU ${esc(pr.p.sku)} (no painel)${one ? `<span class="imp-dif">↔ ${esc(rowLabel(pr.cands[0]))}</span>` : `<span class="imp-dif">↔ ${plural(pr.cands.length, 'linha parecida', 'linhas parecidas')} na planilha: escolha a certa</span>`}
+      <select class="input" data-par="${i}" aria-label="${esc(pr.p.name)}: é o mesmo produto da planilha?">
+        <option value="0"${pr.pre ? '' : ' selected'}>São diferentes</option>
+        ${pr.cands.map((c) => `<option value="${c.ln}"${pr.pre === c.ln ? ' selected' : ''}>${one ? 'É o mesmo produto' : `É o mesmo produto: ${esc(rowLabel(c))}`}</option>`).join('')}
+      </select></li>`;
+  }
+  function summaryDialog(name, r) {
+    const nWrite = r.novos.length + r.atualizados.length;
+    const candLn = new Set(r.pares.flatMap((pr) => pr.cands.map((c) => c.ln)));
+    openDialog({
+      title: 'Resumo da importação',
+      body: `<p class="muted"><b>${esc(name)}</b>: ${plural(r.novos.length, 'produto novo', 'produtos novos')}, ${plural(r.atualizados.length, 'atualizado', 'atualizados')}, ${plural(r.inalterados.length, 'sem mudança', 'sem mudança')}, ${plural(r.ignoradas.length, 'linha ignorada', 'linhas ignoradas')} e ${plural(r.problemas.length, 'problema', 'problemas')}.${r.calculadas ? ` ${plural(r.calculadas, 'cubagem foi calculada', 'cubagens foram calculadas')} pelas medidas 1, 2 e 3.` : ''}${r.pares.length ? ` <b>Confira ${plural(r.pares.length, 'possível correspondência', 'possíveis correspondências')}</b>: o que for “o mesmo produto” atualiza o produto do painel em vez de criar outro.` : ''}</p>
+        <div class="imp-sum" id="pn-impSum">
+          ${impSec('Possíveis correspondências', r.pares, pairHtml, true)}
+          ${impSec('Produtos novos', r.novos, (x) => `<li><b>${esc(x.name)}</b> · SKU ${esc(x.sku)}${x.category ? ` · ${esc(x.category)}` : ''}${x.calc ? ' · cubagem calculada' : ''}${candLn.has(x.ln) ? ' · possível correspondência (acima)' : ''}${x.orig && x.orig !== x.name ? `<span class="imp-dif">Na planilha: ${esc(x.orig)}</span>` : ''}</li>`, !r.atualizados.length && !r.pares.length)}
+          ${impSec('Atualizados', r.atualizados, (x) => `<li><b>${esc(x.rec.name)}</b> · SKU ${esc(x.rec.sku)}${x.dif.map(([k, a, b]) => `<span class="imp-dif">${esc(k)}: ${shortVal(a)} → ${shortVal(b)}</span>`).join('')}</li>`, true)}
+          ${impSec('Sem mudança', r.inalterados, (x) => `<li>${esc(x.name)} · SKU ${esc(x.sku)}</li>`)}
+          ${impSec('Linhas ignoradas', r.ignoradas, (t) => `<li>${esc(t)}</li>`)}
+          ${impSec('Problemas', r.problemas, (t) => `<li>${esc(t)}</li>`, r.problemas.length > 0 && !nWrite)}
+        </div>
+        <p class="muted">${nWrite ? 'Ao confirmar, os produtos entram na barra de alterações e vão para o site quando você publicar. Benefício, capacidade, descrição, URL, imagem e áreas marcadas continuam como estão.' : 'Nada muda: a planilha é igual ao que já está cadastrado.'}</p>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, {
+        label: 'Confirmar importação', kind: 'primary',
+        onClick: () => {
+          // "É o mesmo produto": a linha atualiza o produto do painel (sku, nome, categoria, áreas e textos ficam; entra a ficha com o SAP)
+          const joins = [], used = new Map();
+          for (const s of $$('#pn-impSum select[data-par]', dlg)) {
+            const ln = +s.value; if (!ln) continue;
+            const pr = r.pares[+s.dataset.par], c = pr.cands.find((x) => x.ln === ln); if (!c) continue;
+            if (used.has(ln)) { dlgErr(`A linha ${ln} foi escolhida para dois produtos (“${used.get(ln)}” e “${pr.p.name}”). Deixe só um.`); return false; }
+            used.set(ln, pr.p.name); joins.push({ p: pr.p, c });
+          }
+          for (const { p, c } of joins) {
+            r.recs.delete(c.sku);
+            stagedProds.set(p.sku, { sku: p.sku, name: p.name, category: p.category || c.category, ficha: c.ficha });
+          }
+          for (const [sku, rec] of r.recs) stagedProds.set(sku, { sku, name: rec.name, category: rec.category, ficha: rec.ficha });
+          lastImport = { em: new Date().toISOString(), arquivo: name, problemas: r.problemas.slice() };
+          refreshStage();
+          if (tab === 'prods') renderProds();
+          const n = r.recs.size + joins.length;
+          toast(n ? `${plural(n, 'produto entrou', 'produtos entraram')} na barra de alterações${joins.length ? ` (${plural(joins.length, 'unido a produto do painel', 'unidos a produtos do painel')})` : ''}. Publique para levar ao site.` : 'Nada para importar: a planilha é igual ao cadastro.');
+          return true;
+        }
+      }]
+    });
+  }
+  function problemsDialog() {
+    const pr = (lastImport && lastImport.problemas) || [];
+    openDialog({
+      title: 'Pendências da última importação',
+      body: `<p class="muted">${esc(lastImport ? lastImport.arquivo : '')} · ${fmtDateTime(lastImport ? lastImport.em : new Date().toISOString())}. Corrija na planilha e importe de novo.</p>${pr.length ? impList(pr, (t) => `<li>${esc(t)}</li>`) : '<p class="muted">Nenhum problema.</p>'}`,
+      actions: [{ label: 'Fechar', kind: 'primary' }]
+    });
+  }
+  function baseCardHtml() {
+    const withF = Object.values(viewProducts()).filter((p) => p.ficha && typeof p.ficha === 'object');
+    const last = withF.map((p) => p.ficha.em || '').filter(Boolean).sort().pop() || '';
+    const nPr = lastImport ? lastImport.problemas.length : 0;
+    return `<section class="card stack imp-card" id="pn-baseCard" aria-labelledby="pn-baseH">
+      <div class="imp-head"><h2 id="pn-baseH">Base de produtos</h2>
+        <p class="imp-state" id="pn-baseInfo">${withF.length ? `Base de produtos: <b>${plural(withF.length, 'item', 'itens')}</b>${last ? ` · atualizada em ${fmtDate(last).slice(0, 5)}` : ''}` : 'Nenhuma planilha importada ainda.'}</p></div>
+      <p class="muted">Importe a planilha mestre (.xlsx ou .csv) para criar os produtos e preencher a ficha técnica de cada um. A leitura é feita neste computador; nada é enviado antes de você conferir e publicar.</p>
+      <div class="drop sm" id="pn-xlsDrop" role="button" tabindex="0" aria-label="Importar a planilha de produtos (.xlsx ou .csv)">
+        <span class="drop-ico" aria-hidden="true">${ICO.upload}</span><b>Arraste a planilha aqui</b><span class="muted">ou clique para escolher o arquivo .xlsx (ou .csv), até 8 MB.</span>
+      </div>
+      ${nPr ? `<div class="row"><button class="btn ghost sm" type="button" id="pn-baseProblems">Ver problemas (${nPr.toLocaleString('pt-BR')})</button></div>` : ''}
+    </section>`;
+  }
+  function pickSheet() { if (busy) return; $('#pn-xlsInput').value = ''; $('#pn-xlsInput').click(); }
+  $('#pn-xlsInput').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) importFile(f); });
+  function bindBaseCard() {
+    const drop = $('#pn-xlsDrop'); if (!drop) return;
+    drop.addEventListener('click', pickSheet);
+    drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickSheet(); } });
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault(); e.stopPropagation(); drop.classList.remove('over');
+      const f = [...((e.dataTransfer && e.dataTransfer.files) || [])][0];
+      if (f) importFile(f);
+    });
+    const pb = $('#pn-baseProblems'); if (pb) pb.addEventListener('click', problemsDialog);
+  }
+
+  /* ---------- marcação automática: procura SAP, EAN e nome no texto das páginas ---------- */
+  // Texto das páginas (busca.bin do catálogo, ou o texto que ficou na memória depois de converter o PDF)
+  const searchKey = (c) => `${c.id}:${c.v || 1}:${catKeyB64(c).slice(0, 12)}`;
+  function keepTexts(c, texts) { if (c && Array.isArray(texts)) searchCache.set(searchKey(c), Promise.resolve(texts)); }
+  function searchPages(c) {
+    if (Array.isArray(c.texts)) return Promise.resolve(c.texts); // catálogo antigo: texto ainda dentro do cofre
+    const k = searchKey(c);
+    if (!searchCache.has(k)) {
+      const p = (async () => {
+        const enc = await repo.read(P.path.search(c.id));
+        if (!enc || !vault) return null;
+        return P.openSearch(await P.aesKey(P.b64d(catKeyB64(c)), ['decrypt']), c, enc);
+      })();
+      p.catch(() => { if (searchCache.get(k) === p) searchCache.delete(k); });
+      searchCache.set(k, p);
+    }
+    return searchCache.get(k);
+  }
+  // Texto simplificado (sem acento, minúsculas, pontuação vira espaço, espaços juntos) com a posição de cada letra no original
+  const foldCache = new Map();
+  function foldChar(ch) {
+    const c = ch.charCodeAt(0);
+    if ((c >= 97 && c <= 122) || (c >= 48 && c <= 57)) return ch;
+    if (c >= 65 && c <= 90) return String.fromCharCode(c + 32);
+    if (c < 128) return ' ';
+    let v = foldCache.get(ch);
+    if (v === undefined) { const b = ch.normalize('NFD').charAt(0).toLowerCase(), bc = b.charCodeAt(0); v = (bc >= 97 && bc <= 122) || (bc >= 48 && bc <= 57) ? b : ' '; foldCache.set(ch, v); }
+    return v;
+  }
+  function foldMap(raw) {
+    let s = ' ', sp = true; const idx = [-1];
+    for (let i = 0; i < raw.length; i++) {
+      const ch = foldChar(raw[i]);
+      if (ch === ' ') { if (sp) continue; sp = true; } else sp = false;
+      s += ch; idx.push(i);
+    }
+    if (!sp) { s += ' '; idx.push(raw.length); }
+    return { s, idx };
+  }
+  const foldTerm = (t) => foldMap(String(t || '')).s.trim();
+  // Termos de cada produto: código SAP e EAN (confiança alta) e o nome completo com 6+ letras (confiança média)
+  function scanTerms(prods) {
+    const codes = [], names = [];
+    for (const p of prods) {
+      const f = p.ficha || {};
+      const sap = foldTerm(f.sap);
+      if (sap && /\d/.test(sap) && sap.replace(/ /g, '').length >= 5) codes.push({ sku: p.sku, t: sap, why: `código SAP ${f.sap}` });
+      for (const e of String(f.ean || '').split('/').map((x) => x.replace(/\D/g, '')).filter((x) => P.eanOk(x))) {
+        codes.push({ sku: p.sku, t: e, why: `EAN ${e}`, ean: true });
+        if (e.length === 13) codes.push({ sku: p.sku, t: `${e[0]} ${e.slice(1, 7)} ${e.slice(7)}`, why: `EAN ${e}` }); // como aparece sob o código de barras
+      }
+      const nm = foldTerm(p.name);
+      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, why: 'nome completo' });
+    }
+    return { codes, names };
+  }
+  const allAt = (s, t, max = 30) => { const out = []; let i = s.indexOf(t); while (i >= 0 && out.length < max) { out.push(i); i = s.indexOf(t, i + 1); } return out; };
+  function snippetHtml(raw, a, b) {
+    const x = Math.max(0, a - 50), y = Math.min(raw.length, b + 50), sq = (s) => esc(s.replace(/\s+/g, ' '));
+    return `${x > 0 ? '…' : ''}${sq(raw.slice(x, a))}<mark>${sq(raw.slice(a, b))}</mark>${sq(raw.slice(b, y))}${y < raw.length ? '…' : ''}`;
+  }
+  // Uma página: códigos primeiro; nome só se nenhum código do produto bateu e se não estiver dentro do nome mais longo de outro produto
+  // (ex.: “Cadeira de rodas D100” não conta onde está escrito “Cadeira de rodas D100 Light”)
+  function pageMatches(raw, terms) {
+    const { s, idx } = foldMap(raw), found = new Map();
+    const hit = (t, conf, at, map) => ({ sku: t.sku, conf, why: t.why, a: map[at + 1], b: map[at + t.t.length] + 1 });
+    // Mesmo texto com os números que o PDF quebrou com espaço juntados ("79086073107 08" → "7908607310708"), só para os EAN
+    let sd = null, idd = null;
+    const joined = () => {
+      if (sd === null) {
+        sd = ''; idd = [];
+        for (let i = 0; i < s.length; i++) {
+          const dg = (k) => k >= 0 && k < s.length && s.charCodeAt(k) >= 48 && s.charCodeAt(k) <= 57;
+          if (s[i] === ' ' && dg(i - 1) && dg(i + 1)) continue;
+          sd += s[i]; idd.push(idx[i]);
+        }
+      }
+      return sd;
+    };
+    for (const t of terms.codes) {
+      if (found.has(t.sku)) continue;
+      const at = s.indexOf(' ' + t.t + ' ');
+      if (at >= 0) { found.set(t.sku, hit(t, 'alta', at, idx)); continue; }
+      if (t.ean) { const aj = joined().indexOf(' ' + t.t + ' '); if (aj >= 0) found.set(t.sku, hit(t, 'alta', aj, idd)); }
+    }
+    // Nomes: todos entram na conferência de "nome dentro de nome mais longo", mesmo os de produtos já achados pelo código
+    const occ = [];
+    for (const t of terms.names) { const pos = allAt(s, ' ' + t.t + ' '); if (pos.length) occ.push({ t, pos }); }
+    for (const o of occ) {
+      if (found.has(o.t.sku)) continue;
+      const free = o.pos.find((p) => !occ.some((q) => q !== o && q.t.t.length > o.t.t.length && q.pos.some((r) => r <= p && r + q.t.t.length >= p + o.t.t.length)));
+      if (free !== undefined) found.set(o.t.sku, hit(o.t, 'media', free, idx));
+    }
+    return [...found.values()];
+  }
+  async function runScan() {
+    if (!vault || busy) return;
+    const prods = Object.values(viewProducts()), cats = viewCatalogs();
+    if (!prods.length) { alertBox('Nenhum produto cadastrado', 'Importe a planilha de produtos (ou cadastre os produtos) antes de procurar nas páginas.'); return; }
+    if (!cats.length) { alertBox('Nenhum catálogo', 'Adicione um catálogo antes de procurar os produtos nas páginas.'); return; }
+    const terms = scanTerms(prods), names = new Map(prods.map((p) => [p.sku, p.name]));
+    const skip = new Set([...viewSpots().map(linkKey), ...viewLinks().map(linkKey), ...viewDrops()]); // já marcado, já ligado ou descartado
+    const pg = progressDialog('Procurando produtos nas páginas', true);
+    const props = [], semTexto = []; let pages = 0, jaTem = 0;
+    try {
+      for (let ci = 0; ci < cats.length && !pg.cancelled; ci++) {
+        const c = cats[ci];
+        pg.set(`Catálogo ${ci + 1} de ${cats.length} · ${c.title} · abrindo o texto das páginas…`, ci / cats.length);
+        let texts = null;
+        try { texts = await searchPages(c); } catch (e) { console.error(e); }
+        if (!vault) throw cancelErr();
+        if (!Array.isArray(texts) || !texts.some((x) => String(x || '').trim())) { semTexto.push(c.title); continue; }
+        const n = Math.min(texts.length, c.pages || texts.length);
+        for (let i = 0; i < n; i++) {
+          if (i % 8 === 0) { // devolve a vez à tela a cada 8 páginas
+            pg.set(`Catálogo ${ci + 1} de ${cats.length} · ${c.title} · página ${i + 1} de ${n}`, (ci + i / n) / cats.length);
+            await sleep(0);
+            if (pg.cancelled) break;
+            if (!vault) throw cancelErr();
+          }
+          const raw = String(texts[i] || ''); if (!raw.trim()) continue;
+          pages++;
+          for (const m of pageMatches(raw, terms)) {
+            const key = linkKey({ catalogId: c.id, page: i + 1, product: m.sku });
+            if (skip.has(key)) { jaTem++; continue; }
+            props.push({ key, catalogId: c.id, cat: c.title, page: i + 1, sku: m.sku, name: names.get(m.sku) || m.sku, conf: m.conf, why: m.why, html: snippetHtml(raw, m.a, m.b) });
+          }
+        }
+      }
+    } catch (e) {
+      if (!e.cancelled) { console.error(e); alertBox('Não foi possível terminar a procura', 'Confira a internet, clique em “Atualizar dados” e tente de novo.'); }
+      pg.close(); return;
+    }
+    const cancelled = pg.cancelled;
+    pg.close();
+    scan.props = props; scan.ran = true;
+    const nA = props.filter((p) => p.conf === 'alta').length;
+    scan.info = `${cancelled ? 'Procura cancelada. ' : ''}${plural(pages, 'página lida', 'páginas lidas')} · ${plural(props.length, 'sugestão', 'sugestões')} (${nA.toLocaleString('pt-BR')} de confiança alta, ${(props.length - nA).toLocaleString('pt-BR')} média)${jaTem ? ` · ${plural(jaTem, 'já estava marcada ou descartada', 'já estavam marcadas ou descartadas')}` : ''}${semTexto.length ? ` · sem texto para ler: ${semTexto.join(', ')}` : ''}.`;
+    if (tab === 'prods') renderScanBox();
+  }
+  function scanCardHtml() {
+    return `<section class="card stack imp-card" id="pn-scanCard" aria-labelledby="pn-scanH">
+      <div class="imp-head"><h2 id="pn-scanH">Marcação automática</h2><button class="btn ghost sm" type="button" id="pn-scanBtn">Encontrar produtos nas páginas</button></div>
+      <p class="muted">Procura o código SAP, o EAN e o nome completo de cada produto no texto das páginas dos catálogos e sugere em quais páginas cada um aparece. Ao aceitar, o produto fica ligado à página sem área (o site mostra “N produtos nesta página”); depois, se quiser, desenhe a área sobre a foto no editor abaixo.</p>
+      <div id="pn-scanBox"></div>
+    </section>`;
+  }
+  function renderScanBox() {
+    const box = $('#pn-scanBox'); if (!box) return;
+    if (!scan.ran) { box.innerHTML = ''; return; }
+    const props = scan.props, groups = new Map();
+    for (const p of props) { if (!groups.has(p.catalogId)) groups.set(p.catalogId, []); groups.get(p.catalogId).push(p); }
+    box.innerHTML = `<p class="muted" role="status">${esc(scan.info)}</p>${props.length ? `
+      <div class="scan-acts"><button class="link" type="button" data-scan="all">Selecionar todas</button><button class="link" type="button" data-scan="high">Só as de confiança alta</button><button class="link" type="button" data-scan="none">Nenhuma</button></div>
+      <div class="scan-groups" id="pn-scanList">${[...groups.values()].map((g) => `<fieldset class="scan-cat"><legend>${esc(g[0].cat)} · ${plural(g.length, 'sugestão', 'sugestões')}</legend><ul class="scan-list">
+        ${g.sort((a, b) => a.page - b.page || a.name.localeCompare(b.name, 'pt-BR')).map((p) => `<li><label class="scan-it" data-key="${esc(p.key)}"><input type="checkbox" value="${esc(p.key)}" ${p.conf === 'alta' ? 'checked' : ''}>
+          <span class="scan-t">Página ${p.page} · ${esc(p.name)} <span class="scan-conf ${p.conf}">${p.conf === 'alta' ? 'confiança alta' : 'confiança média'}</span></span>
+          <span class="scan-s">SKU ${esc(p.sku)} · pelo ${esc(p.why)}</span>
+          <span class="scan-s">${p.html}</span></label></li>`).join('')}
+      </ul></fieldset>`).join('')}</div>
+      <div class="scan-acts"><button class="btn primary sm" type="button" id="pn-scanAccept">Aceitar selecionadas</button><button class="btn ghost sm" type="button" id="pn-scanDrop">Descartar selecionadas</button><span class="muted" id="pn-scanSel" aria-live="polite"></span></div>` : ''}`;
+    paintScanSel();
+  }
+  const scanChecked = () => $$('#pn-scanList input[type="checkbox"]:checked').map((i) => i.value);
+  function paintScanSel() { const el = $('#pn-scanSel'); if (el) el.textContent = `${plural(scanChecked().length, 'selecionada', 'selecionadas')} de ${scan.props.length.toLocaleString('pt-BR')}`; }
+  function bindScanCard() {
+    const card = $('#pn-scanCard'); if (!card) return;
+    $('#pn-scanBtn').addEventListener('click', runScan);
+    card.addEventListener('change', (e) => { if (e.target.matches('#pn-scanList input')) paintScanSel(); });
+    card.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-scan], #pn-scanAccept, #pn-scanDrop'); if (!b) return;
+      if (b.dataset.scan) { $$('#pn-scanList input').forEach((i) => { const p = scan.props.find((x) => x.key === i.value); i.checked = b.dataset.scan === 'all' || (b.dataset.scan === 'high' && p && p.conf === 'alta'); }); paintScanSel(); return; }
+      const keys = scanChecked();
+      if (!keys.length) { toast('Selecione pelo menos uma sugestão.'); return; }
+      if (b.id === 'pn-scanAccept') acceptScan(keys); else dropScan(keys);
+    });
+    renderScanBox();
+  }
+  // Aceitar: produto ligado à página SEM área (pageLink), na barra de alterações. Nada de retângulo automático.
+  function acceptScan(keys) {
+    const vd = { ...viewData(), hotspots: viewSpots() }, have = new Set(viewLinks().map(linkKey));
+    let n = 0, first = null;
+    for (const k of keys) {
+      const p = scan.props.find((x) => x.key === k); if (!p) continue;
+      const l = { catalogId: p.catalogId, page: p.page, product: p.sku, auto: true };
+      if (!have.has(k) && linkFits(vd, l)) { stagedLinks.set(k, l); have.add(k); n++; if (!first) first = l; }
+    }
+    scan.props = scan.props.filter((x) => !keys.includes(x.key));
+    refreshStage(); renderProdRows(); renderScanBox();
+    if (first && $('#pn-hsEd')) { ed.cat = first.catalogId; ed.page = first.page; ed.sel = ''; ed.draft = null; renderEditor(); } // editor na primeira página aceita
+    toast(n ? `${plural(n, 'produto ligado', 'produtos ligados')} às páginas (sem área), na barra de alterações.` : 'Essas sugestões já estavam ligadas às páginas.');
+  }
+  function dropScan(keys) {
+    for (const k of keys) stagedDrops.add(k);
+    scan.props = scan.props.filter((x) => !keys.includes(x.key));
+    refreshStage(); renderScanBox();
+    toast(`${plural(keys.length, 'sugestão descartada', 'sugestões descartadas')}: não ${keys.length === 1 ? 'será proposta' : 'serão propostas'} de novo depois de publicar.`);
+  }
+
+  /* ---------- produtos na página sem área, no editor: "Na página (sem área)" ---------- */
+  const pageLinksHere = () => viewLinks().filter((l) => l.catalogId === ed.cat && l.page === ed.page);
+  const linksHtml = (links) => links.map((l) => `<li data-link="${esc(linkKey(l))}"${ed.pendLink && linkKey(ed.pendLink) === linkKey(l) ? ' class="sel"' : ''}>
+      <p class="hs-pick"><b>${esc(prodName(l.product))}</b><span>${esc(l.product)} · Na página (sem área)${stagedLinks.has(linkKey(l)) ? ' · não publicado' : ''}</span></p>
+      <div class="actions"><button class="btn ghost sm" type="button" data-k="ldraw" data-la="draw">Desenhar área</button><button class="btn ghost sm" type="button" data-k="ldel" data-la="del" aria-label="Remover ${esc(prodName(l.product))} desta página">Remover</button></div>
+    </li>`).join('');
+  function onLinkAction(act, key) {
+    const l = viewLinks().find((x) => linkKey(x) === key); if (!l) return;
+    if (act === 'draw') { drawLink(l); return; }
+    if ((vault.pageLinks || []).some((x) => linkKey(x) === key)) stagedLinks.set(key, null); else stagedLinks.delete(key);
+    stagedDrops.add(key); // não volta a ser sugerido pela marcação automática
+    if (ed.pendLink && linkKey(ed.pendLink) === key) ed.pendLink = null;
+    refreshStage(); paintSpots(); renderProdRows(); focusStage();
+    toast(`“${prodName(l.product)}” saiu desta página.`);
+  }
+  // "Desenhar área": editor na página certa, esperando o arraste; ao salvar, a área substitui a ligação (saveSpot)
+  function drawLink(l) {
+    const same = ed.cat === l.catalogId;
+    ed.cat = l.catalogId; ed.page = l.page; ed.sel = ''; ed.draft = null; ed.pendLink = l;
+    if (same && $('#pn-hsStage')) goPage(l.page); else renderEditor();
+    ed.pendLink = l; paintSpots();
+    const st = $('#pn-hsStage'); if (st) { st.scrollIntoView({ block: 'center' }); st.focus({ preventScroll: true }); }
+    toast(`Arraste sobre a foto de “${prodName(l.product)}” para marcar a área.`);
   }
 
   /* ================= configurações ================= */

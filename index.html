@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-h529K4u80zz3Z+pnS2I9lKN4v0HWmfAdTGOM9RoqgLc=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-PZq+mINAZTy1/XwYowS/jtpjH3L7bp6/XEi5cqDOxj0=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -66,7 +66,7 @@
   /* Foco: azul-marinho nas superfícies claras; azul-claro só nas superfícies azul-marinho */
   :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
   .side :focus-visible, .topbar :focus-visible, .hero :focus-visible, .card-strip :focus-visible, .reader :focus-visible, .login-brand :focus-visible { outline-color: var(--sky); }
-  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible { outline-color: var(--navy); }
+  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible, .reader .fi-pop :focus-visible, .reader .hs-ficha:focus-visible, .reader .pg-links:focus-visible { outline-color: var(--navy); }
   .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .warn-ico { display: inline-block; width: 15px; height: 15px; flex: none; vertical-align: -3px; }
   .warn-ico svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -446,6 +446,8 @@
   .r-top .r-search-btn { display: none; }
   .pill-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid var(--line-dark); border-radius: 999px; background: transparent; color: var(--white); font-weight: 600; font-size: 13px; cursor: pointer; flex: none; }
   .pill-btn:hover { background: var(--white); color: var(--navy); }
+  .fichas-btn[aria-pressed="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); } /* etiquetas de ficha visíveis */
+  .fichas-btn[aria-pressed="true"]:hover { background: rgba(139, 184, 232, .32); color: var(--white); }
   .r-top #rShare { background: var(--sky); border-color: var(--sky); color: var(--navy); }
   .r-top #rShare:hover { background: var(--sky); color: var(--navy); box-shadow: inset 0 0 0 999px rgba(255, 255, 255, .22); }
   .panel-btn[aria-expanded="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); }
@@ -610,6 +612,26 @@
     from { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 2px rgba(139, 184, 232, .95); }
     to { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 18px rgba(139, 184, 232, 0); }
   }
+  /* Ficha técnica na própria página: etiqueta "Ficha" no canto da área do produto, faixa dos produtos sem área e balão */
+  .hs-ficha { position: absolute; right: 0; top: 0; display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border: 1px solid rgba(30, 44, 79, .28); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--navy); font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 10px -4px rgba(20, 32, 60, .45); transform: translate(30%, -50%) scale(calc(1 / var(--z, 1))); transform-origin: 70% 50%; }
+  .hs-ficha::before { content: ""; position: absolute; inset: -12px -6px; } /* alvo de toque de 44 px */
+  .hs-ficha:hover, .hs-ficha[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .pg-links { position: absolute; left: 50%; bottom: 10px; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 20px); height: 28px; padding: 0 12px; border: 1px solid rgba(30, 44, 79, .22); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--navy); font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; pointer-events: auto; touch-action: manipulation; box-shadow: 0 6px 14px -6px rgba(20, 32, 60, .5); transform: translateX(-50%) scale(calc(1 / var(--z, 1))); transform-origin: 50% 100%; }
+  .pg-links::before { content: ""; position: absolute; inset: -8px 0; }
+  .pg-links svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+  .pg-links:hover { background: var(--light); }
+  .reader.fichas-off .hs-ficha, .reader.fichas-off .pg-links { display: none; } /* chave "Fichas" desligada: arte limpa */
+  .fi-pop { position: fixed; z-index: 30; left: 8px; top: 8px; width: min(320px, calc(100vw - 16px)); max-height: calc(100vh - 16px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 8px; padding: 12px 12px 12px 14px; border: 1px solid var(--hair); border-radius: 14px; background: var(--white); color: var(--ink); text-align: left; box-shadow: 0 18px 40px -14px rgba(20, 32, 60, .55); }
+  .fi-pop[hidden] { display: none; }
+  .fi-pop:focus { outline: none; }
+  .fp-head { display: flex; align-items: flex-start; gap: 8px; }
+  .fp-head b { flex: 1; min-width: 0; padding-top: 5px; font-family: var(--font-title); font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--navy); overflow-wrap: anywhere; }
+  .fp-x { width: 32px; height: 32px; flex: none; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
+  .fp-x:hover { background: var(--light); }
+  .fp-x svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+  .fp-acts { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+  .fp-acts .btn { gap: 6px; }
+  .fp-acts .btn svg { width: 14px; height: 14px; stroke-width: 2; }
   .res-ph { width: 40px; height: 52px; display: grid; place-items: center; border-radius: 2px; background: var(--light); color: var(--navy); }
   .res-ph svg, .pc-ph svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linejoin: round; }
   /* Diálogo em painel: lateral no computador, folha inferior no celular */
@@ -634,6 +656,29 @@
   .pc-desc { font-size: 13px; line-height: 1.6; color: var(--ink-2); }
   .pc-actions { display: grid; gap: 8px; margin-top: 4px; }
   .pc-actions .btn[aria-pressed="true"] { background: rgba(139, 184, 232, .2); }
+  /* Ficha técnica (planilha mestre): mesmo bloco na ficha do produto e no painel "Nesta página" */
+  .ficha { display: grid; gap: 8px; }
+  .fi-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .fi-head .btn { height: 32px; padding: 0 12px; gap: 6px; border-color: transparent; background: var(--light); color: var(--navy); font-size: 12px; }
+  .fi-head .btn:hover { background: rgba(139, 184, 232, .3); }
+  .fi-head .btn svg { width: 14px; height: 14px; stroke-width: 2; }
+  .fi-selos { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+  .fi-selo { display: inline-flex; align-items: center; height: 22px; padding: 0 10px; border: 1px solid rgba(30, 44, 79, .3); border-radius: 999px; background: var(--light); color: var(--navy); font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: help; }
+  .fi-list { list-style: none; display: grid; margin: 0; padding: 0; }
+  .fi-row { display: grid; grid-template-columns: minmax(74px, 36%) minmax(0, 1fr) 32px; align-items: center; gap: 2px 8px; padding: 5px 0; border-top: 1px solid var(--hair); }
+  .fi-row:first-child { border-top: 0; }
+  .fi-k { font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .fi-v { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .fi-cp { position: relative; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .fi-cp::before { content: ""; position: absolute; inset: -6px; border-radius: 10px; } /* alvo de toque de 44 px sem aumentar a linha */
+  .fi-cp svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .fi-cp:hover { background: var(--light); color: var(--navy); }
+  .fi-more { display: none; justify-self: start; }
+  @media (max-width: 767px) {
+    /* Celular: só os 6 primeiros campos; "Ver mais" abre o resto na mesma tela */
+    .fi-list.fold .fi-row:nth-child(n+7) { display: none; }
+    .fi-more { display: inline-block; }
+  }
   .int-list { list-style: none; margin: 0; padding: 0; display: grid; }
   .int-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px; border-bottom: 1px solid var(--hair); }
   .int-open { display: grid; gap: 1px; padding: 10px 4px; border: 0; border-radius: 6px; background: none; color: inherit; text-align: left; cursor: pointer; }
@@ -1469,6 +1514,8 @@
       </div>
     </div>
     <button class="pill-btn int-btn" id="rIntBtn" type="button" hidden data-int-btn="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
+    <!-- Chave "Fichas": mostra ou esconde as etiquetas de ficha técnica na página (só em catálogo com ficha ou produtos ligados às páginas) -->
+    <button class="pill-btn fichas-btn" id="btnFichas" type="button" hidden aria-pressed="true" title="Fichas na página: mostrar ou esconder"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg></span><span class="txt">Fichas</span></button>
     <button class="pill-btn" id="rShare" type="button"><span class="ico" id="icoShare"></span><span class="txt" id="rShareTxt">Compartilhar</span></button>
     <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos e texto das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
   </header>
@@ -1746,12 +1793,47 @@
     /* ---------- produtos e hotspots (produtos.bin, aberto com a chave-raiz) ----------
        { v:1, comercial:{ whatsapp, email, mensagem },
          products: { "<SKU>": { sku, name, category, benefit, capacity, description, url, image?:{catalogId,page,x,y,width,height} } },
-         hotspots: [ { id, catalogId, page, product:"<SKU>", x, y, width, height } ] }   ← x, y, width, height em % da página */
+         hotspots: [ { id, catalogId, page, product:"<SKU>", x, y, width, height } ],   ← x, y, width, height em % da página
+         pageLinks?: [ { catalogId, page, product:"<SKU>", auto?:true } ] }             ← produto na página, sem área (ver validPageLink) */
+    /* Ficha técnica (vem da planilha mestre de produtos, importada no painel):
+       products["<SKU>"].ficha = { grupo, sap, ean, eanCx, med, medCx, cxUn, peso, pesoCx, cubagem, inmetro, anvisa, ncm, em }
+       Texto é limitado e limpo; peso/pesoCx (kg), cubagem (m³) e cxUn (unidades) são números; "em" = data ISO da importação. */
+    const FICHA_TXT = { grupo: 60, sap: 30, ean: 20, eanCx: 40, med: 60, medCx: 60, inmetro: 80, anvisa: 80, ncm: 30 };
+    const FICHA_NUM = ['cxUn', 'peso', 'pesoCx', 'cubagem'];
+    // Rótulos na ordem em que a ficha aparece para a pessoa (site e painel usam a mesma lista).
+    // O código SAP fica guardado (o painel usa para casar a planilha e achar o produto nas páginas), mas não é exibido.
+    const FICHA_CAMPOS = [
+      ['ean', 'EAN'], ['med', 'Medidas'], ['peso', 'Peso', 'kg'],
+      ['cxUn', 'Caixa master', 'un'], ['medCx', 'Medidas da caixa'], ['pesoCx', 'Peso da caixa', 'kg'],
+      ['cubagem', 'Cubagem', 'm³'], ['eanCx', 'EAN da caixa'], ['ncm', 'NCM'], ['anvisa', 'ANVISA'],
+      ['inmetro', 'INMETRO'], ['grupo', 'Linha']
+    ];
+    function cleanFicha(f) {
+      if (!f || typeof f !== 'object') return null;
+      const out = {};
+      for (const [k, max] of Object.entries(FICHA_TXT)) {
+        const v = String(f[k] == null ? '' : f[k]).replace(/[\x00-\x1f\x7f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+        if (v && v !== '-') out[k] = v;
+      }
+      for (const k of FICHA_NUM) {
+        const n = typeof f[k] === 'string' ? Number(f[k].replace(/\./g, '').replace(',', '.')) : f[k];
+        if (num(n) && n >= 0 && n < 1e7) out[k] = Math.round(n * 1e6) / 1e6;
+      }
+      const em = String(f.em || '');
+      if (/^\d{4}-\d{2}-\d{2}/.test(em)) out.em = em.slice(0, 10);
+      return Object.keys(out).length ? out : null;
+    }
+    // Só dígitos e tamanho de EAN-13/14 (a planilha às vezes traz dois códigos separados por barra)
+    const eanOk = (s) => /^\d{8}$|^\d{12,14}$/.test(String(s || '').replace(/\D/g, ''));
     const sealProdutos = (rootKey, obj) => seal(rootKey, JSON.stringify(obj), 'produtos.bin');
     const openProdutos = async (rootKey, data) => JSON.parse(td.decode(await open(rootKey, data, 'produtos.bin')));
     // Chave de comparação do SKU: "D750 Light" → "d750light"
     const skuKey = (s) => normTxt(s).replace(/[^a-z0-9]/g, '');
     const num = (v) => typeof v === 'number' && isFinite(v);
+    /* Produto presente numa página SEM área desenhada (vem da varredura automática no painel):
+       pageLinks: [ { catalogId, page, product:"<SKU>", auto?:true } ] — o site mostra na página e no "Nesta página";
+       quando alguém desenha a área (hotspot) do mesmo produto na mesma página, o hotspot prevalece. */
+    const validPageLink = (l) => !!l && typeof l.catalogId === 'string' && Number.isInteger(l.page) && l.page >= 1 && typeof l.product === 'string' && l.product.length > 0;
     const validHotspot = (h) => !!h && typeof h.catalogId === 'string' && Number.isInteger(h.page) && h.page >= 1 && typeof h.product === 'string' &&
       num(h.x) && num(h.y) && num(h.width) && num(h.height) && h.x >= 0 && h.y >= 0 && h.width > 0 && h.height > 0 && h.x + h.width <= 100.5 && h.y + h.height <= 100.5;
 
@@ -1917,6 +1999,7 @@
       SUPA, supa,
       CARD_PREFIX, CARD_MAX, CARD_PHOTO_MAX, cleanCard, makeCardCode, readCardCode, sealCard, openCard,
       sealProdutos, openProdutos, skuKey, validHotspot,
+      FICHA_CAMPOS, cleanFicha, eanOk, validPageLink,
       te, td, MIN_IT, ID_IT, ACESSOS_V, CHUNK, THUMB_CHUNK, THUMB_W,
       b64e, b64d, hex, rand, randHex, iters, sha256, isB64,
       deriveBits, aesKey, seal, open, EC,
@@ -2188,15 +2271,20 @@
     catch (e) { return null; }
   }
   function buildProd(data, list) {
-    const out = { comercial: {}, bySku: new Map(), spots: new Map(), byCatPage: new Map() };
+    const out = { comercial: {}, bySku: new Map(), spots: new Map(), byCatPage: new Map(), links: new Map(), linkSpots: new Map() };
     if (!data || typeof data !== 'object' || Number(data.v) > 1) return out;
     if (data.comercial && typeof data.comercial === 'object') out.comercial = data.comercial;
     for (const [k, p] of Object.entries(data.products || {})) {
       if (!p || typeof p !== 'object' || typeof p.name !== 'string' || !p.name.trim()) continue;
       const sku = String(p.sku || k), key = P.skuKey(sku);
       if (!key) continue;
-      const txt = joinUnits(norm(`${sku} ${p.name} ${p.category || ''} ${p.benefit || ''} ${p.capacity || ''} ${p.description || ''}`));
-      out.bySku.set(key, { ...p, sku, _n: txt });
+      // Ficha técnica (opcional): limpa pelas mesmas regras do painel; os códigos dela também entram na busca
+      const fi = P.cleanFicha(p.ficha);
+      const fiTxt = fi ? [fi.sap, fi.ean, fi.eanCx, fi.ncm, fi.grupo].filter(Boolean).join(' ') : '';
+      const txt = joinUnits(norm(`${sku} ${p.name} ${p.category || ''} ${p.benefit || ''} ${p.capacity || ''} ${p.description || ''} ${fiTxt}`));
+      const item = { ...p, sku, _n: txt };
+      if (fi) item.ficha = fi; else delete item.ficha;
+      out.bySku.set(key, item);
     }
     // Só hotspots válidos, de catálogos visíveis, dentro do número de páginas e de produtos existentes
     const pages = new Map(list.map((c) => [c.id, Math.max(1, Number(c.pages) || 1)]));
@@ -2211,11 +2299,34 @@
       if (!out.spots.has(key)) out.spots.set(key, []);
       out.spots.get(key).push(h);
     }
+    // Produto na página SEM área desenhada (varredura automática do painel). Hotspot do mesmo produto na mesma página prevalece.
+    for (const l of Array.isArray(data.pageLinks) && P.validPageLink ? data.pageLinks : []) {
+      if (!P.validPageLink(l) || !(l.page <= pages.get(l.catalogId))) continue;
+      const key = P.skuKey(l.product);
+      if (!out.bySku.has(key)) continue;
+      const drawn = out.byCatPage.has(l.catalogId) && out.byCatPage.get(l.catalogId).get(l.page);
+      if (drawn && drawn.some((h) => P.skuKey(h.product) === key)) continue;
+      if (!out.links.has(l.catalogId)) out.links.set(l.catalogId, new Map());
+      const m = out.links.get(l.catalogId);
+      if (!m.has(l.page)) m.set(l.page, []);
+      if (m.get(l.page).includes(key)) continue;
+      m.get(l.page).push(key);
+      if (!out.linkSpots.has(key)) out.linkSpots.set(key, []);
+      out.linkSpots.get(key).push({ catalogId: l.catalogId, page: l.page });
+    }
     return out;
   }
   const prodBySku = (sku) => (PROD && sku ? PROD.bySku.get(P.skuKey(sku)) || null : null);
   const hotspotsOn = (cid, page) => (PROD && PROD.byCatPage.has(cid) && PROD.byCatPage.get(cid).get(page)) || [];
-  const catHasHotspots = (cid) => !!(PROD && PROD.byCatPage.has(cid));
+  // Produtos ligados à página sem área (pageLinks), já sem os que têm hotspot ali
+  const linksOn = (cid, page) => ((PROD && PROD.links.has(cid) && PROD.links.get(cid).get(page)) || []).map((k) => PROD.bySku.get(k)).filter(Boolean);
+  const catHasHotspots = (cid) => !!(PROD && (PROD.byCatPage.has(cid) || PROD.links.has(cid)));
+  // Páginas (sem área) onde o produto aparece, na mesma ordem de productSpots
+  function productLinks(sku, preferCid) {
+    const list = (PROD && PROD.linkSpots.get(P.skuKey(sku))) || [];
+    const ord = (h) => (h.catalogId === preferCid ? -1 : CATALOGS.findIndex((c) => c.id === h.catalogId));
+    return list.slice().sort((a, b) => ord(a) - ord(b) || a.page - b.page);
+  }
   // Onde o produto aparece: o catálogo preferido primeiro, depois a ordem da prateleira e a página
   function productSpots(sku, preferCid) {
     const list = (PROD && PROD.spots.get(P.skuKey(sku))) || [];
@@ -2410,6 +2521,7 @@
       view: o.view === 'lista' || o.view === 'grade' ? o.view : undefined, // prateleira em lista ou grade
       legacyOff: o.legacyOff === true ? true : undefined, // aviso do acesso antigo já dispensado neste usuário
       panel: typeof o.panel === 'boolean' ? o.panel : undefined, // painel "Nesta página" aberto no computador
+      fichas: typeof o.fichas === 'boolean' ? o.fichas : undefined, // etiquetas de ficha técnica na página (padrão: ligadas)
       card: normCard(o.card), // cartão de visita digital (a foto fica no IndexedDB 'dm-cartao')
       interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
         .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : []
@@ -2452,6 +2564,7 @@
     if (prefs.view) out.view = prefs.view;
     if (prefs.legacyOff) out.legacyOff = true;
     if (typeof prefs.panel === 'boolean') out.panel = prefs.panel;
+    if (typeof prefs.fichas === 'boolean') out.fichas = prefs.fichas;
     if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
     prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests;
@@ -3448,8 +3561,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=27ffad6c';
-      s.integrity = 'sha384-FGmLZ95OKatNnFgDrXgihSTsV2tmL8tYIcwLEywAEEnXLirCoYabzcIpSAtBBqfu';
+      s.src = 'painel.js?v=f38a5762';
+      s.integrity = 'sha384-EO+8oN7aHti5aFs0J3quMJ3jWWKiTNbOrTZD0kiOa4fcZk2zpA/VLaJIxaJdPKle';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -3979,12 +4092,15 @@
       .map((c, ci) => { const t = joinUnits(norm(`${c.title} ${c.kind} ${(c.lines || []).join(' ')} ${c.desc || ''}`)); return terms.every((x) => t.includes(x)) ? { c, ci, s: score(t) } : null; })
       .filter(Boolean).sort((a, b) => b.s - a.s || a.ci - b.ci).map((x) => x.c);
     // Produtos: código exato primeiro, depois início do código; senão todas as palavras (nome, categoria, benefício, capacidade, descrição)
-    const qk = P.skuKey(nq), prodAll = [];
+    // Código exato: SKU e também o código SAP e o EAN da ficha técnica (busca local nos produtos já carregados; busca.bin intacto)
+    const qk = P.skuKey(nq), qd = nq.replace(/\D/g, ''), prodAll = [];
+    const fichaCode = (f) => !!f && ((qk.length >= 2 && P.skuKey(f.sap) === qk) ||
+      (qd.length >= 8 && (String(f.ean || '').replace(/\D/g, '') === qd || String(f.eanCx || '').replace(/\D/g, '') === qd)));
     if (PROD) for (const p of PROD.bySku.values()) {
-      const spot = productSpots(p.sku, onlyCat)[0] || null;
+      const spot = productSpots(p.sku, onlyCat)[0] || productLinks(p.sku, onlyCat)[0] || null; // área desenhada ou, sem ela, a página ligada
       if (onlyCat && (!spot || spot.catalogId !== onlyCat)) continue; // busca do leitor: só produtos deste catálogo
       const key = P.skuKey(p.sku);
-      const s = key === qk ? 1000 : qk.length >= 2 && key.startsWith(qk) ? 500 : terms.every((x) => p._n.includes(x)) ? score(p._n) : -1;
+      const s = key === qk || fichaCode(p.ficha) ? 1000 : qk.length >= 2 && key.startsWith(qk) ? 500 : terms.every((x) => p._n.includes(x)) ? score(p._n) : -1;
       if (s >= 0) prodAll.push({ p, spot, s });
     }
     const prodHits = prodAll.sort((a, b) => b.s - a.s || a.p.name.localeCompare(b.p.name, 'pt-BR')).slice(0, 8);
@@ -4060,7 +4176,7 @@
       html += `<p class="res-group" role="presentation">Produtos</p>` + r.prodHits.map(({ p, spot }) => {
         const c = spot && cat(spot.catalogId);
         const thumb = c ? resThumb(c, spot.page) : `<span class="res-ph" aria-hidden="true">${I.tag}</span>`;
-        return opt(`${thumb}<span><b>${esc(p.name)}</b><span class="where">Código ${esc(p.sku)}${c ? ` · ${esc(c.title)} · página ${spot.page}` : ''}</span></span>`, c ? c.id : '', c ? spot.page : 1, p.sku);
+        return opt(`${thumb}<span><b>${esc(p.name)}</b><span class="where">${[shownCode(p) && `Código ${esc(shownCode(p))}`, c && `${esc(c.title)} · página ${spot.page}`].filter(Boolean).join(' · ')}</span></span>`, c ? c.id : '', c ? spot.page : 1, p.sku);
       }).join('');
     }
     if (r.catHits.length) {
@@ -4297,12 +4413,101 @@
     const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9));
     return blob ? URL.createObjectURL(blob) : null;
   }
+  /* ----- ficha técnica (produtos.bin → products[SKU].ficha; vem da planilha mestre) -----
+     Um bloco só, usado na ficha do produto e no painel "Nesta página" → Produtos.
+     Sem ficha, nada é desenhado (fichaHTML devolve ''), e a tela fica exatamente como era. */
+  const fichaNA = (v) => /^n[ãa]o\s*(se\s*)?aplic/i.test(String(v || '').trim()); // "Não aplicável": mostra a linha, não o selo
+  const fmtDec = (n, min, max) => Number(n).toLocaleString('pt-BR', { minimumFractionDigits: min, maximumFractionDigits: max });
+  // EAN legível na tela ("7 898952 570435", como no código de barras); a cópia leva só os dígitos
+  function fmtEan(v) {
+    const d = String(v || '').replace(/\D/g, '');
+    if (!P.eanOk(d)) return String(v || '');
+    if (d.length === 14) return `${d.slice(0, 2)} ${d.slice(2, 8)} ${d.slice(8)}`;
+    if (d.length === 13) return `${d.slice(0, 1)} ${d.slice(1, 7)} ${d.slice(7)}`;
+    if (d.length === 12) return `${d.slice(0, 6)} ${d.slice(6)}`;
+    if (d.length === 8) return `${d.slice(0, 4)} ${d.slice(4)}`;
+    return d;
+  }
+  // Campos preenchidos, na ordem de P.FICHA_CAMPOS: { label, show (tela), copy (área de transferência) }
+  function fichaRows(p) {
+    const f = p && p.ficha;
+    if (!f || typeof f !== 'object') return [];
+    const out = [];
+    for (const [k, label, unit] of P.FICHA_CAMPOS) {
+      const v = f[k];
+      if (k === 'sap' || v === undefined || v === null || v === '') continue; // código SAP é interno: nunca aparece no site (só a busca o usa)
+      let show, copy;
+      if (typeof v === 'number') {
+        if (!isFinite(v)) continue;
+        // cubagem "0,160" (caixas pequenas: até 6 casas, "0,00048"); caixa master "1"; peso "15,5"
+        const dec = k === 'cubagem' ? (v >= 0.01 ? [3, 3] : [2, 6]) : k === 'cxUn' ? [0, 0] : [0, 3];
+        show = fmtDec(v, dec[0], dec[1]) + (unit ? ' ' + unit : '');
+        copy = show;
+      } else if (k === 'ean' || k === 'eanCx') {
+        const d = String(v).replace(/\D/g, '');
+        show = fmtEan(v);
+        copy = P.eanOk(d) ? d : String(v); // colar num sistema pede os dígitos, sem os espaços da leitura
+      } else {
+        show = copy = String(v) + (unit ? ' ' + unit : '');
+      }
+      out.push({ k, label, show, copy });
+    }
+    return out;
+  }
+  // Selos: só quando o número existe de verdade (nada de selo para "Não aplicável")
+  // Código exibido: o SAP (vindo da planilha) nunca aparece; produto cujo código É o SAP fica sem linha de código
+  function shownCode(p) { if (!p) return ''; const f = p.ficha; return f && f.sap && P.skuKey(f.sap) === P.skuKey(p.sku) ? '' : String(p.sku || ''); }
+  const fichaSelos = (p) => (p && p.ficha ? [['ANVISA', p.ficha.anvisa], ['INMETRO', p.ficha.inmetro]] : [])
+    .filter(([, v]) => v && !fichaNA(v)).map(([nome, v]) => ({ nome, v: String(v) }));
+  // Texto para colar: nome do produto e uma linha por campo, na ordem da ficha (começa pelo EAN)
+  function fichaText(p) {
+    const rows = fichaRows(p);
+    return rows.length ? [p.name, ...rows.map((r) => `${r.label}: ${r.copy}`)].join('\n') : '';
+  }
+  const FICHA_FOLD = 6; // celular: campos visíveis antes do "Ver mais"
+  // Peças da ficha (bloco completo e balão da página usam as mesmas)
+  const fichaSelosHTML = (p) => { const s = fichaSelos(p); return s.length ? `<p class="fi-selos">${s.map((x) => `<span class="fi-selo" title="${esc(x.nome)} ${esc(x.v)}" aria-label="${esc(x.nome)}: ${esc(x.v)}">${esc(x.nome)}</span>`).join('')}</p>` : ''; };
+  const fichaRowHTML = (r) => `<li class="fi-row"><span class="fi-k">${esc(r.label)}</span><span class="fi-v">${esc(r.show)}</span><button type="button" class="fi-cp" data-ficha-v="${esc(r.copy)}" title="Copiar" aria-label="Copiar ${esc(r.label)}: ${esc(r.show)}">${I.copy}</button></li>`;
+  const fichaCopyBtn = (p) => `<button type="button" class="btn ghost sm" data-ficha-copy="${esc(p.sku)}" aria-label="Copiar a ficha técnica de ${esc(p.name)}">${I.copy}Copiar ficha</button>`;
+  function fichaHTML(p) {
+    const rows = fichaRows(p);
+    if (!rows.length) return '';
+    const fold = rows.length > FICHA_FOLD, rest = rows.length - FICHA_FOLD;
+    return `<section class="ficha" aria-label="Ficha técnica de ${esc(p.name)}">
+      <div class="fi-head"><h3 class="label-caps">Ficha técnica</h3>${fichaCopyBtn(p)}</div>
+      ${fichaSelosHTML(p)}
+      <ul class="fi-list${fold ? ' fold' : ''}">${rows.map(fichaRowHTML).join('')}</ul>
+      ${fold ? `<button type="button" class="link fi-more" data-ficha-more aria-expanded="false">Ver mais (${fmtN(rest)})</button>` : ''}
+    </section>`;
+  }
+  // Cliques da ficha (copiar campo, copiar tudo, "Ver mais"). Devolve true quando tratou o clique.
+  function fichaClick(t) {
+    if (!t || !t.closest) return false;
+    const more = t.closest('[data-ficha-more]');
+    if (more) {
+      const list = $('.fi-list', more.closest('.ficha'));
+      const open = list ? list.classList.toggle('fold') === false : false;
+      more.setAttribute('aria-expanded', String(open));
+      more.textContent = open ? 'Ver menos' : `Ver mais (${fmtN($$('.fi-row', more.closest('.ficha')).length - FICHA_FOLD)})`;
+      return true;
+    }
+    const one = t.closest('[data-ficha-v]');
+    if (one) { copyText(one.dataset.fichaV, 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'ficha_campo' }); return true; }
+    const all = t.closest('[data-ficha-copy]');
+    if (all) {
+      const p = prodBySku(all.dataset.fichaCopy), txt = p ? fichaText(p) : '';
+      if (txt) { copyText(txt, 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'ficha', product_sku: p.sku }); }
+      return true;
+    }
+    return false;
+  }
+
   // Ficha do produto (painel). where: { catalogId, page, spot } — o toque no "+" nunca sai da página.
   function openProductCard(p, where = {}) {
     const c = cat(where.catalogId), page = c ? where.page || 1 : 0;
     const com = commercialInfo(), url = safeUrl(p.url), params = prodParams(p, c, page);
     const contact = com.wa ? 'wa' : com.mail ? 'mail' : '';
-    const facts = [['Código', p.sku], ['Categoria', p.category], ['Capacidade', p.capacity]].filter(([, v]) => v);
+    const facts = [['Código', shownCode(p)], ['Categoria', p.category], ['Capacidade', p.capacity]].filter(([, v]) => v);
     const spot = { catalogId: c ? c.id : '', page: page || 1 };
     let blob = null, alive = true;
     openDialog({
@@ -4311,6 +4516,7 @@
         ${p.benefit ? `<p class="pc-benefit">${esc(p.benefit)}</p>` : ''}
         <dl class="pc-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
         ${p.description ? `<p class="pc-desc">${esc(p.description)}</p>` : ''}
+        ${fichaHTML(p)}
         <div class="pc-actions">
           ${url ? `<a class="btn primary block" id="pcVer" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Ver produto</a>` : ''}
           ${contact ? `<button type="button" class="btn ${url ? 'ghost' : 'primary'} block" id="pcTalk">${contact === 'wa' ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}
@@ -4328,6 +4534,8 @@
       media.classList.remove('loading');
       media.innerHTML = u ? `<img src="${esc(u)}" alt="${esc(p.name)}">` : `<span class="pc-ph">${I.tag}<span>Imagem indisponível</span></span>`;
     });
+    const fi = $('.ficha', dlg); // copiar campo, copiar ficha e "Ver mais" (mesmo tratamento do painel)
+    if (fi) fi.addEventListener('click', (e) => fichaClick(e.target));
     const ib = $('#pcInt');
     const paintInt = () => { const on = isInterest(p.sku); ib.setAttribute('aria-pressed', String(on)); ib.innerHTML = on ? `Nos seus interesses ${I.check}` : `${I.heart} Adicionar aos interesses`; };
     paintInt();
@@ -4356,7 +4564,7 @@
     const cut = items.length && channel === 'whatsapp' ? quoteFit(items, com.wa).cut : 0;
     const row = (x) => {
       const p = prodBySku(x.sku), c = cat(x.catalogId), name = p ? p.name : x.sku;
-      return `<li class="int-item"><button type="button" class="int-open" data-int-open="${esc(x.sku)}"><b>${esc(name)}</b><span class="where">Código ${esc(p ? p.sku : x.sku)}${c ? ` · ${esc(c.title)} · página ${x.page}` : ''}</span></button><button type="button" class="int-rm" data-int-rm="${esc(x.sku)}" aria-label="Remover ${esc(name)} dos interesses" title="Remover">${I.close}</button></li>`;
+      return `<li class="int-item"><button type="button" class="int-open" data-int-open="${esc(x.sku)}"><b>${esc(name)}</b><span class="where">${[(p ? shownCode(p) : x.sku) && `Código ${esc(p ? shownCode(p) : x.sku)}`, c && `${esc(c.title)} · página ${x.page}`].filter(Boolean).join(' · ')}</span></button><button type="button" class="int-rm" data-int-rm="${esc(x.sku)}" aria-label="Remover ${esc(name)} dos interesses" title="Remover">${I.close}</button></li>`;
     };
     openDialog({
       title: 'Produtos de interesse', variant: 'panel',
@@ -4414,6 +4622,12 @@
     if (!p) { toast('Este produto não está disponível.'); return; }
     const h = productSpots(p.sku, preferCid)[0];
     if (h) { goProduct(p.sku, h.catalogId, h.page); return; }
+    // Sem área desenhada, mas ligado a uma página (pageLinks): abre a página, sem destaque (não há "+" para destacar)
+    const l = productLinks(p.sku, preferCid)[0];
+    if (l && cat(l.catalogId)) {
+      if (R.cat && R.cat.id === l.catalogId && view === 'reader') goTo(l.page - 1); else navigate(catalogHash(l.catalogId, l.page));
+      return;
+    }
     const pi = p.image && cat(p.image.catalogId) ? p.image : null;
     openProductCard(p, pi ? { catalogId: pi.catalogId, page: pi.page } : R.cat ? { catalogId: R.cat.id, page: curIndex() + 1 } : {});
   }
@@ -4430,11 +4644,17 @@
 
   /* ================= leitor ================= */
   const stage = $('#stage'), holder = $('#holder'), pan = $('#pan'), thumbs = $('#thumbs');
+  // Balão da ficha na página: um elemento só, criado uma vez e reaproveitado (fica no leitor, fora do livro: não pesa na virada)
+  const fiPop = document.createElement('div');
+  fiPop.className = 'fi-pop'; fiPop.id = 'fiPop'; fiPop.hidden = true; fiPop.tabIndex = -1;
+  fiPop.setAttribute('role', 'dialog');
+  V.reader.appendChild(fiPop);
+  const FP = { anchor: null, p: null, where: null, key: '' };
   const counter = $('#counter'), jump = $('#jump'), zoomLevel = $('#zoomLevel'), rLoader = $('#rLoader');
   const btn = {
     first: $('#btnFirst'), prev: $('#btnPrev'), next: $('#btnNext'), last: $('#btnLast'),
     aPrev: $('#arrowPrev'), aNext: $('#arrowNext'), thumbs: $('#btnThumbs'),
-    zin: $('#btnZoomIn'), zout: $('#btnZoomOut'), sound: $('#btnSound'), fs: $('#btnFs')
+    zin: $('#btnZoomIn'), zout: $('#btnZoomOut'), sound: $('#btnSound'), fs: $('#btnFs'), fichas: $('#btnFichas')
   };
   const ZOOMS = [1, 1.5, 2, 3, 4], ZMAX = ZOOMS[ZOOMS.length - 1];
   const MIN_PAGE_W = 260;
@@ -4637,6 +4857,7 @@
     pf.on('changeState', (e) => {
       R.pfState = e.data;
       stage.classList.toggle('flipping', e.data === 'flipping' || e.data === 'user_fold'); // esconde os "+" durante a virada
+      if (e.data === 'flipping' || e.data === 'user_fold') closeFichaPop(false); // o balão da ficha fecha ao virar a página
       if (e.data === 'flipping') { playFlip(); if (R.z > 1) zoomTo(1); if (pf.getCurrentPageIndex() === 0 || isLastLone()) setShift(0); }
       else if (e.data === 'read') syncUI();
     });
@@ -4658,6 +4879,7 @@
   function applyTransform() {
     holder.style.transform = `translate(${R.shift + R.tx}px, ${R.ty}px) scale(${R.z})`;
     holder.style.setProperty('--z', R.z); // o "+" compensa o zoom e mantém o tamanho
+    if (!fiPop.hidden) placeFichaPop(); // zoom e arrasto: o balão acompanha a etiqueta (ou fecha se ela sair da tela)
   }
   function syncUI() {
     if (!R.cat) return;
@@ -4677,6 +4899,7 @@
     if (R.simple) fillPageTexts();
     renderHotspots();
     const cid = R.cat.id, key = cid + ':' + s.join(',');
+    if (!fiPop.hidden) { if (FP.key !== key) closeFichaPop(false); else placeFichaPop(); } // outra página: o balão fecha
     if (pageTimer.cur && pageTimer.cur.key !== key) pageTimer.end('page_change');
     clearTimeout(R.statusT);
     R.statusT = setTimeout(() => { $('#rStatus').textContent = `Página ${label} de ${R.n}`; }, 600);
@@ -4736,7 +4959,15 @@
   /* ----- produtos na página: "+" sobre cada produto, só nas páginas visíveis ----- */
   function hotspotHTML(h, i) {
     const p = prodBySku(h.product);
-    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-label="Ver produto: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Ver produto</span></button></div>`;
+    // Produto com ficha técnica: etiqueta "Ficha" no canto da área (abre o balão ali mesmo)
+    const tag = fichaRows(p).length ? `<button type="button" class="hs-ficha" data-page="${h.page}" data-i="${i}" aria-haspopup="dialog" aria-expanded="false" aria-label="Ficha técnica: ${esc(p.name)}">Ficha</button>` : '';
+    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-label="Ver produto: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Ver produto</span></button>${tag}</div>`;
+  }
+  // Produtos ligados à página sem área (pageLinks): uma faixa no pé da página que abre a lista no "Nesta página"
+  function linksStripHTML(page, list) {
+    if (!list.length) return '';
+    const n = plural(list.length, 'produto', 'produtos');
+    return `<button type="button" class="pg-links" data-links-page="${page}" aria-label="${esc(n)} nesta página: ${esc(list.map((p) => p.name).join(', '))}. Abrir a lista" title="Ver os produtos desta página">${I.tag}<span>${esc(n)} nesta página</span></button>`;
   }
   // Modo simples: a imagem usa object-fit: contain; a camada cobre só a área real da página
   function fitSimpleLayer(layer) {
@@ -4752,12 +4983,13 @@
     const cid = R.cat.id, vis = R.simple ? [R.cur] : spreadOf(curIndex());
     R.pages.forEach((host, i) => {
       const idx = R.simple ? R.cur : i;
-      const list = vis.includes(idx) ? hotspotsOn(cid, idx + 1) : [];
+      const on = vis.includes(idx), list = on ? hotspotsOn(cid, idx + 1) : [], links = on ? linksOn(cid, idx + 1) : [];
       let layer = $(':scope > .interactive-layer', host);
-      if (!list.length) { if (layer) layer.remove(); return; }
+      if (!list.length && !links.length) { if (layer) layer.remove(); return; }
       if (!layer) { layer = document.createElement('div'); layer.className = 'interactive-layer'; host.appendChild(layer); }
       const key = cid + ':' + (idx + 1);
-      if (layer.dataset.key !== key) { layer.dataset.key = key; layer.innerHTML = list.map(hotspotHTML).join(''); }
+      // Mesma página: a camada (com "+", etiquetas e faixa) é reaproveitada, sem redesenhar
+      if (layer.dataset.key !== key) { layer.dataset.key = key; layer.innerHTML = list.map(hotspotHTML).join('') + linksStripHTML(idx + 1, links); }
       if (R.simple) fitSimpleLayer(layer);
     });
     showHighlight();
@@ -4788,6 +5020,100 @@
     trackCatalogEvent('catalog_product_click', { ...prodParams(p, R.cat, page), action: 'hotspot' });
     openProductCard(p, { catalogId: R.cat.id, page, spot: h });
   }
+  /* ----- balão da ficha na página (etiqueta "Ficha"): campos principais, selos, copiar e "Ver ficha completa" ----- */
+  const FP_KEYS = ['ean', 'med', 'peso', 'cxUn', 'cubagem', 'ncm']; // ANVISA e INMETRO aparecem como selos acima
+  function openFichaPop(b) {
+    if (!R.cat) return;
+    if (FP.anchor === b && !fiPop.hidden) { closeFichaPop(true); return; }
+    const page = +b.dataset.page, h = hotspotsOn(R.cat.id, page)[+b.dataset.i], p = h && prodBySku(h.product);
+    if (!p) return;
+    closeFichaPop(false);
+    const rows = fichaRows(p).filter((r) => FP_KEYS.includes(r.k));
+    FP.anchor = b; FP.p = p; FP.where = { catalogId: R.cat.id, page, spot: h };
+    FP.key = R.cat.id + ':' + spreadOf(curIndex()).join(',');
+    fiPop.setAttribute('aria-label', `Ficha técnica: ${p.name}`);
+    fiPop.innerHTML = `<div class="fp-head"><b>${esc(p.name)}</b><button type="button" class="fp-x" data-fp-close aria-label="Fechar a ficha" title="Fechar (Esc)">${I.close}</button></div>
+      ${fichaSelosHTML(p)}
+      ${rows.length ? `<ul class="fi-list">${rows.map(fichaRowHTML).join('')}</ul>` : ''}
+      <div class="fp-acts">${fichaCopyBtn(p)}<button type="button" class="btn primary sm" data-fp-full>Ver ficha completa</button></div>`;
+    fiPop.hidden = false;
+    b.setAttribute('aria-expanded', 'true');
+    placeFichaPop();
+    fiPop.focus({ preventScroll: true });
+    trackCatalogEvent('catalog_product_click', { ...prodParams(p, R.cat, page), action: 'ficha' });
+  }
+  // Ancora o balão à etiqueta: abaixo (ou acima, se faltar espaço), alinhado ao canto do produto e sempre dentro da tela
+  function placeFichaPop() {
+    const b = FP.anchor;
+    if (fiPop.hidden || !b) return;
+    const r = b.getBoundingClientRect(), M = 8, G = 6;
+    const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    if (!b.isConnected || !r.width || r.bottom < 0 || r.top > vh || r.right < 0 || r.left > vw) { closeFichaPop(false); return; }
+    fiPop.style.maxHeight = '';
+    const w = fiPop.offsetWidth, below = vh - r.bottom - G - M, above = r.top - G - M;
+    let h = fiPop.offsetHeight, top;
+    if (h <= below || below >= above) {
+      if (h > below) { fiPop.style.maxHeight = Math.max(140, below) + 'px'; h = fiPop.offsetHeight; }
+      top = r.bottom + G;
+    } else {
+      if (h > above) { fiPop.style.maxHeight = Math.max(140, above) + 'px'; h = fiPop.offsetHeight; }
+      top = r.top - G - h;
+    }
+    let left = r.right - w; // alinhado à direita da etiqueta; na borda esquerda (ou na página da esquerda) vira para o outro lado
+    if (left < M) left = r.left;
+    fiPop.style.left = Math.round(clamp(left, M, Math.max(M, vw - M - w))) + 'px';
+    fiPop.style.top = Math.round(clamp(top, M, Math.max(M, vh - M - h))) + 'px';
+  }
+  function closeFichaPop(refocus) {
+    if (fiPop.hidden) return;
+    const b = FP.anchor;
+    fiPop.hidden = true; fiPop.innerHTML = '';
+    FP.anchor = FP.p = FP.where = null;
+    if (b) { b.setAttribute('aria-expanded', 'false'); if (refocus && b.isConnected) b.focus({ preventScroll: true }); }
+  }
+  fiPop.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t.closest('[data-fp-close]')) { closeFichaPop(true); return; }
+    if (t.closest('[data-fp-full]')) { const p = FP.p, w = FP.where; closeFichaPop(false); if (p) openProductCard(p, w); return; }
+    fichaClick(t); // copiar campo e "Copiar ficha": mesmo tratamento da ficha completa
+  });
+  // Fecha com toque/clique fora e com Esc (antes dos atalhos do leitor)
+  document.addEventListener('pointerdown', (e) => {
+    if (fiPop.hidden || fiPop.contains(e.target) || (FP.anchor && FP.anchor.contains(e.target))) return;
+    closeFichaPop(false);
+  }, true);
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || fiPop.hidden) return;
+    e.preventDefault(); e.stopPropagation(); closeFichaPop(true);
+  }, true);
+  window.addEventListener('resize', () => { if (!fiPop.hidden) placeFichaPop(); });
+  // Faixa "N produtos nesta página": abre o "Nesta página" na aba Produtos
+  function openLinksList() {
+    closeFichaPop(false);
+    setPanelTab('prod');
+    if (!panelShown()) togglePanel(); else $('#rPanelTitle').focus({ preventScroll: true });
+  }
+  // Chave "Fichas" do leitor (prefs.fichas; padrão ligada): mostra ou esconde etiquetas e faixas, sem redesenhar a página
+  function catHasFichas(cid) {
+    if (!PROD) return false;
+    if (PROD.links.has(cid)) return true;
+    const m = PROD.byCatPage.get(cid);
+    if (m) for (const list of m.values()) if (list.some((h) => fichaRows(prodBySku(h.product)).length)) return true;
+    return false;
+  }
+  function applyFichas() {
+    const on = !(prefs && prefs.fichas === false);
+    V.reader.classList.toggle('fichas-off', !on);
+    btn.fichas.setAttribute('aria-pressed', String(on));
+    btn.fichas.hidden = !(R.cat && catHasFichas(R.cat.id));
+    if (!on) closeFichaPop(false);
+  }
+  btn.fichas.addEventListener('click', () => {
+    prefs.fichas = prefs.fichas === false;
+    savePrefs();
+    applyFichas();
+    toast(prefs.fichas ? 'Fichas visíveis na página.' : 'Fichas escondidas: só a arte do catálogo.');
+  });
   // Vai à página do produto no catálogo aberto e marca o destaque (sem "+" neste catálogo: abre a ficha)
   function aimProduct(t) {
     if (!t.page) { openProductCard(t.p, { catalogId: R.cat.id, page: curIndex() + 1 }); return; }
@@ -4841,6 +5167,7 @@
       }
     }
     $('#rNote').hidden = !R.fallback;
+    applyFichas(); // chave "Fichas": só aparece em catálogo com ficha ou produtos ligados às páginas
     zoomTo(1);
     syncUI();
     $('#rTitle').focus({ preventScroll: true });
@@ -4857,6 +5184,7 @@
     const id = R.cat.id;
     pageTimer.end('close');
     saveProgressNow();
+    closeFichaPop(false);
     sheet.close(false);
     resetPanel();
     try { if (R.pf) R.pf.destroy(); } catch (e) { /* noop */ }
@@ -4923,6 +5251,13 @@
       seen.add(k);
       out.push({ p, h, page: i + 1 });
     }));
+    // Depois, os produtos ligados à página sem área (pageLinks): h = null (sem "+" para destacar)
+    idxs.forEach((i) => linksOn(cid, i + 1).forEach((p) => {
+      const k = P.skuKey(p.sku);
+      if (seen.has(k)) return;
+      seen.add(k);
+      out.push({ p, h: null, page: i + 1 });
+    }));
     return out;
   }
   function schedulePanel() { clearTimeout(NP.t); NP.t = setTimeout(renderPanel, 150); }
@@ -4966,12 +5301,13 @@
     const box = $('#rpProd'), gen = NP.gen;
     if (!items.length) { box.innerHTML = '<p class="np-empty">Nenhum produto marcado nestas páginas.</p>'; return; }
     box.innerHTML = `<ul class="np-list">${items.map((x, i) => `<li class="np-item" data-np="${i}">
-        <button type="button" class="np-hit"><span class="np-img loading" aria-hidden="true"></span><span class="np-txt"><b>${esc(x.p.name)}</b><span>Código ${esc(x.p.sku)}</span>${x.p.capacity ? `<span>${esc(x.p.capacity)}</span>` : ''}<span class="sr-only">· mostrar na página ${x.page}</span></span></button>
+        <button type="button" class="np-hit"><span class="np-img loading" aria-hidden="true"></span><span class="np-txt"><b>${esc(x.p.name)}</b>${shownCode(x.p) ? `<span>Código ${esc(shownCode(x.p))}</span>` : ''}${x.p.capacity ? `<span>${esc(x.p.capacity)}</span>` : ''}<span class="sr-only">· mostrar na página ${x.page}</span></span></button>
         <div class="np-acts">
           <button type="button" class="btn sm" data-np-act="copy" aria-label="Copiar dados de ${esc(x.p.name)}">${I.copy}Copiar</button>
           <button type="button" class="btn sm" data-np-act="int" aria-pressed="${isInterest(x.p.sku)}" aria-label="Interesse: ${esc(x.p.name)}">${I.heart}Interesse</button>
           <button type="button" class="btn sm" data-np-act="view" aria-label="Ver ficha de ${esc(x.p.name)}">Ver</button>
         </div>
+        ${fichaHTML(x.p)}
       </li>`).join('')}</ul>`;
     // Um recorte por vez (mesma lógica da ficha do produto), descartado se o painel mudou enquanto carregava
     (async () => {
@@ -4994,7 +5330,7 @@
   function productBlock(it) {
     const p = it.p, c = R.cat;
     const link = safeUrl(p.url) || (c ? `${location.origin}${location.pathname}${catalogHash(c.id, it.page, p.sku)}` : '');
-    return [p.name, `Código: ${p.sku}`, p.category && `Categoria: ${p.category}`, p.capacity && `Capacidade: ${p.capacity}`, p.benefit && `Benefício: ${p.benefit}`, link && `Link: ${link}`].filter(Boolean).join('\n');
+    return [p.name, shownCode(p) && `Código: ${shownCode(p)}`, p.category && `Categoria: ${p.category}`, p.capacity && `Capacidade: ${p.capacity}`, p.benefit && `Benefício: ${p.benefit}`, link && `Link: ${link}`].filter(Boolean).join('\n');
   }
   // Texto extraído para leitura: junta letras soltas de texto vertical, tira espaços repetidos e linhas vazias em excesso
   function cleanPageText(t) {
@@ -5054,6 +5390,7 @@
     const t = e.target;
     const tab = t.closest('[role="tab"]');
     if (tab) { setPanelTab(tab.dataset.tab); return; }
+    if (fichaClick(t)) return; // a ficha fica dentro do item: tratada antes do destaque do "+"
     const li = t.closest('[data-np]');
     if (li) {
       const it = NP.prod[+li.dataset.np]; if (!it) return;
@@ -5248,8 +5585,11 @@
   pan.addEventListener('pointerup', (e) => {
     const d = pan._down; pan._down = null;
     if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) return;
-    const hs = document.elementsFromPoint(e.clientX, e.clientY).find((el) => el.classList && el.classList.contains('product-hotspot'));
-    if (hs) openHotspot(hs);
+    const hs = document.elementsFromPoint(e.clientX, e.clientY).find((el) => el.classList && (el.classList.contains('product-hotspot') || el.classList.contains('hs-ficha') || el.classList.contains('pg-links')));
+    if (!hs) return;
+    if (hs.classList.contains('hs-ficha')) openFichaPop(hs);
+    else if (hs.classList.contains('pg-links')) openLinksList();
+    else openHotspot(hs);
   });
   // Pinça no touchpad (Ctrl + roda)
   stage.addEventListener('wheel', (e) => {
@@ -5259,11 +5599,14 @@
   }, { passive: false });
   // Botão "Tentar de novo" e "+" do produto dentro da página: o folheador não deve tratar esse toque (nem arrastar a folha)
   ['mousedown', 'touchstart', 'pointerdown'].forEach((t) => holder.addEventListener(t, (e) => {
-    if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot')) e.stopPropagation();
+    if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot, .hs-ficha, .pg-links')) e.stopPropagation();
   }, { capture: true, passive: true }));
   holder.addEventListener('click', (e) => {
     const hs = e.target.closest('.product-hotspot');
     if (hs) { e.stopPropagation(); openHotspot(hs); return; }
+    const tg = e.target.closest('.hs-ficha'); // etiqueta "Ficha": balão ancorado na página
+    if (tg) { e.stopPropagation(); openFichaPop(tg); return; }
+    if (e.target.closest('.pg-links')) { e.stopPropagation(); openLinksList(); return; }
     const b = e.target.closest('[data-retry-page]');
     if (!b) return;
     e.stopPropagation();
