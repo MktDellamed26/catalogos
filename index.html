@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-PZq+mINAZTy1/XwYowS/jtpjH3L7bp6/XEi5cqDOxj0=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-GQgdYVclG7m+VikGeUmnKoZFvrX/JwWGUXLsNQCc3bo=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -66,7 +66,7 @@
   /* Foco: azul-marinho nas superfícies claras; azul-claro só nas superfícies azul-marinho */
   :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
   .side :focus-visible, .topbar :focus-visible, .hero :focus-visible, .card-strip :focus-visible, .reader :focus-visible, .login-brand :focus-visible { outline-color: var(--sky); }
-  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible, .reader .fi-pop :focus-visible, .reader .hs-ficha:focus-visible, .reader .pg-links:focus-visible { outline-color: var(--navy); }
+  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible, .reader .fi-pop :focus-visible, .reader .hs-ficha:focus-visible, .reader .pg-links:focus-visible, .reader .cp-bar :focus-visible, .reader .cp-hit:focus-visible, .reader .cp-tbl:focus-visible, .reader .cp-selbtn:focus-visible { outline-color: var(--navy); }
   .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .warn-ico { display: inline-block; width: 15px; height: 15px; flex: none; vertical-align: -3px; }
   .warn-ico svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -448,6 +448,8 @@
   .pill-btn:hover { background: var(--white); color: var(--navy); }
   .fichas-btn[aria-pressed="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); } /* etiquetas de ficha visíveis */
   .fichas-btn[aria-pressed="true"]:hover { background: rgba(139, 184, 232, .32); color: var(--white); }
+  .copy-btn[aria-pressed="true"] { background: var(--sky); border-color: var(--sky); color: var(--navy); } /* Modo Copiar ligado */
+  .copy-btn[aria-pressed="true"]:hover { background: var(--white); border-color: var(--white); }
   .r-top #rShare { background: var(--sky); border-color: var(--sky); color: var(--navy); }
   .r-top #rShare:hover { background: var(--sky); color: var(--navy); box-shadow: inset 0 0 0 999px rgba(255, 255, 255, .22); }
   .panel-btn[aria-expanded="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); }
@@ -533,8 +535,6 @@
   .rp-pages { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
   .rp-close { color: var(--navy); }
   .rp-close:hover { background: var(--light); }
-  .rp-tabs { display: flex; margin: 0 16px 10px; background: var(--light); box-shadow: none; }
-  .rp-tabs button { flex: 1; }
   .rp-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px 16px; }
   .rp-foot { display: grid; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hair); }
   .rp-foot:empty { display: none; }
@@ -556,19 +556,6 @@
   .np-acts .btn[aria-pressed="true"] svg { fill: currentColor; }
   .np-acts .btn svg { width: 14px; height: 14px; stroke-width: 2; }
   .np-empty, .np-note { padding: 12px 14px; border-radius: 10px; background: var(--light); font-size: 13px; line-height: 1.55; color: var(--ink-2); }
-  .np-h { margin: 6px 0 8px; }
-  .rp-body .np-codes + .np-btns, .rp-body .np-empty + .np-btns { margin-top: 12px; }
-  .np-codes { display: flex; flex-wrap: wrap; gap: 6px; }
-  .code-chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border: 1px solid rgba(30, 44, 79, .3); border-radius: 999px; background: var(--white); color: var(--navy); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; cursor: pointer; }
-  .code-chip:hover { background: rgba(139, 184, 232, .2); border-color: var(--navy); }
-  .code-chip small { font-size: 10px; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
-  .np-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-  .np-btns .btn { gap: 6px; }
-  .np-btns .btn svg { width: 14px; height: 14px; stroke-width: 2; }
-  .np-page h3 { margin: 14px 0 6px; font-size: 13px; font-weight: 700; }
-  .np-page + .np-page { margin-top: 4px; }
-  .np-text { margin-top: 8px; padding: 12px 14px; border-radius: 10px; background: var(--light); font-size: 13px; line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; user-select: text; -webkit-user-select: text; }
-  .np-page h3 + .np-text { margin-top: 0; }
 
   dialog { width: min(520px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 18px; color: var(--ink); box-shadow: 0 30px 70px -20px rgba(20, 32, 60, .6); }
   dialog::backdrop { background: rgba(20, 32, 60, .55); }
@@ -632,6 +619,55 @@
   .fp-acts { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
   .fp-acts .btn { gap: 6px; }
   .fp-acts .btn svg { width: 14px; height: 14px; stroke-width: 2; }
+  /* Modo Copiar: texto transparente posicionado sobre cada página visível (mesma camada/posição dos "+"), seleção nativa,
+     toque para copiar códigos/EAN/medidas/nomes e "Copiar tabela". A página não vira por gesto enquanto ele está ligado. */
+  .reader.copy-on .interactive-layer { display: none; } /* "+", etiquetas "Ficha" e faixas "N produtos" voltam ao sair */
+  .reader.copy-on .stage.zoomed .pan { display: none; } /* com zoom o texto continua selecionável; a roda do mouse move a página */
+  .reader.copy-on .stage > .lines, .reader.copy-on .r-banner { display: none; } /* a faixa do Modo Copiar ocupa o topo */
+  .reader.copy-on .stage { padding-top: 60px; }
+  .cp-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; cursor: text; user-select: text; -webkit-user-select: text; -webkit-touch-callout: default; }
+  .stage.flipping .cp-layer { visibility: hidden; }
+  .cp-t { position: absolute; margin: 0; padding: 0; white-space: pre; color: transparent; font-family: Arial, Helvetica, sans-serif; font-weight: 400; font-style: normal; letter-spacing: 0; font-size: calc(var(--h) * var(--ppm, .5) * .87px); line-height: calc(var(--h) * var(--ppm, .5) * 1px); height: calc(var(--h) * var(--ppm, .5) * 1px); transform-origin: 0 0; }
+  @supports (height: 1cqh) {
+    /* Navegadores atuais: a fonte sai da altura da própria camada (unidade de contêiner), sem depender de medir em JS */
+    .cp-layer { container-type: size; }
+    .cp-t { font-size: calc(var(--h) * .087cqh); line-height: calc(var(--h) * .1cqh); height: calc(var(--h) * .1cqh); }
+  }
+  .cp-layer ::selection { background: rgba(30, 44, 79, .3); color: transparent; }
+  .cp-hit { border-radius: 2px; background: rgba(139, 184, 232, .3); border-bottom: 1px dotted rgba(30, 44, 79, .75); cursor: copy; }
+  .cp-hit:hover { background: rgba(139, 184, 232, .55); }
+  .cp-hit:focus-visible { outline-width: 2px; outline-offset: 1px; }
+  .cp-hit.cp-flash { animation: cp-flash .7s ease-out; }
+  @keyframes cp-flash { from { background: rgba(30, 44, 79, .6); } to { background: rgba(139, 184, 232, .3); } }
+  .cp-tbl { position: absolute; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--navy); color: var(--white); font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 6px 14px -4px rgba(20, 32, 60, .55); transform: translate(-100%, 4px) scale(calc(1 / var(--z, 1))); transform-origin: 100% 0; }
+  .cp-tbl.up { transform: translate(-100%, -115%) scale(calc(1 / var(--z, 1))); transform-origin: 100% 100%; } /* tabela no pé da página: pílula acima dela */
+  .cp-tbl.in { transform: translate(-100%, 4px) scale(calc(1 / var(--z, 1))); transform-origin: 100% 0; } /* tabela colada no topo da página: a pílula entra nela */
+  .cp-tbl::before { content: ""; position: absolute; inset: -8px -4px; } /* alvo de toque de 44 px */
+  .cp-tbl:hover { background: var(--sky); color: var(--navy); }
+  .cp-tbl svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cp-bar { position: absolute; top: 8px; left: 50%; z-index: 6; transform: translateX(-50%); width: max-content; max-width: calc(100% - 16px); display: grid; gap: 4px; padding: 4px 4px 4px 14px; border-radius: 22px; background: rgba(255, 255, 255, .97); color: var(--graphite); font-size: 13px; box-shadow: 0 10px 26px -12px rgba(0, 0, 0, .6); }
+  .cp-bar[hidden] { display: none; }
+  .cp-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .cp-lbl { display: inline-flex; align-items: center; gap: 6px; min-width: 0; margin-right: 4px; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cp-lbl b { font-family: var(--font-title); font-weight: 700; }
+  .cp-lbl .ico svg { width: 16px; height: 16px; }
+  .cp-hint, .cp-hint-s { color: var(--ink-2); }
+  .cp-hint-s { display: none; }
+  .cp-act { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--light); color: var(--navy); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; flex: none; }
+  .cp-act:hover { background: rgba(139, 184, 232, .38); }
+  .cp-act .ico svg { width: 14px; height: 14px; stroke-width: 2; }
+  .cp-act.cp-exit { background: var(--navy); color: var(--white); }
+  .cp-act.cp-exit:hover { background: var(--graphite); }
+  .cp-msg { max-width: 540px; padding: 0 10px 4px 0; font-size: 12px; line-height: 1.45; color: var(--graphite); }
+  .cp-msg:empty { display: none; }
+  .cp-msg .cp-act { height: 28px; margin-left: 6px; vertical-align: middle; }
+  .cp-tip { max-width: 540px; padding: 6px 6px 4px 0; border-top: 1px solid var(--hair); font-size: 12px; line-height: 1.45; color: var(--ink-2); }
+  .cp-tip[hidden] { display: none; }
+  .cp-tip-ok { padding: 2px 6px; border: 0; background: none; color: var(--navy); font-weight: 700; text-decoration: underline; cursor: pointer; }
+  /* Computador: mini botão "Copiar" ao lado do texto selecionado (Ctrl+C também copia) */
+  .cp-selbtn { position: fixed; z-index: 31; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 10px 24px -10px rgba(0, 0, 0, .6); }
+  .cp-selbtn[hidden] { display: none; }
+  .cp-selbtn svg { width: 14px; height: 14px; stroke-width: 2; }
   .res-ph { width: 40px; height: 52px; display: grid; place-items: center; border-radius: 2px; background: var(--light); color: var(--navy); }
   .res-ph svg, .pc-ph svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linejoin: round; }
   /* Diálogo em painel: lateral no computador, folha inferior no celular */
@@ -869,6 +905,20 @@
   }
   @media (min-width: 1200px) and (max-width: 1679px) {
     .r-top.searching .r-search .results { left: auto; right: 96px; width: min(560px, 50vw); }
+    /* Com "Copiar" (ícone + texto) na barra: "Compartilhar" e "Fichas" ficam só com o ícone (nome acessível no texto escondido) e o título respira */
+    .r-top .r-search-btn { flex: none; }
+    .r-top #rShare, .r-top .fichas-btn { width: 36px; padding: 0; justify-content: center; }
+    .r-top #rShare .txt, .r-top .fichas-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    /* Título do catálogo legível até 1679 px: "Prateleira" e "Produtos" só com ícone (o número de interesses fica), sem a porcentagem do zoom */
+    .back { width: 36px; padding: 0; justify-content: center; }
+    .back .txt, .r-top .int-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .r-top .int-btn { padding: 0 10px; }
+    .zoom-level, .bar .divider { display: none; }
+    .doc { min-width: 96px; }
+  }
+  @media (min-width: 1200px) and (max-width: 1439px) {
+    .r-top .logo { display: none; } /* a marca sai antes do nome do catálogo */
+    .r-top .logo + .doc { padding-left: 0; border-left: 0; }
   }
   /* Tablet e celular (< 1200) */
   @media (max-width: 1199px) {
@@ -892,7 +942,7 @@
     .hero h2 { font-size: 20px; }
     .hero-meta { display: none; } /* os três números só no computador */
     /* Alvos de toque ≥ 44px */
-    .chip, .sort select, .btn.sm, .seg button, .back, .pill-btn, .counter, .jump, .upd-i, .nav-i, .code-chip, .np-acts .btn, .menu button { height: 44px; min-height: 44px; }
+    .chip, .sort select, .btn.sm, .seg button, .back, .pill-btn, .counter, .jump, .upd-i, .nav-i, .np-acts .btn, .menu button { height: 44px; min-height: 44px; }
     .icon-btn { width: 44px; height: 44px; }
     .fav { width: 36px; height: 36px; }
     .fav::before { inset: -4px; }
@@ -933,6 +983,13 @@
     .r-panel { position: fixed; z-index: 20; top: 0; right: 0; bottom: 0; width: min(400px, 92vw); padding-right: var(--safe-r); border-left: 0; border-radius: 18px 0 0 18px; box-shadow: -24px 0 60px -24px rgba(20, 32, 60, .55); transform: translateX(104%); visibility: hidden; transition: transform .28s cubic-bezier(.3, .7, .2, 1), visibility 0s linear .28s; }
     .r-panel.open { transform: none; visibility: visible; transition: transform .28s cubic-bezier(.3, .7, .2, 1); }
     .rp-head { padding-top: 14px; }
+    /* Busca e "Nesta página" não encolhem abaixo do alvo de 44 px (com "Fichas" e "Copiar" na barra) */
+    .r-top .r-search-btn, .r-top .panel-btn { flex: none; min-width: 44px; justify-content: center; }
+    /* Modo Copiar: alvos de 44 px na faixa */
+    .reader.copy-on .stage { padding-top: 66px; }
+    .cp-bar { top: 6px; }
+    .cp-act, .cp-msg .cp-act { height: 44px; padding: 0 14px; }
+    .cp-tip-ok { min-height: 44px; }
     /* Gestão: sem menu lateral fixo, a barra de publicação ocupa a largura toda */
     .ger-main { min-height: calc(100vh - var(--bar-h)); min-height: calc(100dvh - var(--bar-h)); padding: 20px 24px calc(32px + var(--ger-bar-h, 0px)); }
     .ger-bar { left: 0; padding-left: var(--safe-l); }
@@ -1057,6 +1114,13 @@
     .r-panel { top: auto; left: 0; right: 0; width: auto; min-height: 50vh; max-height: 85vh; max-height: 85dvh; padding: 0 var(--safe-r) var(--safe-b) var(--safe-l); border-radius: 18px 18px 0 0; box-shadow: 0 -18px 50px -20px rgba(20, 32, 60, .55); transform: translateY(104%); }
     .r-panel::before { content: ""; flex: none; width: 40px; height: 4px; margin: 10px auto 0; border-radius: 2px; background: var(--silver); }
     .rp-head { padding: 6px 8px 6px 16px; }
+    /* Modo Copiar no celular: faixa curta; "Copiar texto da página" só com o ícone (nome acessível no aria-label) */
+    .cp-bar { max-width: calc(100% - 12px); padding-left: 12px; }
+    .cp-hint { display: none; }
+    .cp-hint-s { display: inline; }
+    .r-top .copy-btn { width: 44px; padding: 0; justify-content: center; }
+    #cpAll { width: 44px; padding: 0; }
+    #cpAll .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     dialog.panel { width: 100%; max-width: 100%; height: auto; max-height: 85vh; max-height: 85dvh; margin: auto 0 0; border-radius: 18px 18px 0 0; box-shadow: 0 -18px 50px -20px rgba(20, 32, 60, .55); animation-name: sheet-in; }
     dialog.panel::before { content: ""; flex: none; width: 40px; height: 4px; margin: 10px auto 0; border-radius: 2px; background: var(--silver); }
     dialog.panel .dlg-body { padding: 14px 18px max(20px, env(safe-area-inset-bottom)); }
@@ -1070,6 +1134,12 @@
     .grp { gap: 0; }
     #btnZoomOut, #btnZoomIn, #rIntBtn { display: none; } /* pinça para ampliar; interesses no rodapé do painel "Nesta página" */
     .counter, .jump { min-width: 72px; padding: 0 8px; }
+    /* A pílula passava da tela (~20 px em 375: "Tela cheia" cortado). "Última página" sai (o contador e as miniaturas
+       levam a qualquer página); ficam miniaturas, capa, ‹, contador, ›, som e tela cheia, todos com 44 px */
+    .bar .btn-last { display: none; }
+  }
+  @media (max-width: 359px) {
+    .bar .btn-first { display: none; } /* telas de 320 px: a capa fica nas miniaturas e no contador */
   }
   /* Celular deitado e telas baixas: barras sem fixar e controles mais rentes */
   @media (max-height: 500px) and (orientation: landscape) {
@@ -1516,8 +1586,10 @@
     <button class="pill-btn int-btn" id="rIntBtn" type="button" hidden data-int-btn="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
     <!-- Chave "Fichas": mostra ou esconde as etiquetas de ficha técnica na página (só em catálogo com ficha ou produtos ligados às páginas) -->
     <button class="pill-btn fichas-btn" id="btnFichas" type="button" hidden aria-pressed="true" title="Fichas na página: mostrar ou esconder"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg></span><span class="txt">Fichas</span></button>
+    <!-- Modo Copiar: texto da página selecionável, toque num código/EAN/medida/nome para copiar e "Copiar tabela". Com ele ligado, a página só vira por ‹ › e pelas setas -->
+    <button class="pill-btn copy-btn" id="btnCopy" type="button" aria-pressed="false" aria-label="Modo Copiar" title="Modo Copiar: copiar nomes, códigos, medidas e tabelas da página"><span class="ico" data-ico="copy"></span><span class="txt">Copiar</span></button>
     <button class="pill-btn" id="rShare" type="button"><span class="ico" id="icoShare"></span><span class="txt" id="rShareTxt">Compartilhar</span></button>
-    <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos e texto das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
+    <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
   </header>
   <div class="r-body">
     <nav class="thumbs" id="thumbs" hidden aria-label="Miniaturas das páginas"></nav>
@@ -1525,6 +1597,16 @@
       <p class="lines" id="rLines" aria-hidden="true"></p>
       <p class="r-banner" id="rBanner" hidden></p>
       <p class="r-note" id="rNote" hidden>Leitura em modo simples: o efeito de folhear não carregou.</p>
+      <!-- Faixa do Modo Copiar: a página não vira por gesto (só ‹ › e setas); copiar o texto das páginas abertas; sair -->
+      <div class="cp-bar" id="cpBar" role="region" aria-label="Modo Copiar" hidden>
+        <div class="cp-row">
+          <span class="cp-lbl"><span class="ico" data-ico="copy"></span><b>Modo Copiar</b><span class="cp-hint"> · use ‹ › para trocar de página</span><span class="cp-hint-s"> · ‹ › troca a página</span></span>
+          <button type="button" class="cp-act" id="cpAll" aria-label="Copiar texto da página" title="Copiar todo o texto das páginas abertas"><span class="ico" data-ico="copy"></span><span class="txt">Copiar texto da página</span></button>
+          <button type="button" class="cp-act cp-exit" id="cpExit" title="Sair do Modo Copiar (Esc)">Sair</button>
+        </div>
+        <p class="cp-msg" id="cpMsg" role="status" aria-live="polite"></p>
+        <p class="cp-tip" id="cpTip" hidden><span id="cpTipTxt"></span> <button type="button" class="cp-tip-ok" id="cpTipOk">Entendi</button></p>
+      </div>
       <div class="holder" id="holder"></div>
       <div class="pan" id="pan" aria-hidden="true"></div>
       <button class="arrow prev" id="arrowPrev" type="button" aria-label="Página anterior" title="Página anterior (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -1535,19 +1617,14 @@
         <p class="small">Abrindo o catálogo…</p>
       </div>
     </main>
-    <!-- Nesta página: produtos com "+" nas páginas abertas e o texto delas (copiar dados, códigos e texto) -->
+    <!-- Nesta página: produtos com "+" (e ligados à página) nas páginas abertas. O texto da página se copia em cima dela (Modo Copiar) -->
     <aside class="r-panel" id="rPanel" aria-labelledby="rPanelTitle" tabindex="-1">
       <div class="rp-head">
         <h2 id="rPanelTitle" tabindex="-1">Nesta página <span class="rp-pages" id="rPanelPages"></span></h2>
         <button class="icon-btn rp-close" id="rPanelClose" type="button" aria-label="Fechar o painel Nesta página" title="Fechar o painel"><span class="ico" data-ico="close"></span></button>
       </div>
-      <div class="seg rp-tabs" role="tablist" aria-label="Conteúdo das páginas abertas">
-        <button type="button" role="tab" id="rpTabProd" data-tab="prod" aria-controls="rpProd" aria-selected="true">Produtos (<span id="rpProdN">0</span>)</button>
-        <button type="button" role="tab" id="rpTabText" data-tab="text" aria-controls="rpText" aria-selected="false" tabindex="-1">Texto da página</button>
-      </div>
       <div class="rp-body">
-        <div role="tabpanel" id="rpProd" aria-labelledby="rpTabProd"></div>
-        <div role="tabpanel" id="rpText" aria-labelledby="rpTabText" hidden></div>
+        <div id="rpProd"></div>
       </div>
       <div class="rp-foot" id="rpFoot"></div>
     </aside>
@@ -1755,7 +1832,8 @@
       chunk: (id, ci) => `p/${id}/${pad3(ci)}.bin`,
       thumbs: (id, ti) => `p/${id}/m${String(ti).padStart(2, '0')}.bin`,
       cover: (id) => `p/${id}/capa.bin`,
-      search: (id) => `p/${id}/busca.bin`
+      search: (id) => `p/${id}/busca.bin`,
+      layout: (id) => `p/${id}/texto.bin`
     };
     // Catálogos novos (c.aad = 1) amarram cada arquivo ao caminho e à versão; os antigos não usam AAD.
     const fileAad = (c, p) => (c.aad ? p + '|' + c.v : undefined);
@@ -1764,6 +1842,25 @@
     // Busca: sempre com AAD (arquivo novo)
     const sealSearch = (key, c, pages) => seal(key, JSON.stringify({ pages }), path.search(c.id) + '|' + c.v);
     const openSearch = async (key, c, data) => JSON.parse(td.decode(await open(key, data, path.search(c.id) + '|' + c.v))).pages || [];
+    /* Texto posicionado (texto.bin), usado pelo modo Copiar do leitor. O catálogo marca c.texto = true quando o arquivo existe.
+       { v:1, pages: [ { it: [ [texto, x, y, w, h, f], ... ] } ] }  — uma entrada por página, na ordem das páginas.
+       x, y, w, h: inteiros em milésimos da página (0–1000), origem no canto superior esquerdo; f = 1 para título/negrito/fonte grande, senão 0.
+       O JSON é compactado (gzip) antes de cifrar: com a posição de cada trecho, o texto puro ficaria grande demais. */
+    async function gz(u8, dir) {
+      const S = dir === 'in' ? CompressionStream : DecompressionStream;
+      return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new S('gzip'))).arrayBuffer());
+    }
+    const layoutAad = (c) => path.layout(c.id) + '|' + c.v;
+    const sealLayout = async (key, c, pages) => seal(key, await gz(te.encode(JSON.stringify({ v: 1, pages })), 'in'), layoutAad(c));
+    async function openLayout(key, c, data) {
+      const o = JSON.parse(td.decode(await gz(await open(key, data, layoutAad(c)), 'out')));
+      const n = (v) => Number.isInteger(v) && v >= -50 && v <= 1050;
+      return (Array.isArray(o && o.pages) ? o.pages : []).map((pg) => ({
+        it: (pg && Array.isArray(pg.it) ? pg.it : []).filter((e) => Array.isArray(e) && typeof e[0] === 'string' && e[0].trim() && n(e[1]) && n(e[2]) && n(e[3]) && n(e[4]) && e[3] > 0 && e[4] > 0)
+          .map((e) => [e[0].slice(0, 400), e[1], e[2], e[3], e[4], e[5] === 1 ? 1 : 0])
+      }));
+    }
+    const canLayout = () => typeof CompressionStream === 'function' && typeof DecompressionStream === 'function';
     // Várias imagens num arquivo: [u32 tamanho do cabeçalho][JSON {sizes}][imagens]
     async function packImages(parts) {
       const bufs = await Promise.all(parts.map((b) => (b instanceof Blob ? b.arrayBuffer() : b)));
@@ -2007,7 +2104,7 @@
       CODE_ALPHA, genCode, canonCode, fmtCode, makePend, openPend,
       ACT_PREFIX, makeActivation, readActivation, checkActivation, confNumber,
       makeEntry, makeLegacyEntry, openEntry, fakeEntry, fakePend, padTo,
-      pad3, path, fileAad, sealFile, openFile, sealSearch, openSearch, packImages, unpackImages,
+      pad3, path, fileAad, sealFile, openFile, sealSearch, openSearch, sealLayout, openLayout, canLayout, packImages, unpackImages,
       sealDados, openDados
     };
   })();
@@ -2145,6 +2242,9 @@
   const SEARCH_N = {};            // id → textos normalizados (preenchidos na primeira busca)
   const searchLoads = new Map();  // id → carregamento em andamento
   const searchFail = new Map();   // id → horário da última falha
+  const LAYOUTS = new Map();      // id → texto posicionado (texto.bin) do Modo Copiar, carregado só quando o modo é ligado
+  const layoutLoads = new Map();  // id → carregamento em andamento
+  const CPP = new Map();          // "id:índice" → página preparada (linhas, itens copiáveis, tabelas), feita na primeira exibição
   let me = null, prefs = { favorites: [], progress: {}, interests: [] }, filter = 'todos', sortBy = 'ordem';
   const cat = (id) => CATALOGS.find((c) => c.id === id) || null;
   const visibleCatalogs = () => CATALOGS.slice();
@@ -2250,10 +2350,10 @@
       await Promise.all(list.map(async (c) => {
         keys.set(c.id, await P.aesKey(P.b64d(c.key), ['decrypt']));
         delete c.key;
-        c.aad = c.aad ? 1 : 0; c.th = Math.max(0, Number(c.th) || 0); c.busca = !!c.busca;
+        c.aad = c.aad ? 1 : 0; c.th = Math.max(0, Number(c.th) || 0); c.busca = !!c.busca; c.texto = c.texto === true;
       }));
     } else {
-      for (const c of list) { keys.set(c.id, rootKey); c.aad = 0; c.th = 0; c.busca = false; }
+      for (const c of list) { keys.set(c.id, rootKey); c.aad = 0; c.th = 0; c.busca = false; c.texto = false; }
     }
     const prodData = await prodJob;
     ROOT = rootKey; CATALOGS = list; KEYS = keys; DATA_GEN++;
@@ -2261,6 +2361,7 @@
     for (const k of Object.keys(SEARCH)) delete SEARCH[k];
     for (const k of Object.keys(SEARCH_N)) delete SEARCH_N[k];
     searchLoads.clear(); searchFail.clear();
+    LAYOUTS.clear(); layoutLoads.clear(); CPP.clear(); // Modo Copiar: texto posicionado da versão anterior sai da memória
     if (!v2) for (const [id, v] of Object.entries(data.search || {})) SEARCH[id] = ((v && v.pages) || []).map((t) => String(t || ''));
   }
 
@@ -2522,6 +2623,7 @@
       legacyOff: o.legacyOff === true ? true : undefined, // aviso do acesso antigo já dispensado neste usuário
       panel: typeof o.panel === 'boolean' ? o.panel : undefined, // painel "Nesta página" aberto no computador
       fichas: typeof o.fichas === 'boolean' ? o.fichas : undefined, // etiquetas de ficha técnica na página (padrão: ligadas)
+      copyTip: o.copyTip === true ? true : undefined, // dica do Modo Copiar já mostrada
       card: normCard(o.card), // cartão de visita digital (a foto fica no IndexedDB 'dm-cartao')
       interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
         .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : []
@@ -2565,6 +2667,7 @@
     if (prefs.legacyOff) out.legacyOff = true;
     if (typeof prefs.panel === 'boolean') out.panel = prefs.panel;
     if (typeof prefs.fichas === 'boolean') out.fichas = prefs.fichas;
+    if (prefs.copyTip) out.copyTip = true;
     if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
     prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests;
@@ -3561,8 +3664,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=f38a5762';
-      s.integrity = 'sha384-EO+8oN7aHti5aFs0J3quMJ3jWWKiTNbOrTZD0kiOa4fcZk2zpA/VLaJIxaJdPKle';
+      s.src = 'painel.js?v=aedab7d7';
+      s.integrity = 'sha384-610r3abbmw5YPVCuOpQvBpUf1Y54ubijMnbNQ2BZwItiLWv6pXvT082RUlVFdL1X';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -4650,11 +4753,19 @@
   fiPop.setAttribute('role', 'dialog');
   V.reader.appendChild(fiPop);
   const FP = { anchor: null, p: null, where: null, key: '' };
+  // Modo Copiar: mini botão "Copiar" junto do texto selecionado (computador); um elemento só, fora do livro
+  const cpSel = document.createElement('button');
+  cpSel.type = 'button'; cpSel.className = 'cp-selbtn'; cpSel.id = 'cpSel'; cpSel.hidden = true;
+  cpSel.innerHTML = `${I.copy}<span>Copiar</span>`;
+  cpSel.setAttribute('aria-label', 'Copiar o texto selecionado');
+  V.reader.appendChild(cpSel);
+  const cpBar = $('#cpBar');
+  const CP = { on: false, st: '', down: null, t: null, tipT: null };
   const counter = $('#counter'), jump = $('#jump'), zoomLevel = $('#zoomLevel'), rLoader = $('#rLoader');
   const btn = {
     first: $('#btnFirst'), prev: $('#btnPrev'), next: $('#btnNext'), last: $('#btnLast'),
     aPrev: $('#arrowPrev'), aNext: $('#arrowNext'), thumbs: $('#btnThumbs'),
-    zin: $('#btnZoomIn'), zout: $('#btnZoomOut'), sound: $('#btnSound'), fs: $('#btnFs'), fichas: $('#btnFichas')
+    zin: $('#btnZoomIn'), zout: $('#btnZoomOut'), sound: $('#btnSound'), fs: $('#btnFs'), fichas: $('#btnFichas'), copy: $('#btnCopy')
   };
   const ZOOMS = [1, 1.5, 2, 3, 4], ZMAX = ZOOMS[ZOOMS.length - 1];
   const MIN_PAGE_W = 260;
@@ -4780,7 +4891,11 @@
       const img = document.createElement('img');
       img.alt = R.cat.title; img.decoding = 'async'; img.draggable = false;
       img.addEventListener('error', () => { if (img.getAttribute('src')) { img.removeAttribute('src'); delete img.dataset.idx; pageFail(0, null); } });
-      img.addEventListener('load', () => { const l = R.book && $(':scope > .interactive-layer', R.book); if (l) fitSimpleLayer(l); });
+      img.addEventListener('load', () => {
+        const l = R.book && $(':scope > .interactive-layer', R.book), t = R.book && $(':scope > .cp-layer', R.book);
+        if (l) fitSimpleLayer(l);
+        if (t) sizeCopyLayer(t); // Modo Copiar: mesma área real da página
+      });
       R.book.appendChild(img);
       R.imgs.push(img); R.pages.push(R.book);
       return;
@@ -4847,6 +4962,10 @@
       disableFlipByClick: true
     });
     R.pf = pf;
+    // O próprio folheador chama pf.flipNext/flipPrev no deslizar do dedo: passam pela mesma virada verificada dos botões e das setas
+    const libNext = pf.flipNext.bind(pf), libPrev = pf.flipPrev.bind(pf);
+    pf.flipNext = (corner) => turnBy(1, () => libNext(corner));
+    pf.flipPrev = (corner) => turnBy(-1, () => libPrev(corner));
     pf.loadFromHTML(R.pages);
     // loadFromHTML sobrescreve largura e largura mínima do livro: recalcula depois dela.
     R.book.style.minWidth = '0'; R.book.style.minHeight = '0';
@@ -4880,6 +4999,7 @@
     holder.style.transform = `translate(${R.shift + R.tx}px, ${R.ty}px) scale(${R.z})`;
     holder.style.setProperty('--z', R.z); // o "+" compensa o zoom e mantém o tamanho
     if (!fiPop.hidden) placeFichaPop(); // zoom e arrasto: o balão acompanha a etiqueta (ou fecha se ela sair da tela)
+    if (!cpSel.hidden) placeSelBtn(); // Modo Copiar: o "Copiar" da seleção acompanha o texto
   }
   function syncUI() {
     if (!R.cat) return;
@@ -4898,6 +5018,7 @@
     ensureSrc(i);
     if (R.simple) fillPageTexts();
     renderHotspots();
+    if (CP.on) renderCopyLayers(); // Modo Copiar: texto só nas páginas visíveis (camadas reaproveitadas)
     const cid = R.cat.id, key = cid + ':' + s.join(',');
     if (!fiPop.hidden) { if (FP.key !== key) closeFichaPop(false); else placeFichaPop(); } // outra página: o balão fecha
     if (pageTimer.cur && pageTimer.cur.key !== key) pageTimer.end('page_change');
@@ -4950,8 +5071,36 @@
     }
     const cur = R.pf.getCurrentPageIndex();
     if (spreadOf(cur).includes(i)) return;
-    if (Math.abs(i - cur) <= 2) R.pf.flip(i);
+    if (Math.abs(i - cur) <= 2) { const pf = R.pf; pfTurn(i, () => pf.flip(i)); }
     else { R.pf.turnToPage(i); syncUI(); }
+  }
+  /* Virada conferida. Defeito conhecido do page-flip 2.0.7 em retrato (celular, uma página por vez): flipPrev() (e flip() para trás)
+     às vezes não faz nada, porque a animação começaria de um canto que não existe. Pede a virada animada; se em ~120 ms ela não
+     começou, ou se terminou o tempo da animação e a página não mudou, troca direto com turnToPage (+ som e syncUI).
+     Com a aba parada (sem quadros de animação) a virada fica "flipping": nada é forçado, para não virar duas vezes. */
+  function pfTurn(to, start) {
+    const pf = R.pf;
+    if (!pf || !R.cat || to < 0 || to >= R.n) return;
+    const from = pf.getCurrentPageIndex(), ms = reduceMotion ? 250 : 850;
+    clearTimeout(R.turnT);
+    try { start(); } catch (e) { /* o folheador recusou: a conferência abaixo troca a página */ }
+    const check = (late) => {
+      R.turnT = null;
+      if (R.pf !== pf || !R.cat || pf.getCurrentPageIndex() !== from) return; // virou (ou o leitor fechou)
+      if (R.pfState === 'flipping') { if (!late) R.turnT = setTimeout(() => check(true), ms + 350); return; }
+      try { pf.turnToPage(to); } catch (e) { return; }
+      if (R.z > 1) zoomTo(1);
+      playFlip();
+      syncUI();
+    };
+    R.turnT = setTimeout(() => check(false), 120);
+  }
+  // dir: +1 avança, -1 volta (a partir da página ou do par de páginas visível)
+  function turnBy(dir, start) {
+    if (!R.pf || !R.cat) return;
+    const s = spreadOf(R.pf.getCurrentPageIndex()), to = dir > 0 ? s[s.length - 1] + 1 : s[0] - 1;
+    if (to < 0 || to >= R.n) return;
+    pfTurn(to, start);
   }
   const flipNext = () => { if (R.pf) R.pf.flipNext(); else goTo(R.cur + 1); };
   const flipPrev = () => { if (R.pf) R.pf.flipPrev(); else goTo(R.cur - 1); };
@@ -5090,7 +5239,6 @@
   // Faixa "N produtos nesta página": abre o "Nesta página" na aba Produtos
   function openLinksList() {
     closeFichaPop(false);
-    setPanelTab('prod');
     if (!panelShown()) togglePanel(); else $('#rPanelTitle').focus({ preventScroll: true });
   }
   // Chave "Fichas" do leitor (prefs.fichas; padrão ligada): mostra ou esconde etiquetas e faixas, sem redesenhar a página
@@ -5113,6 +5261,466 @@
     savePrefs();
     applyFichas();
     toast(prefs.fichas ? 'Fichas visíveis na página.' : 'Fichas escondidas: só a arte do catálogo.');
+  });
+
+  /* ================= Modo Copiar: copiar nomes, códigos, medidas e tabelas direto da página =================
+     texto.bin (P.openLayout): por página, [texto, x, y, w, h, f] em milésimos da página (f = 1: título/negrito).
+     Carregado só ao ligar o modo, uma vez por catálogo (LAYOUTS). Cada página visível ganha uma camada .cp-layer com um span
+     transparente por trecho, na posição exata da arte: a seleção nativa funciona e Ctrl+C copia. EAN, códigos, medidas e nomes
+     ficam realçados (toque/clique curto copia só aquilo); tabelas detectadas pela geometria ganham "Copiar tabela" (TSV).
+     Com o modo ligado nenhum gesto vira a página: os eventos do livro param antes do folheador; só ‹ › e as setas trocam a página.
+     O que está impresso na arte pode ser copiado; os dados internos da ficha (sap) nunca entram aqui. */
+  const CP_KIND = { ean: ['EAN', 'EAN copiado'], cod: ['código', 'Código copiado'], med: ['medida', 'Medida copiada'], nome: ['nome', 'Nome copiado'] };
+  // Medidas: "15 x 10,8 x 18 cm", "24,5 cm x7,6 cm", "Ø32 cm a Ø37 cm" (o Ø às vezes vem como 0), "42 cm a 45 cm", "120 kg"
+  const RX_MED = /[Øø⌀]?\d+(?:[.,]\d+)?\s*(?:(?:mm|cm|m)\s*)?[x×]\s*[Øø⌀]?\d+(?:[.,]\d+)?(?:\s*(?:mm|cm|m)(?![a-zà-ÿ]))?(?:\s*[x×]\s*[Øø⌀]?\d+(?:[.,]\d+)?)?(?:\s*(?:mm|cm|m|pol)(?![a-zà-ÿ]))?|[Øø⌀]?\d+(?:[.,]\d+)?\s*(?:kg|g|mg|ml|l|mm|cm|m|pol)?\s*(?:a|até|-|–)\s*[Øø⌀]?\d+(?:[.,]\d+)?\s*(?:kg|g|mg|ml|l|mm|cm|m|pol|w|v|bar|mmhg)(?![a-zà-ÿ0-9])|[Øø⌀]?\d+(?:[.,]\d+)?\s*(?:kg|g|mg|ml|l|mm|cm|m|pol|w|v|mah|bar|mmhg|°c|ºc)(?![a-zà-ÿ0-9])/gi;
+  const RX_EAN = /\d(?: ?\d){7,15}/g;
+  const RX_NUM = /\d{5,12}/g;
+  const RX_ALNUM = /[A-Z]{1,4}-?\d{2,8}[A-Z]{0,2}(?![A-Za-z0-9])/g;
+  const cpWordCh = (ch) => !!ch && /[0-9A-Za-zÀ-ÖÙ-öù-ÿ.,]/.test(ch); // Ø/ø e × não contam como letra
+  // GTIN: 13 dígitos contam sempre como EAN (formato do catálogo, mesmo com verificador errado na arte);
+  // 8, 12 e 14 dígitos só com o dígito verificador certo (senão podem ser um código comum)
+  function gtinOk(d) {
+    if (/^\d{13}$/.test(d)) return true;
+    if (!/^(\d{8}|\d{12}|\d{14})$/.test(d)) return false;
+    let s = 0;
+    for (let i = d.length - 2, w = 3; i >= 0; i--, w = 4 - w) s += +d[i] * w;
+    return (10 - (s % 10)) % 10 === +d[d.length - 1];
+  }
+  // Trechos copiáveis de um texto: medida > EAN > código (sem sobreposição), na ordem do texto
+  function cpFind(s) {
+    const found = [];
+    const scan = (rx, kind, take) => {
+      rx.lastIndex = 0;
+      let m;
+      while ((m = rx.exec(s))) {
+        const a = m.index;
+        if (a > 0 && cpWordCh(s[a - 1])) { rx.lastIndex = a + 1; continue; } // começo de palavra/número
+        const r = take(m[0], a);
+        if (!r) { rx.lastIndex = a + 1; continue; }
+        found.push({ a, b: a + r.len, k: kind, v: r.v });
+        rx.lastIndex = a + r.len;
+      }
+    };
+    scan(RX_MED, 'med', (t) => ({ len: t.replace(/\s+$/, '').length, v: normMed(t) }));
+    scan(RX_EAN, 'ean', (t, a) => {
+      const g = t.split(' ');
+      for (let k = g.length; k >= 1; k--) {
+        const part = g.slice(0, k), d = part.join('');
+        if (k > 1 && part.slice(1).some((x) => x.length < 4)) continue; // "7 898952 570435" sim; "10 20 30 40" não
+        const end = a + part.join(' ').length;
+        if (gtinOk(d) && !/^(?:[0-9A-Za-z]|[.,]\d)/.test(s.slice(end, end + 2))) return { len: part.join(' ').length, v: d };
+      }
+      return null;
+    });
+    scan(RX_NUM, 'cod', (t, a) => (/^(?:[0-9A-Za-z]|[.,-]\d)/.test(s.slice(a + t.length, a + t.length + 2)) ? null : { len: t.length, v: t }));
+    scan(RX_ALNUM, 'cod', (t) => ({ len: t.length, v: t }));
+    const rank = { med: 0, ean: 1, cod: 2 }, out = [];
+    found.sort((x, y) => rank[x.k] - rank[y.k] || x.a - y.a).forEach((f) => { if (!out.some((o) => f.a < o.b && o.a < f.b)) out.push(f); });
+    return out.sort((x, y) => x.a - y.a);
+  }
+  const cpCtx = (() => { try { const c = document.createElement('canvas').getContext('2d'); c.font = '100px Arial, Helvetica, sans-serif'; return c; } catch (e) { return null; } })();
+  // Página preparada (uma vez): linhas em ordem de leitura, itens com realces, tabelas e o texto corrido
+  function cpPrep(cid, idx) {
+    const key = cid + ':' + idx;
+    if (CPP.has(key)) return CPP.get(key);
+    const pg = (LAYOUTS.get(cid) || [])[idx], its = [];
+    (pg && Array.isArray(pg.it) ? pg.it : []).forEach(([t, x, y, w, h, f]) => {
+      const s = String(t).replace(/\s+/g, ' ').trim();
+      if (s) its.push({ s, x, y, w, h, f, cy: y + h / 2, l: 0, tb: -1, hits: [], whole: null, sx: 1 });
+    });
+    // Linhas: centros próximos (tolerância pela altura do texto), cada uma da esquerda para a direita
+    its.sort((a, b) => a.cy - b.cy || a.x - b.x);
+    const lines = [];
+    for (const it of its) {
+      const L = lines[lines.length - 1];
+      // (centro da linha = média dos itens: uma nota solta um pouco acima, como "2" à margem, não desloca a linha)
+      if (L && Math.abs(it.cy - L.cy) <= Math.max(3, Math.min(L.h, it.h) * 0.45)) { L.items.push(it); L.h = Math.max(L.h, it.h); L.cy += (it.cy - L.cy) / L.items.length; }
+      else lines.push({ cy: it.cy, h: it.h, items: [it] });
+    }
+    lines.forEach((L, li) => {
+      L.items.sort((a, b) => a.x - b.x);
+      L.items.forEach((it) => { it.l = li; });
+      // Células: o painel já junta os pedaços vizinhos com o mesmo peso de fonte; sobram separados os de negrito misto
+      // ("Ø32 cm" + "a" + "Ø37 cm"). Junta só esses (peso diferente e espaço de uma letra); colunas coladas continuam separadas.
+      L.cells = [];
+      for (const it of L.items) {
+        const c = L.cells[L.cells.length - 1], last = c && c.items[c.items.length - 1], gap = c ? it.x - (c.x + c.w) : 0;
+        if (c && last.f !== it.f && gap < Math.max(c.h, it.h) * 0.6 && gap > -Math.max(c.h, it.h) * 0.3) { c.items.push(it); c.s += ' ' + it.s; c.w = Math.max(c.w, it.x + it.w - c.x); c.h = Math.max(c.h, it.h); }
+        else L.cells.push({ x: it.x, w: it.w, h: it.h, y: it.y, s: it.s, items: [it] });
+      }
+    });
+    const tables = cpTables(lines);
+    // Célula de medida da tabela em pedaços ("032 cm" + "a" + "037 cm x9 cm"): cada pedaço copia a célula inteira, já normalizada
+    tables.forEach((t, ti) => {
+      t.items.forEach((it) => { it.tb = ti; });
+      t.groups.forEach((g) => { if (g.med) g.items.forEach((it) => { it.whole = { k: 'med', v: g.v }; }); });
+    });
+    const hs = its.map((it) => it.h).sort((a, b) => a - b), medH = hs.length ? hs[Math.floor(hs.length / 2)] : 0;
+    const whole = (s) => { const h = cpFind(s); return h.length === 1 && h[0].a === 0 && h[0].b === s.length ? h[0] : null; };
+    // Fora de tabela, célula em pedaços de negrito misto que, junta, é uma medida/código: cada pedaço copia a célula inteira
+    for (const L of lines) for (const c of L.cells) if (c.items.length > 1 && !c.items.some((it) => it.whole)) { const w = whole(c.s); if (w) c.items.forEach((it) => { it.whole = w; }); }
+    for (const it of its) {
+      const one = it.whole ? null : whole(it.s);
+      it.hits = it.whole || one ? [] : cpFind(it.s);
+      if (it.whole) { /* parte de uma célula copiável */ }
+      else if (one) it.whole = one; // o trecho inteiro é um código, EAN ou medida
+      // Nome: negrito/título MAIOR que o texto comum da página, fora de tabela, com letras e sem ser número/código/medida
+      // (o catálogo usa negrito em muita coisa: só o f = 1 não basta)
+      else if (it.f === 1 && it.tb < 0 && it.h > medH && !it.hits.length && it.s.length <= 90 && !/:$/.test(it.s) && (it.s.match(/[A-Za-zÀ-ÿ]/g) || []).length >= 3) {
+        it.whole = { k: 'nome', v: it.s };
+      }
+      const nat = cpCtx ? cpCtx.measureText(it.s).width / 100 : it.s.length * 0.5;
+      it.sx = nat > 0 ? clamp((it.w * (R.ratio || 0.707)) / (nat * it.h * 0.87), 0.2, 4) : 1;
+    }
+    const pp = { lines, tables, text: lines.map((L) => L.items.map((it) => it.s).join(' ')).join('\n') };
+    CPP.set(key, pp);
+    return pp;
+  }
+  // Medida como impressa, com os defeitos da extração corrigidos: "032 cm"/"0 42 cm" → "Ø32 cm"/"Ø42 cm" (o Ø vem como 0),
+  // "cmx9cm"/"x9 cm" → " x 9 cm" e número colado na unidade → "9 cm"
+  function normMed(s) {
+    return String(s)
+      .replace(/\s*[x×]\s*(?=[\dØø⌀(])/g, ' x ')
+      .replace(/(^|[^\d.,])0 ?(\d{2,3})(?= ?(?:cm|mm)(?![a-zà-ÿ]))/gi, '$1Ø$2')
+      .replace(/(\d)\s*(cm|mm|kg|ml)(?![a-zà-ÿ])/gi, '$1 $2')
+      .replace(/\s+/g, ' ').trim();
+  }
+  const CP_HEAD = /^(?:c[óo]d(?:igo)?\.?|ref(?:er[êe]ncia)?\.?|tam(?:anho)?\.?|medidas?(?: do produto)?|dimens[õo]es|ean|gtin|cor(?:es)?|peso|capacidade|modelo|qtd\.?|quantidade|embalagem|voltagem|tens[ãa]o)$/i;
+  const CP_SIZE = /^(?:pp|p|m|g|gg|xg|xgg|eg|u|p\/m|m\/g|g\/gg|[pmg]\/[pmg]{1,2})$/i;
+  /* Tabelas. 1) Pelo cabeçalho: linha com 2+ títulos conhecidos (Cód., Tam., Medidas, EAN…) e as linhas logo abaixo (2+ linhas de dados;
+     notas soltas como "1"/"2" à margem não interrompem). 2) Sem cabeçalho conhecido, pela geometria: 3+ linhas seguidas com 3+ células
+     cujos inícios (ou fins) batem com as colunas (tolerância de 1,5% da largura), células curtas e com números (texto corrido não conta).
+     Todas as tabelas da página são detectadas. */
+  function cpTables(lines) {
+    const out = [], used = new Set();
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].cells.filter((c) => CP_HEAD.test(c.s.trim())).length < 2) continue;
+      const H = lines[i], hc = H.cells.slice().sort((a, b) => a.x - b.x), last = hc[hc.length - 1];
+      const left = hc[0].x - 60, right = last.x + last.w + 90;
+      const inside = (it) => { const c = it.x + it.w / 2; return c >= left && c <= right; };
+      const data = [], seen = [i];
+      let prev = H, j = i + 1;
+      for (; j < lines.length; j++) {
+        const L = lines[j], inn = L.items.filter(inside);
+        if (L.cy - prev.cy > Math.max(prev.h, L.h) * 3.2) break;
+        if (!inn.length || inn.every((it) => it.s.length <= 2 && !/[A-Za-zÀ-ÿ]/.test(it.s))) { seen.push(j); continue; } // nota solta
+        if (inn.length < 2 || inn.some((it) => it.s.length > 30) || inn.some((it) => CP_HEAD.test(it.s.trim()))) break;
+        data.push(inn); seen.push(j); prev = L;
+      }
+      if (data.length < 2) continue;
+      out.push(cpBuild(hc, data));
+      seen.forEach((k) => used.add(k));
+      i = j - 1;
+    }
+    const TOL = 15;
+    const near = (cols, it) => cols.some((c) => Math.abs(c.a - it.x) <= TOL || Math.abs(c.e - (it.x + it.w)) <= TOL);
+    let i = 0;
+    while (i < lines.length) {
+      if (used.has(i) || lines[i].cells.length < 3) { i++; continue; }
+      const cols = lines[i].cells.map((it) => ({ a: it.x, e: it.x + it.w })), run = [lines[i]];
+      let j = i + 1;
+      for (; j < lines.length; j++) {
+        const L = lines[j], prev = run[run.length - 1];
+        if (used.has(j) || L.cells.length < 3 || L.cy - prev.cy > Math.max(prev.h, L.h) * 3.2) break;
+        const hit = L.cells.filter((it) => near(cols, it)).length;
+        if (hit < 3 || hit < L.cells.length * 0.6) break;
+        L.cells.forEach((it) => { if (!cols.some((c) => Math.abs(c.a - it.x) <= TOL)) cols.push({ a: it.x, e: it.x + it.w }); });
+        run.push(L);
+      }
+      const cells = run.flatMap((L) => L.cells), lens = cells.map((it) => it.s.length).sort((a, b) => a - b);
+      const tabular = lens[Math.floor(lens.length / 2)] <= 24 && cells.filter((it) => /\d/.test(it.s)).length >= cells.length * 0.3;
+      if (run.length >= 3 && tabular) { out.push(cpBuild(run[0].cells.slice().sort((a, b) => a.x - b.x), run.slice(1).map((L) => L.items))); i = j; } else i++;
+    }
+    return out.sort((a, b) => a.y - b.y);
+  }
+  /* Colunas a partir do cabeçalho: cada uma vai do início do seu título até o início do próximo; cada pedaço das linhas de dados
+     entra na coluna que contém o CENTRO dele (dados centralizados sob o título) e os pedaços da mesma coluna se juntam com espaço.
+     Coluna sem título que os dados mostram (ex.: tamanhos entre "Cód." e "Medidas") vira coluna própria; coluna vazia sai. */
+  function cpBuild(hc, data) {
+    let cols = hc.map((c) => ({ x: c.x, head: c.s.trim(), items: c.items }));
+    const colOf = (it) => { const c = it.x + it.w / 2; let k = 0; while (k + 1 < cols.length && cols[k + 1].x <= c) k++; return k; };
+    for (let k = 0; k < cols.length; k++) {
+      const mids = [];
+      data.forEach((row) => {
+        const inCol = row.filter((it) => colOf(it) === k).sort((a, b) => a.x - b.x);
+        let best = null;
+        for (let n = 1; n < inCol.length; n++) { const g = inCol[n].x - (inCol[n - 1].x + inCol[n - 1].w); if (g >= 20 && (!best || g > best.g)) best = { g, m: inCol[n].x - g / 2 }; }
+        if (best) mids.push(best.m);
+      });
+      if (mids.length && mids.length * 2 >= data.length) {
+        mids.sort((a, b) => a - b);
+        const m = mids[Math.floor(mids.length / 2)], hcx = cols[k].items.reduce((s, it) => s + it.x + it.w / 2, 0) / cols[k].items.length;
+        const nc = { x: m, head: '', items: [] };
+        if (hcx >= m) { nc.head = cols[k].head; nc.items = cols[k].items; cols[k] = { x: cols[k].x, head: '', items: [] }; } // o título fica do lado dele
+        cols.splice(k + 1, 0, nc);
+        k++;
+      }
+    }
+    let rows = data.map((row) => cols.map((_, k) => row.filter((it) => colOf(it) === k).sort((a, b) => a.x - b.x)));
+    const keep = cols.map((c, k) => !!c.head || rows.some((r) => r[k].length));
+    cols = cols.filter((_, k) => keep[k]);
+    rows = rows.map((r) => r.filter((_, k) => keep[k]));
+    const groups = [];
+    const body = rows.map((r) => r.map((its, k) => {
+      const head = cols[k].head;
+      let v = its.map((it) => it.s).join(' ').replace(/[\t\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const f = cpFind(v), isMed = /\d/.test(v) && (/medida|dimens/i.test(head) || (f.some((h) => h.k === 'med') && !f.some((h) => h.k !== 'med')));
+      if (isMed) v = normMed(v);
+      if (CP_SIZE.test(v) && (/^tam/i.test(head) || !head)) v = v.toUpperCase();
+      if (its.length) groups.push({ items: its, v, med: isMed });
+      return v;
+    }));
+    // Coluna sem título só com tamanhos (P, M, G…): recebe "Tam."
+    cols.forEach((c, k) => { if (!c.head && body.every((r) => !r[k] || CP_SIZE.test(r[k])) && body.some((r) => r[k])) c.head = 'Tam.'; });
+    const items = [...hc.flatMap((c) => c.items), ...data.flat()];
+    return { items, groups, rows: [cols.map((c) => c.head), ...body], y: Math.min(...items.map((it) => it.y)), y2: Math.max(...items.map((it) => it.y + it.h)), x2: Math.max(...items.map((it) => it.x + it.w)) };
+  }
+  const cpHitAttrs = (h) => `data-k="${h.k}" data-v="${esc(h.v)}" tabindex="0" role="button" aria-label="Copiar ${CP_KIND[h.k][0]}: ${esc(h.v)}"`;
+  function cpLayerHTML(pp, pageNo) {
+    let out = '';
+    for (const L of pp.lines) {
+      for (const it of L.items) {
+        const st = `left:${it.x / 10}%;top:${it.y / 10}%;--h:${it.h};transform:scaleX(${it.sx.toFixed(3)})`;
+        if (it.whole) { out += `<span class="cp-t cp-hit" data-l="${it.l}" ${cpHitAttrs(it.whole)} style="${st}">${esc(it.s)}</span>`; continue; }
+        let inner = '', p = 0;
+        for (const h of it.hits) { inner += `${esc(it.s.slice(p, h.a))}<span class="cp-hit" ${cpHitAttrs(h)}>${esc(it.s.slice(h.a, h.b))}</span>`; p = h.b; }
+        out += `<span class="cp-t" data-l="${it.l}" style="${st}">${inner}${esc(it.s.slice(p))}</span>`;
+      }
+    }
+    pp.tables.forEach((t, ti) => {
+      // Pílula logo ABAIXO do canto direito da tabela (não cobre o nome do produto, que fica acima); tabela no pé da página: pílula acima dela
+      const low = t.y2 > 950;
+      out += `<button type="button" class="cp-tbl${low ? (t.y < 45 ? ' in' : ' up') : ''}" data-tb="${ti}" style="left:${t.x2 / 10}%;top:${(low ? t.y : t.y2) / 10}%" aria-label="Copiar tabela da página ${pageNo} (${plural(t.rows.length, 'linha', 'linhas')})">${I.copy}Copiar tabela</button>`;
+    });
+    return out;
+  }
+  function ensureLayout(c) {
+    if (LAYOUTS.has(c.id)) return Promise.resolve(LAYOUTS.get(c.id));
+    if (!layoutLoads.has(c.id)) {
+      const job = (async () => {
+        const buf = await getBuf(P.path.layout(c.id) + '?v=' + encodeURIComponent(c.v || 1));
+        const pages = await P.openLayout(KEYS.get(c.id), c, buf);
+        if (cat(c.id) === c) LAYOUTS.set(c.id, pages);
+        return pages;
+      })();
+      // Falha (rede, arquivo antigo) só mostra o aviso com "Tentar de novo": não derruba a sessão nem recarrega as chaves
+      job.catch(() => {}).finally(() => { if (layoutLoads.get(c.id) === job) layoutLoads.delete(c.id); });
+      layoutLoads.set(c.id, job);
+    }
+    return layoutLoads.get(c.id);
+  }
+  const cpReady = () => !!(CP.on && CP.st === 'ok' && R.cat && LAYOUTS.has(R.cat.id));
+  // Camada de texto só nas páginas visíveis; mesma chave "catálogo:página" da camada dos "+" (reaproveitada, sem redesenhar)
+  function renderCopyLayers() {
+    if (!R.cat || !R.book) return;
+    const cid = R.cat.id, ready = cpReady(), vis = visibleIdx();
+    R.pages.forEach((host, i) => {
+      const idx = R.simple ? R.cur : i;
+      let layer = $(':scope > .cp-layer', host);
+      const pp = ready && vis.includes(idx) ? cpPrep(cid, idx) : null;
+      if (!pp || !pp.lines.length) { if (layer) layer.remove(); return; }
+      if (!layer) { layer = document.createElement('div'); layer.className = 'cp-layer'; host.appendChild(layer); }
+      const key = cid + ':' + (idx + 1);
+      if (layer.dataset.key !== key) { layer.dataset.key = key; layer.dataset.pg = String(idx); layer.innerHTML = cpLayerHTML(pp, idx + 1); }
+      sizeCopyLayer(layer);
+    });
+    if (!ready) return;
+    // Página sem texto no PDF (só imagem): avisa na faixa
+    const empty = vis.filter((i) => !cpPrep(cid, i).lines.length);
+    const note = !empty.length ? '' : empty.length === vis.length
+      ? (vis.length > 1 ? 'Estas páginas não têm texto para copiar (são só imagem).' : 'Esta página não tem texto para copiar (é só imagem).')
+      : `A página ${empty[0] + 1} não tem texto para copiar (é só imagem).`;
+    if ($('#cpMsg').textContent !== note) $('#cpMsg').textContent = note;
+  }
+  // --ppm: pixels (CSS) por milésimo da altura da página, reserva para navegadores sem unidade de contêiner (cqh).
+  // No folheador vem do tamanho calculado da página (a medida do elemento pode estar atrasada logo depois de redimensionar).
+  function sizeCopyLayer(layer) {
+    if (R.simple) fitSimpleLayer(layer);
+    const h = R.simple ? layer.clientHeight : bookH();
+    if (h) layer.style.setProperty('--ppm', (h / 1000).toFixed(4));
+  }
+  const copyLayers = () => $$('.cp-layer', holder).sort((a, b) => a.dataset.pg - b.dataset.pg);
+  function hasCopySel() {
+    const s = window.getSelection();
+    if (!s || s.isCollapsed || !s.rangeCount) return false;
+    const r = s.getRangeAt(0);
+    return copyLayers().some((l) => r.intersectsNode(l));
+  }
+  function offIn(root, node, off) { const rg = document.createRange(); rg.selectNodeContents(root); rg.setEnd(node, off); return rg.toString().length; }
+  // Texto selecionado em ordem de leitura (linhas com quebra; página da esquerda antes da direita), só dos trechos da camada
+  function copySelText() {
+    const s = window.getSelection();
+    if (!s || s.isCollapsed || !s.rangeCount) return '';
+    const r = s.getRangeAt(0), out = [];
+    for (const layer of copyLayers()) {
+      if (!r.intersectsNode(layer)) continue;
+      const lines = [];
+      let buf = [], last = null;
+      for (const sp of $$('.cp-t', layer)) {
+        if (!r.intersectsNode(sp)) continue;
+        let t = sp.textContent, a = 0, b = t.length;
+        try {
+          if (sp.contains(r.startContainer)) a = offIn(sp, r.startContainer, r.startOffset);
+          if (sp.contains(r.endContainer)) b = offIn(sp, r.endContainer, r.endOffset);
+        } catch (e) { a = 0; b = t.length; }
+        t = t.slice(a, b).trim();
+        if (!t) continue;
+        if (sp.dataset.l !== last) { if (buf.length) lines.push(buf.join(' ')); buf = []; last = sp.dataset.l; }
+        buf.push(t);
+      }
+      if (buf.length) lines.push(buf.join(' '));
+      if (lines.length) out.push(lines.join('\n'));
+    }
+    return out.join('\n\n');
+  }
+  // Tabela: TSV (cola no Excel/Planilhas, cada dado na sua coluna) + HTML com códigos longos como texto (EAN sem virar 7,9E+12)
+  async function copyRich(text, html, okMsg) {
+    try {
+      if (!window.ClipboardItem || !navigator.clipboard || !navigator.clipboard.write) throw new Error('sem ClipboardItem');
+      await navigator.clipboard.write([new ClipboardItem({ 'text/plain': new Blob([text], { type: 'text/plain' }), 'text/html': new Blob([html], { type: 'text/html' }) })]);
+      toast(okMsg);
+      return true;
+    } catch (e) { return copyText(text, okMsg); }
+  }
+  function copyTable(b) {
+    const layer = b.closest('.cp-layer');
+    if (!layer || !R.cat) return;
+    const idx = +layer.dataset.pg, t = cpPrep(R.cat.id, idx).tables[+b.dataset.tb];
+    if (!t) return;
+    const tsv = t.rows.map((r) => r.join('\t')).join('\n');
+    const asText = (v) => /^0\d/.test(v) || v.replace(/\s/g, '').length >= 8 && /^[\d ]+$/.test(v);
+    const html = `<table>${t.rows.map((r) => `<tr>${r.map((v) => `<td${asText(v) ? ' style="mso-number-format:\'\\@\'"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`;
+    copyRich(tsv, html, `Tabela copiada (${plural(t.rows.length, 'linha', 'linhas')})`);
+    trackCatalogEvent('catalog_copy', { kind: 'tabela', page_number: idx + 1 });
+  }
+  function copyHit(el) {
+    const k = el.dataset.k, v = el.dataset.v, layer = el.closest('.cp-layer');
+    if (!CP_KIND[k] || !v) return;
+    el.classList.remove('cp-flash'); void el.offsetWidth; el.classList.add('cp-flash'); // pisca
+    copyText(v, CP_KIND[k][1]);
+    trackCatalogEvent('catalog_copy', { kind: k, page_number: layer ? +layer.dataset.pg + 1 : null });
+  }
+  // "Copiar texto da página": páginas visíveis em ordem de leitura; sem texto posicionado, o texto da busca (busca.bin)
+  async function copyPageText() {
+    const c = R.cat;
+    if (!c) return;
+    const idxs = visibleIdx();
+    let pages;
+    if (cpReady()) pages = idxs.map((i) => ({ n: i + 1, text: cpPrep(c.id, i).text }));
+    else {
+      if (!SEARCH[c.id]) { const job = ensureSearch([c.id]); if (job) { cpMsg('Preparando…'); await job; if (R.cat !== c) return; cpSetState(CP.st); } }
+      const texts = SEARCH[c.id];
+      if (!texts) { toast(c.busca ? 'Não foi possível carregar o texto agora. Tente de novo.' : 'Estas páginas não têm texto para copiar.'); return; }
+      pages = idxs.map((i) => ({ n: i + 1, text: cleanPageText(texts[i]) }));
+    }
+    const txt = pages.filter((p) => p.text).map((p) => `${c.title} · página ${p.n}\n\n${p.text}`).join('\n\n');
+    if (!txt) { toast(idxs.length > 1 ? 'Estas páginas não têm texto para copiar (são só imagem).' : 'Esta página não tem texto para copiar (é só imagem).'); return; }
+    copyText(txt, pages.length > 1 ? 'Texto das páginas copiado' : 'Texto da página copiado');
+    trackCatalogEvent('catalog_copy', { kind: 'texto', page_number: idxs[0] + 1 });
+  }
+  function cpMsg(html) { $('#cpMsg').innerHTML = html; }
+  function cpSetState(st) {
+    CP.st = st;
+    if (st === 'loading') cpMsg('Preparando…');
+    else if (st === 'err') cpMsg('Não foi possível preparar a cópia agora.<button type="button" class="cp-act" data-cp-retry>Tentar de novo</button>');
+    else if (st === 'none') cpMsg('Este catálogo ainda não foi preparado para cópia. O marketing ativa em Gerenciar → Catálogos → Preparar para copiar.');
+    else cpMsg('');
+    if (st === 'ok') cpTipOnce();
+    renderCopyLayers();
+  }
+  function cpPrepare() {
+    const c = R.cat;
+    if (!c) return;
+    if (!c.texto || typeof P.openLayout !== 'function' || typeof P.canLayout !== 'function' || !P.canLayout()) { cpSetState('none'); return; }
+    if (LAYOUTS.has(c.id)) { cpSetState('ok'); return; }
+    cpSetState('loading');
+    ensureLayout(c).then(() => { if (R.cat === c && CP.on) cpSetState('ok'); }, () => { if (R.cat === c && CP.on) cpSetState('err'); });
+  }
+  // Dica curta, uma vez por pessoa (prefs.copyTip)
+  function cpTipOnce() {
+    if (prefs.copyTip) return;
+    prefs.copyTip = true; savePrefs();
+    $('#cpTipTxt').textContent = coarse ? 'Toque num código para copiar · Toque e segure para selecionar · Tabelas têm “Copiar tabela”' : 'Clique num código para copiar · Arraste para selecionar · Tabelas têm “Copiar tabela”';
+    $('#cpTip').hidden = false;
+    clearTimeout(CP.tipT); CP.tipT = setTimeout(() => { $('#cpTip').hidden = true; }, 12000);
+  }
+  function setCopy(on) {
+    on = !!on && !!R.cat;
+    if (CP.on === on) return;
+    if (!on && hasCopySel()) window.getSelection().removeAllRanges();
+    CP.on = on;
+    V.reader.classList.toggle('copy-on', on);
+    btn.copy.setAttribute('aria-pressed', String(on));
+    cpBar.hidden = !on;
+    cpSel.hidden = true; CP.down = null;
+    clearTimeout(clickT); clickT = null;
+    clearTimeout(CP.tipT); $('#cpTip').hidden = true;
+    $('#rStatus').textContent = on ? 'Modo Copiar ligado. A página só vira pelos botões anterior e próxima e pelas setas do teclado.' : 'Modo Copiar desligado.';
+    if (on) { closeFichaPop(false); cpPrepare(); }
+    else { CP.st = ''; cpMsg(''); $$('.cp-layer', holder).forEach((l) => l.remove()); }
+  }
+  // Mini "Copiar" perto da seleção (só com mouse; no celular fica o menu do sistema)
+  function placeSelBtn() {
+    if (!CP.on || !hasCopySel()) { cpSel.hidden = true; return; }
+    const rg = window.getSelection().getRangeAt(0);
+    const rs = [...rg.getClientRects()].filter((r) => r.width > 2 && r.height > 2);
+    const r = rs.length ? rs[rs.length - 1] : rg.getBoundingClientRect();
+    cpSel.hidden = false;
+    const vw = document.documentElement.clientWidth, vh = window.innerHeight, w = cpSel.offsetWidth, h = cpSel.offsetHeight;
+    let top = r.bottom + 8;
+    if (top + h > vh - 8) top = r.top - h - 8;
+    cpSel.style.left = Math.round(clamp(r.right - w / 2, 8, Math.max(8, vw - w - 8))) + 'px';
+    cpSel.style.top = Math.round(clamp(top, 8, Math.max(8, vh - h - 8))) + 'px';
+  }
+  btn.copy.addEventListener('click', () => setCopy(!CP.on));
+  cpBar.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t.closest('#cpExit')) { setCopy(false); btn.copy.focus(); }
+    else if (t.closest('#cpAll')) copyPageText();
+    else if (t.closest('[data-cp-retry]')) cpPrepare();
+    else if (t.closest('#cpTipOk')) { clearTimeout(CP.tipT); $('#cpTip').hidden = true; }
+  });
+  cpSel.addEventListener('pointerdown', (e) => e.preventDefault()); // mantém a seleção
+  cpSel.addEventListener('mousedown', (e) => e.preventDefault());
+  cpSel.addEventListener('click', () => {
+    const t = copySelText();
+    cpSel.hidden = true;
+    if (t) { copyText(t, 'Texto copiado'); trackCatalogEvent('catalog_copy', { kind: 'selecao' }); }
+  });
+  window.addEventListener('pointerup', (e) => {
+    if (!CP.on || e.pointerType !== 'mouse' || (e.target.closest && e.target.closest('#cpSel'))) return; // o próprio "Copiar" não reabre
+    setTimeout(placeSelBtn, 0);
+  }, true);
+  document.addEventListener('selectionchange', () => { if (!cpSel.hidden && !hasCopySel()) cpSel.hidden = true; });
+  window.addEventListener('resize', () => { if (!cpSel.hidden) placeSelBtn(); });
+  // Ctrl+C (e "Copiar" do menu do sistema) numa seleção da página: texto limpo, em ordem de leitura
+  document.addEventListener('copy', (e) => {
+    if (!CP.on || !e.clipboardData || !hasCopySel()) return;
+    const t = copySelText();
+    if (!t) return;
+    e.clipboardData.setData('text/plain', t);
+    e.preventDefault();
+    trackCatalogEvent('catalog_copy', { kind: 'selecao' });
+  });
+  // Com o modo ligado, nenhum toque/arrasto/clique no livro chega ao folheador (nem a dobra do canto ao passar o mouse).
+  // O toque curto (< 8 px e < 500 ms, sem seleção) num item realçado copia só ele.
+  ['mousedown', 'mousemove', 'touchstart', 'touchmove', 'pointerdown'].forEach((t) => holder.addEventListener(t, (e) => {
+    if (!CP.on) return;
+    if (t === 'pointerdown') CP.down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), sel: hasCopySel() };
+    e.stopPropagation();
+  }, { capture: true, passive: true }));
+  holder.addEventListener('pointerup', (e) => {
+    const d = CP.down;
+    CP.down = null;
+    if (!CP.on || !d || d.id !== e.pointerId || d.sel) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) >= 8 || performance.now() - d.t >= 500) return;
+    const hit = e.target.closest && e.target.closest('.cp-hit');
+    if (hit && !hasCopySel()) copyHit(hit);
+  }, true);
+  holder.addEventListener('keydown', (e) => {
+    if (!CP.on || (e.key !== 'Enter' && e.key !== ' ') || !e.target.classList || !e.target.classList.contains('cp-hit')) return;
+    e.preventDefault();
+    copyHit(e.target);
   });
   // Vai à página do produto no catálogo aberto e marca o destaque (sem "+" neste catálogo: abre a ficha)
   function aimProduct(t) {
@@ -5185,11 +5793,12 @@
     pageTimer.end('close');
     saveProgressNow();
     closeFichaPop(false);
+    setCopy(false); // fechar o leitor desliga o Modo Copiar
     sheet.close(false);
     resetPanel();
     try { if (R.pf) R.pf.destroy(); } catch (e) { /* noop */ }
-    clearTimeout(R.loaderT); clearTimeout(R.viewT); clearTimeout(R.hashT); clearTimeout(R.statusT); clearTimeout(clickT);
-    R.loaderT = R.viewT = R.hashT = R.statusT = null; clickT = null;
+    clearTimeout(R.loaderT); clearTimeout(R.viewT); clearTimeout(R.hashT); clearTimeout(R.statusT); clearTimeout(clickT); clearTimeout(R.turnT);
+    R.loaderT = R.viewT = R.hashT = R.statusT = R.turnT = null; clickT = null;
     R.pf = null; R.cat = null; R.book = null; R.pages = []; R.imgs = []; R.hl = null;
     G.pts.clear(); G.pinch = null; G.drag = null;
     unobserveIn(thumbs);
@@ -5203,11 +5812,12 @@
   }
   new ResizeObserver(() => { if (!R.cat) return; layout(); refreshFlip(); clampPan(); applyTransform(); syncUI(); }).observe(stage);
 
-  /* ================= painel "Nesta página": produtos com "+" e texto das páginas visíveis =================
+  /* ================= painel "Nesta página": produtos com "+" (e ligados à página) nas páginas visíveis =================
+     O texto da página se copia em cima dela (Modo Copiar); a antiga aba "Texto da página" saiu.
      Computador: coluna à direita, recolhível (prefs.panel). Tablet: painel deslizante. Celular: folha inferior.
      Redesenha com atraso de 150 ms quando as páginas visíveis mudam, e só com o painel à vista. */
   const rPanel = $('#rPanel'), rPanelBtn = $('#rPanelBtn');
-  const NP = { tab: 'prod', keys: { prod: '', text: '' }, footKey: '', t: null, urls: [], gen: 0, prod: [], footItems: [], text: [], codes: [] };
+  const NP = { key: '', footKey: '', t: null, urls: [], gen: 0, prod: [], footItems: [] };
   const sheet = modalLayer(rPanel, $('#rScrim'), () => [rTop, stage, thumbs], (on) => {
     rPanelBtn.setAttribute('aria-expanded', String(on));
     if (on) renderPanel();
@@ -5239,7 +5849,7 @@
     applyPanelDock();
     if (!R.cat) return;
     toggleThumbs(false); // a faixa de miniaturas das telas menores não fica aberta ao trocar de faixa
-    NP.keys.prod = NP.keys.text = '';
+    NP.key = '';
     schedulePanel();
   });
   // Produtos com "+" nas páginas visíveis: um item por SKU, na primeira página em que aparece
@@ -5269,30 +5879,21 @@
     badge.textContent = fmtN(items.length);
     badge.hidden = !items.length;
     if (!panelShown()) return;
-    const pagesKey = cid + ':' + idxs.join(',');
-    const key = NP.tab === 'text' ? `${pagesKey}|${SEARCH[cid] ? 1 : 0}` : pagesKey;
-    $('#rpProdN').textContent = fmtN(items.length);
+    const key = cid + ':' + idxs.join(',');
     $('#rPanelPages').textContent = idxs.length === 2 ? `· páginas ${idxs[0] + 1}–${idxs[1] + 1}` : `· página ${idxs[0] + 1}`;
-    paintPanelTabs();
-    if (NP.footKey !== pagesKey) { NP.footKey = pagesKey; renderPanelFoot(items); }
-    if (NP.keys[NP.tab] === key) return;
-    NP.keys[NP.tab] = key;
-    if (NP.tab === 'text') renderPanelText(cid, idxs, items); else renderPanelProducts(cid, items);
+    if (NP.footKey !== key) { NP.footKey = key; renderPanelFoot(items); }
+    if (NP.key === key) return;
+    NP.key = key;
+    renderPanelProducts(cid, items);
   }
-  function paintPanelTabs() {
-    $$('[role="tab"]', rPanel).forEach((b) => { const on = b.dataset.tab === NP.tab; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
-    $('#rpProd').hidden = NP.tab !== 'prod';
-    $('#rpText').hidden = NP.tab !== 'text';
-  }
-  function setPanelTab(t) { NP.tab = t === 'text' ? 'text' : 'prod'; paintPanelTabs(); renderPanel(); }
   // Recortes dos produtos: blobs próprios, revogados a cada redesenho e ao fechar o leitor
   function releasePanelUrls() { NP.gen++; NP.urls.forEach((u) => URL.revokeObjectURL(u)); NP.urls = []; }
   function resetPanel() {
     clearTimeout(NP.t); NP.t = null;
     releasePanelUrls();
-    NP.keys.prod = NP.keys.text = ''; NP.footKey = '';
-    NP.prod = []; NP.footItems = []; NP.text = []; NP.codes = [];
-    $('#rpProd').innerHTML = ''; $('#rpText').innerHTML = ''; $('#rpFoot').innerHTML = '';
+    NP.key = ''; NP.footKey = '';
+    NP.prod = []; NP.footItems = [];
+    $('#rpProd').innerHTML = ''; $('#rpFoot').innerHTML = '';
     $('#rPanelN').hidden = true;
   }
   function renderPanelProducts(cid, items) {
@@ -5332,7 +5933,7 @@
     const link = safeUrl(p.url) || (c ? `${location.origin}${location.pathname}${catalogHash(c.id, it.page, p.sku)}` : '');
     return [p.name, shownCode(p) && `Código: ${shownCode(p)}`, p.category && `Categoria: ${p.category}`, p.capacity && `Capacidade: ${p.capacity}`, p.benefit && `Benefício: ${p.benefit}`, link && `Link: ${link}`].filter(Boolean).join('\n');
   }
-  // Texto extraído para leitura: junta letras soltas de texto vertical, tira espaços repetidos e linhas vazias em excesso
+  // Texto extraído (busca.bin) para "Copiar texto da página" sem texto posicionado: junta letras soltas de texto vertical, tira espaços repetidos e linhas vazias em excesso
   function cleanPageText(t) {
     const out = [];
     let run = [];
@@ -5346,40 +5947,6 @@
     flush();
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
-  const EAN_RE = /\b7[89]\d{11}\b/g;
-  const COD_RE = /\bc[óo]d(?:igo)?\.?\s*(?:n[º°o]\.?\s*)?[:#-]?\s*([a-z0-9]{4,14})\b/gi;
-  function renderPanelText(cid, idxs, items) {
-    const box = $('#rpText'), c = R.cat, texts = SEARCH[cid];
-    NP.text = []; NP.codes = [];
-    if (!texts) {
-      const job = c.busca ? ensureSearch([cid]) : null; // o mesmo texto da busca, carregado sob demanda
-      if (job) {
-        box.innerHTML = '<p class="np-note" role="status">Carregando texto…</p>';
-        job.then(() => { if (R.cat && R.cat.id === cid) { NP.keys.text = ''; schedulePanel(); } });
-        return;
-      }
-      box.innerHTML = c.busca && searchFail.has(cid)
-        ? '<p class="np-note">Não foi possível carregar o texto agora. <button type="button" class="link" data-np-retry>Tentar de novo</button></p>'
-        : '<p class="np-note">Esta página não tem texto selecionável.</p>';
-      return;
-    }
-    // Códigos: SKUs dos produtos da página, EAN-13 e códigos internos depois de "Cód."/"Código" (com ao menos um número)
-    const codes = [], seen = new Set();
-    const add = (v, kind, pg) => { const k = P.skuKey(v); if (!k || seen.has(k)) return; seen.add(k); codes.push({ v, kind, pg }); };
-    items.forEach((x) => add(x.p.sku, 'SKU', x.page));
-    idxs.forEach((i) => { for (const m of String(texts[i] || '').matchAll(EAN_RE)) add(m[0], 'EAN', i + 1); });
-    idxs.forEach((i) => { for (const m of String(texts[i] || '').matchAll(COD_RE)) if (/\d/.test(m[1])) add(m[1], 'Cód.', i + 1); });
-    const pages = idxs.map((i) => ({ n: i + 1, text: cleanPageText(texts[i]) }));
-    NP.text = pages; NP.codes = codes;
-    const any = pages.some((p) => p.text);
-    box.innerHTML = `<h3 class="label-caps np-h">Códigos encontrados</h3>
-      ${codes.length ? `<div class="np-codes">${codes.map((x) => `<button type="button" class="code-chip" data-code="${esc(x.v)}" data-pg="${x.pg}" aria-label="Copiar ${x.kind === 'EAN' ? 'EAN' : 'código'} ${esc(x.v)}" title="Copiar"><small aria-hidden="true">${x.kind}</small>${esc(x.v)}</button>`).join('')}</div>` : '<p class="np-empty">Nenhum código encontrado nestas páginas.</p>'}
-      <div class="np-btns">
-        <button type="button" class="btn ghost sm" data-np-copy="texto"${any ? '' : ' disabled'}>${I.copy}Copiar texto da página</button>
-        <button type="button" class="btn ghost sm" data-np-copy="codigos"${codes.length ? '' : ' disabled'}>${I.copy}Copiar todos os códigos</button>
-      </div>
-      ${pages.map((p) => `<section class="np-page" aria-label="Texto da página ${p.n}">${pages.length > 1 ? `<h3>Página ${p.n}</h3>` : ''}${p.text ? `<div class="np-text">${esc(p.text)}</div>` : '<p class="np-note">Esta página não tem texto selecionável.</p>'}</section>`).join('')}`;
-  }
   function renderPanelFoot(items) {
     const com = commercialInfo();
     NP.footItems = items;
@@ -5388,8 +5955,6 @@
   rPanel.addEventListener('click', (e) => {
     if (!R.cat) return;
     const t = e.target;
-    const tab = t.closest('[role="tab"]');
-    if (tab) { setPanelTab(tab.dataset.tab); return; }
     if (fichaClick(t)) return; // a ficha fica dentro do item: tratada antes do destaque do "+"
     const li = t.closest('[data-np]');
     if (li) {
@@ -5407,18 +5972,6 @@
       else { trackCatalogEvent('catalog_product_click', { ...prodParams(it.p, R.cat, it.page), action: 'painel' }); openProductCard(it.p, { catalogId: R.cat.id, page: it.page, spot: it.h }); }
       return;
     }
-    const chip = t.closest('[data-code]');
-    if (chip) { copyText(chip.dataset.code, 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'codigo', page_number: +chip.dataset.pg }); return; }
-    const cp = t.closest('[data-np-copy]');
-    if (cp) {
-      const first = visibleIdx()[0] + 1;
-      if (cp.dataset.npCopy === 'texto') {
-        const txt = NP.text.filter((p) => p.text).map((p) => `${R.cat.title} · página ${p.n}\n\n${p.text}`).join('\n\n');
-        if (txt) { copyText(txt, 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'texto', page_number: first }); }
-      } else if (NP.codes.length) { copyText(NP.codes.map((x) => x.v).join('\n'), 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'codigos', page_number: first }); }
-      return;
-    }
-    if (t.closest('[data-np-retry]')) { searchFail.delete(R.cat.id); NP.keys.text = ''; renderPanel(); return; }
     if (t.closest('[data-np-talk]')) {
       const com = commercialInfo(), list = NP.footItems.map((x) => ({ sku: x.p.sku, catalogId: R.cat.id, page: x.page }));
       if (com.wa) trackCatalogEvent('catalog_whatsapp_click', { context: 'pagina', items_count: list.length });
@@ -5426,14 +5979,6 @@
       return;
     }
     if (t.closest('[data-np-int-list]')) openInterests();
-  });
-  // Abas com as setas (sem virar a página do catálogo)
-  $('.rp-tabs', rPanel).addEventListener('keydown', (e) => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
-    e.preventDefault(); e.stopPropagation();
-    const next = e.key === 'Home' ? 'prod' : e.key === 'End' ? 'text' : NP.tab === 'prod' ? 'text' : 'prod';
-    setPanelTab(next);
-    $(`[role="tab"][data-tab="${next}"]`, rPanel).focus();
   });
   function rerenderCurrent() {
     if (R.cat) {
@@ -5495,7 +6040,7 @@
       G.lastTap = null;
       clearTimeout(clickT); clickT = null;
       stage.classList.add('dragging');
-    } else if (G.pts.size === 1 && R.z > 1) {
+    } else if (G.pts.size === 1 && R.z > 1 && !(CP.on && e.pointerType === 'mouse')) { // Modo Copiar: arrastar o mouse seleciona texto
       G.drag = { x: e.clientX, y: e.clientY, tx: R.tx, ty: R.ty };
       if (e.target === pan) { try { pan.setPointerCapture(e.pointerId); } catch (_) { /* noop */ } }
       stage.classList.add('dragging');
@@ -5535,14 +6080,15 @@
     const dx = e.clientX - p.x0, dy = e.clientY - p.y0, dt = now - p.t;
     const moved = Math.hypot(dx, dy) > 10, recentPinch = now - G.pinchEnd < 350;
     if (p.type !== 'mouse' && !moved && dt < 300 && !recentPinch) {
+      if (CP.on && e.target.closest && e.target.closest('.cp-hit')) { G.lastTap = null; return; } // toque que copia não conta para o zoom
       // Toque duplo alterna o zoom no ponto tocado
       const last = G.lastTap;
       if (last && now - last.t < 320 && Math.hypot(e.clientX - last.x, e.clientY - last.y) < 30) { G.lastTap = null; toggleZoomAt(e.clientX, e.clientY); }
       else G.lastTap = { t: now, x: e.clientX, y: e.clientY };
       return;
     }
-    // Modo simples: deslizar para o lado vira a página
-    if (R.simple && p.type !== 'mouse' && R.z === 1 && !recentPinch && Math.abs(dx) > 40 && Math.abs(dy) < 80 && dt < 800) { if (dx < 0) flipNext(); else flipPrev(); }
+    // Modo simples: deslizar para o lado vira a página (não no Modo Copiar)
+    if (R.simple && !CP.on && p.type !== 'mouse' && R.z === 1 && !recentPinch && Math.abs(dx) > 40 && Math.abs(dy) < 80 && dt < 800) { if (dx < 0) flipNext(); else flipPrev(); }
   }
   window.addEventListener('pointerup', endPointer, true);
   window.addEventListener('pointercancel', endPointer, true);
@@ -5555,7 +6101,7 @@
   // Mouse: clique vira a página (metade esquerda volta, direita avança); duplo clique amplia no ponto
   stage.addEventListener('mousedown', (e) => { downAt = { x: e.clientX, y: e.clientY }; }, true);
   stage.addEventListener('click', (e) => {
-    if (G.lastType !== 'mouse' || R.z > 1 || !gestureTarget(e) || !e.target.closest('.book')) return;
+    if (CP.on || G.lastType !== 'mouse' || R.z > 1 || !gestureTarget(e) || !e.target.closest('.book')) return; // Modo Copiar: clique não vira
     if (e.detail > 1) { clearTimeout(clickT); clickT = null; return; }
     if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 6) return;
     if (R.pf && R.pfState !== 'read') return;
@@ -5570,6 +6116,7 @@
   });
   stage.addEventListener('dblclick', (e) => {
     if (G.lastType !== 'mouse' || !gestureTarget(e)) return;
+    if (CP.on && e.target.closest('.cp-layer')) return; // Modo Copiar: o duplo clique seleciona a palavra
     clearTimeout(clickT); clickT = null;
     e.preventDefault();
     toggleZoomAt(e.clientX, e.clientY);
@@ -5593,7 +6140,11 @@
   });
   // Pinça no touchpad (Ctrl + roda)
   stage.addEventListener('wheel', (e) => {
-    if (!R.cat || !e.ctrlKey) return;
+    if (!R.cat) return;
+    if (!e.ctrlKey) { // Modo Copiar com zoom: a camada de arrasto sai (para selecionar); a roda move a página
+      if (CP.on && R.z > 1) { e.preventDefault(); R.tx -= e.deltaX; R.ty -= e.deltaY; clampPan(); applyTransform(); }
+      return;
+    }
     e.preventDefault();
     zoomTo(R.z * Math.exp(-e.deltaY / 300), e.clientX, e.clientY);
   }, { passive: false });
@@ -5602,6 +6153,8 @@
     if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot, .hs-ficha, .pg-links')) e.stopPropagation();
   }, { capture: true, passive: true }));
   holder.addEventListener('click', (e) => {
+    const tb = e.target.closest('.cp-tbl'); // Modo Copiar: "Copiar tabela"
+    if (tb) { e.stopPropagation(); copyTable(tb); return; }
     const hs = e.target.closest('.product-hotspot');
     if (hs) { e.stopPropagation(); openHotspot(hs); return; }
     const tg = e.target.closest('.hs-ficha'); // etiqueta "Ficha": balão ancorado na página
@@ -5736,7 +6289,8 @@
         case '-': case '_': zoomStep(-1); break;
         case 'Escape':
           e.preventDefault();
-          if (zoomed) zoomTo(1);
+          if (CP.on) { setCopy(false); btn.copy.focus(); } // Esc desliga o Modo Copiar
+          else if (zoomed) zoomTo(1);
           else if (!thumbs.hidden && !deskMq.matches) { toggleThumbs(false); btn.thumbs.focus(); }
           else leaveReader();
           break;

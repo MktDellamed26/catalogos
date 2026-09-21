@@ -148,6 +148,8 @@
   .dmp .cell-l { display: none; font-size: 12px; font-weight: 600; color: var(--ink-2); }
   .dmp .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
   .dmp .tag { padding: 1px 8px; border: 1px solid rgba(30, 44, 79, .25); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--navy); white-space: nowrap; }
+  .dmp .tag.copy { display: inline-block; margin-left: 4px; border-color: var(--hair); color: var(--ink-2); font-weight: 600; vertical-align: 1px; }
+  .dmp .tag.copy.wait { border-style: dashed; border-color: rgba(30, 44, 79, .35); color: var(--navy); }
   .dmp .cat-grid { grid-template-columns: 48px minmax(0, 1fr) 76px 76px 128px var(--c-order); }
   .dmp .rows-head.cat-grid > :first-child { grid-column: 1 / 3; }
   .dmp .rw.cat-grid { grid-template-areas: "cover main site new valid order" "cover acts site new valid order"; }
@@ -547,6 +549,7 @@
       <section class="dm-sec" id="pn-tabCfg" data-section="config" aria-label="Configurações" tabindex="-1" hidden></section>
     </div>
     <input type="file" id="pn-pdfInput" accept="application/pdf,.pdf" hidden>
+    <input type="file" id="pn-layoutInput" accept="application/pdf,.pdf" hidden>
     <input type="file" id="pn-xlsInput" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden>
   </div>`;
   const BAR_HTML = `
@@ -933,7 +936,7 @@
     const catalogs = visible.map((c) => ({
       id: c.id, title: c.title, kind: c.kind, version: c.version, pages: c.pages, ratio: c.ratio, updated: c.updated, lines: c.lines || [],
       order: c.order, isNew: !!c.isNew, validUntil: c.validUntil || '', desc: c.desc || '', v: c.v || 1,
-      key: c.key || d.contentKey, aad: c.aad ? 1 : 0, th: c.th || 0, busca: !!c.busca
+      key: c.key || d.contentKey, aad: c.aad ? 1 : 0, th: c.th || 0, busca: !!c.busca, texto: !!c.texto
     }));
     const dados = await P.sealDados(root, { v: 2, gerado: new Date().toISOString(), catalogs });
     const produtos = await produtosBin(d, root, visible);
@@ -1068,7 +1071,9 @@
   const stagedProds = new Map(), stagedDrops = new Set();
   // Produto ligado à página SEM área (pageLinks): "catálogo|página|SKU" → ligação nova, ou null = removida
   const stagedLinks = new Map();
-  let spotLost = 0;               // operações ignoradas na última aplicação (catálogo, página ou produto sumiram)
+  // Texto posicionado lido de novo do PDF ("Preparar para copiar"): id do catálogo → { v, pages } (vira p/<id>/texto.bin ao publicar)
+  const stagedLayouts = new Map();
+  let spotLost = 0;              // operações ignoradas na última aplicação (catálogo, página ou produto sumiram)
   function applyStaged(d, onlyCatalogs) {
     for (const [k, val] of stagedFlags) { const [id, f] = k.split('|'); const c = d.catalogs.find((x) => x.id === id); if (c) c[f] = val; }
     if (stagedOrder) {
@@ -1141,7 +1146,27 @@
     }
     pruneProdOps();
     pruneSpotOps();
-    return stagedFlags.size + (stagedOrder ? 1 : 0) + stagedSpots.size + stagedImages.size + stagedProds.size + stagedLinks.size + stagedDrops.size;
+    pruneLayoutOps();
+    return stagedFlags.size + (stagedOrder ? 1 : 0) + stagedSpots.size + stagedImages.size + stagedProds.size + stagedLinks.size + stagedDrops.size + stagedLayouts.size;
+  }
+  // Texto para copiar preparado de um catálogo que mudou (removido, nova versão, chaves trocadas, ou já ativado por outro administrador) sai da barra
+  function pruneLayoutOps() {
+    for (const [id, s] of [...stagedLayouts]) {
+      const c = vault.catalogs.find((x) => x.id === id);
+      if (!c || (c.v || 1) !== s.v || (c.pages || 0) !== s.pages.length || c.texto) stagedLayouts.delete(id);
+    }
+  }
+  // Na publicação: cifra o texto preparado com a chave e a versão do catálogo no rascunho e marca c.texto
+  async function layoutFiles(d) {
+    const files = []; let lost = 0;
+    for (const [id, s] of stagedLayouts) {
+      const t = d.catalogs.find((x) => x.id === id);
+      if (!t || (t.v || 1) !== s.v || (t.pages || 0) !== s.pages.length || !canLayout()) { lost++; continue; }
+      const key = await P.aesKey(P.b64d(t.key || d.contentKey), ['encrypt']);
+      files.push({ path: P.path.layout(id), data: await P.sealLayout(key, { id, v: t.v || 1 }, s.pages) });
+      t.texto = true;
+    }
+    return { files, lost };
   }
   function refreshStage() {
     const n = stageCount(), cats = stagedFlags.size + (stagedOrder ? 1 : 0);
@@ -1149,7 +1174,8 @@
       stagedSpots.size && plural(stagedSpots.size, 'área de produto', 'áreas de produto'),
       stagedLinks.size && plural(stagedLinks.size, 'ligação de produto à página (sem área)', 'ligações de produtos às páginas (sem área)'),
       stagedDrops.size && plural(stagedDrops.size, 'sugestão descartada', 'sugestões descartadas'),
-      stagedImages.size && plural(stagedImages.size, 'imagem de produto', 'imagens de produto')].filter(Boolean);
+      stagedImages.size && plural(stagedImages.size, 'imagem de produto', 'imagens de produto'),
+      stagedLayouts.size && plural(stagedLayouts.size, 'cópia preparada de catálogo', 'cópias preparadas de catálogos')].filter(Boolean);
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}` : parts[0];
     $('#pn-stageBar').hidden = !n || !vault;
     $('#pn-wrap').classList.toggle('has-bar', !!n && !!vault); // espaço no fim do conteúdo para a barra (host.bar)
@@ -1157,13 +1183,18 @@
     $('#pn-stagePublish').disabled = busy;
     paintNav();
   }
-  function clearStage() { stagedFlags.clear(); stagedOrder = null; stagedSpots.clear(); stagedImages.clear(); stagedProds.clear(); stagedLinks.clear(); stagedDrops.clear(); refreshStage(); }
+  function clearStage() { stagedFlags.clear(); stagedOrder = null; stagedSpots.clear(); stagedImages.clear(); stagedProds.clear(); stagedLinks.clear(); stagedDrops.clear(); stagedLayouts.clear(); refreshStage(); }
   // Depois de publicar ou descartar, redesenha a aba que mostra alterações preparadas
   const renderStagedTab = () => { if (tab === 'cats') renderCats(); else if (tab === 'prods') renderProds(); };
   $('#pn-stageDiscard').addEventListener('click', () => { clearStage(); renderStagedTab(); toast('Alterações descartadas.'); });
   $('#pn-stagePublish').addEventListener('click', async () => {
-    const ok = await publish('Publicando alterações', (d) => { applyStaged(d); });
-    if (ok) { clearStage(); toast(spotLost ? `Publicado. ${plural(spotLost, 'área de produto foi ignorada', 'áreas de produto foram ignoradas')}: o catálogo, a página ou o produto não existem mais.` : 'Publicado. O site atualiza em 1 a 3 minutos.'); }
+    let layoutLost = 0;
+    const ok = await publish('Publicando alterações', async (d) => { applyStaged(d); const x = await layoutFiles(d); layoutLost = x.lost; return { files: x.files }; });
+    if (ok) {
+      clearStage();
+      const lostTxt = layoutLost ? ` ${plural(layoutLost, 'catálogo preparado para copiar foi ignorado', 'catálogos preparados para copiar foram ignorados')}: o catálogo mudou; prepare de novo.` : '';
+      toast((spotLost ? `Publicado. ${plural(spotLost, 'área de produto foi ignorada', 'áreas de produto foram ignoradas')}: o catálogo, a página ou o produto não existem mais.` : 'Publicado. O site atualiza em 1 a 3 minutos.') + lostTxt);
+    }
     renderStagedTab();
   });
   window.addEventListener('beforeunload', (e) => { if (busy || stageCount()) { e.preventDefault(); e.returnValue = ''; } });
@@ -1772,7 +1803,11 @@
     const box = $('#pn-tabCats'); if (!vault) return;
     const list = viewCatalogs();
     const orig = new Map(vault.catalogs.map((c) => [c.id, c]));
-    const changed = (c) => { const o = orig.get(c.id); return o && ((o.visible !== false) !== (c.visible !== false) || !!o.isNew !== !!c.isNew || o.order !== c.order); };
+    const changed = (c) => { const o = orig.get(c.id); return o && ((o.visible !== false) !== (c.visible !== false) || !!o.isNew !== !!c.isNew || o.order !== c.order || stagedLayouts.has(c.id)); };
+    // Modo Copiar do leitor: selo quando o texto posicionado (texto.bin) existe; "Preparar para copiar" nos catálogos antigos
+    const copyTag = (c) => (c.texto ? ' <span class="tag copy" title="Quem vê o catálogo pode copiar nomes, códigos e tabelas direto da página.">Cópia ativa</span>'
+      : stagedLayouts.has(c.id) ? ' <span class="tag copy wait">Cópia pronta · falta publicar</span>' : '');
+    const copyBtn = (c) => (c.texto || stagedLayouts.has(c.id) ? '' : `<button class="btn ghost sm" type="button" data-k="layout" data-act="layout" title="Permite copiar nomes, códigos e tabelas direto da página.">Preparar para copiar</button>`);
     keepFocus(() => {
       box.innerHTML = `${pageHead('cats', `<button class="btn primary" type="button" data-step="cat">${ICO.upload}Adicionar catálogo</button>`)}
         ${firstStepsHtml()}
@@ -1783,12 +1818,12 @@
           <div class="rows-head cat-grid" aria-hidden="true"><span>Catálogo</span><span>No site</span><span>Novo</span><span>Validade</span><span>Ordem</span></div>
           <ul class="rows" aria-label="Catálogos">${list.map((c, i) => `<li class="rw cat-grid${changed(c) ? ' changed' : ''}" data-row="${esc(c.id)}">
             <div class="c-cover"><img data-cover="${esc(c.id)}" alt=""></div>
-            <div class="c-main"><p class="rw-title">${esc(c.title)}</p><p class="rw-meta">${plural(c.pages, 'página', 'páginas')} · ${esc(c.kind)}${c.version ? ` · ${esc(c.version)}` : ''} · ${fmtDate(c.updated)}</p>${(c.lines || []).length ? `<p class="tags">${c.lines.map((l) => `<span class="tag">${esc(l)}</span>`).join('')}</p>` : ''}</div>
+            <div class="c-main"><p class="rw-title">${esc(c.title)}</p><p class="rw-meta">${plural(c.pages, 'página', 'páginas')} · ${esc(c.kind)}${c.version ? ` · ${esc(c.version)}` : ''} · ${fmtDate(c.updated)}${copyTag(c)}</p>${(c.lines || []).length ? `<p class="tags">${c.lines.map((l) => `<span class="tag">${esc(l)}</span>`).join('')}</p>` : ''}</div>
             <div class="c-site"><span class="cell-l" aria-hidden="true">No site</span><label class="switch"><input type="checkbox" data-k="visible" ${c.visible !== false ? 'checked' : ''} aria-label="Mostrar ${esc(c.title)} no site"><span></span></label></div>
             <div class="c-new"><span class="cell-l" aria-hidden="true">Selo “Novo”</span><label class="switch"><input type="checkbox" data-k="isNew" ${c.isNew ? 'checked' : ''} aria-label="Selo Novo em ${esc(c.title)}"><span></span></label></div>
             <div class="c-valid"><span class="cell-l">Validade:</span> ${validText(c)}</div>
             <div class="c-order"><span class="cell-l" aria-hidden="true">Ordem</span><div class="order"><button class="mini" type="button" data-k="up" data-move="-1" aria-label="Subir ${esc(c.title)}" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="mini" type="button" data-k="down" data-move="1" aria-label="Descer ${esc(c.title)}" ${i === list.length - 1 ? 'disabled' : ''}>${ICO.down}</button></div></div>
-            <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-act="edit">Editar</button><button class="btn ghost sm" type="button" data-k="replace" data-act="replace">Nova versão</button><button class="btn ghost sm" type="button" data-k="remove" data-act="remove">Remover</button></div>
+            <div class="rw-acts"><button class="btn ghost sm" type="button" data-k="edit" data-act="edit">Editar</button><button class="btn ghost sm" type="button" data-k="replace" data-act="replace">Nova versão</button>${copyBtn(c)}<button class="btn ghost sm" type="button" data-k="remove" data-act="remove">Remover</button></div>
           </li>`).join('')}</ul></div>` : `<div class="empty">Nenhum catálogo ainda. Arraste o primeiro PDF acima.</div>`}`;
     });
     $$('img[data-cover]', box).forEach(async (im) => { const c = vault.catalogs.find((x) => x.id === im.dataset.cover); const u = c && (await coverFor(c)); if (u) im.src = u; });
@@ -1819,7 +1854,8 @@
       const c = vault.catalogs.find((x) => x.id === id); if (!c) return;
       if (act.dataset.act === 'edit') editCatalog(c);
       else if (act.dataset.act === 'replace') pickPdf(c);
-      else if (await confirmBox(`Remover “${c.title}”?`, `<p>O catálogo sai do site e os arquivos dele são apagados do repositório. Esta ação não pode ser desfeita.</p>${spotsLostHtml(id)}`, 'Remover catálogo', true)) {
+      else if (act.dataset.act === 'layout') layoutDialog(c);
+      else if (act.dataset.act === 'remove' && await confirmBox(`Remover “${c.title}”?`, `<p>O catálogo sai do site e os arquivos dele são apagados do repositório. Esta ação não pode ser desfeita.</p>${spotsLostHtml(id)}`, 'Remover catálogo', true)) {
         const ok = await publish('Removendo o catálogo', (d) => {
           const t = d.catalogs.find((x) => x.id === id); if (!t) return {};
           d.catalogs = d.catalogs.filter((x) => x.id !== id);
@@ -1834,6 +1870,7 @@
   // Todos os arquivos de um catálogo no repositório
   function catalogPaths(c, { chunks = true } = {}) {
     const out = [P.path.cover(c.id), P.path.search(c.id)];
+    if (P.path.layout) out.push(P.path.layout(c.id)); // texto.bin: o GitHub só apaga o que existe (commit filtra pela árvore)
     if (chunks) for (let ci = 0; ci < Math.ceil((c.pages || 0) / P.CHUNK); ci++) out.push(P.path.chunk(c.id, ci));
     for (let ti = 0; ti < (c.th || 0); ti++) out.push(P.path.thumbs(c.id, ti));
     return out;
@@ -1942,7 +1979,7 @@
       const order = d.catalogs.reduce((a, c) => Math.max(a, c.order || 0), 0) + 1;
       d.catalogs.push({
         ...c0, title: meta.title || file.name.replace(/\.pdf$/i, ''), kind: meta.kind || 'Catálogo', version: meta.version || '', updated: meta.updated || localDate(),
-        lines: meta.lines || [], desc: meta.desc || '', validUntil: meta.validUntil || '', pages: conv.pages, ratio: conv.ratio, th: conv.th, busca: true,
+        lines: meta.lines || [], desc: meta.desc || '', validUntil: meta.validUntil || '', pages: conv.pages, ratio: conv.ratio, th: conv.th, busca: true, texto: !!conv.layout,
         order, isNew: true, visible: !opts.hidden
       });
       return { files: conv.files };
@@ -1970,7 +2007,7 @@
       // Mudou o número de páginas: saem as áreas das páginas que não existem mais e o catálogo fica marcado para conferir (marca só do cofre)
       review = conv.pages !== t.pages && hasSpotsIn(d, c.id);
       lost = review ? dropCatalogSpots(d, c.id, conv.pages) : 0;
-      Object.assign(t, { key: cNew.key, aad: 1, v: cNew.v, pages: conv.pages, ratio: conv.ratio, th: conv.th, busca: true, updated: localDate() });
+      Object.assign(t, { key: cNew.key, aad: 1, v: cNew.v, pages: conv.pages, ratio: conv.ratio, th: conv.th, busca: true, texto: !!conv.layout, updated: localDate() });
       if (review) t.reviewHotspots = true;
       delete t.texts;
       return { files: conv.files, deletes };
@@ -2044,6 +2081,7 @@
       if ((n > 150 || file.size > 80 * 1048576) && !(await confirmBox('PDF grande', `<p>Este PDF tem ${plural(n, 'página', 'páginas')} e ${mb(file.size)} MB. A conversão pode levar muitos minutos e usar bastante memória.</p><p>Use um computador, deixe esta aba aberta e continue só se o arquivo estiver certo.</p>`, 'Converter assim mesmo'))) throw cancelErr();
       const key = await P.aesKey(P.b64d(c.key), ['encrypt']);
       const files = [], texts = [], odd = [], up = uploader(files);
+      const layouts = canLayout() ? [] : null, bold = new Map(); // texto posicionado (texto.bin) no mesmo passo das páginas
       let ratio = 0.707, group = [], thumbs = [];
       const pack = (p, parts) => up.add(p, (async () => P.sealFile(key, c, p, await P.packImages(parts)))());
       for (let i = 1; i <= n; i++) {
@@ -2068,13 +2106,15 @@
         if (group.length === P.CHUNK || i === n) { pack(P.path.chunk(c.id, Math.floor((i - 1) / P.CHUNK)), group); group = []; }
         if (thumbs.length === P.THUMB_CHUNK || i === n) { pack(P.path.thumbs(c.id, Math.floor((i - 1) / P.THUMB_CHUNK)), thumbs); thumbs = []; }
         const tc = await page.getTextContent();
-        texts.push(tc.items.map((it) => it.str + (it.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').trim());
+        texts.push(pageText(tc));
+        if (layouts) layouts.push(layoutPage(page, tc, bold)); // depois de desenhar: as fontes da página já estão carregadas
         page.cleanup();
       }
       up.add(P.path.search(c.id), P.sealSearch(key, c, texts));
+      if (layouts) up.add(P.path.layout(c.id), P.sealLayout(key, { id: c.id, v: c.v || 1 }, layouts));
       pg.set('Terminando o envio das páginas…', 0.8);
       await up.done();
-      return { pages: n, ratio, files, th: Math.ceil(n / P.THUMB_CHUNK), odd, texts };
+      return { pages: n, ratio, files, th: Math.ceil(n / P.THUMB_CHUNK), odd, texts, layout: !!layouts };
     } finally {
       try { if (pdf) await pdf.destroy(); } catch (e) { /* noop */ }
       worker.terminate();
@@ -2082,9 +2122,155 @@
     }
   }
 
+  /* ================= texto posicionado (p/<id>/texto.bin): base do modo Copiar do leitor ================= */
+  // Texto corrido da página (busca.bin): o mesmo cálculo na conversão e na conferência do "Preparar para copiar"
+  const pageText = (tc) => tc.items.map((it) => it.str + (it.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').trim();
+  // Protocolo antigo (sem sealLayout) ou navegador sem CompressionStream: o catálogo segue sem texto.bin (c.texto = false), sem erro
+  const canLayout = () => !!(P.path && typeof P.path.layout === 'function' && typeof P.sealLayout === 'function' && typeof P.canLayout === 'function' && P.canLayout());
+  const LAYOUT_TXT_MAX = 400, LAYOUT_ITEMS_MAX = 4000;
+  const BOLD_FONT = /bold|black|heavy/i; // cobre Bold, SemiBold, ExtraBold, Black, Heavy
+  // Fonte em negrito pelo nome. O pdf.js só conhece o nome depois de carregar a fonte (página desenhada ou getOperatorList).
+  function fontBold(page, cache, id) {
+    if (!id) return false;
+    if (cache.has(id)) return cache.get(id);
+    let has = false, b = false;
+    try { has = page.commonObjs.has(id); if (has) { const f = page.commonObjs.get(id); b = !!f && BOLD_FONT.test(String(f.name || '')); } } catch (e) { has = false; }
+    if (has) cache.set(id, b);
+    return b;
+  }
+  // Uma página → [[texto, x, y, w, h, f], ...] em milésimos da página (origem no canto superior esquerdo)
+  function layoutPage(page, tc, boldCache) {
+    const vp = page.getViewport({ scale: 1 }), W = vp.width, H = vp.height, T = window.pdfjsLib.Util.transform;
+    const raw = [];
+    for (const it of tc.items) {
+      if (!it || typeof it.str !== 'string') continue;
+      const s = it.str.replace(/[\x00-\x1f\x7f]+/g, ' ');
+      if (!s.trim()) continue;
+      const m = T(vp.transform, it.transform);
+      const fh = Math.hypot(m[2], m[3]), w = (Number(it.width) || 0) * vp.scale;
+      if (!(fh > 0) || !(w > 0)) continue;
+      if (!(m[0] > 0) || Math.abs(m[1]) > 0.1 * m[0] || Math.abs(m[2]) > 0.1 * m[0]) continue; // texto girado ou espelhado
+      raw.push({ s, x: m[4], x2: m[4] + w, top: m[5] - fh, bot: m[5] - fh + fh * 1.15, base: m[5], h: fh, b: fontBold(page, boldCache, it.fontName) });
+    }
+    const hs = raw.map((r) => r.h).sort((a, b) => a - b);
+    const med = hs.length ? hs[Math.floor(hs.length / 2)] : 0;
+    // Junta pedaços vizinhos da mesma linha (o pdf.js quebra palavras e trechos); colunas de tabela (espaço grande) ficam separadas
+    const out = [];
+    for (const r of raw) {
+      r.f = r.b || (med > 0 && r.h >= 1.35 * med) ? 1 : 0;
+      const p = out[out.length - 1];
+      if (p) {
+        const hh = Math.max(p.h, r.h), gap = r.x - p.x2;
+        if (p.f === r.f && Math.abs(r.base - p.base) <= 0.25 * hh && gap < 0.6 * hh && gap > -0.3 * hh) {
+          p.s += (gap > 0.15 * hh && !/\s$/.test(p.s) && !/^\s/.test(r.s) ? ' ' : '') + r.s;
+          p.x = Math.min(p.x, r.x); p.x2 = Math.max(p.x2, r.x2); p.top = Math.min(p.top, r.top); p.bot = Math.max(p.bot, r.bot);
+          p.base = r.base; p.h = hh;
+          continue;
+        }
+      }
+      out.push(r);
+    }
+    const cl = (v) => Math.max(-50, Math.min(1050, v));
+    const it = [];
+    for (const r of out) {
+      const s = r.s.replace(/\s+/g, ' ').trim().slice(0, LAYOUT_TXT_MAX);
+      if (!/[\p{L}\p{N}]/u.test(s)) continue; // só símbolos ("~", "-", "•"): ícones e enfeites, nada útil para copiar
+      it.push([s, cl(Math.round(r.x / W * 1000)), cl(Math.round(r.top / H * 1000)),
+        Math.max(1, cl(Math.round((r.x2 - r.x) / W * 1000))), Math.max(1, cl(Math.round((r.bot - r.top) / H * 1000))), r.f]);
+      if (it.length >= LAYOUT_ITEMS_MAX) break;
+    }
+    return { it };
+  }
+  // "Preparar para copiar" (catálogo já publicado): lê só o texto do PDF, sem converter as páginas de novo
+  async function readLayout(file, c, pg) {
+    const worker = await startPdfWorker();
+    let pdf = null;
+    try {
+      try { pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise; }
+      catch (e) { throw userErr('Não foi possível abrir este PDF. Confira se o arquivo abre normalmente e não tem senha.'); }
+      const n = pdf.numPages;
+      if (n !== (c.pages || 0)) throw userErr(`Este PDF tem ${plural(n, 'página', 'páginas')} e “${c.title}” tem ${plural(c.pages || 0, 'página', 'páginas')} no site. Escolha o PDF da versão publicada deste catálogo. Nada foi alterado.`);
+      const pages = [], texts = [], bold = new Map();
+      for (let i = 1; i <= n; i++) {
+        if (pg.cancelled) throw cancelErr();
+        pg.set(`Lendo o texto da página ${i} de ${n}`, (i - 1) / n);
+        const page = await pdf.getPage(i);
+        try { await page.getOperatorList(); } catch (e) { /* sem os nomes das fontes: o negrito vem só do tamanho */ }
+        const tc = await page.getTextContent();
+        texts.push(pageText(tc));
+        pages.push(layoutPage(page, tc, bold));
+        page.cleanup();
+      }
+      return { pages, texts };
+    } finally {
+      try { if (pdf) await pdf.destroy(); } catch (e) { /* noop */ }
+      worker.terminate();
+      window.pdfjsLib.GlobalWorkerOptions.workerPort = null;
+    }
+  }
+  let layoutTarget = '';
+  function layoutDialog(c) {
+    if (busy) return;
+    if (!canLayout()) { alertBox('Não disponível neste navegador', 'Para preparar a cópia, use uma versão recente do Chrome, Edge, Firefox ou Safari.'); return; }
+    layoutTarget = c.id;
+    openDialog({
+      title: 'Preparar para copiar',
+      body: `<p>Permite copiar nomes, códigos e tabelas direto da página. Escolha o PDF deste catálogo.</p>
+        <p class="muted">“${esc(c.title)}” · ${plural(c.pages || 0, 'página', 'páginas')}. Só o texto é lido, neste computador; as páginas não são convertidas de novo.</p>
+        <div class="drop sm" id="pn-layoutDrop" role="button" tabindex="0" aria-label="Escolher o PDF de ${esc(c.title)}">
+          <span class="drop-ico" aria-hidden="true">${ICO.upload}</span><b>Arraste o PDF aqui</b><span class="muted">ou clique para escolher o arquivo.</span>
+        </div>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }]
+    });
+    const dz = $('#pn-layoutDrop'), pick = () => { const inp = $('#pn-layoutInput'); inp.value = ''; inp.click(); };
+    dz.addEventListener('click', pick);
+    dz.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', (e) => {
+      e.preventDefault(); e.stopPropagation(); dz.classList.remove('over');
+      const f = [...((e.dataTransfer && e.dataTransfer.files) || [])][0];
+      if (f) takeLayoutFile(f);
+    });
+  }
+  $('#pn-layoutInput').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) takeLayoutFile(f); });
+  async function takeLayoutFile(file) {
+    const c = vault && vault.catalogs.find((x) => x.id === layoutTarget);
+    if (!c || busy) return;
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') { dlgErr('Escolha um arquivo PDF.'); return; }
+    closeDialog();
+    const v = c.v || 1;
+    const pg = progressDialog('Preparando para copiar', true);
+    let r;
+    try { r = await readLayout(file, c, pg); }
+    catch (e) {
+      pg.close();
+      if (e.cancelled) { toast('Cancelado. Nada foi alterado.'); return; }
+      console.error(e); alertBox('Não foi possível preparar a cópia', errText(e).replace(' Nada foi alterado no site.', ''));
+      return;
+    }
+    pg.close();
+    // Confere com o texto publicado (busca.bin): outro PDF com o mesmo número de páginas pede confirmação
+    try {
+      const old = await searchPages(c);
+      if (Array.isArray(old) && old.length === r.texts.length) {
+        const sq = (s) => String(s || '').replace(/\s+/g, '');
+        const diff = r.texts.filter((t, i) => sq(t) !== sq(old[i])).length;
+        if (diff > Math.max(1, Math.round(old.length * 0.1)) && !(await confirmBox('Este PDF parece diferente do publicado', `<p>O texto de ${plural(diff, 'página', 'páginas')} (de ${old.length}) não bate com o catálogo publicado. Se for outra versão, a cópia vai mostrar textos que não estão na página.</p><p>Use o PDF exato da versão publicada ou publique uma nova versão do catálogo.</p>`, 'Usar assim mesmo'))) return;
+      }
+    } catch (e) { /* sem o texto publicado para conferir: segue só com o número de páginas */ }
+    const cur = vault && vault.catalogs.find((x) => x.id === c.id);
+    if (!cur || (cur.v || 1) !== v) { alertBox('O catálogo mudou', 'Outro administrador publicou uma versão deste catálogo enquanto o PDF era lido. Clique em “Atualizar dados” e tente de novo.'); return; }
+    stagedLayouts.set(c.id, { v, pages: r.pages });
+    refreshStage();
+    if (tab === 'cats') renderCats();
+    const n = r.pages.reduce((a, p) => a + p.it.length, 0);
+    toast(`Texto de “${c.title}” pronto (${plural(n, 'trecho', 'trechos')}). Clique em “Publicar alterações” para ativar a cópia no site.`, 'ok');
+  }
+
   /* ================= troca de chaves (sem publicar pela metade: tudo vai num único envio) ================= */
   const rotationTargets = (d, all) => d.catalogs.filter((c) => all || !c.key);
-  const rotationFileCount = (list) => list.reduce((a, c) => a + Math.ceil((c.pages || 0) / P.CHUNK) + 2 + (c.th || Math.ceil((c.pages || 0) / P.THUMB_CHUNK)), 0);
+  const rotationFileCount = (list) => list.reduce((a, c) => a + Math.ceil((c.pages || 0) / P.CHUNK) + 2 + (c.texto ? 1 : 0) + (c.th || Math.ceil((c.pages || 0) / P.THUMB_CHUNK)), 0);
   const estimate = (n) => `cerca de ${plural(n, 'arquivo', 'arquivos')}, ~${Math.max(1, Math.ceil(n * 1.2 / 60))} min`;
   // Nova chave-raiz (dados.bin) e chaves novas para os catálogos antigos (all = false) ou para todos (all = true)
   async function rotateKeys(d, pg, all) {
@@ -2092,13 +2278,13 @@
     d.contentKey = P.b64e(P.rand(32)); d.keyRev = (d.keyRev || 1) + 1;
     const targets = rotationTargets(d, all);
     const total = Math.max(1, rotationFileCount(targets));
-    const files = []; let done = 0;
+    const files = [], deletes = []; let done = 0;
     const tick = () => pg.set(`Protegendo os catálogos com chaves novas… ${Math.min(++done, total)} de ${total}`, 0.78 * Math.min(1, done / total));
     for (const c of targets) {
       if (pg.cancelled) throw cancelErr();
       const oldC = { id: c.id, v: c.v || 1, aad: c.aad ? 1 : 0 };
       const oldKey = await P.aesKey(P.b64d(c.key || oldRoot), ['decrypt']);
-      const oldTh = c.th || 0, hadBusca = !!c.busca, texts = c.texts;
+      const oldTh = c.th || 0, hadBusca = !!c.busca, hadTexto = !!c.texto, texts = c.texts;
       c.key = P.b64e(P.rand(32)); c.aad = 1; c.v = (c.v || 1) + 1;
       const newKey = await P.aesKey(P.b64d(c.key), ['encrypt']);
       const readOpen = async (p) => {
@@ -2127,10 +2313,19 @@
         const enc = await repo.read(sp);
         if (enc) { const pages = await P.openSearch(oldKey, oldC, enc); up.add(sp, P.sealSearch(newKey, c, pages)); } else c.busca = false;
       }
+      // Texto posicionado: abre com a chave velha e sela com a nova; se não abrir, o catálogo fica sem cópia (c.texto = false) e o arquivo sai
+      if (hadTexto) {
+        const lp = P.path.layout ? P.path.layout(c.id) : '';
+        let lay = null;
+        try { const enc = lp && canLayout() ? await repo.read(lp) : null; if (enc) lay = await P.openLayout(oldKey, { id: c.id, v: oldC.v }, enc); } catch (e) { console.error(e); lay = null; }
+        if (lay) { const sealed = await P.sealLayout(newKey, { id: c.id, v: c.v }, lay); up.add(lp, sealed); }
+        else { c.texto = false; if (lp) deletes.push(lp); }
+        tick();
+      }
       tick();
       await up.done();
     }
-    return { files };
+    return { files, deletes };
   }
 
   /* ================= Supabase: sessão do administrador (P.auth, a mesma do site neste computador) =================
