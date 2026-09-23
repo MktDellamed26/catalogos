@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-GQgdYVclG7m+VikGeUmnKoZFvrX/JwWGUXLsNQCc3bo=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src blob:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-Iz22b7SbNqOC59JHpjqPsZa7wUpSO4DHSBg2tu+y5R0=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -10,6 +10,11 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKkSURBVFhHY2BAAzI6/gFy2v7tcjp+++V0/P9TB4PM8uuX1fVPkJe350C3Ewzktbwk5HT8t2Nqpi6W1fa/Lq/jo4Fqub6/gqy233t0xbTCsjr+3+V1fS3gDqBucBOHwSEBig4Zbb8IdEl6YVkdvwoGOW3/6egSdMTbGWR1/M5jkUDBi1Zs/79w+TYwBrFnLdzwv6Z15n+v0CIMtaRgULpjQBfEhvGBcxdv/E/Nb8fQQyym2AEwMG3uWgx9xGCiHJBR1AnG6YUdYLqkZtL/hcu2/n/6/DXY8ucv3/z3CS/G0EcMJsoBuLCWReT/7klL/rsG5IL5boF5/9v6FmCow4eJcgDItwuWbQHTcxdv+l/bOuu/mVMSihqQI2Ah4hFSgGEGLkyUA7CBDx8//88u6YarATkOBtZtPoBhBi5MtgNgwC+yBKzGwSfr/69fv8Fi795/+q9pFo5hDjZMsQN27z8FVwfKkjDgHUZcGUGxA0A5QMkgCKxu9Ya9cPGErGYMc7BhqjhA2TAYrG7VQDhgz4HTcHVnLyCigNhygWIH+EeVgdXYe2f+//nzF1gMnAjNIzDMwYbJdsCnz1//55X3wdWAKioY2LD1IIYZuDBRDgDVgDAMKpAaOub8t3BNQVEDKnxevHwLdgAptSRRDsCFQXkdVPQ6+maD+Z6hheCiGV0dPkyUA0DVLTIurJoALpKfPH0F9jGIJqX4RcZEOYAYQNPqGB+4cPkWuIpG10MsBjXJ7qMLouMlq3agYFDw17fP/u8bAakHyMWg5jkoBJajS9ALy2r7H2eQ1fYvQJegH/brB/WKBGR1/J9jStIWg3tH+v4KkK6Ztr8DugJaY1BHFal3yMAgo+XrQY+QAPkcw3IYAEUHuBut7X8cXSOlGNIB8puP3jMGACiuhNvAzU5aAAAAAElFTkSuQmCC">
 <link rel="icon" type="image/png" sizes="48x48" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQASURBVGhD1ZpZTBRBEIb30UcffXB2vBV2UAGjaLxNjDE64wUqRsSbB4nRREI84olXQF81UcCTEI23rohC8AKVCAQNEeUIsp4oeOB6JWVq1h2d6gWbXlxmKvl4oLqK+meqe3qmcTjaMHmI1l2K0BKdLvWsU1ELJUWtcyoahALf31ILnYrmlhQ1SQ6f2oPW165h4ZJLbaaJuwpJ0bySoqbSOhnDq+5UtByawCpILq1YVqYNonXrhrcplG0iCt4NOVwbSut3+HqdDbAikqKWyfK4bkbx+mQNMNDSuLRdevG+1tG8zAAboLcSLlPUYRvwLuBayzhsguTSqhz4gzrsAra+Q/SB9dzzGv5lb5uawZ1/F5LW7oHeg2cyOToDbCHmlzw8rqql9bZrVdX1sHLNbiZPsAgLqH7WQGvksivX7oIyMp7JJ4qwgOL7lfDu/QeGlg+f4MfPn7Ruwx5WPLGGgLDhc8EVM58hYtQCGD1lBSxNToOTp/Lg46dWo/iiO2XQL2oOkysYhAXwMmLSEjh3uQhuFZebih8QHQsb0w4y4zvKfxcQiD5DZkHBzVL9ruAKRf0dQVjA1evF8Kz2OTyt+QNO7NKyKsg6cQm0+BQmBsEWyy+8b7RVQ+OroNpKWEBNXaNRRFt2LNetX+2/43akZ9FhkJySweTnRVgA73Mgr6AE5IgZRtzwiUv0lepvw8lN8/Py3wWgbdt72BSbefyiyf+51cvk5yUkApretejLrj82bvEGOoTJz0tIBKDNX7rJiI0atwi+eL+a/DQ/LyETsHHHASMWV50Xr5pMfpqfly4T4Hn51uSn+XkJmYAFyzcbsZFjE6D1i9fkp/l5CYkA3OSZJnHiejqEyc9LSASkZWSbYg8dvWDyW3oZxT1Pr8F/HmTDJiRCc4v5QYYbPZqfF2EBPFuJ3DP50Ddytilu575sOgxWp+5j8vMiLOBawT2orfeYqKn3QHlltb4Hmp2QysQgQ8cs1LcOfmv0vIH+0bHMOF6EBeD+JhB0XCBwGcW2QVu1Lp3xdwRhAbxgz58+XwA3ih6YdqZhI+bB9r2ZzPiOIixg4LA4fWmk4GvlyMnLICFpKxzJuWKasPgeQLfXwSIs4HZJhf7dh4Jr/rdv342iqZWUPtJF0nyiCAsQ/ayCkx/fymg+UYQF8D4H/IavnMkpwU3YQDhEP63zfFrEdsK+x8Lp86CzwM/rlj9Wag/H7+NMxmEH8OLj5/Ut1GEf1CwHHluyDnvQM3z6FN8JpaLup04b4DZOKfHI0k4nNXgow/z7gRwxPYYOtCp4LGwq3m/YU5KivaQBVgGvfJvF+833/xJqFg22AG6mbdoz2aWNRyGih4Cdwe9dQk5PRZtB6/PbLyib4MIfQLayAAAAAElFTkSuQmCC">
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prateleira">
 <style id="antiframe">html{display:none}</style>
 <title>Prateleira de Catálogos Dellamed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,6 +58,8 @@
     --safe-b: env(safe-area-inset-bottom, 0px);
     --safe-l: env(safe-area-inset-left, 0px);
     --safe-r: env(safe-area-inset-right, 0px);
+    /* Área segura de cima: 0 no navegador (a barra dele já reserva o espaço) e a do aparelho no app instalado (body.app-instalado) */
+    --safe-t: 0px;
   }
   *, *::before, *::after { box-sizing: border-box; }
   [hidden] { display: none !important; }
@@ -1160,6 +1167,50 @@
     .bento { scroll-snap-type: none; }
     .ger-spin { animation-duration: 2.4s; }
   }
+
+  /* ---------- app instalável (PWA): faixas, "Instalar app" e ajustes do app aberto ----------
+     Fica no fim da folha de propósito: os ajustes de body.app-instalado precisam vir depois das faixas de tela. */
+  /* Faixas discretas e não bloqueantes (nova versão, sem internet, convite para instalar): acima do aviso (toast) */
+  .app-bars { position: fixed; z-index: 88; left: 0; right: 0; bottom: calc(84px + var(--safe-b)); display: grid; gap: 8px; justify-items: center; padding: 0 calc(16px + var(--safe-r)) 0 calc(16px + var(--safe-l)); pointer-events: none; }
+  .app-bars:empty { display: none; }
+  .app-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; max-width: min(560px, 100%); padding: 10px 12px 10px 18px; border-radius: 22px; background: var(--white); color: var(--ink); font-size: 13px; line-height: 1.45; box-shadow: var(--pop-shadow); pointer-events: auto; }
+  .app-bar > .ico { color: var(--navy); }
+  .app-bar p { flex: 1; min-width: 150px; }
+  .app-bar .btn { flex: none; }
+  body.ger-on .app-bars { bottom: calc(84px + var(--safe-b) + var(--ger-bar-h, 0px)); }
+  body.reading .app-bars { bottom: calc(96px + var(--safe-b)); } /* leitor: acima do aviso, longe da pílula de páginas */
+  /* Passo a passo do iPhone (diálogo "Instalar app") */
+  .app-steps { display: grid; gap: 10px; margin: 0; padding-left: 20px; color: var(--ink); font-size: 14px; line-height: 1.5; }
+  .app-steps .ico { display: inline-grid; vertical-align: -4px; color: var(--navy); }
+  .app-steps .ico svg { width: 17px; height: 17px; }
+  /* "Instalar app" no menu da conta: só no celular (computador e tablet usam o item do menu lateral/gaveta) */
+  .menu .menu-app { display: flex; align-items: center; gap: 10px; }
+  .menu .menu-app .ico { color: var(--navy); }
+  @media (min-width: 768px) { .menu .menu-app { display: none; } }
+  @media (max-width: 1199px) {
+    body.reading .app-bars { bottom: calc(140px + var(--safe-b)); } /* acima da pílula flutuante de páginas */
+  }
+  @media (max-width: 767px) {
+    .app-bars { bottom: calc(var(--tab-h) + 70px + var(--safe-b)); }
+    body.ger-on .app-bars { bottom: calc(var(--tab-h) + 70px + var(--safe-b) + var(--ger-bar-h, 0px)); }
+    body.ger-only .app-bars { bottom: calc(70px + var(--safe-b) + var(--ger-bar-h, 0px)); }
+  }
+  /* App aberto instalado (standalone): a faixa azul-marinho do topo cobre a área do relógio.
+     Embaixo nada muda: --safe-b já é usado nas abas, no conteúdo e na barra de publicação. */
+  body.app-instalado { --safe-t: env(safe-area-inset-top, 0px); }
+  body.app-instalado .topbar { height: calc(var(--bar-h) + var(--safe-t)); padding-top: var(--safe-t); }
+  body.app-instalado .cmdbar { top: calc(var(--bar-h) + var(--safe-t)); }
+  body.app-instalado .menu[data-from="top"] { top: calc(var(--bar-h) + var(--safe-t) + 6px); }
+  body.app-instalado .side { padding-top: calc(20px + var(--safe-t)); }
+  body.app-instalado .login-brand { padding-top: calc(36px + var(--safe-t)); }
+  body.app-instalado .r-top { height: calc(60px + var(--safe-t)); padding-top: var(--safe-t); }
+  @media (max-width: 1199px) {
+    body.app-instalado .r-top { height: calc(var(--bar-h) + var(--safe-t)); }
+    body.app-instalado .ger-main { min-height: calc(100vh - var(--bar-h) - var(--safe-t)); min-height: calc(100dvh - var(--bar-h) - var(--safe-t)); }
+  }
+  @media (max-width: 899px) {
+    body.app-instalado .login-brand { padding-top: calc(22px + var(--safe-t)); }
+  }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -1317,6 +1368,8 @@
         <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard"></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
       </div>
+      <!-- Instalar app (computador e tablet): só quando o navegador aceita instalar e o app ainda não está instalado -->
+      <button class="nav-i" type="button" id="installSide" data-install hidden><span class="ico" data-ico="install"></span><span class="nav-t">Instalar app</span></button>
       <!-- Gerenciar: só admin do Supabase (ou gestão de emergência aberta); a gestão (painel.js) abre dentro do site -->
       <div class="nav-group" role="group" aria-labelledby="gerNavH" data-admin-entry hidden>
         <p class="nav-h" id="gerNavH">Gerenciar</p>
@@ -1341,6 +1394,8 @@
       <button type="button" data-ger="pessoas"><span class="ico" data-ico="users"></span>Pessoas<span class="int-n" data-ger-n="pessoas" hidden></span></button>
       <button type="button" data-ger="config"><span class="ico" data-ico="ajustes"></span>Configurações<span class="int-n" data-ger-n="config" hidden></span></button>
     </div>
+    <!-- Instalar app (celular): mesmo item do menu lateral, aqui no menu da conta -->
+    <button type="button" class="menu-app" id="installMenu" data-install hidden><span class="ico" data-ico="install"></span>Instalar app</button>
     <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
@@ -1634,6 +1689,8 @@
 </section>
 
 <dialog id="dlg" aria-labelledby="dlgTitle"></dialog>
+<!-- Faixas do app (nova versão, sem internet, convite para instalar): discretas, sem prender o foco e fora do #shell -->
+<div class="app-bars" id="appBars" aria-live="polite"></div>
 <div class="toast-wrap" id="toastWrap"><div class="toast" id="toast" role="status" aria-live="polite"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js" integrity="sha384-L4eWrYFdqQ+LoGA0MMuqLqzV13x7SKkQaqacy4MED8e815dS37tTKlO/6xBEUpZW" crossorigin="anonymous"></script>
@@ -2178,6 +2235,8 @@
     pencil: '<svg viewBox="0 0 24 24"><path d="M4.5 19.5l1-4.2L15.8 5a2.1 2.1 0 0 1 3 0l.2.2a2.1 2.1 0 0 1 0 3L8.7 18.5z"/><path d="M13.8 7l3.2 3.2"/></svg>',
     qr: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5H14zM19 14h1M14 19.5h1M17.5 17.5H20V20h-2.5z"/></svg>',
     device: '<svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17.5h2"/></svg>',
+    install: '<svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9.5 11.5l2.5 2.5 2.5-2.5"/></svg>',
+    iosShare: '<svg viewBox="0 0 24 24"><path d="M12 3.5v11M8.5 7L12 3.5 15.5 7"/><path d="M8 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5H16"/></svg>',
     search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg>',
     star: '<svg viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -2302,7 +2361,8 @@
   /* ================= acesso (acessos.json) ================= */
   async function loadAccess() {
     let r;
-    try { r = await fetch('acessos.json?t=' + Date.now(), { cache: 'no-store' }); } catch (e) { throw new NetError(); }
+    // Sem carimbo de hora no endereço: o app instalado precisa reconhecer o arquivo guardado quando está sem internet ("no-store" já evita cache velho do navegador)
+    try { r = await fetch('acessos.json', { cache: 'no-store' }); } catch (e) { throw new NetError(); }
     if (!r.ok) throw new HttpError(r.status, 'acessos');
     const a = await r.json();
     if (!a || typeof a !== 'object') throw new Error('acessos inválido');
@@ -2339,7 +2399,7 @@
   /* ================= dados.bin ================= */
   async function unlockData(rootKey) {
     const prodJob = loadProdutos(rootKey); // em paralelo com dados.bin; nunca impede a entrada
-    const buf = await getBuf('dados.bin?t=' + Date.now(), { cache: 'no-store' });
+    const buf = await getBuf('dados.bin', { cache: 'no-store' });
     const data = await P.openDados(rootKey, buf);
     if (Number(data.v) > 2) { const err = new Error('versão'); err.name = 'VersionError'; throw err; }
     const list = (Array.isArray(data.catalogs) ? data.catalogs : []).filter((c) => c && typeof c.id === 'string').slice().sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -2362,13 +2422,14 @@
     for (const k of Object.keys(SEARCH_N)) delete SEARCH_N[k];
     searchLoads.clear(); searchFail.clear();
     LAYOUTS.clear(); layoutLoads.clear(); CPP.clear(); // Modo Copiar: texto posicionado da versão anterior sai da memória
+    syncCatalogCache(); // catálogo republicado (c.v mudou): o app descarta o que guardou dele
     if (!v2) for (const [id, v] of Object.entries(data.search || {})) SEARCH[id] = ((v && v.pages) || []).map((t) => String(t || ''));
   }
 
   /* ================= produtos.bin (produtos e hotspots; opcional) ================= */
   // Ausente (404), antigo ou impossível de abrir: o site funciona normalmente, só sem produtos
   async function loadProdutos(rootKey) {
-    try { return await P.openProdutos(rootKey, await getBuf('produtos.bin?t=' + Date.now(), { cache: 'no-store' })); }
+    try { return await P.openProdutos(rootKey, await getBuf('produtos.bin', { cache: 'no-store' })); }
     catch (e) { return null; }
   }
   function buildProd(data, list) {
@@ -2600,6 +2661,7 @@
     if (err && err.gen != null && err.gen !== DATA_GEN) return null; // pedido anterior à última recarga: ignora
     if (rotating || !me) return rotating;
     if (Date.now() - rotatedAt < 60000) { logout({ msg: MSG_EXPIRED }); return null; }
+    clearCatalogCache(); // chaves trocadas: nada do que o app guardou dos catálogos abre com a chave nova
     rotating = (async () => {
       try { if (await reloadData(true)) rotatedAt = Date.now(); }
       catch (e) { reloadGone(e); }
@@ -2624,6 +2686,8 @@
       panel: typeof o.panel === 'boolean' ? o.panel : undefined, // painel "Nesta página" aberto no computador
       fichas: typeof o.fichas === 'boolean' ? o.fichas : undefined, // etiquetas de ficha técnica na página (padrão: ligadas)
       copyTip: o.copyTip === true ? true : undefined, // dica do Modo Copiar já mostrada
+      logins: Math.min(99, Math.max(0, parseInt(o.logins, 10) || 0)), // quantas vezes esta pessoa entrou neste aparelho (convite do app)
+      appInvite: o.appInvite === true ? true : undefined, // convite para instalar o app já mostrado a esta pessoa
       card: normCard(o.card), // cartão de visita digital (a foto fica no IndexedDB 'dm-cartao')
       interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
         .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : []
@@ -2668,9 +2732,13 @@
     if (typeof prefs.panel === 'boolean') out.panel = prefs.panel;
     if (typeof prefs.fichas === 'boolean') out.fichas = prefs.fichas;
     if (prefs.copyTip) out.copyTip = true;
+    // App instalável: a contagem de entradas e o convite já mostrado nunca voltam atrás (outra aba pode ter subido os dois)
+    out.logins = Math.max(st.logins, prefs.logins || 0);
+    if (prefs.appInvite || st.appInvite) out.appInvite = true;
     if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
     prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests;
+    prefs.logins = out.logins; prefs.appInvite = out.appInvite === true ? true : undefined;
     favOps.clear(); interestOps.clear(); prefsDirty = false; cardDirty = false;
   }
   window.addEventListener('storage', (e) => {
@@ -2683,6 +2751,7 @@
     prefs.progress = mergeProgress(st.progress, prefs.progress);
     prefs.interests = applyInterestOps(st.interests);
     if (!cardDirty) prefs.card = st.card;
+    if (st.appInvite) prefs.appInvite = true; // convite do app mostrado em outra aba: não repete aqui
     updateInterestUI();
     if (cardAllowed()) renderCard(); // cartão salvo em outra aba: visualização e faixa do início acompanham
     if (typeof st.sound === 'boolean' && !prefsDirty) { prefs.sound = st.sound; setSound(st.sound, false); }
@@ -2903,6 +2972,7 @@
     if (tw.parentNode !== host) host.appendChild(tw);
     view = name;
     syncNav();
+    syncAppBars(); // convite para instalar o app: nunca dentro do leitor
     const tabHome = $('#tabbar [data-tab="inicio"]'), tabCard = $('#tabbar [data-tab="cartao"]');
     if (name === 'card') { tabHome.removeAttribute('aria-current'); tabCard.setAttribute('aria-current', 'true'); }
     else if (name === 'ger') { tabHome.removeAttribute('aria-current'); tabCard.removeAttribute('aria-current'); }
@@ -3590,6 +3660,8 @@
     me.papel = me.auth === 'supabase' ? String(prof.p || '') : '';
     if (me.auth === 'legacy') rememberLegacyUid();
     loadPrefs();
+    prefs.logins = Math.min(99, (prefs.logins || 0) + 1); // convite para instalar o app: só a partir da segunda entrada
+    savePrefs();
     setSound(typeof prefs.sound === 'boolean' ? prefs.sound : !coarse, false);
     $$('[data-avatar]').forEach((a) => { a.textContent = initials(me.name); });
     $('#uName').textContent = me.name;
@@ -3620,6 +3692,7 @@
     if (loggingOut) return;
     loggingOut = true;
     gerLock(); // gestão aberta: cofre, token e segredos saem da memória (também na saída por outra aba, evento storage ou aviso "sair")
+    clearCatalogCache(); // o app descarta o que guardou dos catálogos (o site e os ícones continuam, para abrir offline)
     flushPrefs();
     clearCardMemory(); // os dados do cartão ficam no aparelho; só a tela e a foto em memória são descartadas
     // Login Supabase: encerra a sessão única no servidor (só a aba que pediu; as outras recebem o aviso "sair" ou o evento storage de "dm.auth" e só limpam)
@@ -3758,6 +3831,7 @@
       if (!me) return; // emergência sem login: não há prateleira para atualizar
       if (rotating) await rotating;
       clearTimeout(gerPubT);
+      if (fresh) clearCatalogCache(); // chaves novas na publicação: o app descarta tudo o que guardou dos catálogos
       try {
         if (!(await reloadData(fresh))) return;
         if (!tries) gerPubT = setTimeout(() => gerPublished({ keysRotated: false }, 9), 90000);
@@ -5658,6 +5732,7 @@
     $('#rStatus').textContent = on ? 'Modo Copiar ligado. A página só vira pelos botões anterior e próxima e pelas setas do teclado.' : 'Modo Copiar desligado.';
     if (on) { closeFichaPop(false); cpPrepare(); }
     else { CP.st = ''; cpMsg(''); $$('.cp-layer', holder).forEach((l) => l.remove()); }
+    syncAppBars(); // convite para instalar o app: nunca no Modo Copiar
   }
   // Mini "Copiar" perto da seleção (só com mouse; no celular fica o menu do sistema)
   function placeSelBtn() {
@@ -7244,6 +7319,173 @@
     ['#cardPreview', '#cardEditPreview', '#cardShowCard', '#cardThumb', '#cardPrevAv', '#cardPrevName', '#cardStripAv', '#cardStripName', '#cardLive', '#cardStatus'].forEach((s) => { const el = $(s); el.innerHTML = ''; delete el.dataset.v; });
     cardForm.reset();
   }
+
+  /* ================= app instalável (PWA) =================
+     O site continua funcionando igual sem nada disto: qualquer falha só vai para o console.
+     O trabalhador de segundo plano (sw.js) guarda o site e os arquivos JÁ criptografados dos catálogos;
+     chaves, sessão e preferências continuam só neste aparelho (IndexedDB e localStorage) e nunca passam por ele.
+     Recados aceitos pelo sw: 'assumir' (versão nova), { tipo:'limpar', id } e { tipo:'limpar' }. */
+  const swOn = () => !!(navigator.serviceWorker && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1'));
+  const swTell = (msg) => { try { const c = navigator.serviceWorker && navigator.serviceWorker.controller; if (c) c.postMessage(msg); } catch (e) { /* sem app instalado: nada a avisar */ } };
+  const standaloneMq = matchMedia('(display-mode: standalone)');
+  const appAberto = () => standaloneMq.matches || navigator.standalone === true; // rodando instalado
+  // iPhone e iPad (inclusive o iPad que se anuncia como Mac com toque): não têm beforeinstallprompt
+  const ehIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (/Mac/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const markApp = () => { document.body.classList.toggle('app-instalado', appAberto()); };
+  markApp();
+
+  /* ----- faixas discretas: nova versão, sem internet e convite para instalar ----- */
+  const appBars = $('#appBars');
+  function showBar(id, { icon = '', text, actions = [] }) {
+    let el = $(`[data-bar="${cssq(id)}"]`, appBars);
+    if (!el) { el = document.createElement('div'); el.className = 'app-bar'; el.dataset.bar = id; appBars.appendChild(el); }
+    el.innerHTML = `${icon ? `<span class="ico" aria-hidden="true">${icon}</span>` : ''}<p>${esc(text)}</p>` +
+      actions.map((a, i) => `<button type="button" class="btn ${a.kind === 'primary' ? 'primary' : 'ghost'} sm" data-i="${i}">${esc(a.label)}</button>`).join('');
+    $$('button', el).forEach((b) => b.addEventListener('click', () => { const a = actions[+b.dataset.i]; if (a && a.onClick) a.onClick(); }));
+  }
+  function closeBar(id) { const el = $(`[data-bar="${cssq(id)}"]`, appBars); if (el) el.remove(); }
+
+  /* ----- registro do sw.js e aviso de versão nova ----- */
+  let swReg = null, updatePedido = false, recarregando = false;
+  // Nunca recarregar no meio de uma edição do cartão nem com alterações não publicadas na gestão (o "Sair" usa o mesmo hasPending)
+  const appOcupado = () => (view === 'card' && CARD.mode === 'edit') || gerPending();
+  function barraVersao() {
+    showBar('versao', { text: 'Nova versão da Prateleira disponível.', actions: [{ label: 'Atualizar', kind: 'primary', onClick: assumirVersao }] });
+  }
+  // "Atualizar": a versão nova assume e a página recarrega no controllerchange (uma vez só)
+  function assumirVersao() {
+    updatePedido = true;
+    const esperando = swReg && swReg.waiting;
+    if (esperando) { try { esperando.postMessage('assumir'); } catch (e) { console.warn('[app] recado não enviado:', e); } }
+    showBar('versao', { text: 'Atualizando…' });
+    setTimeout(recarregarApp, 4000); // sem resposta do trabalhador: recarrega assim mesmo
+  }
+  function recarregarApp() {
+    if (!updatePedido || recarregando) return;
+    if (appOcupado()) { // adia: a pessoa está editando o cartão ou tem alterações não publicadas
+      showBar('versao', { text: 'Atualização pronta. Ela entra assim que você terminar o que está editando.', actions: [{ label: 'Recarregar', kind: 'primary', onClick: recarregarApp }] });
+      return;
+    }
+    recarregando = true;
+    closeBar('versao');
+    location.reload();
+  }
+  function swRegistrado(reg) {
+    swReg = reg;
+    if (reg.waiting && navigator.serviceWorker.controller) barraVersao(); // versão nova já esperando desde a abertura anterior
+    reg.addEventListener('updatefound', () => {
+      const novo = reg.installing;
+      if (!novo) return;
+      novo.addEventListener('statechange', () => {
+        // Só há o que avisar quando já existe uma versão no ar (sem controller é a primeira instalação)
+        if (novo.state === 'installed' && navigator.serviceWorker.controller) barraVersao();
+      });
+    });
+  }
+  if (swOn()) {
+    navigator.serviceWorker.addEventListener('controllerchange', recarregarApp);
+    const registrar = () => navigator.serviceWorker.register('./sw.js', { scope: './' }).then(swRegistrado)
+      .catch((e) => console.warn('[app] sem trabalhador de segundo plano:', (e && e.message) || e));
+    if (document.readyState === 'complete') registrar();
+    else window.addEventListener('load', registrar, { once: true });
+  }
+  // Rota trocada (ex.: saiu da edição do cartão): a atualização adiada entra agora
+  window.addEventListener('hashchange', recarregarApp);
+
+  /* ----- catálogos guardados pelo app ----- */
+  let CAT_VERS = null; // id → versão (c.v) conhecida na última leitura de dados.bin
+  // Catálogo republicado: os arquivos mudam de conteúdo no mesmo endereço, então o guardado precisa sair
+  function syncCatalogCache() {
+    const agora = new Map(CATALOGS.map((c) => [c.id, String(c.v == null ? 1 : c.v)]));
+    if (CAT_VERS) for (const [id, v] of agora) { const antes = CAT_VERS.get(id); if (antes != null && antes !== v) swTell({ tipo: 'limpar', id }); }
+    CAT_VERS = agora;
+  }
+  // Chaves trocadas ou saída do acesso: tudo o que o app guardou dos catálogos é descartado
+  function clearCatalogCache() { CAT_VERS = null; swTell({ tipo: 'limpar' }); }
+
+  /* ----- "Instalar app": menu lateral (computador e tablet) e menu da conta (celular) ----- */
+  let instalarEvt = null; // beforeinstallprompt guardado (Chrome, Edge, Android)
+  function syncInstallEntries() {
+    const on = !appAberto() && (!!instalarEvt || ehIOS());
+    $$('[data-install]').forEach((el) => { el.hidden = !on; });
+    if (!on) closeBar('convite');
+  }
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    instalarEvt = e;
+    syncInstallEntries();
+    syncAppBars();
+  });
+  window.addEventListener('appinstalled', () => {
+    instalarEvt = null;
+    markApp();
+    syncInstallEntries();
+    closeBar('convite');
+    toast('App instalado.');
+  });
+  onMq(standaloneMq, () => { markApp(); syncInstallEntries(); });
+  async function instalarApp(from) {
+    if (instalarEvt) {
+      const evt = instalarEvt;
+      instalarEvt = null; // o convite do navegador só pode ser aberto uma vez por evento
+      closeBar('convite');
+      let escolha = null;
+      try { evt.prompt(); escolha = await evt.userChoice; }
+      catch (e) { console.warn('[app] instalação não abriu:', (e && e.message) || e); }
+      syncInstallEntries();
+      if (escolha && escolha.outcome === 'accepted') toast('App instalado.');
+      return;
+    }
+    if (ehIOS()) ajudaIOS(from);
+  }
+  // iPhone e iPad: o Safari não oferece a instalação por botão; o diálogo mostra o caminho
+  function ajudaIOS(from) {
+    openDialog({
+      title: 'Instalar app no iPhone',
+      body: `<p class="dlg-sub">No Safari, em três passos:</p>
+        <ol class="app-steps">
+          <li>Toque no botão <b>Compartilhar</b> <span class="ico" aria-hidden="true">${I.iosShare}</span> (quadrado com seta).</li>
+          <li>Escolha <b>Adicionar à Tela de Início</b>.</li>
+          <li>Toque em <b>Adicionar</b>.</li>
+        </ol>`,
+      actions: [{ label: 'Entendi', kind: 'primary' }]
+    });
+    if (from && from.isConnected) dlg._ret = from;
+  }
+  $$('[data-install]').forEach((b) => b.addEventListener('click', () => { setMenu(false); drawer.close(false); instalarApp(b); }));
+  syncInstallEntries();
+
+  /* ----- convite discreto, uma vez por pessoa (gravado nas preferências) ----- */
+  function convidarInstalar() {
+    if (!me || appAberto() || prefs.appInvite) return;
+    if ((prefs.logins || 0) < 2) return;               // só depois do segundo login
+    if (!instalarEvt && !ehIOS()) return;              // sem caminho de instalação: não convida
+    if (view === 'reader' || CP.on) return;            // nunca dentro do leitor nem no Modo Copiar
+    prefs.appInvite = true;
+    savePrefs();
+    showBar('convite', {
+      icon: I.install,
+      text: 'Instale a Prateleira no seu celular para abrir mais rápido e usar sem internet.',
+      actions: [
+        { label: 'Agora não', onClick: () => closeBar('convite') },
+        { label: 'Instalar', kind: 'primary', onClick: () => { closeBar('convite'); instalarApp(null); } }
+      ]
+    });
+  }
+  // Chamada na troca de vista (showOnly) e ao ligar/desligar o Modo Copiar (setCopy)
+  function syncAppBars() {
+    if (view === 'reader' || CP.on) closeBar('convite');
+    else convidarInstalar();
+  }
+
+  /* ----- sem internet ----- */
+  function pintarOffline() {
+    if (navigator.onLine === false) showBar('offline', { icon: I.warn, text: 'Sem internet — você continua vendo o que já abriu.' });
+    else closeBar('offline');
+  }
+  window.addEventListener('offline', pintarOffline);
+  window.addEventListener('online', pintarOffline);
+  pintarOffline();
 
   /* ================= início ================= */
   // Sessão do Supabase guardada: renova o token (P.auth), confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
