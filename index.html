@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-Weli4NM/pl2+iEw/d/jIgWeBTNmrgbwz14UBg54D4OY=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-ySHDrR+q0hu9TXdYF4s2f0eNCtztphbeyCDsOXNy/uU=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -97,7 +97,7 @@
   :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
   /* O menu lateral/gaveta ficou branco (Clínico claro): o foco dele volta ao azul-marinho padrão */
   .topbar :focus-visible, .hero :focus-visible, .reader :focus-visible, .login-brand :focus-visible { outline-color: var(--sky); }
-  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible, .reader .fi-pop :focus-visible, .reader .hs-ficha:focus-visible, .reader .pg-links:focus-visible, .reader .cp-bar :focus-visible, .reader .cp-hit:focus-visible, .reader .cp-tbl:focus-visible, .reader .cp-selbtn:focus-visible, .reader .arrow:focus-visible, .reader .thumbs :focus-visible { outline-color: var(--navy); }
+  .reader .results :focus-visible, .reader .jump:focus-visible, .reader .img-err :focus-visible, .reader .r-search :focus-visible, .reader .r-panel :focus-visible, .reader .fi-pop :focus-visible, .reader .hs-ficha:focus-visible, .reader .pg-links :focus-visible, .reader .hs-qty :focus-visible, .reader .cp-bar :focus-visible, .reader .cp-hit:focus-visible, .reader .cp-tbl:focus-visible, .reader .cp-selbtn:focus-visible, .reader .arrow:focus-visible, .reader .thumbs :focus-visible { outline-color: var(--navy); }
   .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
   .warn-ico { display: inline-block; width: 15px; height: 15px; flex: none; vertical-align: -3px; }
   .warn-ico svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -278,7 +278,7 @@
   .nav-h { margin: 0 12px 4px; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
   .nav-exit { display: none; margin-top: auto; }
   /* Gestão de emergência sem login no site (body.ger-only): só a marca, o grupo "Gerenciar" e "Voltar ao login" */
-  body.ger-only .side-nav > :not(.nav-group), body.ger-only .side .me, body.ger-only #intBtn, body.ger-only .tabbar, body.ger-only #pwChangeBtn { display: none !important; }
+  body.ger-only .side-nav > :not(.nav-group), body.ger-only .side .me, body.ger-only .tabbar, body.ger-only #pwChangeBtn { display: none !important; }
   body.ger-only .nav-group { margin-top: 0; padding-top: 0; border-top: 0; }
   body.ger-only .nav-exit { display: flex; }
   .avatar svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
@@ -400,7 +400,7 @@
   .hero .cover-open { display: block; cursor: pointer; }
   .hero .cover-open img { display: block; width: 100%; height: auto; aspect-ratio: var(--r, .707); object-fit: cover; border-radius: 3px; background: rgba(255, 255, 255, .1); box-shadow: 0 30px 50px -20px rgba(0, 0, 0, .65); }
   .hero .cover.a img { box-shadow: 0 0 0 1px rgba(255, 255, 255, .12), 0 34px 60px -20px rgba(0, 0, 0, .7), 0 0 80px rgba(139, 184, 232, .25); }
-  /* Blocos: continuar lendo, produtos de interesse, atualizados recentemente — brancos, com borda sutil */
+  /* Blocos: continuar lendo, carrinho, atualizados recentemente — brancos, com borda sutil */
   .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .bento[data-n="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .bento[data-n="1"] { grid-template-columns: minmax(0, 1fr); }
@@ -420,9 +420,9 @@
   .meta { font-size: 12px; color: var(--ink-2); }
   .progress { margin-top: 10px; height: 4px; max-width: 340px; border-radius: 2px; background: var(--light); overflow: hidden; }
   .progress i { display: block; height: 100%; background: var(--sky); }
-  .int-tile .num { margin-top: 6px; font-family: var(--font-title); font-size: 30px; font-weight: 300; line-height: 1.1; color: var(--navy); }
-  .int-tile .num b { font-weight: 700; }
-  .int-tile .skus { margin-top: 4px; font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+  .cart-tile .num { margin-top: 6px; font-family: var(--font-title); font-size: 30px; font-weight: 300; line-height: 1.1; color: var(--navy); }
+  .cart-tile .num b { font-weight: 700; }
+  .cart-tile .skus { margin-top: 4px; font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
   .tile-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 14px; }
   .upd { list-style: none; display: grid; margin: 8px 0 0; padding: 0; }
   .upd-i { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: calc(100% + 16px); min-height: 40px; margin: 0 -8px; padding: 6px 8px; border: 0; border-radius: 10px; background: none; color: var(--navy); font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; }
@@ -558,7 +558,6 @@
   .r-sep { flex: none; width: 1px; height: 22px; margin: 0 2px; background: var(--line-soft); }
   .panel-btn[aria-expanded="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); }
   .panel-btn[aria-expanded="true"]:hover { background: rgba(139, 184, 232, .32); color: var(--white); }
-  .int-btn { gap: 8px; }
   .int-n { min-width: 20px; height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 11px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
   /* Controles (anterior, contador, próxima, zoom, som, tela cheia): na barra superior no computador; pílula flutuante nas telas menores */
   .bar { display: flex; align-items: center; gap: 2px; flex: none; }
@@ -645,6 +644,11 @@
   .rp-head h2 { flex: 1; min-width: 0; display: grid; gap: 1px; font-size: 16px; font-weight: 700; line-height: 1.3; }
   .rp-head h2:focus { outline: none; }
   .rp-pages { font-family: var(--font-text); font-size: 12px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+  /* "Adicionar todos desta página" no cabeçalho do painel (a faixa da página tem o mesmo atalho) */
+  .rp-add { display: inline-flex; align-items: center; gap: 6px; flex: none; height: 34px; padding: 0 12px; border: 1px solid var(--clin-line); border-radius: 999px; background: var(--clin); color: var(--navy); font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .rp-add:hover { background: var(--sky-pill); border-color: var(--sky); }
+  .rp-add[hidden] { display: none; }
+  .rp-add svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .rp-close { color: var(--navy); }
   .rp-close:hover { background: var(--light); }
   .rp-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px 16px; }
@@ -697,7 +701,7 @@
   .sh-h { font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
   .sh-opt:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 
-  /* ---------- produtos no catálogo: "+" na página, ficha do produto e produtos de interesse ---------- */
+  /* ---------- produtos no catálogo: "+" do carrinho na página, etiqueta "Ficha" e cartão do produto ---------- */
   /* A camada fica dentro de cada .page: acompanha folhear, zoom, tela cheia e orientação sem JavaScript */
   .interactive-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
   .stage.flipping .interactive-layer { visibility: hidden; }
@@ -722,14 +726,30 @@
     from { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 2px rgba(139, 184, 232, .95); }
     to { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 18px rgba(139, 184, 232, 0); }
   }
+  /* Carrinho na própria página: um toque soma uma unidade (o número fica no botão); o toque seguinte troca o botão
+     pelo seletor − N + no mesmo lugar, que some sozinho depois de alguns segundos (ou quando o ponteiro se afasta) */
+  .product-hotspot[aria-pressed="true"] { background: var(--sky); color: var(--navy); box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 6px 14px -4px rgba(20, 32, 60, .45); }
+  .hs-n { min-width: 12px; text-align: center; font-variant-numeric: tabular-nums; }
+  .product-hotspot[aria-pressed="true"] .hs-plus { display: none; } /* no carrinho: o número ocupa o lugar do "+" */
+  .product-hotspot:not([aria-pressed="true"]) .hs-n { display: none; }
+  .hs-area.qty-on .product-hotspot { display: none; }
+  .hs-qty { position: absolute; left: 50%; top: 50%; display: none; align-items: center; padding: 2px; border-radius: 999px; background: var(--white); pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 0 0 2px var(--navy), 0 8px 18px -6px rgba(20, 32, 60, .6); transform: translate(-50%, -50%) scale(calc(1 / var(--z, 1))); }
+  .hs-area.qty-on .hs-qty { display: inline-flex; }
+  .hs-qty button { width: 36px; height: 36px; flex: none; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--navy); font-family: var(--font-text); font-size: 17px; font-weight: 700; line-height: 1; cursor: pointer; }
+  .hs-qty button:hover { background: var(--light); }
+  .hs-qty b { min-width: 30px; padding: 0 2px; font-family: var(--font-text); font-size: 14px; font-weight: 700; color: var(--ink); text-align: center; font-variant-numeric: tabular-nums; }
   /* Ficha técnica na própria página: etiqueta "Ficha" no canto da área do produto, faixa dos produtos sem área e balão */
   .hs-ficha { position: absolute; right: 0; top: 0; display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border: 1px solid rgba(30, 44, 79, .28); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--navy); font-family: var(--font-title); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; cursor: pointer; pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 10px -4px rgba(20, 32, 60, .45); transform: translate(30%, -50%) scale(calc(1 / var(--z, 1))); transform-origin: 70% 50%; }
   .hs-ficha::before { content: ""; position: absolute; inset: -12px -6px; } /* alvo de toque de 44 px */
   .hs-ficha:hover, .hs-ficha[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--white); }
-  .pg-links { position: absolute; left: 50%; bottom: 10px; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 20px); height: 28px; padding: 0 12px; border: 1px solid rgba(30, 44, 79, .22); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--navy); font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; pointer-events: auto; touch-action: manipulation; box-shadow: 0 6px 14px -6px rgba(20, 32, 60, .5); transform: translateX(-50%) scale(calc(1 / var(--z, 1))); transform-origin: 50% 100%; }
+  /* Faixa "N produtos nesta página": dois botões numa pílula só — abrir a lista e somar todos ao carrinho */
+  .pg-links { position: absolute; left: 50%; bottom: 10px; display: inline-flex; align-items: center; max-width: calc(100% - 20px); height: 28px; border: 1px solid rgba(30, 44, 79, .22); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--navy); pointer-events: auto; box-shadow: 0 6px 14px -6px rgba(20, 32, 60, .5); transform: translateX(-50%) scale(calc(1 / var(--z, 1))); transform-origin: 50% 100%; }
   .pg-links::before { content: ""; position: absolute; inset: -8px 0; }
+  .pg-l-open { display: inline-flex; align-items: center; gap: 6px; min-width: 0; height: 26px; padding: 0 10px 0 12px; border: 0; border-radius: 999px 0 0 999px; background: transparent; color: inherit; font-family: var(--font-text); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .pg-l-add { position: relative; width: 28px; height: 26px; flex: none; display: grid; place-items: center; padding: 0; border: 0; border-left: 1px solid rgba(30, 44, 79, .18); border-radius: 0 999px 999px 0; background: transparent; color: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .pg-l-add::before { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; border-radius: 50%; transform: translate(-50%, -50%); }
   .pg-links svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
-  .pg-links:hover { background: var(--light); }
+  .pg-l-open:hover, .pg-l-add:hover { background: var(--light); }
   .reader.fichas-off .hs-ficha, .reader.fichas-off .pg-links { display: none; } /* chave "Fichas" desligada: arte limpa */
   .fi-pop { position: fixed; z-index: 30; left: 8px; top: 8px; width: min(320px, calc(100vw - 16px)); max-height: calc(100vh - 16px); overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 8px; padding: 12px 12px 12px 14px; border: 1px solid var(--hair); border-radius: 14px; background: var(--white); color: var(--ink); text-align: left; box-shadow: 0 18px 40px -14px rgba(20, 32, 60, .55); }
   .fi-pop[hidden] { display: none; }
@@ -803,7 +823,7 @@
   @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
   .dlg-x { position: absolute; top: 16px; right: 14px; z-index: 1; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; }
   .dlg-x:hover { background: var(--light); }
-  .dlg-x svg, .int-rm svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+  .dlg-x svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
   .pc-media { height: 210px; display: grid; place-items: center; border-radius: 10px; background: var(--light); overflow: hidden; }
   .pc-media.loading { background: linear-gradient(100deg, var(--light) 30%, var(--white) 50%, var(--light) 70%); background-size: 300% 100%; animation: shimmer 1.4s linear infinite; }
   .pc-media img { display: block; width: 100%; height: 100%; object-fit: contain; background: var(--white); }
@@ -838,19 +858,6 @@
     .fi-list.fold .fi-row:nth-child(n+7) { display: none; }
     .fi-more { display: inline-block; }
   }
-  .int-list { list-style: none; margin: 0; padding: 0; display: grid; }
-  .int-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 4px; border-bottom: 1px solid var(--hair); }
-  .int-open { display: grid; gap: 1px; padding: 10px 4px; border: 0; border-radius: 6px; background: none; color: inherit; text-align: left; cursor: pointer; }
-  .int-open b { font-size: 14px; font-weight: 600; color: var(--navy); }
-  .int-open:hover b { text-decoration: underline; text-underline-offset: 3px; }
-  .int-open .where { font-size: 12px; color: var(--ink-2); }
-  .int-rm { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer; }
-  .int-rm:hover { background: var(--light); color: var(--navy); }
-  .int-empty { padding: 8px 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
-  .int-cart { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer; }
-  .int-cart:hover { background: var(--light); color: var(--navy); }
-  .int-cart svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-
   /* ---------- carrinho: botão "+" nas listas, seletor de quantidade e tela #/carrinho ---------- */
   /* Botão "+" (balão da ficha, "Nesta página", busca): o número no lugar do "+" quando o produto já está no carrinho */
   .cart-btn .cart-n { font-variant-numeric: tabular-nums; }
@@ -905,13 +912,33 @@
   .cart-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
   .cart-acts .btn { flex: 1 1 auto; min-width: 160px; }
   .cart-acts .cart-clear { flex: none; margin-left: auto; color: var(--graphite); }
-  .cart-btn, .res-cart, .int-cart, .cart-rm, .qty button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-  /* "Produtos de interesse" no menu da conta: só no celular (nos demais tamanhos fica no menu lateral/gaveta) */
-  .menu .menu-int { display: flex; align-items: center; gap: 10px; }
-  .menu .menu-int .ico { color: var(--navy); }
-  .menu .menu-int .int-n { margin-left: auto; }
-  @media (min-width: 768px) { .menu .menu-int { display: none; } }
-  body.ger-only .menu-int { display: none !important; }
+  .cart-btn, .res-cart, .cart-rm, .qty button, .hs-qty button, .cart-pick-act, .cart-tab { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  /* Controle reutilizável: "+" fora do carrinho, seletor − N + dentro dele (painel "Nesta página") */
+  .cart-ctrl { display: inline-flex; align-items: center; }
+  /* Seletor de listas no topo da tela do carrinho (uma lista por cliente) + abas Produtos/Envios */
+  .cart-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; border: 1px solid var(--hair); border-radius: var(--r-home); background: var(--white); }
+  .cart-pick-l { font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .cart-pick select { min-width: 0; max-width: 100%; flex: 1 1 200px; height: 40px; padding: 0 30px 0 12px; border: 1px solid var(--line-ui); border-radius: 10px; background: var(--white); color: var(--ink); font-size: 14px; font-weight: 600; }
+  .cart-pick-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .cart-pick-act { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 1px solid var(--clin-line); border-radius: 999px; background: var(--clin); color: var(--navy); font-size: 12px; font-weight: 600; cursor: pointer; }
+  .cart-pick-act:hover { background: var(--sky-pill); border-color: var(--sky); }
+  .cart-pick-act svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cart-tabs { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--clin-line); }
+  .cart-tab { position: relative; height: 40px; padding: 0 14px; border: 0; border-radius: 10px 10px 0 0; background: transparent; color: var(--ink-2); font-family: var(--font-title); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .cart-tab:hover { background: var(--clin); color: var(--navy); }
+  .cart-tab[aria-selected="true"] { color: var(--navy); }
+  .cart-tab[aria-selected="true"]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px; border-radius: 2px; background: var(--navy); }
+  .cart-tab .int-n { margin-left: 6px; }
+  /* Envios: um item por mensagem enviada ou copiada, com as ações de releitura e repetição */
+  .hist-list { list-style: none; display: grid; gap: 10px; margin: 0; padding: 0; }
+  .hist-item { display: grid; gap: 8px; padding: 12px 14px; border: 1px solid var(--hair); border-radius: var(--r-home); background: var(--white); }
+  .hist-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .hist-h b { font-size: 14px; font-weight: 600; color: var(--navy); overflow-wrap: anywhere; }
+  .hist-meta { font-size: 12px; color: var(--ink-2); }
+  .hist-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hist-acts .btn { height: 34px; padding: 0 12px; font-size: 12px; }
+  .hist-msg { max-height: 40vh; overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 12px; border: 1px solid var(--hair); border-radius: 10px; background: var(--light); color: var(--ink); font-family: var(--font-text); font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .hist-gone { color: var(--graphite); font-weight: 600; }
   /* Ação dentro do aviso ("Ver carrinho"): o aviso em si continua sem capturar cliques */
   .toast-act { min-height: 28px; margin-left: 10px; padding: 2px 10px; border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font-size: 12px; font-weight: 700; cursor: pointer; pointer-events: auto; }
   .toast-act:hover { background: rgba(255, 255, 255, .16); }
@@ -1181,7 +1208,7 @@
   @media (min-width: 1200px) and (max-width: 1439px) {
     .zoom-level, .bar .divider, .doc span { display: none; }
     .back { width: 36px; padding: 0; justify-content: center; }
-    .back .txt, .r-top .int-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .back .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .counter, .jump { min-width: 84px; }
     .doc h1 { line-height: 1.25; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   }
@@ -1202,10 +1229,9 @@
     .r-top .r-search-btn { flex: none; }
     .r-top #rShare, .r-top .fichas-btn { width: 36px; padding: 0; justify-content: center; }
     .r-top #rShare .txt, .r-top .fichas-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    /* Título do catálogo legível até 1679 px: "Prateleira" e "Produtos" só com ícone (o número de interesses fica), sem a porcentagem do zoom */
+    /* Título do catálogo legível até 1679 px: "Prateleira" só com ícone, sem a porcentagem do zoom */
     .back { width: 36px; padding: 0; justify-content: center; }
-    .back .txt, .r-top .int-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .r-top .int-btn { padding: 0 10px; }
+    .back .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .zoom-level, .bar .divider { display: none; }
     .doc { min-width: 96px; }
   }
@@ -1236,7 +1262,7 @@
     .hero h2 { font-size: 20px; }
     .hero-meta { display: none; } /* os três números só no computador */
     /* Alvos de toque ≥ 44px */
-    .chip, .sort select, .btn.sm, .seg button, .back, .pill-btn, .counter, .jump, .upd-i, .nav-i, .np-acts .btn, .fi-head .btn, .menu button { height: 44px; min-height: 44px; }
+    .chip, .sort select, .btn.sm, .seg button, .back, .pill-btn, .counter, .jump, .upd-i, .nav-i, .np-acts .btn, .fi-head .btn, .rp-add, .menu button { height: 44px; min-height: 44px; }
     [data-view="grade"] .cat-act .btn.sm { height: 44px; } /* vence os 38 px do cartão de catálogo no computador */
     .icon-btn { width: 44px; height: 44px; }
     .fav { width: 36px; height: 36px; }
@@ -1246,16 +1272,18 @@
     .link { min-height: 44px; padding: 10px 6px; }
     /* Carrinho: sem menu lateral fixo, o rodapé dos totais ocupa a largura toda e os alvos vão a 44 px */
     .cart-foot { left: 0; padding-left: max(24px, var(--safe-l)); padding-right: max(24px, var(--safe-r)); }
-    .int-cart, .cart-rm, .res-cart { width: 44px; height: 44px; }
+    .cart-rm, .res-cart { width: 44px; height: 44px; }
     .qty button { width: 44px; height: 44px; }
     .qty input { height: 44px; }
+    .hs-qty button { width: 44px; height: 44px; }
+    .hs-qty b { min-width: 34px; font-size: 15px; }
+    .cart-pick select, .cart-pick-act, .cart-tab, .hist-acts .btn { height: 44px; min-height: 44px; }
     .toast-act { min-height: 34px; }
     .check { min-height: 44px; }
     .check input { width: 20px; height: 20px; }
     .check.check-terms { min-height: 0; padding: 4px 0; }
     .terms-read { margin-top: -12px; }
     .spread { padding: 8px; }
-    .int-rm { width: 44px; height: 44px; }
     /* iOS: campos com menos de 16px disparam zoom automático */
     input, select, textarea, .field input, .field textarea, .search input, .r-search input, .code-box, .jump { font-size: 16px; }
     .sort select { font-weight: 400; }
@@ -1265,8 +1293,7 @@
     .r-top .r-search-btn { margin-left: 0; }
     .r-top.searching .r-search .results { top: calc(var(--bar-h) + 4px); }
     .r-top #rShare { width: 44px; padding: 0; justify-content: center; }
-    .r-top #rShare .txt, .r-top .int-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .r-top .int-btn { padding: 0 12px; }
+    .r-top #rShare .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .zoom-level { display: none; }
     /* Pílula flutuante: fica sobre o palco claro, por isso continua azul-marinho (contraste do ícone branco ≥ 4,5:1).
        Cada grupo (miniaturas · páginas · zoom/som/tela cheia) separado por um traço fino. */
@@ -1319,7 +1346,6 @@
     :root { --gap-sec: 16px; --r-home: 14px; }
     .side, .scrim, .menu-btn { display: none !important; }
     .topbar { padding: 0 56px 0 calc(16px + var(--safe-l)); }
-    .topbar .int-btn { display: none; } /* os interesses ficam na barra de abas */
     .cmdbar { position: static; padding: 12px 16px 0; background: none; }
     /* Busca discreta: 44 px e borda no lugar da sombra */
     .search input { height: 44px; border-color: var(--line-ui); box-shadow: none; }
@@ -1339,6 +1365,12 @@
     .cart-acts .btn.primary { flex: 1 1 100%; } /* "Enviar pelo WhatsApp" ocupa a linha toda; as alternativas dividem a de baixo */
     /* "Limpar carrinho" encostado à direita: o botão redondo central da barra de abas sobe sobre o rodapé e não pode cobri-lo */
     .cart-acts .cart-clear { flex: 0 0 auto; margin-left: auto; }
+    /* Seletor de listas no celular: nome em cima, ações embaixo, sem rolagem lateral */
+    .cart-pick { padding: 10px 12px; }
+    .cart-pick select { flex: 1 1 100%; }
+    .cart-pick-acts { width: 100%; }
+    .cart-pick-act { flex: 1 1 auto; justify-content: center; padding: 0 10px; }
+    .cart-tab { flex: 1 1 auto; padding: 0 8px; }
     .tabbar { display: grid; }
     .toast-wrap { bottom: calc(var(--tab-h) + 14px + var(--safe-b)); }
     /* Gestão: a barra de publicação fica logo acima das abas; sem abas (emergência sem login), rente à área segura */
@@ -1371,7 +1403,7 @@
     .tile.cont h3 { font-size: 14px; }
     .tile.cont .progress { margin-top: 8px; }
     .tile.cont .btn::after { border-radius: var(--r-home); }
-    .int-tile .num { font-size: 20px; }
+    .cart-tile .num { font-size: 20px; }
     .cats { scroll-margin-top: 64px; }
     /* Barra em duas linhas: filtros roláveis de borda a borda e, abaixo, "Ordenar" + Lista/Grade */
     .cats-bar { display: grid; gap: 8px; margin-bottom: 10px; }
@@ -1461,7 +1493,7 @@
     .bar { padding: 2px; gap: 0; }
     .grp { gap: 0; }
     .bar .grp.left::after { margin: 0 2px; }
-    #btnZoomOut, #btnZoomIn, #rIntBtn { display: none; } /* pinça para ampliar; interesses no rodapé do painel "Nesta página" */
+    #btnZoomOut, #btnZoomIn { display: none; } /* pinça para ampliar */
     .counter, .jump { min-width: 72px; padding: 0 8px; }
     /* A pílula passava da tela (~20 px em 375: "Tela cheia" cortado). "Última página" sai (o contador e as miniaturas
        levam a qualquer página); ficam miniaturas, capa, ‹, contador, ›, som e tela cheia, todos com 44 px */
@@ -1699,7 +1731,6 @@
       <button class="nav-i" type="button" data-nav="catalogos"><span class="ico" data-ico="book"></span><span class="nav-t">Catálogos</span></button>
       <button class="nav-i" type="button" data-nav="favoritos"><span class="ico" data-ico="star"></span><span class="nav-t">Favoritos</span><span class="nav-c" id="navFavN"></span></button>
       <button class="nav-i" type="button" data-nav="carrinho" data-cart-btn="Carrinho"><span class="ico" data-ico="cart"></span><span class="nav-t">Carrinho</span><span class="int-n" data-cart-count data-hide0 hidden>0</span></button>
-      <button class="nav-i" type="button" data-nav="interesses" data-int-btn="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="nav-t">Produtos de interesse</span><span class="int-n" data-int-count data-hide0 hidden>0</span></button>
       <div class="nav-row" data-card-entry hidden>
         <button class="nav-i" type="button" data-nav="cartao"><span class="nav-thumb" id="navCardAv" aria-hidden="true"></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
@@ -1732,8 +1763,6 @@
     </div>
     <!-- Instalar app (celular): mesmo item do menu lateral, aqui no menu da conta -->
     <button type="button" class="menu-app" id="installMenu" data-install hidden><span class="ico" data-ico="install"></span>Instalar app</button>
-    <!-- Produtos de interesse: no celular a aba virou "Carrinho"; a lista continua aqui (nos demais tamanhos, no menu lateral) -->
-    <button type="button" class="menu-int" id="menuIntBtn" data-int-btn="Produtos de interesse"><span class="ico" data-ico-heart></span>Produtos de interesse<span class="int-n" data-int-count data-hide0 hidden>0</span></button>
     <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
@@ -1741,7 +1770,6 @@
     <header class="topbar">
       <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="side"><span class="ico" data-ico="menu"></span></button>
       <span class="logo" role="img" aria-label="Dellamed"></span>
-      <button class="pill-btn int-btn" id="intBtn" type="button" hidden data-int-btn="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
       <button class="avatar-btn" id="avatarBtn" type="button" aria-label="Conta" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="top"><span class="avatar" data-avatar></span></button>
     </header>
     <main id="viewShelf">
@@ -1774,7 +1802,7 @@
         <section class="hero" id="hero" hidden aria-labelledby="heroTitle"></section>
         <div class="bento" id="bento" hidden>
           <section class="tile cont" id="continue" hidden aria-label="Continuar lendo"></section>
-          <section class="tile int-tile" id="intTile" hidden aria-labelledby="intTileH"></section>
+          <section class="tile cart-tile" id="cartTile" hidden aria-labelledby="cartTileH"></section>
           <section class="tile upd-tile" id="updTile" hidden aria-labelledby="updTileH"></section>
         </div>
         <!-- Catálogos: o título fica só para leitores de tela (os chips já indicam o filtro); a barra reúne chips, Ordenar e Lista/Grade -->
@@ -1930,7 +1958,14 @@
     <main id="viewCart" hidden>
       <div class="wrap">
         <div class="cart-head"><h1 id="cartH" tabindex="-1">Carrinho</h1><p id="cartSub"></p></div>
-        <div id="cartBody"></div>
+        <!-- Uma lista por cliente: trocar, criar, renomear e apagar (tudo neste aparelho) -->
+        <div class="cart-pick" id="cartPick"></div>
+        <div class="cart-tabs" role="tablist" aria-label="Carrinho">
+          <button class="cart-tab" type="button" role="tab" id="cartTabProd" aria-controls="cartBody" aria-selected="true" data-cart-tab="produtos">Produtos<span class="int-n" data-cart-count data-hide0 hidden>0</span></button>
+          <button class="cart-tab" type="button" role="tab" id="cartTabHist" aria-controls="cartHist" aria-selected="false" data-cart-tab="envios">Envios<span class="int-n" id="cartHistN" hidden>0</span></button>
+        </div>
+        <div id="cartBody" role="tabpanel" aria-labelledby="cartTabProd" tabindex="-1"></div>
+        <div id="cartHist" role="tabpanel" aria-labelledby="cartTabHist" tabindex="-1" hidden></div>
       </div>
       <!-- Rodapé fixo: totais somados da ficha técnica e as ações de envio -->
       <div class="cart-foot" id="cartFoot" hidden></div>
@@ -2014,9 +2049,8 @@
     <button class="pill-btn fichas-btn" id="btnFichas" type="button" hidden aria-pressed="true" title="Fichas na página: mostrar ou esconder"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg></span><span class="txt">Fichas</span></button>
     <!-- Modo Copiar: texto da página selecionável, toque num código/EAN/medida/nome para copiar e "Copiar tabela". Com ele ligado, a página só vira por ‹ › e pelas setas -->
     <button class="pill-btn copy-btn" id="btnCopy" type="button" aria-pressed="false" aria-label="Modo Copiar" title="Modo Copiar: copiar nomes, códigos, medidas e tabelas da página"><span class="ico" data-ico="copy"></span><span class="txt">Copiar</span></button>
-    <!-- Grupo "conteúdo e envio": produtos de interesse, "Nesta página" e, por último, a ação principal (Compartilhar) -->
+    <!-- Grupo "conteúdo e envio": "Nesta página" e, por último, a ação principal (Compartilhar) -->
     <span class="r-sep" aria-hidden="true"></span>
-    <button class="pill-btn int-btn" id="rIntBtn" type="button" hidden data-int-btn="Produtos de interesse" title="Produtos de interesse"><span class="ico" data-ico-heart></span><span class="txt">Produtos</span><span class="int-n" data-int-count>0</span></button>
     <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
     <button class="pill-btn" id="rShare" type="button"><span class="ico" id="icoShare"></span><span class="txt" id="rShareTxt">Compartilhar</span></button>
   </header>
@@ -2050,6 +2084,8 @@
     <aside class="r-panel" id="rPanel" aria-labelledby="rPanelTitle" tabindex="-1">
       <div class="rp-head">
         <h2 id="rPanelTitle" tabindex="-1">Nesta página <span class="rp-pages" id="rPanelPages"></span></h2>
+        <!-- Soma ao carrinho todos os produtos das páginas abertas (a faixa na própria página tem o mesmo atalho) -->
+        <button class="rp-add" id="rpAddAll" type="button" hidden>Adicionar todos</button>
         <button class="icon-btn rp-close" id="rPanelClose" type="button" aria-label="Fechar o painel Nesta página" title="Fechar o painel"><span class="ico" data-ico="close"></span></button>
       </div>
       <div class="rp-body">
@@ -2620,7 +2656,9 @@
     lock: '<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>',
     check: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 4.5L21 19.5H3z"/><path d="M12 10v4.5M12 17.3v.2"/></svg>',
-    heart: '<svg viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.6-7.5-10.1A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7.5 2.4c0 5.5-7.5 10.1-7.5 10.1z"/></svg>',
+    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    hist: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+    undo: '<svg viewBox="0 0 24 24"><path d="M4 9h9.5a5.5 5.5 0 0 1 0 11H8"/><path d="M7.5 5L4 9l3.5 4"/></svg>',
     tag: '<svg viewBox="0 0 24 24"><path d="M3.5 12.3V4.5a1 1 0 0 1 1-1h7.8l8.2 8.2a1 1 0 0 1 0 1.4l-6.9 6.9a1 1 0 0 1-1.4 0z"/><circle cx="8" cy="8" r="1.5"/></svg>',
     cart: '<svg viewBox="0 0 24 24"><path d="M2.8 4.5h2.4l2.3 9.8a1.6 1.6 0 0 0 1.6 1.2h7.5a1.6 1.6 0 0 0 1.6-1.2l1.6-6.6H6"/><circle cx="10" cy="19.3" r="1.4"/><circle cx="17" cy="19.3" r="1.4"/></svg>',
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
@@ -2652,7 +2690,6 @@
   $('#icoSearch2').innerHTML = I.search;
   $('#icoBack').innerHTML = I.back;
   $('#icoShare').innerHTML = I.share;
-  $$('[data-ico-heart]').forEach((s) => { s.innerHTML = I.heart; });
   $('#pwToggle').innerHTML = I.eye;
   $('#pwToggle2').innerHTML = I.eye;
   $('#suPwToggle').innerHTML = I.eye;
@@ -2663,8 +2700,10 @@
   /* ================= estado ================= */
   const LINES = ['Home Care', 'Health Care', 'Wellness', 'Ortho Care'];
   const ROLE = { cliente: 'Cliente', representante: 'Representante', interno: 'Equipe Dellamed' };
-  // Carrinho: no máximo 200 produtos diferentes, quantidade inteira de 1 a 9999 e mensagem de até ~7.000 caracteres (o WhatsApp corta o resto)
+  // Carrinho: no máximo 200 produtos diferentes por lista, quantidade inteira de 1 a 9999 e mensagem de até ~7.000 caracteres (o WhatsApp corta o resto)
   const CART_MAX = 200, CART_QTD_MAX = 9999, CART_MSG_MAX = 7000, CART_THUMBS = 24;
+  // Várias listas (uma por cliente) e histórico de envios, tudo neste aparelho
+  const CART_LISTAS_MAX = 20, CART_NOME_MAX = 40, CART_HIST_MAX = 30, CART_QTY_MS = 4000;
   const SKEY = 'dm.sessao', AVISO = 'dm.aviso';
   const LRU_PAGES = 8, LRU_THUMBS = 6, KEEP_RADIUS = 8;
   const MSG_UPDATE = 'Há uma versão nova do site. Recarregue a página (Ctrl+F5 ou puxe para baixo no celular).';
@@ -2683,7 +2722,7 @@
   const LAYOUTS = new Map();      // id → texto posicionado (texto.bin) do Modo Copiar, carregado só quando o modo é ligado
   const layoutLoads = new Map();  // id → carregamento em andamento
   const CPP = new Map();          // "id:índice" → página preparada (linhas, itens copiáveis, tabelas), feita na primeira exibição
-  let me = null, prefs = { favorites: [], progress: {}, interests: [], cart: [] }, filter = 'todos', sortBy = 'ordem';
+  let me = null, prefs = { favorites: [], progress: {}, carts: [], cartAtual: '', cartHist: [] }, filter = 'todos', sortBy = 'ordem';
   const cat = (id) => CATALOGS.find((c) => c.id === id) || null;
   const visibleCatalogs = () => CATALOGS.slice();
   // produtos.bin (opcional): { comercial, bySku: skuKey → produto, spots: skuKey → [hotspot], byCatPage: catálogo → página → [hotspot] }
@@ -2861,7 +2900,6 @@
   const hotspotsOn = (cid, page) => (PROD && PROD.byCatPage.has(cid) && PROD.byCatPage.get(cid).get(page)) || [];
   // Produtos ligados à página sem área (pageLinks), já sem os que têm hotspot ali
   const linksOn = (cid, page) => ((PROD && PROD.links.has(cid) && PROD.links.get(cid).get(page)) || []).map((k) => PROD.bySku.get(k)).filter(Boolean);
-  const catHasHotspots = (cid) => !!(PROD && (PROD.byCatPage.has(cid) || PROD.links.has(cid)));
   // Páginas (sem área) onde o produto aparece, na mesma ordem de productSpots
   function productLinks(sku, preferCid) {
     const list = (PROD && PROD.linkSpots.get(P.skuKey(sku))) || [];
@@ -3053,8 +3091,12 @@
   const prefsKey = () => 'dm.prefs.' + me.uid;
   let prefsT = null, prefsDirty = false;
   const favOps = new Map(); // favoritos alterados nesta aba e ainda não gravados
-  const interestOps = new Map(); // produtos de interesse alterados nesta aba: skuKey → item (ou null = removido)
-  const cartOps = new Map(); // carrinho alterado nesta aba: skuKey → item { sku, qtd, … } (ou null = removido)
+  // Carrinho alterado nesta aba: "idDaLista::skuKey" → { lista, k, item } (item null = removido)
+  const cartOps = new Map();
+  // Listas criadas, renomeadas ou apagadas nesta aba: id → { nome, criadoEm, atualizadoEm } (null = apagada)
+  const cartListOps = new Map();
+  const cartHistAdd = []; // envios gravados nesta aba (entram no que as outras abas já gravaram)
+  let cartAtualDirty = false; // a lista em uso mudou nesta aba
   function readStoredPrefs() { try { const o = JSON.parse(localStorage.getItem(prefsKey())); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
   function normPrefs(o) {
     return {
@@ -3069,13 +3111,49 @@
       logins: Math.min(99, Math.max(0, parseInt(o.logins, 10) || 0)), // quantas vezes esta pessoa entrou neste aparelho (convite do app)
       appInvite: o.appInvite === true ? true : undefined, // convite para instalar o app já mostrado a esta pessoa
       card: normCard(o.card), // cartão de visita digital (a foto fica no IndexedDB 'dm-cartao')
-      interests: Array.isArray(o.interests) ? o.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
-        .map((x) => ({ sku: x.sku, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') })) : [],
-      // Carrinho: mesma forma dos interesses, mais a quantidade (inteira, 1…CART_QTD_MAX) e um teto de produtos diferentes
-      cart: Array.isArray(o.cart) ? o.cart.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
-        .map((x) => ({ sku: x.sku, qtd: clamp(Math.round(Number(x.qtd)) || 1, 1, CART_QTD_MAX), catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') }))
-        .slice(0, CART_MAX) : []
+      // Carrinho: uma lista por cliente, com quantidade inteira (1…CART_QTD_MAX) e teto de produtos diferentes por lista
+      carts: normCarts(o.carts),
+      cartAtual: typeof o.cartAtual === 'string' ? o.cartAtual.slice(0, 40) : '',
+      cartHist: normCartHist(o.cartHist)
     };
+  }
+  // Itens de uma lista (a mesma forma do carrinho único antigo, com a quantidade)
+  function normCartItems(v) {
+    return Array.isArray(v) ? v.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku))
+      .map((x) => ({ sku: x.sku, qtd: clamp(Math.round(Number(x.qtd)) || 1, 1, CART_QTD_MAX), catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || '') }))
+      .slice(0, CART_MAX) : [];
+  }
+  const cartNome = (v) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, CART_NOME_MAX);
+  function normCarts(v) {
+    if (!Array.isArray(v)) return [];
+    const seen = new Set(), out = [];
+    for (const c of v) {
+      if (!c || typeof c !== 'object' || typeof c.id !== 'string' || !c.id || seen.has(c.id)) continue;
+      seen.add(c.id);
+      out.push({ id: c.id.slice(0, 40), nome: cartNome(c.nome) || 'Lista', itens: normCartItems(c.itens), criadoEm: String(c.criadoEm || ''), atualizadoEm: String(c.atualizadoEm || '') });
+      if (out.length >= CART_LISTAS_MAX) break;
+    }
+    return out;
+  }
+  // Histórico de envios: sem telefone e sem a observação do cliente (só o que a tela mostra e o que refaz a lista)
+  function normCartHist(v) {
+    if (!Array.isArray(v)) return [];
+    const seen = new Set(), out = [];
+    for (const h of v) {
+      if (!h || typeof h !== 'object' || typeof h.id !== 'string' || !h.id || seen.has(h.id)) continue;
+      seen.add(h.id);
+      const t = h.totais && typeof h.totais === 'object' ? h.totais : {};
+      out.push({
+        id: h.id.slice(0, 40), quando: String(h.quando || ''), lista: cartNome(h.lista),
+        canal: h.canal === 'email' ? 'email' : h.canal === 'copiar' ? 'copiar' : 'whatsapp',
+        cliente: { nome: typeof (h.cliente && h.cliente.nome) === 'string' ? h.cliente.nome.slice(0, 80) : '' },
+        itens: Array.isArray(h.itens) ? h.itens.filter((x) => x && typeof x.sku === 'string' && x.sku)
+          .map((x) => ({ sku: x.sku, qtd: clamp(Math.round(Number(x.qtd)) || 1, 1, CART_QTD_MAX), nome: typeof x.nome === 'string' ? x.nome.slice(0, 160) : '' })).slice(0, CART_MAX) : [],
+        totais: { itens: Number(t.itens) || 0, caixas: Number(t.caixas) || 0, peso: Number(t.peso) || 0, cubagem: Number(t.cubagem) || 0 }
+      });
+      if (out.length >= CART_HIST_MAX) break;
+    }
+    return out.sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
   }
   // Cartão: só textos curtos e opções conhecidas; campo ausente = valor padrão (nome, cargo, e-mail… da sessão)
   function normCard(o) {
@@ -3090,17 +3168,31 @@
     };
   }
   function applyFavOps(list) { const s = new Set(list); for (const [id, on] of favOps) { if (on) s.add(id); else s.delete(id); } return [...s]; }
-  // Mesmo método dos favoritos, mas numa lista própria (produtos, não catálogos)
-  function applyInterestOps(list) {
-    const m = new Map(list.map((x) => [P.skuKey(x.sku), x]));
-    for (const [k, item] of interestOps) { if (item) m.set(k, item); else m.delete(k); }
-    return [...m.values()];
-  }
-  // Carrinho: mesma mescla entre abas dos interesses (a quantidade desta aba vence a gravada)
+  // Carrinho entre abas: primeiro as listas criadas/renomeadas/apagadas aqui, depois os itens mexidos aqui
+  // (o que esta aba fez vence o que estava gravado; o resto das listas vem de quem gravou por último)
   function applyCartOps(list) {
-    const m = new Map(list.map((x) => [P.skuKey(x.sku), x]));
-    for (const [k, item] of cartOps) { if (item) m.set(k, item); else m.delete(k); }
-    return [...m.values()].slice(0, CART_MAX);
+    const m = new Map(list.map((c) => [c.id, { ...c, itens: c.itens.slice() }]));
+    for (const [id, meta] of cartListOps) {
+      if (!meta) { m.delete(id); continue; }
+      const c = m.get(id);
+      if (c) { c.nome = meta.nome; c.atualizadoEm = meta.atualizadoEm; }
+      else if (m.size < CART_LISTAS_MAX) m.set(id, { id, nome: meta.nome, itens: [], criadoEm: meta.criadoEm, atualizadoEm: meta.atualizadoEm });
+    }
+    for (const op of cartOps.values()) {
+      const c = m.get(op.lista);
+      if (!c) continue;
+      const i = c.itens.findIndex((x) => P.skuKey(x.sku) === op.k);
+      if (!op.item) { if (i >= 0) c.itens.splice(i, 1); }
+      else if (i >= 0) c.itens[i] = op.item;
+      else if (c.itens.length < CART_MAX) c.itens.push(op.item);
+    }
+    return [...m.values()].slice(0, CART_LISTAS_MAX);
+  }
+  // Envios: os desta aba entram na lista gravada, mais novo primeiro, até CART_HIST_MAX
+  function applyCartHist(list) {
+    const m = new Map(list.map((h) => [h.id, h]));
+    for (const h of cartHistAdd) m.set(h.id, h);
+    return [...m.values()].sort((a, b) => String(b.quando).localeCompare(String(a.quando))).slice(0, CART_HIST_MAX);
   }
   function mergeProgress(a, b) {
     const out = { ...a };
@@ -3108,14 +3200,24 @@
     return out;
   }
   let cardDirty = false; // cartão alterado nesta aba e ainda não gravado (as outras abas não sobrescrevem)
-  function loadPrefs() { prefs = normPrefs(readStoredPrefs()); favOps.clear(); interestOps.clear(); cartOps.clear(); prefsDirty = false; cardDirty = false; }
+  function loadPrefs() {
+    const raw = readStoredPrefs();
+    prefs = normPrefs(raw);
+    favOps.clear(); cartOps.clear(); cartListOps.clear(); cartHistAdd.length = 0;
+    prefsDirty = false; cardDirty = false; cartAtualDirty = false;
+    migrateCarts(raw); // carrinho único antigo → listas; produtos de interesse → carrinho (uma vez só)
+  }
   function savePrefs() { prefsDirty = true; clearTimeout(prefsT); prefsT = setTimeout(flushPrefs, 600); }
   // Relê o que está gravado (outra aba pode ter mudado), mescla e grava
   function flushPrefs() {
     clearTimeout(prefsT); prefsT = null;
     if (!prefsDirty || !me) return;
     const raw = readStoredPrefs(), st = normPrefs(raw);
-    const out = { ...raw, favorites: applyFavOps(st.favorites), progress: mergeProgress(st.progress, prefs.progress), interests: applyInterestOps(st.interests), cart: applyCartOps(st.cart) };
+    const out = { ...raw, favorites: applyFavOps(st.favorites), progress: mergeProgress(st.progress, prefs.progress), carts: applyCartOps(st.carts), cartHist: applyCartHist(st.cartHist) };
+    // Formatos antigos já migrados: saem das preferências para não voltarem a ser lidos
+    delete out.interests; delete out.cart;
+    out.cartAtual = cartAtualDirty ? prefs.cartAtual : (st.cartAtual || prefs.cartAtual);
+    if (!out.carts.some((c) => c.id === out.cartAtual)) out.cartAtual = out.carts.length ? out.carts[0].id : '';
     if (typeof prefs.sound === 'boolean') out.sound = prefs.sound;
     if (prefs.view) out.view = prefs.view;
     if (prefs.legacyOff) out.legacyOff = true;
@@ -3127,9 +3229,11 @@
     if (prefs.appInvite || st.appInvite) out.appInvite = true;
     if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
     try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
-    prefs.favorites = out.favorites; prefs.progress = out.progress; prefs.interests = out.interests; prefs.cart = out.cart;
+    prefs.favorites = out.favorites; prefs.progress = out.progress;
+    prefs.carts = out.carts; prefs.cartAtual = out.cartAtual; prefs.cartHist = out.cartHist;
     prefs.logins = out.logins; prefs.appInvite = out.appInvite === true ? true : undefined;
-    favOps.clear(); interestOps.clear(); cartOps.clear(); prefsDirty = false; cardDirty = false;
+    favOps.clear(); cartOps.clear(); cartListOps.clear(); cartHistAdd.length = 0;
+    prefsDirty = false; cardDirty = false; cartAtualDirty = false;
   }
   window.addEventListener('storage', (e) => {
     if (!me) return;
@@ -3139,11 +3243,12 @@
     const st = normPrefs(readStoredPrefs());
     prefs.favorites = applyFavOps(st.favorites);
     prefs.progress = mergeProgress(st.progress, prefs.progress);
-    prefs.interests = applyInterestOps(st.interests);
-    prefs.cart = applyCartOps(st.cart);
+    prefs.carts = applyCartOps(st.carts);
+    prefs.cartHist = applyCartHist(st.cartHist);
+    if (!cartAtualDirty && st.cartAtual) prefs.cartAtual = st.cartAtual;
+    if (!prefs.carts.some((c) => c.id === prefs.cartAtual)) prefs.cartAtual = prefs.carts.length ? prefs.carts[0].id : '';
     if (!cardDirty) prefs.card = st.card;
     if (st.appInvite) prefs.appInvite = true; // convite do app mostrado em outra aba: não repete aqui
-    updateInterestUI();
     updateCartUI();
     if (cardAllowed()) renderCard(); // cartão salvo em outra aba: visualização e faixa do início acompanham
     if (typeof st.sound === 'boolean' && !prefsDirty) { prefs.sound = st.sound; setSound(st.sound, false); }
@@ -3430,11 +3535,16 @@
       if (again) $(mode === 'edit' ? '#cardEditH' : '#cardH').focus({ preventScroll: true }); else openCardView(mode, entering);
       return;
     }
-    // Carrinho (#/carrinho): produtos escolhidos com quantidade, totais da ficha técnica e envio ao cliente
+    // Produtos de interesse saíram: link antigo guardado cai no carrinho, que é onde a lista vive agora
+    if (parts[0] === 'interesses') { redirect('#/carrinho'); return; }
+    // Carrinho (#/carrinho e #/carrinho/envios): listas por cliente, totais da ficha técnica, envio e histórico
     if (parts[0] === 'carrinho') {
       closeReader();
       showOnly('cart');
-      renderCart();
+      CART.tab = parts[1] === 'envios' ? 'envios' : 'produtos';
+      renderCartPick();
+      if (CART.tab === 'envios') renderCartHist(); else renderCart();
+      paintCartTabs();
       window.scrollTo(0, 0);
       $('#cartH').focus({ preventScroll: true });
       return;
@@ -3618,7 +3728,7 @@
       return false;
     }
   }
-  // Mesmo aparelho, troca do acesso antigo para o novo: favoritos, progresso, interesses e cartão seguem a pessoa (pelo e-mail)
+  // Mesmo aparelho, troca do acesso antigo para o novo: favoritos, progresso, carrinho e cartão seguem a pessoa (pelo e-mail)
   const LEGADO = 'dm.legado';
   function rememberLegacyUid() {
     if (!me || !me.email) return;
@@ -4149,7 +4259,6 @@
     $('#tabbar').classList.toggle('has-card', cardOn);
     document.body.classList.toggle('card-tab', cardOn);
     if (cardOn) { loadCard(); adoptSignupPhoto().catch(() => { /* a foto do cadastro é um extra: nunca atrapalha a entrada */ }); }
-    updateInterestUI();
     updateCartUI();
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
@@ -4157,6 +4266,8 @@
       try { history.replaceState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
     }
     route();
+    // Atualização: os produtos de interesse viraram itens do carrinho. O aviso aparece uma vez só (a lista antiga já foi apagada).
+    if (CART.migrated) { const n = CART.migrated; CART.migrated = 0; setTimeout(() => toastCart(`Seus produtos de interesse agora estão no carrinho (${plural(n, 'produto', 'produtos')}).`), 400); }
   }
   let loggingOut = false;
   async function logout(opts = {}) {
@@ -4452,7 +4563,6 @@
   // Versão editorial do catálogo (campo "version" do painel): "19" → "versão 19"; "V19" fica como está
   const verLabel = (c) => String((c && c.version) || '').trim();
   const verTxt = (c) => { const v = verLabel(c); return !v ? '' : /^v/i.test(v) ? v : `versão ${v}`; };
-  const sortedInterests = () => prefs.interests.slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const curView = () => (prefs.view === 'lista' || prefs.view === 'grade' ? prefs.view : mobileMq.matches ? 'grade' : 'lista');
   function applyView() {
     const v = curView();
@@ -4467,7 +4577,7 @@
     paintCardStrip(); // faixa "Seu cartão" (celular)
     renderHero(list);
     renderContinue();
-    renderIntTile();
+    renderCartTile();
     renderUpdated(list);
     renderChips(list);
     $('#sort').value = sortBy;
@@ -4476,7 +4586,7 @@
   }
   // Blocos visíveis: o grid se ajusta a 1, 2 ou 3 colunas
   function syncBento() {
-    const n = ['#continue', '#intTile', '#updTile'].filter((s) => !$(s).hidden).length;
+    const n = ['#continue', '#cartTile', '#updTile'].filter((s) => !$(s).hidden).length;
     const b = $('#bento');
     b.dataset.n = String(n);
     b.hidden = !n;
@@ -4524,33 +4634,31 @@
     hydrate(box);
     syncBento();
   }
-  // Bloco branco dos produtos de interesse (some quando não há produtos publicados nem interesses).
-  // Sem interesses: vira uma linha de texto simples (classe tile-note), sem cartão nem fundo escuro.
-  function renderIntTile() {
-    const box = $('#intTile');
-    const items = sortedInterests(), n = items.length;
+  // Bloco branco do carrinho: a lista em uso, quantos produtos e o atalho para enviar
+  // (some quando não há produtos publicados nem nada na lista). Lista vazia: uma linha de texto simples.
+  function renderCartTile() {
+    const box = $('#cartTile');
+    if (!box) return;
+    const c = me ? curCart() : null, n = c ? c.itens.length : 0;
     box.hidden = !me || (!n && !(PROD && PROD.bySku.size));
-    box.className = 'tile int-tile' + (n ? '' : ' tile-note');
+    box.className = 'tile cart-tile' + (n ? '' : ' tile-note');
     if (box.hidden) { box.innerHTML = ''; syncBento(); return; }
-    const com = commercialInfo();
-    const skus = items.slice(0, 4).map((x) => { const p = prodBySku(x.sku); return p ? p.sku : x.sku; });
+    const skus = c.itens.slice(0, 4).map((x) => { const p = prodBySku(x.sku); return p ? p.sku : x.sku; });
+    const outras = (prefs.carts || []).length;
     box.innerHTML = n
-      ? `<h2 class="eyebrow" id="intTileH">Produtos de interesse</h2>
+      ? `<h2 class="eyebrow" id="cartTileH">${esc(c.nome)}${outras > 1 ? ` · ${plural(outras, 'lista', 'listas')}` : ''}</h2>
         <p class="num"><b>${fmtN(n)}</b> ${n === 1 ? 'produto' : 'produtos'}</p>
         <p class="skus">${esc(skus.join(' · '))}${n > 4 ? ' · …' : ''}</p>
-        <div class="tile-act"><button class="btn sky sm" type="button" data-int-ask>${com.wa || com.mail ? 'Solicitar informações' : 'Copiar pedido de informações'}</button><button class="link" type="button" data-int-list>Ver lista</button></div>`
-      : `<h2 class="sr-only" id="intTileH">Produtos de interesse</h2>
-        <p>Nenhum produto de interesse ainda. ${coarse ? 'Toque' : 'Clique'} no <b>+</b> dentro do catálogo para guardar.</p>`;
+        <div class="tile-act"><button class="btn sky sm" type="button" data-cart-tile="enviar">Enviar ao cliente</button><button class="link" type="button" data-cart-tile="ver">Ver carrinho</button></div>`
+      : `<h2 class="sr-only" id="cartTileH">Carrinho</h2>
+        <p>Carrinho vazio. ${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo para começar a lista.</p>`;
     syncBento();
   }
-  $('#intTile').addEventListener('click', (e) => {
-    if (e.target.closest('[data-int-list]')) { openInterests(); return; }
-    if (!e.target.closest('[data-int-ask]')) return;
-    const items = sortedInterests(), com = commercialInfo();
-    if (!items.length) return;
-    // Lista longa demais para o WhatsApp: o painel de interesses avisa e oferece copiar a mensagem completa
-    if (com.wa && quoteFit(items, com.wa).cut) { openInterests(); return; }
-    askInterests(items);
+  $('#cartTile').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cart-tile]');
+    if (!b) return;
+    if (b.dataset.cartTile === 'enviar' && cartCount()) { openCartSend('whatsapp'); return; }
+    navigate('#/carrinho');
   });
   // Atualizados recentemente: até 4 catálogos pela data de atualização.
   // Só aparece com MAIS de 4 catálogos no total; abaixo disso a própria lista já mostra tudo.
@@ -4601,7 +4709,7 @@
     setFilter(b.dataset.k);
     const again = $(`#chips [data-k="${cssq(filter)}"]`); if (again) again.focus();
   });
-  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Produtos de interesse (painel), Meu cartão e Gerenciar (gestão, só admin)
+  // Menu lateral: Início (topo), Catálogos e Favoritos (lista), Carrinho, Meu cartão e Gerenciar (gestão, só admin)
   side.addEventListener('click', (e) => {
     const g = e.target.closest('[data-ger]');
     if (g) { drawer.close(false); navigate('#/gerenciar/' + g.dataset.ger); return; }
@@ -4609,7 +4717,6 @@
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
     if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'carrinho') { drawer.close(false); navigate('#/carrinho'); return; }
-    if (nav === 'interesses') { drawer.close(); openInterests(); return; }
     if (!toShelf()) { drawer.close(false); return; } // no cartão, Início, Catálogos e Favoritos voltam à prateleira antes de agir
     if (nav === 'favoritos') setFilter('favoritos');
     else { navSel = nav; setFilter('todos'); }
@@ -4622,8 +4729,7 @@
     $('#cats').scrollIntoView({ block: 'start', behavior: scrollBehavior() });
     if (inDrawer) $('#catsTitle').focus({ preventScroll: true });
   });
-  // Barra de abas (celular): Início, Buscar, Cartão (central, representante e equipe) e Carrinho (a aba Conta abre o menu da conta,
-  // onde ficam os "Produtos de interesse")
+  // Barra de abas (celular): Início, Buscar, Cartão (central, representante e equipe), Carrinho e Conta
   $('#tabbar').addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab]'); if (!t) return;
     if (t.dataset.tab === 'cartao') { navigate('#/cartao'); return; }
@@ -4632,8 +4738,6 @@
     if (t.dataset.tab === 'inicio') { navSel = 'inicio'; if (filter !== 'todos') setFilter('todos'); else syncNav(); window.scrollTo({ top: 0, behavior: scrollBehavior() }); }
     else if (t.dataset.tab === 'buscar') { window.scrollTo({ top: 0 }); $('#q').focus(); }
   });
-  // "Produtos de interesse" no menu da conta (a aba do celular agora é o Carrinho)
-  $('#menuIntBtn').addEventListener('click', () => { setMenu(false); openInterests(); });
   $('#sort').addEventListener('change', (e) => { sortBy = e.target.value; renderHero(visibleCatalogs()); renderShelves(); });
   $('#viewSeg').addEventListener('click', (e) => {
     const b = e.target.closest('[data-view]'); if (!b) return;
@@ -4990,7 +5094,7 @@
     });
   }
   const dlg = $('#dlg');
-  // variant 'panel': painel lateral no computador, folha inferior no celular (ficha do produto, interesses).
+  // variant 'panel': painel lateral no computador, folha inferior no celular (ficha do produto, envio do carrinho).
   // onClose: limpeza ao fechar ou quando outro conteúdo substitui este (ex.: revogar o blob da imagem da ficha).
   function openDialog({ title, body, actions = [], variant = '', onClose = null }) {
     const wasOpen = dlg.open;
@@ -5044,32 +5148,8 @@
     t._t2 = setTimeout(() => { t.textContent = ''; }, 300);
   }
 
-  /* ================= produtos: ficha, produtos de interesse e pedido de informações ================= */
+  /* ================= produtos: ficha e pedido de informações ================= */
   const prodParams = (p, c, page) => ({ product_sku: p.sku, product_name: p.name, ...(c ? { catalog_id: c.id, catalog_title: c.title, page_number: page || null } : {}) });
-  const isInterest = (sku) => prefs.interests.some((x) => P.skuKey(x.sku) === P.skuKey(sku));
-  // Mesmo mecanismo dos favoritos (prefs + operações pendentes + savePrefs), numa lista própria
-  function setInterest(p, on, where) {
-    const k = P.skuKey(p.sku);
-    const item = on ? { sku: p.sku, catalogId: where.catalogId || '', page: where.page || 1, at: new Date().toISOString() } : null;
-    prefs.interests = prefs.interests.filter((x) => P.skuKey(x.sku) !== k);
-    if (item) prefs.interests.push(item);
-    interestOps.set(k, item);
-    savePrefs();
-    updateInterestUI();
-    trackCatalogEvent(on ? 'catalog_product_favorite' : 'catalog_product_remove', prodParams(p, cat(where.catalogId), where.page));
-  }
-  function updateInterestUI() {
-    const n = prefs.interests.length;
-    $$('[data-int-count]').forEach((s) => { s.textContent = fmtN(n); if (s.hasAttribute('data-hide0')) s.hidden = n === 0; });
-    // Nome acessível começa pelo texto visível do botão (menu lateral, barra superior, aba "Interesses", leitor)
-    $$('[data-int-btn]').forEach((b) => b.setAttribute('aria-label', `${b.dataset.intBtn}: ${plural(n, 'produto', 'produtos')}`));
-    $('#intBtn').hidden = n === 0;
-    $('#rIntBtn').hidden = !(n > 0 || (R.cat && catHasHotspots(R.cat.id)));
-    renderIntTile();
-    paintPanelInterests();
-  }
-  $('#intBtn').addEventListener('click', () => openInterests());
-  $('#rIntBtn').addEventListener('click', () => openInterests());
 
   const quoteLine = (x) => {
     const p = prodBySku(x.sku), c = cat(x.catalogId);
@@ -5088,7 +5168,7 @@
     while (n > 1 && waUrl(wa, quoteText(items, n)).length > 1900) n--;
     return { text: quoteText(items, n), cut: items.length - n };
   }
-  // Pedido de informações: ponto ÚNICO de integração com o comercial (ficha do produto e painel de interesses).
+  // Pedido de informações: ponto ÚNICO de integração com o comercial (ficha do produto e painel "Nesta página").
   function sendQuote(items, channel, context) {
     const list = items.filter((x) => x && x.sku), com = commercialInfo();
     if (!list.length || (channel === 'whatsapp' && !com.wa) || (channel === 'email' && !com.mail)) return false;
@@ -5231,7 +5311,6 @@
           ${url ? `<a class="btn primary block" id="pcVer" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Ver produto</a>` : ''}
           ${contact ? `<button type="button" class="btn ${url ? 'ghost' : 'primary'} block" id="pcTalk">${contact === 'wa' ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}
           <div class="pc-cart" id="pcCart"></div>
-          <button type="button" class="btn ghost block" id="pcInt" aria-pressed="false"></button>
           ${c ? '<button type="button" class="btn ghost block" id="pcShare">Compartilhar</button>' : ''}
         </div>
         ${c ? `<p class="dlg-note">${esc(c.title)} · página ${page}</p>` : ''}`,
@@ -5247,10 +5326,6 @@
     });
     const fi = $('.ficha', dlg); // copiar campo, copiar ficha e "Ver mais" (mesmo tratamento do painel)
     if (fi) fi.addEventListener('click', (e) => fichaClick(e.target));
-    const ib = $('#pcInt');
-    const paintInt = () => { const on = isInterest(p.sku); ib.setAttribute('aria-pressed', String(on)); ib.innerHTML = on ? `Nos seus interesses ${I.check}` : `${I.heart} Adicionar aos interesses`; };
-    paintInt();
-    ib.addEventListener('click', () => { setInterest(p, !isInterest(p.sku), spot); paintInt(); });
     // Carrinho: "Adicionar ao carrinho" e, com o produto já dentro, o seletor de quantidade (− valor +) com "Remover".
     // O bloco só é redesenhado quando o produto entra ou sai do carrinho (o foco no − + não se perde).
     const cb = $('#pcCart');
@@ -5268,7 +5343,7 @@
     cb._paint();
     cb.addEventListener('click', (e) => {
       if (qtyClick(e.target)) return;
-      if (e.target.closest('[data-cart-add]')) { if (setCart(p, 1, spot)) toastCart('Adicionado ao carrinho'); return; }
+      if (e.target.closest('[data-cart-add]')) { if (setCart(p, 1, spot)) toastCart(`Adicionado${cartWhereTxt()}`); return; }
       if (e.target.closest('[data-cart-rm]')) setCart(p, 0, spot);
     });
     cb.addEventListener('change', (e) => { qtyChange(e.target); });
@@ -5282,83 +5357,81 @@
     const sh = $('#pcShare');
     if (sh) sh.addEventListener('click', () => share(c, page, p));
   }
-  // Painel "Produtos de interesse": reabrir, remover, compartilhar a lista e pedir informações de todos
-  // Pedido de informações de todos os interesses (painel de interesses e bloco da prateleira): mesmo canal e mesma métrica
-  function askInterests(items) {
-    const com = commercialInfo(), channel = com.wa ? 'whatsapp' : com.mail ? 'email' : 'copy';
-    if (channel === 'whatsapp') trackCatalogEvent('catalog_whatsapp_click', { context: 'interesses', items_count: items.length });
-    return sendQuote(items, channel, 'interesses');
-  }
-  function openInterests() {
-    const items = sortedInterests();
-    const com = commercialInfo();
-    const channel = com.wa ? 'whatsapp' : com.mail ? 'email' : 'copy';
-    const cut = items.length && channel === 'whatsapp' ? quoteFit(items, com.wa).cut : 0;
-    const row = (x) => {
-      const p = prodBySku(x.sku), c = cat(x.catalogId), name = p ? p.name : x.sku;
-      return `<li class="int-item"><button type="button" class="int-open" data-int-open="${esc(x.sku)}"><b>${esc(name)}</b><span class="where">${[(p ? shownCode(p) : x.sku) && `Código ${esc(p ? shownCode(p) : x.sku)}`, c && `${esc(c.title)} · página ${x.page}`].filter(Boolean).join(' · ')}</span></button><button type="button" class="int-cart" data-int-cart="${esc(x.sku)}" aria-label="Mover ${esc(name)} para o carrinho" title="Mover para o carrinho">${I.cart}</button><button type="button" class="int-rm" data-int-rm="${esc(x.sku)}" aria-label="Remover ${esc(name)} dos interesses" title="Remover">${I.close}</button></li>`;
-    };
-    openDialog({
-      title: 'Produtos de interesse', variant: 'panel',
-      body: items.length ? `<p class="dlg-sub">Produtos que você marcou nos catálogos, guardados neste aparelho.</p>
-        <ul class="int-list">${items.map(row).join('')}</ul>
-        ${cut ? `<p class="warn-note">${WARN}<span>A mensagem do WhatsApp leva ${items.length - cut} de ${items.length} produtos (limite de tamanho). Para enviar todos, copie a mensagem completa.</span></p>` : ''}
-        <div class="pc-actions">
-          <button type="button" class="btn primary block" id="intAsk">${channel === 'copy' ? 'Copiar pedido de informações' : 'Solicitar informações sobre todos'}</button>
-          ${cut ? '<button type="button" class="btn ghost block" id="intCopy">Copiar mensagem completa</button>' : ''}
-          <button type="button" class="btn ghost block" id="intAllCart">${I.cart} Mover todos para o carrinho</button>
-          <button type="button" class="btn ghost block" id="intShare">Compartilhar lista</button>
-        </div>`
-        : `<p class="int-empty">Nenhum produto ainda. No catálogo, ${coarse ? 'toque' : 'clique'} no <b>+</b> de um produto e escolha “Adicionar aos interesses”.</p>`
-    });
-    const find = (sku) => prefs.interests.find((x) => P.skuKey(x.sku) === P.skuKey(sku));
-    const list = $('.int-list', dlg);
-    if (list) list.addEventListener('click', (e) => {
-      const rm = e.target.closest('[data-int-rm]');
-      if (rm) { const it = find(rm.dataset.intRm); if (it) setInterest(prodBySku(it.sku) || { sku: it.sku, name: it.sku }, false, it); openInterests(); return; }
-      const mv = e.target.closest('[data-int-cart]'); // sai dos interesses e entra no carrinho
-      if (mv) { const it = find(mv.dataset.intCart); if (it) moveToCart([it]); openInterests(); return; }
-      const op = e.target.closest('[data-int-open]');
-      if (op) { const it = find(op.dataset.intOpen); closeDialog(); if (it) goProduct(it.sku, it.catalogId, it.page); }
-    });
-    const all = $('#intAllCart');
-    if (all) all.addEventListener('click', () => { moveToCart(items); openInterests(); });
-    const ask = $('#intAsk');
-    if (ask) ask.addEventListener('click', () => askInterests(items));
-    const cp = $('#intCopy');
-    if (cp) cp.addEventListener('click', () => copyText(quoteText(items), 'Mensagem completa copiada.'));
-    const sl = $('#intShare');
-    if (sl) sl.addEventListener('click', () => shareList(items));
-  }
-  // Lista de interesses para enviar a alguém (cada produto com o link da página)
-  function shareList(items) {
-    const base = `${location.origin}${location.pathname}`;
-    const lines = items.map((x) => {
-      const p = prodBySku(x.sku), c = cat(x.catalogId);
-      return `• ${p ? p.name : x.sku} (${p ? p.sku : x.sku})${c ? `\n${c.title}, página ${x.page}: ${base}${catalogHash(c.id, x.page, x.sku)}` : ''}`;
-    });
-    shareDialog({
-      title: me.role === 'cliente' ? 'Compartilhar lista' : 'Enviar lista ao cliente',
-      msg: `Olá! Seguem os produtos Dellamed que separei:\n\n${lines.join('\n\n')}${signature()}`,
-      name: 'Produtos Dellamed', subject: 'Produtos Dellamed',
-      type: 'list', params: { items_count: items.length, product_skus: items.map((x) => x.sku) }, variant: 'panel'
-    });
-  }
-  /* ================= carrinho (#/carrinho): produtos com quantidade, totais da ficha e envio ao cliente =================
-     Estado: prefs.cart = [{ sku, qtd, catalogId, page, at }], guardado junto com as demais preferências da pessoa
-     (mesmo mecanismo dos "Produtos de interesse": prefs + operações pendentes + savePrefs; sobrevive a recarregar e a fechar o app).
+  /* ================= carrinho (#/carrinho): listas por cliente, quantidade, totais da ficha e envio =================
+     Estado (tudo neste aparelho, junto com as demais preferências da pessoa):
+       prefs.carts    = [{ id, nome, itens: [{ sku, qtd, catalogId, page, at }], criadoEm, atualizadoEm }]  (até CART_LISTAS_MAX)
+       prefs.cartAtual= id da lista em uso (o contador do menu sempre reflete ela)
+       prefs.cartHist = [{ id, quando, lista, canal, cliente: { nome }, itens: [{ sku, qtd, nome }], totais }] (até CART_HIST_MAX)
+     Mesmo mecanismo de sempre: prefs + operações pendentes + savePrefs + mescla entre abas pelo evento storage.
      Contas: caixas = ceil(qtd / cxUn) quando cxUn ≥ 1, senão 1 caixa por unidade; peso = qtd × peso; cubagem = caixas × cubagem.
      Tudo sai de products[sku].ficha, que é OPCIONAL: sem os números, o total fica marcado como parcial e a tela diz quem ficou de fora.
      O código SAP nunca aparece (o código exibido vem sempre de shownCode). */
-  const CART = { thumbs: [], gen: 0, keys: '' };
-  const cartFind = (sku) => prefs.cart.find((x) => P.skuKey(x.sku) === P.skuKey(sku)) || null;
+  const CART = { thumbs: [], gen: 0, keys: null, tab: 'produtos', migrated: 0 };
+  // Identificador da lista: curto, só letras e números (entra em chaves de operação e em seletores)
+  const newCartId = () => 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const cartById = (id) => (prefs.carts || []).find((c) => c.id === id) || null;
+  function markCartList(c) { cartListOps.set(c.id, { nome: c.nome, criadoEm: c.criadoEm, atualizadoEm: c.atualizadoEm }); }
+  function markCartItem(c, k, item) { cartOps.set(c.id + '::' + k, { lista: c.id, k, item }); }
+  function touchCart(c) { c.atualizadoEm = new Date().toISOString(); markCartList(c); }
+  // Lista em uso. Sem nenhuma lista (primeira vez, ou todas apagadas), cria "Meu carrinho" na hora.
+  function curCart() {
+    if (!Array.isArray(prefs.carts)) prefs.carts = [];
+    let c = cartById(prefs.cartAtual);
+    if (!c) c = prefs.carts[0] || null;
+    if (!c) {
+      const now = new Date().toISOString();
+      c = { id: newCartId(), nome: 'Meu carrinho', itens: [], criadoEm: now, atualizadoEm: now };
+      prefs.carts.push(c);
+      markCartList(c);
+    }
+    if (prefs.cartAtual !== c.id) { prefs.cartAtual = c.id; cartAtualDirty = true; }
+    return c;
+  }
+  const cartItems = () => curCart().itens;
+  const cartListName = () => curCart().nome;
+  // Nome da lista no aviso só quando há mais de uma ("Adicionado a Farmácia Central")
+  const cartWhereTxt = () => ((prefs.carts || []).length > 1 ? ` a ${cartListName()}` : '');
+  const cartFind = (sku) => cartItems().find((x) => P.skuKey(x.sku) === P.skuKey(sku)) || null;
   const inCart = (sku) => !!cartFind(sku);
   const cartQty = (sku) => { const it = cartFind(sku); return it ? it.qtd : 0; };
-  const cartCount = () => (prefs.cart || []).length;
-  const cartList = () => (prefs.cart || []).slice(); // ordem de entrada: a mesma da tela e da mensagem
-  // Assinatura dos produtos do carrinho (sem a quantidade): só quando ela muda a lista é redesenhada;
-  // mudar a quantidade apenas acerta os números, sem perder o foco de quem está no campo
-  const cartKeys = (list) => list.map((x) => P.skuKey(x.sku)).join('|');
+  const cartCount = () => cartItems().length;
+  const cartList = () => cartItems().slice(); // ordem de entrada: a mesma da tela e da mensagem
+  /* ----- atualização de formato: carrinho único → listas; produtos de interesse → carrinho -----
+     Roda uma vez, na primeira abertura depois da atualização. O que era "prefs.cart" vira a lista "Meu carrinho";
+     o que estava em "prefs.interests" entra nela com quantidade 1, sem duplicar o que já existe. Depois os dois
+     campos antigos saem das preferências (flushPrefs os apaga) e nada disso se repete. */
+  function migrateCarts(raw) {
+    CART.migrated = 0;
+    if (!prefs.carts.length) {
+      const itens = normCartItems(raw.cart), now = new Date().toISOString();
+      const c = { id: newCartId(), nome: 'Meu carrinho', itens, criadoEm: now, atualizadoEm: now };
+      prefs.carts = [c];
+      prefs.cartAtual = c.id;
+      cartAtualDirty = true;
+      markCartList(c);
+      for (const x of itens) markCartItem(c, P.skuKey(x.sku), x);
+      if (raw.cart !== undefined) prefsDirty = true;
+    }
+    const velhos = Array.isArray(raw.interests) ? raw.interests.filter((x) => x && typeof x.sku === 'string' && P.skuKey(x.sku)) : [];
+    if (velhos.length) {
+      const c = curCart(), now = new Date().toISOString();
+      for (const x of velhos) {
+        const k = P.skuKey(x.sku);
+        if (c.itens.length >= CART_MAX) break;
+        if (c.itens.some((y) => P.skuKey(y.sku) === k)) continue; // já estava no carrinho: não duplica
+        const item = { sku: x.sku, qtd: 1, catalogId: typeof x.catalogId === 'string' ? x.catalogId : '', page: Math.max(1, parseInt(x.page, 10) || 1), at: String(x.at || now) };
+        c.itens.push(item);
+        markCartItem(c, k, item);
+        CART.migrated++;
+      }
+      touchCart(c);
+    }
+    if (raw.interests !== undefined || raw.cart !== undefined) { prefsDirty = true; flushPrefs(); }
+  }
+  // Assinatura da lista em uso e dos produtos dela (SEM a quantidade): só quando ela muda a tela é redesenhada;
+  // mudar a quantidade apenas acerta os números, sem perder o foco de quem está no campo.
+  // O id da lista entra na assinatura: trocar de lista sempre redesenha, mesmo com os mesmos produtos.
+  const cartKeys = (list) => curCart().id + '#' + list.map((x) => P.skuKey(x.sku)).join('|');
   // Onde o produto foi pego (para reabrir a página no catálogo): o que já está no carrinho vence; depois o ponto pedido; depois o leitor
   function cartWhere(sku, cid, page) {
     const it = cartFind(sku);
@@ -5368,48 +5441,98 @@
     if (h) return { catalogId: h.catalogId, page: h.page };
     return R.cat ? { catalogId: R.cat.id, page: curIndex() + 1 } : { catalogId: '', page: 1 };
   }
-  // qtd 0 (ou menos) remove. Devolve true quando o carrinho mudou.
+  // qtd 0 (ou menos) remove. Devolve true quando a lista em uso mudou.
   function setCart(p, qtd, where = {}) {
     if (!p || !p.sku) return false;
-    const k = P.skuKey(p.sku), cur = cartFind(p.sku), q = Math.round(Number(qtd) || 0);
+    const c = curCart(), k = P.skuKey(p.sku), cur = cartFind(p.sku), q = Math.round(Number(qtd) || 0);
     if (q <= 0) {
       if (!cur) return false;
-      prefs.cart = prefs.cart.filter((x) => P.skuKey(x.sku) !== k);
-      cartOps.set(k, null);
+      c.itens = c.itens.filter((x) => P.skuKey(x.sku) !== k);
+      markCartItem(c, k, null);
+      touchCart(c);
       savePrefs();
       trackCatalogEvent('cart_remove', { ...prodParams(p, cat(cur.catalogId), cur.page), items_count: cartCount() });
       updateCartUI();
       return true;
     }
-    if (!cur && cartCount() >= CART_MAX) { toast(`O carrinho já tem ${plural(CART_MAX, 'produto', 'produtos')} diferentes.`, 'err'); return false; }
+    if (!cur && c.itens.length >= CART_MAX) { toast(`A lista já tem ${plural(CART_MAX, 'produto', 'produtos')} diferentes.`, 'err'); return false; }
     const item = cur ? { ...cur, qtd: clamp(q, 1, CART_QTD_MAX) }
       : { sku: p.sku, qtd: clamp(q, 1, CART_QTD_MAX), catalogId: where.catalogId || '', page: where.page || 1, at: new Date().toISOString() };
     if (cur && cur.qtd === item.qtd) return false;
-    prefs.cart = cur ? prefs.cart.map((x) => (P.skuKey(x.sku) === k ? item : x)) : [...prefs.cart, item]; // a posição na lista não muda
-    cartOps.set(k, item);
+    c.itens = cur ? c.itens.map((x) => (P.skuKey(x.sku) === k ? item : x)) : [...c.itens, item]; // a posição na lista não muda
+    markCartItem(c, k, item);
+    touchCart(c);
     savePrefs();
     if (!cur || item.qtd > cur.qtd) trackCatalogEvent('cart_add', { ...prodParams(p, cat(item.catalogId), item.page), quantity: item.qtd, items_count: cartCount() });
     updateCartUI();
     return true;
   }
   function cartClear() {
-    const n = cartCount();
+    const c = curCart(), n = c.itens.length;
     if (!n) return;
-    for (const x of prefs.cart) cartOps.set(P.skuKey(x.sku), null);
-    prefs.cart = [];
+    for (const x of c.itens) markCartItem(c, P.skuKey(x.sku), null);
+    c.itens = [];
+    touchCart(c);
     savePrefs();
     trackCatalogEvent('cart_remove', { reason: 'limpar', removed_count: n, items_count: 0 });
     updateCartUI();
-    toast('Carrinho limpo.');
+    toast('Lista esvaziada.');
   }
   function cartClearAsk(after) {
     const n = cartCount();
     if (!n) return;
     openDialog({
-      title: 'Limpar o carrinho?',
-      body: `<p class="dlg-sub">${after ? 'A mensagem já saiu. ' : ''}Os ${plural(n, 'produto', 'produtos')} do carrinho saem deste aparelho. Os produtos de interesse não mudam.</p>`,
-      actions: [{ label: 'Manter', kind: 'ghost' }, { label: 'Limpar', kind: 'primary', onClick: () => cartClear() }]
+      title: 'Esvaziar a lista?',
+      body: `<p class="dlg-sub">${after ? 'A mensagem já saiu. ' : ''}Os ${plural(n, 'produto', 'produtos')} de <b>${esc(cartListName())}</b> saem deste aparelho. As outras listas e o histórico de envios não mudam.</p>`,
+      actions: [{ label: 'Manter', kind: 'ghost' }, { label: 'Esvaziar', kind: 'primary', onClick: () => cartClear() }]
     });
+  }
+  /* ----- listas (uma por cliente): trocar, criar, renomear e apagar ----- */
+  function setCartAtual(id) {
+    const c = cartById(id);
+    if (!c || prefs.cartAtual === id) return false;
+    prefs.cartAtual = id;
+    cartAtualDirty = true;
+    savePrefs();
+    CART.keys = null; // lista diferente: a tela é redesenhada por inteiro
+    updateCartUI();
+    return true;
+  }
+  function cartListNew(nome) {
+    if ((prefs.carts || []).length >= CART_LISTAS_MAX) { toast(`São no máximo ${plural(CART_LISTAS_MAX, 'lista', 'listas')}.`, 'err'); return null; }
+    const now = new Date().toISOString();
+    const c = { id: newCartId(), nome: cartNome(nome) || 'Nova lista', itens: [], criadoEm: now, atualizadoEm: now };
+    prefs.carts.push(c);
+    markCartList(c);
+    prefs.cartAtual = c.id;
+    cartAtualDirty = true;
+    savePrefs();
+    CART.keys = null;
+    updateCartUI();
+    return c;
+  }
+  function cartListRename(id, nome) {
+    const c = cartById(id), n = cartNome(nome);
+    if (!c || !n || c.nome === n) return false;
+    c.nome = n;
+    touchCart(c);
+    savePrefs();
+    CART.keys = null; // o nome aparece no subtítulo e no estado vazio: redesenha a tela
+    updateCartUI();
+    return true;
+  }
+  function cartListDelete(id) {
+    const c = cartById(id);
+    if (!c) return false;
+    prefs.carts = prefs.carts.filter((x) => x.id !== id);
+    cartListOps.set(id, null);
+    for (const key of [...cartOps.keys()]) if (cartOps.get(key).lista === id) cartOps.delete(key);
+    prefs.cartAtual = prefs.carts.length ? prefs.carts[0].id : '';
+    cartAtualDirty = true;
+    savePrefs();
+    CART.keys = null;
+    updateCartUI();
+    return true;
   }
   // Contagem no menu lateral, na gaveta e na aba do celular + aviso discreto para leitores de tela
   function updateCartUI() {
@@ -5418,12 +5541,19 @@
     // Nome acessível começa pelo texto visível do botão (menu lateral, gaveta, aba "Carrinho")
     $$('[data-cart-btn]').forEach((b) => b.setAttribute('aria-label', `${b.dataset.cartBtn}: ${plural(n, 'produto', 'produtos')}`));
     const live = $('#cartLive');
-    if (live) live.textContent = n ? `Carrinho: ${plural(n, 'produto', 'produtos')}` : 'Carrinho vazio';
+    if (live) live.textContent = n ? `${cartListName()}: ${plural(n, 'produto', 'produtos')}` : `${cartListName()}: vazia`;
+    renderCartTile();
     paintCartButtons();
-    if (view === 'cart') { if (cartKeys(cartList()) === CART.keys) paintCartScreen(); else renderCart(); }
+    if (view === 'cart') {
+      renderCartPick();
+      paintCartTabs();
+      if (cartKeys(cartList()) === CART.keys) paintCartScreen(); else renderCart();
+    }
   }
-  // Botões "+" das listas (balão da ficha, "Nesta página", busca) e o bloco da ficha do produto
+  // Botões "+" das listas (balão da ficha, "Nesta página", busca), seletores de quantidade,
+  // "+" sobre a página do catálogo e o bloco da ficha do produto
   function paintCartButtons() {
+    $$('[data-cart-ctrl]').forEach(paintCartCtrl);
     $$('[data-cart-tog]').forEach((b) => {
       const sku = b.dataset.cartTog, p = prodBySku(sku), name = p ? p.name : sku, q = cartQty(sku);
       b.setAttribute('aria-pressed', String(q > 0));
@@ -5432,21 +5562,42 @@
       if (s) s.textContent = q ? fmtN(q) : '+';
     });
     $$('[data-qty]').forEach((box) => { const p = prodBySku(box.dataset.qty); if (p) paintQty(box, p); });
+    paintHotspotCart();
     const pc = $('#pcCart');
     if (pc && pc._paint) pc._paint();
   }
+  // Controle reutilizável do painel "Nesta página": "+" fora do carrinho, seletor − N + dentro dele
+  function cartCtrlHTML(p, cid, page) {
+    return `<span class="cart-ctrl" data-cart-ctrl="${esc(p.sku)}" data-cart-cat="${esc(cid || '')}" data-cart-pg="${page || 1}"></span>`;
+  }
+  function paintCartCtrl(box) {
+    const sku = box.dataset.cartCtrl, p = prodBySku(sku), name = p ? p.name : sku, q = cartQty(sku);
+    const st = q ? 'in' : 'out';
+    if (box.dataset.st !== st) {
+      box.dataset.st = st;
+      box.innerHTML = q ? qtyHTML(sku, q, name, true) // "−" em 1 tira o produto da lista
+        : `<button type="button" class="btn sm cart-btn" data-cart-tog="${esc(sku)}" data-cart-cat="${esc(box.dataset.cartCat || '')}" data-cart-pg="${esc(box.dataset.cartPg || '1')}" aria-pressed="false">${I.cart}<span class="cart-n">+</span></button>`;
+    }
+    const qb = $('[data-qty]', box);
+    if (qb && p) paintQty(qb, p);
+  }
   /* ----- seletor de quantidade (− valor +): o mesmo na ficha do produto e na tela do carrinho ----- */
-  function qtyHTML(sku, q, name) {
-    return `<span class="qty" data-qty="${esc(sku)}">
-      <button type="button" data-qty-step="-1" aria-label="Menos uma unidade de ${esc(name)}"${q <= 1 ? ' disabled' : ''}>−</button>
+  // zero = true: o "−" em 1 tira o produto da lista (painel "Nesta página"); sem ele, 1 é o menor valor
+  function qtyHTML(sku, q, name, zero) {
+    return `<span class="qty" data-qty="${esc(sku)}"${zero ? ' data-qty-zero' : ''}>
+      <button type="button" data-qty-step="-1" aria-label="${zero && q <= 1 ? `Remover ${esc(name)} do carrinho` : `Menos uma unidade de ${esc(name)}`}"${!zero && q <= 1 ? ' disabled' : ''}>−</button>
       <input type="number" inputmode="numeric" min="1" max="${CART_QTD_MAX}" step="1" value="${q}" data-qty-input aria-label="Quantidade de ${esc(name)}">
       <button type="button" data-qty-step="1" aria-label="Mais uma unidade de ${esc(name)}"${q >= CART_QTD_MAX ? ' disabled' : ''}>+</button>
     </span>`;
   }
   function paintQty(box, p) {
-    const q = cartQty(p.sku), inp = $('[data-qty-input]', box);
+    const q = cartQty(p.sku), inp = $('[data-qty-input]', box), zero = box.hasAttribute('data-qty-zero');
     if (inp && document.activeElement !== inp) inp.value = String(q || 1);
-    $$('[data-qty-step]', box).forEach((b) => { b.disabled = +b.dataset.qtyStep < 0 ? q <= 1 : q >= CART_QTD_MAX; });
+    $$('[data-qty-step]', box).forEach((b) => {
+      const menos = +b.dataset.qtyStep < 0;
+      b.disabled = menos ? (!zero && q <= 1) : q >= CART_QTD_MAX;
+      if (menos && zero) b.setAttribute('aria-label', q <= 1 ? `Remover ${p.name} do carrinho` : `Menos uma unidade de ${p.name}`);
+    });
   }
   // Cliques do seletor (− +) em qualquer tela. Devolve true quando tratou o clique.
   function qtyClick(t) {
@@ -5478,21 +5629,95 @@
     if (!p) return true;
     const had = inCart(p.sku);
     if (setCart(p, cartQty(p.sku) + 1, cartWhere(p.sku, b.dataset.cartCat, b.dataset.cartPg))) {
-      toastCart(had ? `${p.name}: ${plural(cartQty(p.sku), 'unidade', 'unidades')}` : 'Adicionado ao carrinho');
+      toastCart(had ? `${p.name}: ${plural(cartQty(p.sku), 'unidade', 'unidades')}` : `Adicionado${cartWhereTxt()}`);
     }
     return true;
   }
   const toastCart = (msg) => toast(msg, '', { label: 'Ver carrinho', onClick: () => navigate('#/carrinho') });
-  // "Mover para o carrinho" / "Mover todos" (painel dos produtos de interesse)
-  function moveToCart(items) {
-    let n = 0;
-    for (const x of items) {
-      const p = prodBySku(x.sku);
-      if (!p) continue;
-      if (setCart(p, cartQty(p.sku) + 1, { catalogId: x.catalogId, page: x.page })) { setInterest(p, false, x); n++; }
+  /* ----- "Adicionar todos desta página": soma uma unidade de cada e oferece "Desfazer" no próprio aviso ----- */
+  function cartAddMany(items) {
+    const prev = []; // quantidade de antes de cada produto que realmente mudou
+    let n = 0, cheia = false;
+    for (const it of items) {
+      const p = it && it.p ? it.p : it;
+      if (!p || !p.sku) continue;
+      const q = cartQty(p.sku);
+      if (!q && cartCount() >= CART_MAX) { cheia = true; break; }
+      if (setCart(p, q + 1, { catalogId: it.catalogId || (R.cat ? R.cat.id : ''), page: it.page || 1 })) { prev.push({ sku: p.sku, qtd: q }); n++; }
     }
-    if (n) toastCart(n === 1 ? 'Movido para o carrinho' : `${plural(n, 'produto movido', 'produtos movidos')} para o carrinho`);
+    if (!n) { toast(cheia ? `A lista já tem ${plural(CART_MAX, 'produto', 'produtos')} diferentes.` : 'Nada para adicionar.', cheia ? 'err' : ''); return 0; }
+    const desfazer = () => {
+      for (const x of prev) setCart(prodBySku(x.sku) || { sku: x.sku, name: x.sku }, x.qtd, cartWhere(x.sku));
+      toast('Desfeito.');
+    };
+    toast(`${plural(n, 'produto adicionado', 'produtos adicionados')}${cartWhereTxt()}.${cheia ? ' A lista chegou ao limite.' : ''}`, '', { label: 'Desfazer', onClick: desfazer });
     return n;
+  }
+  // Todos os produtos de uma página do catálogo aberto (com "+" e ligados à página, sem repetir)
+  function cartAddPage(page) {
+    if (!R.cat) return;
+    cartAddMany(panelProducts(R.cat.id, [Math.max(0, (parseInt(page, 10) || 1) - 1)]));
+  }
+  /* ----- "+" sobre o produto na página: um toque adiciona; o seguinte abre o seletor − N + ali mesmo ----- */
+  const HSQ = { area: null, t: null };
+  function hsProduct(b) {
+    if (!b || !R.cat) return null;
+    const h = hotspotsOn(R.cat.id, +b.dataset.page)[+b.dataset.i];
+    return (h && prodBySku(h.product)) || prodBySku(b.dataset.sku || '');
+  }
+  function paintHotspotCart() {
+    $$('.product-hotspot[data-hs-cart]').forEach((b) => {
+      const sku = b.dataset.sku, p = prodBySku(sku), name = p ? p.name : sku, q = cartQty(sku);
+      b.setAttribute('aria-pressed', String(q > 0));
+      b.setAttribute('aria-label', q ? `${name}: ${plural(q, 'unidade', 'unidades')} no carrinho. Ajustar a quantidade` : `Adicionar ao carrinho: ${name}`);
+      const s = $('.hs-n', b);
+      if (s) s.textContent = q ? fmtN(q) : '';
+    });
+    const a = HSQ.area, v = a && $('[data-hs-v]', a);
+    if (v) { const b = $('.product-hotspot', a); const q = b ? cartQty(b.dataset.sku) : 0; if (q) v.textContent = fmtN(q); else closeHsQty(false); }
+  }
+  function hsCartClick(b) {
+    const p = hsProduct(b);
+    if (!p) return;
+    const area = b.closest('.hs-area');
+    if (cartQty(p.sku) > 0) { openHsQty(area, p, true); return; } // já está na lista: ajustar a quantidade
+    const page = +b.dataset.page || (R.cat ? curIndex() + 1 : 1);
+    if (setCart(p, 1, { catalogId: R.cat ? R.cat.id : '', page })) toastCart(`Adicionado${cartWhereTxt()}`);
+  }
+  function openHsQty(area, p, focusIt) {
+    closeHsQty(false);
+    const box = area && $('.hs-qty', area);
+    if (!box) return;
+    box.innerHTML = `<button type="button" data-hs-step="-1" aria-label="Menos uma unidade de ${esc(p.name)}">−</button><b data-hs-v>${fmtN(cartQty(p.sku))}</b><button type="button" data-hs-step="1" aria-label="Mais uma unidade de ${esc(p.name)}">+</button>`;
+    area.classList.add('qty-on');
+    HSQ.area = area;
+    if (focusIt) { const f = $('[data-hs-step="1"]', box); if (f) f.focus({ preventScroll: true }); }
+    hsQtyHold();
+  }
+  // Some sozinho depois de alguns segundos; qualquer toque ou ponteiro por perto recomeça a contagem
+  function hsQtyHold() { clearTimeout(HSQ.t); HSQ.t = setTimeout(() => closeHsQty(true), CART_QTY_MS); }
+  function closeHsQty(refocus) {
+    clearTimeout(HSQ.t); HSQ.t = null;
+    const a = HSQ.area;
+    HSQ.area = null;
+    if (!a) return;
+    const had = a.contains(document.activeElement);
+    a.classList.remove('qty-on');
+    const box = $('.hs-qty', a);
+    if (box) box.innerHTML = '';
+    const b = $('.product-hotspot', a);
+    if (b && refocus && had && b.isConnected) b.focus({ preventScroll: true });
+  }
+  // Cliques no seletor da página. Devolve true quando tratou o clique.
+  function hsQtyClick(t) {
+    const s = t && t.closest && t.closest('[data-hs-step]');
+    if (!s) return false;
+    const area = s.closest('.hs-area'), b = area && $('.product-hotspot', area), p = hsProduct(b);
+    if (!p) return true;
+    setCart(p, cartQty(p.sku) + (+s.dataset.hsStep || 0), { catalogId: R.cat ? R.cat.id : '', page: +b.dataset.page || 1 });
+    if (cartQty(p.sku) <= 0) closeHsQty(true); // chegou a 0: sai do carrinho e o "+" volta
+    else { const v = $('[data-hs-v]', area); if (v) v.textContent = fmtN(cartQty(p.sku)); hsQtyHold(); }
+    return true;
   }
 
   /* ----- contas: caixas master, peso e cubagem a partir da ficha técnica ----- */
@@ -5543,16 +5768,58 @@
       <span class="cart-side">${qtyHTML(x.sku, x.qtd, name)}<button type="button" class="cart-rm" data-cart-rm="${esc(x.sku)}" aria-label="Remover ${esc(name)} do carrinho" title="Remover">${I.close}</button></span>
     </li>`;
   }
+  /* ----- seletor de listas e abas Produtos / Envios ----- */
+  // O seletor é montado uma vez e só as opções mudam: quem está no teclado não perde o foco ao trocar de lista
+  function renderCartPick() {
+    const box = $('#cartPick'), listas = prefs.carts || [], cur = curCart();
+    if (!box) return;
+    if (!box.dataset.on) {
+      box.dataset.on = '1';
+      box.innerHTML = `<span class="cart-pick-l" id="cartPickL">Lista</span>
+        <select id="cartPickSel" aria-labelledby="cartPickL"></select>
+        <span class="cart-pick-acts">
+          <button type="button" class="cart-pick-act" data-cart-act="nova">${I.plus}Nova lista</button>
+          <button type="button" class="cart-pick-act" data-cart-act="renomear">${I.pencil}Renomear</button>
+          <button type="button" class="cart-pick-act" data-cart-act="apagar">${I.close}Apagar lista</button>
+        </span>`;
+    }
+    const sel = $('#cartPickSel', box);
+    const assin = listas.map((c) => `${c.id}::${c.itens.length}::${c.nome}`).join('##');
+    if (sel.dataset.k !== assin) { sel.dataset.k = assin; sel.innerHTML = listas.map((c) => `<option value="${esc(c.id)}">${esc(c.nome)} (${fmtN(c.itens.length)})</option>`).join(''); }
+    sel.value = cur.id;
+    $('[data-cart-act="apagar"]', box).disabled = listas.length < 2; // a última lista não pode ser apagada
+  }
+  function paintCartTabs() {
+    const n = (prefs.cartHist || []).length, b = $('#cartHistN');
+    if (b) { b.textContent = fmtN(n); b.hidden = n === 0; }
+    const prod = CART.tab !== 'envios';
+    $('#cartTabProd').setAttribute('aria-selected', String(prod));
+    $('#cartTabHist').setAttribute('aria-selected', String(!prod));
+    $('#cartBody').hidden = !prod;
+    $('#cartHist').hidden = prod;
+    $('#cartFoot').hidden = !prod || !cartCount();
+    setCartFootH();
+  }
+  function setCartTab(tab, focusIt) {
+    CART.tab = tab === 'envios' ? 'envios' : 'produtos';
+    // A aba entra no endereço (sem nova entrada no histórico do navegador): o link guardado abre onde parou
+    const h = CART.tab === 'envios' ? '#/carrinho/envios' : '#/carrinho';
+    lastRoute = h;
+    try { history.replaceState(null, '', h); } catch (e) { /* noop */ }
+    if (CART.tab === 'envios') renderCartHist(); else renderCart();
+    paintCartTabs();
+    if (focusIt) $(CART.tab === 'envios' ? '#cartHist' : '#cartBody').focus({ preventScroll: true });
+  }
   function renderCart() {
-    const list = cartList(), body = $('#cartBody');
+    const list = cartList(), body = $('#cartBody'), cur = curCart();
     CART.keys = cartKeys(list);
     releaseCartThumbs();
     $('#cartSub').textContent = list.length
-      ? `${plural(list.length, 'produto', 'produtos')} neste aparelho. Ajuste a quantidade e envie a lista ao cliente.`
-      : 'Guarde aqui os produtos que você vai enviar ao cliente.';
+      ? `${plural(list.length, 'produto', 'produtos')} em ${cur.nome}, neste aparelho. Ajuste a quantidade e envie a lista ao cliente.`
+      : `${cur.nome}: guarde aqui os produtos que você vai enviar ao cliente.`;
     if (!list.length) {
-      setHTML(body, `<div class="empty"><h3>Seu carrinho está vazio</h3>
-        <p>${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo e escolha <b>Adicionar ao carrinho</b>. Depois é só ajustar a quantidade e enviar.</p>
+      setHTML(body, `<div class="empty"><h3>${esc(cur.nome)} está vazia</h3>
+        <p>${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo: ele entra na lista na hora. ${coarse ? 'Tocando' : 'Clicando'} de novo aparece o seletor de quantidade.</p>
         <button class="btn primary" type="button" data-cart-act="catalogos">Ver catálogos</button></div>`);
       renderCartFoot(list);
       return;
@@ -5560,6 +5827,65 @@
     setHTML(body, `<ul class="cart-list">${list.map(cartRowHTML).join('')}</ul>`);
     renderCartFoot(list);
     loadCartThumbs(list);
+  }
+  /* ----- Envios: o que já foi mandado ou copiado, mais novo primeiro ----- */
+  const histDate = (s) => { const d = new Date(s); return isFinite(d.getTime()) ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} às ${String(d.getHours()).padStart(2, '0')}h${String(d.getMinutes()).padStart(2, '0')}` : ''; };
+  const histShortDate = (s) => { const d = new Date(s); return isFinite(d.getTime()) ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}` : ''; };
+  const CANAL = { whatsapp: 'WhatsApp', email: 'E-mail', copiar: 'Copiado' };
+  // Nome do produto na tela: o do catálogo hoje; saiu da base, o nome guardado no envio (ver cartMessage)
+  function renderCartHist() {
+    const box = $('#cartHist'), list = prefs.cartHist || [];
+    if (!list.length) {
+      setHTML(box, `<div class="empty"><h3>Nenhum envio ainda</h3>
+        <p>Toda vez que você enviar ou copiar uma lista, ela fica guardada aqui — com data, cliente e produtos — para conferir ou repetir depois.</p></div>`);
+      return;
+    }
+    setHTML(box, `<ul class="hist-list">${list.map((h) => {
+      const quem = h.cliente && h.cliente.nome ? h.cliente.nome : 'Sem nome do cliente';
+      const un = h.totais && h.totais.itens ? ` · ${plural(h.totais.itens, 'item', 'itens')}` : '';
+      const fora = h.itens.filter((it) => !prodBySku(it.sku)).length;
+      return `<li class="hist-item" data-hist="${esc(h.id)}">
+        <div class="hist-h"><b>${esc(quem)}</b><span class="hist-meta">${esc(histDate(h.quando))} · ${esc(CANAL[h.canal] || h.canal)}</span></div>
+        <p class="hist-meta">${esc(h.lista || 'Carrinho')} · ${plural(h.itens.length, 'produto', 'produtos')}${un}${fora ? ` · <span class="hist-gone">${plural(fora, 'produto não está mais no catálogo', 'produtos não estão mais no catálogo')}</span>` : ''}</p>
+        <div class="hist-acts">
+          <button type="button" class="btn ghost sm" data-hist-act="ver">Ver a mensagem</button>
+          <button type="button" class="btn ghost sm" data-hist-act="reenviar">Enviar de novo</button>
+          <button type="button" class="btn ghost sm" data-hist-act="recriar">Recriar lista</button>
+        </div>
+      </li>`;
+    }).join('')}</ul>`);
+  }
+  const histById = (id) => (prefs.cartHist || []).find((h) => h.id === id) || null;
+  // Grava um envio (sem telefone e sem a observação do cliente)
+  function histAdd(canal, clienteNome, list, totais, listaNome) {
+    const t = totais || cartTotals(list);
+    const h = {
+      id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      quando: new Date().toISOString(), lista: cartNome(listaNome) || cartListName(), canal,
+      cliente: { nome: String(clienteNome || '').slice(0, 80) },
+      itens: list.map((x) => { const p = prodBySku(x.sku); return { sku: x.sku, qtd: x.qtd, nome: p ? p.name : (x.nome || '') }; }),
+      totais: { itens: t.itens, caixas: t.caixas, peso: t.peso, cubagem: t.cub !== undefined ? t.cub : (t.cubagem || 0) }
+    };
+    prefs.cartHist = [h, ...(prefs.cartHist || []).filter((x) => x.id !== h.id)].slice(0, CART_HIST_MAX);
+    cartHistAdd.push(h);
+    savePrefs();
+    if (view === 'cart') { paintCartTabs(); if (CART.tab === 'envios') renderCartHist(); }
+    return h;
+  }
+  // Refaz uma lista a partir de um envio (produtos que saíram da base ficam de fora, e a tela diz quantos)
+  function histRecreate(h) {
+    const nome = cartNome(h.cliente && h.cliente.nome) || `Repetição de ${histShortDate(h.quando)}`;
+    const c = cartListNew(nome);
+    if (!c) return;
+    let fora = 0;
+    for (const it of h.itens) {
+      const p = prodBySku(it.sku);
+      if (!p) { fora++; continue; }
+      setCart(p, it.qtd, cartWhere(p.sku));
+    }
+    setCartTab('produtos');
+    // O aviso usa textContent: o nome da lista entra como texto puro
+    toast(`${c.nome} criada com ${plural(cartCount(), 'produto', 'produtos')}.${fora ? ` ${plural(fora, 'produto não está mais no catálogo', 'produtos não estão mais no catálogo')}.` : ''}`);
   }
   // Só a quantidade mudou: acerta os números sem redesenhar a lista (o foco no campo não se perde)
   function paintCartScreen() {
@@ -5574,7 +5900,7 @@
   }
   function renderCartFoot(list) {
     const foot = $('#cartFoot');
-    if (!list.length) { foot.hidden = true; foot.innerHTML = ''; setCartFootH(); return; }
+    if (!list.length || CART.tab === 'envios') { foot.hidden = true; foot.innerHTML = ''; setCartFootH(); return; }
     const t = cartTotals(list);
     foot.hidden = false;
     foot.innerHTML = `<p class="cart-tot">${t.parcial ? '<span class="cart-parcial">Parcial</span>' : ''}<span>${esc(cartTotalLine(t))}</span></p>
@@ -5583,7 +5909,7 @@
         <button type="button" class="btn primary" data-cart-act="whatsapp">Enviar pelo WhatsApp</button>
         <button type="button" class="btn ghost" data-cart-act="copy">Copiar lista</button>
         <button type="button" class="btn ghost" data-cart-act="email">Enviar por e-mail</button>
-        <button type="button" class="link cart-clear" data-cart-act="clear">Limpar carrinho</button>
+        <button type="button" class="link cart-clear" data-cart-act="clear">Esvaziar lista</button>
       </div>`;
     setCartFootH();
   }
@@ -5615,10 +5941,22 @@
       if (gen === CART.gen) $$('[data-cart-img].loading', body).forEach((s) => { s.classList.remove('loading'); s.innerHTML = I.tag; });
     })();
   }
-  function leaveCartView() { if (view === 'cart') { releaseCartThumbs(); CART.keys = ''; } }
+  function leaveCartView() { if (view === 'cart') { releaseCartThumbs(); CART.keys = null; } }
   $('#viewCart').addEventListener('click', (e) => {
     const t = e.target;
     if (qtyClick(t)) return;
+    const tab = t.closest('[data-cart-tab]');
+    if (tab) { setCartTab(tab.dataset.cartTab, true); return; }
+    const hb = t.closest('[data-hist-act]');
+    if (hb) {
+      const li = hb.closest('[data-hist]'), h = li && histById(li.dataset.hist);
+      if (!h) return;
+      const a = hb.dataset.histAct;
+      if (a === 'ver') openHistMsg(h);
+      else if (a === 'reenviar') openCartSend('whatsapp', h);
+      else histRecreate(h);
+      return;
+    }
     const rm = t.closest('[data-cart-rm]');
     if (rm) { const p = prodBySku(rm.dataset.cartRm) || { sku: rm.dataset.cartRm, name: rm.dataset.cartRm }; setCart(p, 0); return; }
     const act = t.closest('[data-cart-act]');
@@ -5627,9 +5965,52 @@
     if (a === 'catalogos') { navigate('#/prateleira'); return; }
     if (a === 'clear') { cartClearAsk(false); return; }
     if (a === 'copy') { cartCopy(); return; }
+    if (a === 'nova') {
+      if ((prefs.carts || []).length >= CART_LISTAS_MAX) { toast(`São no máximo ${plural(CART_LISTAS_MAX, 'lista', 'listas')}. Apague uma antes de criar outra.`, 'err'); return; }
+      askCartName('Nova lista', '', (n) => { if (cartListNew(n)) toast(`${n} é a lista em uso.`); });
+      return;
+    }
+    if (a === 'renomear') { const c = curCart(); askCartName('Renomear a lista', c.nome, (n) => { if (cartListRename(c.id, n)) toast('Nome trocado.'); }); return; }
+    if (a === 'apagar') { askCartDelete(); return; }
     openCartSend(a === 'email' ? 'email' : 'whatsapp');
   });
-  $('#viewCart').addEventListener('change', (e) => { qtyChange(e.target); });
+  $('#viewCart').addEventListener('change', (e) => {
+    const sel = e.target.closest && e.target.closest('#cartPickSel');
+    if (sel) { if (setCartAtual(sel.value)) toast(`${cartListName()} é a lista em uso.`); return; }
+    qtyChange(e.target);
+  });
+  // Nome da lista: até CART_NOME_MAX caracteres, num diálogo curto (mesmo padrão dos demais)
+  function askCartName(title, valor, onOk) {
+    openDialog({
+      title,
+      body: `<div class="field"><label class="field-label" for="cartNomeL">Nome da lista</label><input id="cartNomeL" type="text" maxlength="${CART_NOME_MAX}" autocomplete="off" placeholder="Farmácia Central"><span class="dlg-note">Até ${CART_NOME_MAX} caracteres. Serve só para você se achar entre as listas.</span></div>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Salvar', kind: 'primary', onClick: () => { const n = cartNome($('#cartNomeL').value); if (!n) return false; onOk(n); } }]
+    });
+    const inp = $('#cartNomeL');
+    inp.value = valor || '';
+    inp.focus();
+    inp.select();
+    inp.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') { ev.preventDefault(); const n = cartNome(inp.value); if (n) { closeDialog(); onOk(n); } } });
+  }
+  function askCartDelete() {
+    const c = curCart();
+    if ((prefs.carts || []).length < 2) { toast('Esta é a única lista. Crie outra antes de apagar.', 'err'); return; }
+    openDialog({
+      title: 'Apagar a lista?',
+      body: `<p class="dlg-sub"><b>${esc(c.nome)}</b> e os ${plural(c.itens.length, 'produto', 'produtos')} dela saem deste aparelho. O histórico de envios não muda.</p>`,
+      actions: [{ label: 'Manter', kind: 'ghost' }, { label: 'Apagar', kind: 'primary', onClick: () => { cartListDelete(c.id); toast('Lista apagada.'); } }]
+    });
+  }
+  // "Ver a mensagem": a mesma mensagem daquele envio, só para leitura
+  function openHistMsg(h) {
+    openDialog({
+      title: 'Mensagem enviada', variant: 'panel',
+      body: `<p class="dlg-sub">${esc(histDate(h.quando))} · ${esc(CANAL[h.canal] || h.canal)}${h.cliente && h.cliente.nome ? ` · ${esc(h.cliente.nome)}` : ''}</p>
+        <p class="hist-msg">${esc(histMessage(h))}</p>
+        <p class="dlg-note">A observação e o telefone do cliente não ficam guardados.</p>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }]
+    });
+  }
 
   /* ----- mensagem e envio ao cliente ----- */
   // Assinatura: nome e WhatsApp do cartão de visita salvo; sem cartão, o nome do perfil e nenhum telefone
@@ -5641,29 +6022,41 @@
     const fone = d.length === 10 || d.length === 11 ? maskPhone(d) : d.length === 12 || d.length === 13 ? fmtPhone(d) : '';
     return `${[nome, empresa].filter(Boolean).join(' · ')}${fone ? `\nWhatsApp: ${fone}` : ''}`;
   }
-  function cartMessage(nome, obs) {
-    const list = cartList(), t = cartTotals(list);
+  // list: itens da lista em uso ou de um envio do histórico (nesses, "nome" guarda o produto que saiu do catálogo).
+  // tot: totais já calculados (o histórico guarda os da hora do envio, para "Ver a mensagem" bater com o que foi mandado).
+  function cartMessage(nome, obs, list, tot) {
+    const itens = list || cartList(), t = tot || cartTotals(itens);
     const head = nome ? `Olá, ${nome}! Segue a seleção de produtos Dellamed:` : 'Olá! Segue a seleção de produtos Dellamed:';
-    const linhas = list.map((x, i) => {
-      const p = prodBySku(x.sku), name = p ? p.name : x.sku;
+    const linhas = itens.map((x, i) => {
+      const p = prodBySku(x.sku), name = p ? p.name : (x.nome || x.sku);
       const code = p ? shownCode(p) : x.sku; // sem código SAP
       const ean = p && p.ficha && p.ficha.ean ? String(p.ficha.ean).replace(/\D/g, '') : '';
-      return [`${i + 1}) ${name}`, code && `cód ${code}`, ean && `EAN ${ean}`, `${fmtN(x.qtd)} un`].filter(Boolean).join(' — ');
+      const fora = p ? '' : ' (produto não está mais no catálogo)';
+      return [`${i + 1}) ${name}${fora}`, code && `cód ${code}`, ean && `EAN ${ean}`, `${fmtN(x.qtd)} un`].filter(Boolean).join(' — ');
     });
-    const tot = `Total: ${cartTotalLine(t)}${t.parcial ? ` (parcial: ${plural(t.falta.length, 'item', 'itens')} sem peso ou volume na ficha)` : ''}`;
+    const linhaTot = t.falta ? cartTotalLine(t) : `${plural(t.itens, 'item', 'itens')} · ${plural(t.caixas, 'caixa master', 'caixas master')} · ${fmtDec(t.peso, 0, 3)} kg · ${fmtCub(t.cubagem || 0)} m³`;
+    const tot2 = `Total: ${linhaTot}${t.parcial ? ` (parcial: ${plural(t.falta.length, 'item', 'itens')} sem peso ou volume na ficha)` : ''}`;
     const sig = cartSignature();
-    return [head, '', linhas.join('\n'), '', tot, ...(obs ? ['', `Obs.: ${obs}`] : []), ...(sig ? ['', sig] : [])].join('\n');
+    return [head, '', linhas.join('\n'), '', tot2, ...(obs ? ['', `Obs.: ${obs}`] : []), ...(sig ? ['', sig] : [])].join('\n');
   }
+  const histMessage = (h) => cartMessage(h.cliente && h.cliente.nome, '', h.itens, h.totais);
   async function cartCopy(msg) {
+    const list = cartList(), t = cartTotals(list);
     const text = msg || cartMessage('', '');
     const ok = await copyText(text, 'Lista copiada.');
-    if (ok) { trackCatalogEvent('cart_send', { channel: 'copy', items_count: cartCount(), units_count: cartTotals(cartList()).itens }); cartClearAsk(true); }
+    if (ok) {
+      trackCatalogEvent('cart_send', { channel: 'copy', items_count: cartCount(), units_count: t.itens });
+      histAdd('copiar', '', list, t);
+      cartClearAsk(true);
+    }
     return ok;
   }
-  // Diálogo "Enviar carrinho": nome e WhatsApp do cliente, observação e a prévia da mensagem (somente leitura)
-  function openCartSend(prefer) {
-    const list = cartList();
+  /* ----- diálogo "Enviar carrinho": nome e WhatsApp do cliente, observação e a prévia (somente leitura) -----
+     de = envio do histórico ("Enviar de novo"): a mensagem é a mesma daquele envio e a lista em uso não é mexida. */
+  function openCartSend(prefer, de) {
+    const list = de ? de.itens.slice() : cartList();
     if (!list.length) return;
+    const totFix = de ? de.totais : null;
     openDialog({
       title: 'Enviar carrinho', variant: 'panel',
       body: `<p class="dlg-sub">A mensagem já vai pronta, com a lista e os totais. Todos os campos são opcionais.</p>
@@ -5682,9 +6075,10 @@
     });
     const nome = $('#cartNome'), wa = $('#cartWa'), obs = $('#cartObs'), prev = $('#cartPrev');
     const waBtn = $('#cartWaBtn'), warn = $('#cartWarn'), warnT = $('#cartWarnT');
+    if (de && de.cliente && de.cliente.nome) nome.value = de.cliente.nome; // "Enviar de novo": mesmo cliente
     let msg = '';
     const upd = () => {
-      msg = cartMessage(nome.value.trim(), obs.value.trim());
+      msg = cartMessage(nome.value.trim(), obs.value.trim(), list, totFix);
       prev.value = msg;
       $('#cartObsN').textContent = `${fmtN(300 - obs.value.length)} caracteres restantes`;
       const big = msg.length > CART_MSG_MAX;
@@ -5698,32 +6092,35 @@
     nome.addEventListener('input', upd);
     obs.addEventListener('input', upd);
     wa.addEventListener('input', () => { remaskPhone(wa); upd(); });
-    const sent = (channel) => trackCatalogEvent('cart_send', { channel, items_count: cartCount(), units_count: cartTotals(cartList()).itens });
+    // Cada envio ou cópia que dá certo entra no histórico (sem o telefone e sem a observação)
+    const sent = (channel, canal) => {
+      trackCatalogEvent('cart_send', { channel, items_count: list.length, units_count: (totFix || cartTotals(list)).itens });
+      histAdd(canal, nome.value.trim(), list, totFix, de ? de.lista : ''); // reenvio: guarda a lista de origem daquele envio
+    };
+    // "Enviar de novo" não mexe na lista em uso: nada de perguntar se esvazia
+    const depois = () => { closeDialog(); if (!de) cartClearAsk(true); };
     waBtn.addEventListener('click', async () => {
-      if (msg.length > CART_MSG_MAX) { if (await copyText(msg, 'Lista copiada.')) { sent('copy'); closeDialog(); cartClearAsk(true); } return; }
+      if (msg.length > CART_MSG_MAX) { if (await copyText(msg, 'Lista copiada.')) { sent('copy', 'copiar'); depois(); } return; }
       const d = onlyDigits(wa.value);
       const to = d.length === 10 || d.length === 11 ? '55' + d : ''; // sem telefone: o WhatsApp pergunta o contato
       window.open(waUrl(to, msg), '_blank', 'noopener');
-      sent('whatsapp');
-      closeDialog();
-      cartClearAsk(true);
+      sent('whatsapp', 'whatsapp');
+      depois();
     });
     $('#cartMailBtn').addEventListener('click', () => {
       location.href = mailtoUrl('', 'Seleção de produtos Dellamed', msg);
-      sent('email');
-      closeDialog();
-      cartClearAsk(true);
+      sent('email', 'email');
+      depois();
     });
     $('#cartCopyBtn').addEventListener('click', async () => {
       if (!await copyText(msg, 'Lista copiada.')) return;
-      sent('copy');
-      closeDialog();
-      cartClearAsk(true);
+      sent('copy', 'copiar');
+      depois();
     });
     (prefer === 'email' ? $('#cartMailBtn') : nome).focus();
   }
 
-  // Produto pedido (endereço, busca, interesses): página com o "+" dele no catálogo (a pedida, se tiver). page 0 = sem "+" aqui.
+  // Produto pedido (endereço, busca): página com o "+" dele no catálogo (a pedida, se tiver). page 0 = sem "+" aqui.
   function productTarget(cid, page, sku) {
     const p = prodBySku(sku);
     if (!p) return null;
@@ -5788,7 +6185,7 @@
     fallback: false, // modo simples porque o folheador não carregou
     pages: [], imgs: [], orientation: 'landscape', bookW: 0, cur: 0, z: 1, tx: 0, ty: 0, shift: 0,
     viewT: null, hashT: null, loaderT: null, statusT: null, lastView: '', pendingProg: null,
-    hl: null // produto em destaque (endereço/busca/interesses): { sku, idx, seen, pulsed }
+    hl: null // produto em destaque (endereço/busca): { sku, idx, seen, pulsed }
   };
   let soundOn = false, audioCtx = null;
 
@@ -6123,13 +6520,15 @@
     const p = prodBySku(h.product);
     // Produto com ficha técnica: etiqueta "Ficha" no canto da área (abre o balão ali mesmo)
     const tag = fichaRows(p).length ? `<button type="button" class="hs-ficha" data-page="${h.page}" data-i="${i}" aria-haspopup="dialog" aria-expanded="false" aria-label="Ficha técnica: ${esc(p.name)}">Ficha</button>` : '';
-    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-label="Ver produto: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Ver produto</span></button>${tag}</div>`;
+    // Um toque no "+" soma o produto ao carrinho; o toque seguinte abre o seletor − N + no mesmo lugar (a ficha fica na etiqueta)
+    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-hs-cart data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-pressed="false" aria-label="Adicionar ao carrinho: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-n" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Adicionar</span></button><span class="hs-qty"></span>${tag}</div>`;
   }
-  // Produtos ligados à página sem área (pageLinks): uma faixa no pé da página que abre a lista no "Nesta página"
+  // Produtos ligados à página sem área (pageLinks): faixa no pé da página que abre a lista no "Nesta página"
+  // e, ao lado, soma ao carrinho todos os produtos daquela página
   function linksStripHTML(page, list) {
     if (!list.length) return '';
     const n = plural(list.length, 'produto', 'produtos');
-    return `<button type="button" class="pg-links" data-links-page="${page}" aria-label="${esc(n)} nesta página: ${esc(list.map((p) => p.name).join(', '))}. Abrir a lista" title="Ver os produtos desta página">${I.tag}<span>${esc(n)} nesta página</span></button>`;
+    return `<div class="pg-links"><button type="button" class="pg-l-open" data-links-page="${page}" aria-label="${esc(n)} nesta página: ${esc(list.map((p) => p.name).join(', '))}. Abrir a lista" title="Ver os produtos desta página">${I.tag}<span>${esc(n)} nesta página</span></button><button type="button" class="pg-l-add" data-links-add="${page}" aria-label="Adicionar todos os produtos desta página ao carrinho" title="Adicionar todos desta página ao carrinho">${I.cart}</button></div>`;
   }
   // Modo simples: a imagem usa object-fit: contain; a camada cobre só a área real da página
   function fitSimpleLayer(layer) {
@@ -6142,6 +6541,7 @@
   // Chamado pelo syncUI (folhear, orientação, redimensionar): cria a camada nas páginas visíveis e remove das outras
   function renderHotspots() {
     if (!R.cat || !R.book) return;
+    closeHsQty(false); // trocou de página ou de tamanho: o seletor na página sai
     const cid = R.cat.id, vis = R.simple ? [R.cur] : spreadOf(curIndex());
     R.pages.forEach((host, i) => {
       const idx = R.simple ? R.cur : i;
@@ -6154,6 +6554,7 @@
       if (layer.dataset.key !== key) { layer.dataset.key = key; layer.innerHTML = list.map(hotspotHTML).join('') + linksStripHTML(idx + 1, links); }
       if (R.simple) fitSimpleLayer(layer);
     });
+    paintHotspotCart(); // cada "+" já sai com a quantidade e o nome acessível certos
     showHighlight();
   }
   // Destaque do produto pedido: pulso e contorno por ~2,5 s quando a página aparece (sem pulso com movimento reduzido)
@@ -6162,7 +6563,7 @@
     if (!hl || hl.pulsed || !R.cat || !rLoader.hidden || (R.pf && R.pfState !== 'read')) return;
     if (!pulseProduct(hl.idx, hl.sku)) return;
     hl.pulsed = true;
-    toast(coarse ? 'Toque no + para ver o produto' : 'Clique no + para ver o produto');
+    toast(coarse ? 'Toque no + para adicionar ao carrinho' : 'Clique no + para adicionar ao carrinho');
   }
   // Pulso e contorno nos "+" de um produto na página idx (destaque do endereço e itens do painel "Nesta página")
   function pulseProduct(idx, sku) {
@@ -6174,13 +6575,6 @@
     areas.forEach((a) => { a.classList.remove('pulse'); void a.offsetWidth; a.classList.add('pulse'); }); // reinicia a animação
     setTimeout(() => areas.forEach((a) => a.classList.remove('pulse')), 2600);
     return true;
-  }
-  function openHotspot(b) {
-    if (!R.cat) return;
-    const page = +b.dataset.page, h = hotspotsOn(R.cat.id, page)[+b.dataset.i], p = h && prodBySku(h.product);
-    if (!p) return;
-    trackCatalogEvent('catalog_product_click', { ...prodParams(p, R.cat, page), action: 'hotspot' });
-    openProductCard(p, { catalogId: R.cat.id, page, spot: h });
   }
   /* ----- balão da ficha na página (etiqueta "Ficha"): campos principais, selos, copiar e "Ver ficha completa" ----- */
   const FP_KEYS = ['ean', 'med', 'peso', 'cxUn', 'cubagem', 'ncm']; // ANVISA e INMETRO aparecem como selos acima
@@ -6671,7 +7065,7 @@
     clearTimeout(clickT); clickT = null;
     clearTimeout(CP.tipT); $('#cpTip').hidden = true;
     $('#rStatus').textContent = on ? 'Modo Copiar ligado. A página só vira pelos botões anterior e próxima e pelas setas do teclado.' : 'Modo Copiar desligado.';
-    if (on) { closeFichaPop(false); cpPrepare(); }
+    if (on) { closeFichaPop(false); closeHsQty(false); cpPrepare(); } // com o Modo Copiar ligado, os botões do carrinho da página somem
     else { CP.st = ''; cpMsg(''); $$('.cp-layer', holder).forEach((l) => l.remove()); }
     syncAppBars(); // convite para instalar o app: nunca no Modo Copiar
   }
@@ -6799,7 +7193,7 @@
     const p = ensureSearch([c.id]);
     if (p) p.then(() => { if (R.cat === c) fillPageTexts(); });
     fillPageTexts();
-    updateInterestUI();
+    paintCartButtons(); // "+" das páginas já com a quantidade de cada produto
     trackCatalogEvent('catalog_open', { page_number: R.cur + 1, product_sku: t ? t.p.sku : undefined });
     if (t && !t.page) openProductCard(t.p, { catalogId: id, page: R.cur + 1 }); // produto sem "+" neste catálogo
   }
@@ -6809,6 +7203,7 @@
     pageTimer.end('close');
     saveProgressNow();
     closeFichaPop(false);
+    closeHsQty(false); // seletor de quantidade aberto sobre a página
     setCopy(false); // fechar o leitor desliga o Modo Copiar
     sheet.close(false);
     resetPanel();
@@ -6860,6 +7255,7 @@
   }
   rPanelBtn.addEventListener('click', togglePanel);
   $('#rPanelClose').addEventListener('click', togglePanel);
+  $('#rpAddAll').addEventListener('click', (e) => { e.stopPropagation(); cartAddMany($('#rpAddAll')._itens || NP.prod || []); });
   onMq(deskMq, () => {
     if (deskMq.matches && sheet.isOpen()) sheet.close(false);
     applyPanelDock();
@@ -6894,6 +7290,12 @@
     const badge = $('#rPanelN');
     badge.textContent = fmtN(items.length);
     badge.hidden = !items.length;
+    // "Adicionar todos desta página" no cabeçalho do painel
+    const addAll = $('#rpAddAll');
+    addAll.hidden = !items.length;
+    addAll.innerHTML = `${I.cart}Adicionar todos`;
+    addAll.setAttribute('aria-label', `Adicionar ao carrinho os ${plural(items.length, 'produto', 'produtos')} destas páginas`);
+    addAll._itens = items;
     if (!panelShown()) return;
     const key = cid + ':' + idxs.join(',');
     $('#rPanelPages').textContent = idxs.length === 2 ? `· páginas ${idxs[0] + 1}–${idxs[1] + 1}` : `· página ${idxs[0] + 1}`;
@@ -6918,16 +7320,16 @@
     const box = $('#rpProd'), gen = NP.gen;
     if (!items.length) { box.innerHTML = '<p class="np-empty">Nenhum produto marcado nestas páginas.</p>'; return; }
     box.innerHTML = `<ul class="np-list">${items.map((x, i) => `<li class="np-item" data-np="${i}">
-        <button type="button" class="np-hit"><span class="np-img loading" aria-hidden="true"></span><span class="np-txt"><b>${esc(x.p.name)}</b>${shownCode(x.p) ? `<span>Código ${esc(shownCode(x.p))}</span>` : ''}${x.p.capacity ? `<span>${esc(x.p.capacity)}</span>` : ''}<span class="sr-only">· mostrar na página ${x.page}</span></span></button>
+        <button type="button" class="np-hit"><span class="np-img loading" aria-hidden="true"></span><span class="np-txt"><b>${esc(x.p.name)}</b>${shownCode(x.p) ? `<span>Código ${esc(shownCode(x.p))}</span>` : ''}${x.p.capacity ? `<span>${esc(x.p.capacity)}</span>` : ''}<span class="sr-only">· abrir o cartão do produto</span></span></button>
         <div class="np-acts">
-          <button type="button" class="btn sm cart-btn" data-cart-tog="${esc(x.p.sku)}" data-cart-cat="${esc(cid)}" data-cart-pg="${x.page}" aria-pressed="false">${I.cart}<span class="cart-n">+</span></button>
+          ${cartCtrlHTML(x.p, cid, x.page)}
           <button type="button" class="btn sm" data-np-act="copy" aria-label="Copiar dados de ${esc(x.p.name)}">${I.copy}Copiar</button>
-          <button type="button" class="btn sm" data-np-act="int" aria-pressed="${isInterest(x.p.sku)}" aria-label="Interesse: ${esc(x.p.name)}">${I.heart}Interesse</button>
-          <button type="button" class="btn sm" data-np-act="view" aria-label="Ver ficha de ${esc(x.p.name)}">Ver</button>
+          ${x.h ? `<button type="button" class="btn sm" data-np-act="loc" aria-label="Mostrar ${esc(x.p.name)} na página">Na página</button>` : ''}
+          <button type="button" class="btn sm" data-np-act="view" aria-label="Ver detalhes de ${esc(x.p.name)}">Ver detalhes</button>
         </div>
         ${fichaHTML(x.p)}
       </li>`).join('')}</ul>`;
-    paintCartButtons(); // "+" do carrinho já com a quantidade de cada produto
+    paintCartButtons(); // "+" e seletores do carrinho já com a quantidade de cada produto
     // Um recorte por vez (mesma lógica da ficha do produto), descartado se o painel mudou enquanto carregava
     (async () => {
       for (let i = 0; i < items.length; i++) {
@@ -6941,9 +7343,6 @@
         slot.innerHTML = u ? `<img src="${esc(u)}" alt="">` : I.tag;
       }
     })();
-  }
-  function paintPanelInterests() {
-    $$('#rpProd [data-np-act="int"]').forEach((b) => { const it = NP.prod[+b.closest('[data-np]').dataset.np]; if (it) b.setAttribute('aria-pressed', String(isInterest(it.p.sku))); });
   }
   // Bloco pronto para colar: nome, código, categoria, capacidade, benefício e link (página do produto ou endereço no catálogo)
   function productBlock(it) {
@@ -6968,7 +7367,7 @@
   function renderPanelFoot(items) {
     const com = commercialInfo();
     NP.footItems = items;
-    $('#rpFoot').innerHTML = `${items.length && (com.wa || com.mail) ? `<button type="button" class="btn primary block" data-np-talk>${com.wa ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}<button type="button" class="btn ghost block" data-np-int-list>Produtos de interesse (<span data-int-count>${fmtN(prefs.interests.length)}</span>)</button>`;
+    $('#rpFoot').innerHTML = `${items.length && (com.wa || com.mail) ? `<button type="button" class="btn primary block" data-np-talk>${com.wa ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}<button type="button" class="btn ghost block" data-np-cart>${I.cart} Ver o carrinho (<span data-cart-count>${fmtN(cartCount())}</span>)</button>`;
   }
   rPanel.addEventListener('click', (e) => {
     if (!R.cat) return;
@@ -6979,16 +7378,15 @@
     if (li) {
       const it = NP.prod[+li.dataset.np]; if (!it) return;
       const act = t.closest('[data-np-act]');
-      if (!act) { // o item destaca o "+" do produto na página
+      const abrir = () => { trackCatalogEvent('catalog_product_click', { ...prodParams(it.p, R.cat, it.page), action: 'painel' }); openProductCard(it.p, { catalogId: R.cat.id, page: it.page, spot: it.h }); };
+      if (!act) { abrir(); return; } // o nome do produto abre o cartão completo
+      const a = act.dataset.npAct;
+      if (a === 'copy') { copyText(productBlock(it), 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'produto', product_sku: it.p.sku, page_number: it.page }); }
+      else if (a === 'loc') { // destaca o "+" do produto na própria página
         $$('.np-item.on', rPanel).forEach((x) => x.classList.remove('on'));
         li.classList.add('on');
         pulseProduct(it.page - 1, it.p.sku);
-        return;
-      }
-      const a = act.dataset.npAct;
-      if (a === 'copy') { copyText(productBlock(it), 'Copiado.'); trackCatalogEvent('catalog_copy', { kind: 'produto', product_sku: it.p.sku, page_number: it.page }); }
-      else if (a === 'int') setInterest(it.p, !isInterest(it.p.sku), { catalogId: R.cat.id, page: it.page });
-      else { trackCatalogEvent('catalog_product_click', { ...prodParams(it.p, R.cat, it.page), action: 'painel' }); openProductCard(it.p, { catalogId: R.cat.id, page: it.page, spot: it.h }); }
+      } else abrir();
       return;
     }
     if (t.closest('[data-np-talk]')) {
@@ -6997,7 +7395,7 @@
       sendQuote(list, com.wa ? 'whatsapp' : 'email', 'pagina');
       return;
     }
-    if (t.closest('[data-np-int-list]')) openInterests();
+    if (t.closest('[data-np-cart]')) navigate('#/carrinho');
   });
   function rerenderCurrent() {
     if (R.cat) {
@@ -7047,7 +7445,7 @@
 
   const G = { pts: new Map(), pinch: null, drag: null, lastTap: null, lastType: '', pinchEnd: 0 };
   let clickT = null, downAt = null;
-  const gestureTarget = (e) => !!(R.cat && e.target && e.target.closest && !e.target.closest('button, a, input, .thumbs, .results, .r-banner, .product-hotspot'));
+  const gestureTarget = (e) => !!(R.cat && e.target && e.target.closest && !e.target.closest('button, a, input, .thumbs, .results, .r-banner, .product-hotspot, .hs-qty, .pg-links'));
   stage.addEventListener('pointerdown', (e) => {
     G.lastType = e.pointerType;
     if (!gestureTarget(e)) return;
@@ -7151,11 +7549,13 @@
   pan.addEventListener('pointerup', (e) => {
     const d = pan._down; pan._down = null;
     if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 8) return;
-    const hs = document.elementsFromPoint(e.clientX, e.clientY).find((el) => el.classList && (el.classList.contains('product-hotspot') || el.classList.contains('hs-ficha') || el.classList.contains('pg-links')));
+    const alvos = ['product-hotspot', 'hs-ficha', 'pg-l-open', 'pg-l-add'];
+    const hs = document.elementsFromPoint(e.clientX, e.clientY).find((el) => el.classList && alvos.some((k) => el.classList.contains(k)));
     if (!hs) return;
     if (hs.classList.contains('hs-ficha')) openFichaPop(hs);
-    else if (hs.classList.contains('pg-links')) openLinksList();
-    else openHotspot(hs);
+    else if (hs.classList.contains('pg-l-open')) openLinksList();
+    else if (hs.classList.contains('pg-l-add')) cartAddPage(hs.dataset.linksAdd);
+    else hsCartClick(hs);
   });
   // Pinça no touchpad (Ctrl + roda)
   stage.addEventListener('wheel', (e) => {
@@ -7169,16 +7569,21 @@
   }, { passive: false });
   // Botão "Tentar de novo" e "+" do produto dentro da página: o folheador não deve tratar esse toque (nem arrastar a folha)
   ['mousedown', 'touchstart', 'pointerdown'].forEach((t) => holder.addEventListener(t, (e) => {
-    if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot, .hs-ficha, .pg-links')) e.stopPropagation();
+    if (e.target.closest && e.target.closest('[data-retry-page], .product-hotspot, .hs-qty, .hs-ficha, .pg-links')) e.stopPropagation();
   }, { capture: true, passive: true }));
+  // Ponteiro por perto do seletor − N + na página: ele fica mais tempo na tela
+  holder.addEventListener('pointermove', (e) => { if (HSQ.area && e.target.closest && e.target.closest('.hs-qty')) hsQtyHold(); }, { passive: true });
   holder.addEventListener('click', (e) => {
     const tb = e.target.closest('.cp-tbl'); // Modo Copiar: "Copiar tabela"
     if (tb) { e.stopPropagation(); copyTable(tb); return; }
+    if (hsQtyClick(e.target)) { e.stopPropagation(); return; } // seletor de quantidade na própria página
     const hs = e.target.closest('.product-hotspot');
-    if (hs) { e.stopPropagation(); openHotspot(hs); return; }
+    if (hs) { e.stopPropagation(); hsCartClick(hs); return; }
     const tg = e.target.closest('.hs-ficha'); // etiqueta "Ficha": balão ancorado na página
     if (tg) { e.stopPropagation(); openFichaPop(tg); return; }
-    if (e.target.closest('.pg-links')) { e.stopPropagation(); openLinksList(); return; }
+    const la = e.target.closest('[data-links-add]'); // "Adicionar todos desta página" na faixa
+    if (la) { e.stopPropagation(); cartAddPage(la.dataset.linksAdd); return; }
+    if (e.target.closest('.pg-l-open')) { e.stopPropagation(); openLinksList(); return; }
     const b = e.target.closest('[data-retry-page]');
     if (!b) return;
     e.stopPropagation();
@@ -7629,7 +8034,7 @@
     if (view !== 'card' || !cardEditDirty()) return false;
     lastRoute = CARD_EDIT_HASH;
     if (location.hash !== CARD_EDIT_HASH) { try { history.replaceState(null, '', CARD_EDIT_HASH); } catch (e) { /* noop */ } }
-    openDialog({ // com outro diálogo aberto (ex.: produtos de interesse), este toma o lugar dele
+    openDialog({ // com outro diálogo aberto (ex.: ficha do produto), este toma o lugar dele
       title: 'Salvar as alterações do cartão?',
       body: '<p class="dlg-sub">Você alterou o cartão e ainda não concluiu. Salve para manter as alterações ou descarte para voltar ao cartão anterior.</p>',
       actions: [
