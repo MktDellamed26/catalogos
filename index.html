@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-LpDqFjAGeWrummkouWH4XUYqdfTgM/xbx+adFJEy+Po=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-augNajEaRk0dZG2m/FuoC/EL9f/jayWMfgJhyL8EVYw=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2070,6 +2070,21 @@
     #viewShelf .cats .sort select { background: var(--white); color: var(--navy); } /* no celular o "Ordenar" é uma pílula branca */
     #viewShelf .closing { padding-top: 48px; }
   }
+  /* Giro 360° da capa do destaque (frente: capa; verso: azul-marinho com a marca) */
+  .hero .cover { perspective: 1100px; }
+  .hero .cover-open { position: relative; transform-style: preserve-3d; }
+  .hero .cover-open img { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .hero .cover-open::after { content: ""; position: absolute; inset: 0; border-radius: 4px; transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; pointer-events: none;
+    background: var(--white); -webkit-mask: var(--logo) center / 56% auto no-repeat; mask: var(--logo) center / 56% auto no-repeat; }
+  .hero .cover-open::before { content: ""; position: absolute; inset: 0; border-radius: 4px; transform: rotateY(180deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 30%, var(--ds-navy-2), var(--ds-navy-3) 70%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), 0 30px 60px -24px rgba(0, 0, 0, .7); }
+  .hero .cover-open.spin { animation: ds-spin 1.6s cubic-bezier(.45, .05, .25, 1) both; }
+  @keyframes ds-spin { 0% { transform: rotateY(0) scale(1); } 50% { transform: rotateY(180deg) scale(1.04); } 100% { transform: rotateY(360deg) scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .hero .cover-open.spin { animation: none; } }
+  /* Foto no perfil do menu e no botão da conta */
+  .avatar { overflow: hidden; }
+  .nav-thumb[hidden] { display: none; }
+  .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -2258,7 +2273,7 @@
       <button class="nav-i" type="button" data-nav="favoritos"><span class="ico" data-ico="star"></span><span class="nav-t">Favoritos</span><span class="nav-c" id="navFavN"></span></button>
       <button class="nav-i" type="button" data-nav="carrinho" data-cart-btn="Carrinho"><span class="ico" data-ico="cart"></span><span class="nav-t">Carrinho</span><span class="int-n" data-cart-count data-hide0 hidden>0</span></button>
       <div class="nav-row" data-card-entry hidden>
-        <button class="nav-i" type="button" data-nav="cartao"><span class="nav-thumb" id="navCardAv" aria-hidden="true"></span><span class="nav-t">Meu cartão</span></button>
+        <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard" aria-hidden="true"></span><span class="nav-thumb" id="navCardAv" aria-hidden="true" hidden></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
       </div>
       <!-- Instalar app (computador e tablet): só quando o navegador aceita instalar e o app ainda não está instalado -->
@@ -4827,7 +4842,7 @@
     prefs.logins = Math.min(99, (prefs.logins || 0) + 1); // convite para instalar o app: só a partir da segunda entrada
     savePrefs();
     setSound(typeof prefs.sound === 'boolean' ? prefs.sound : !coarse, false);
-    $$('[data-avatar]').forEach((a) => { a.textContent = initials(me.name); });
+    $$('[data-avatar]').forEach((a) => { delete a.dataset.v; a.textContent = initials(me.name); });
     $('#uName').textContent = me.name;
     $('#uRole').textContent = ROLE[me.role] || '';
     $('#avatarBtn').setAttribute('aria-label', `Conta: ${me.name}`);
@@ -5248,7 +5263,19 @@
       </div>
       <div class="hero-art"><div class="cover a"><div class="cover-open" data-open="${esc(c.id)}"><img data-cover="${esc(c.id)}" style="--r:${Number(c.ratio) || 0.707}" alt=""></div></div></div>`);
     hydrate(box);
+    // A capa dá uma volta (360°) quando o destaque aparece pela primeira vez nesta sessão (ou muda de catálogo)
+    if (heroSpun !== c.id) { heroSpun = c.id; setTimeout(() => spinHero(), 700); }
   }
+  /* Giro da capa do destaque: frente = capa do catálogo, verso = azul-marinho com a marca. Uma volta ao aparecer e outra ao
+     passar o mouse; nada com "reduzir movimento" ligado. Só uma volta por vez (a classe sai no fim da animação). */
+  let heroSpun = '';
+  function spinHero() {
+    const co = $('#hero .cover-open');
+    if (!co || reduceMotion || co.classList.contains('spin')) return;
+    co.classList.add('spin');
+    co.addEventListener('animationend', () => co.classList.remove('spin'), { once: true });
+  }
+  $('#hero').addEventListener('mouseenter', (e) => { if (e.target.closest && e.target.closest('.hero-art')) spinHero(); }, true);
   function renderContinue() {
     const box = $('#continue');
     const entries = Object.entries(prefs.progress || {})
@@ -9466,6 +9493,8 @@
     $('#cardStripName').textContent = nome;
     paintCardMini($('#cardStripAv'), nome, CARD.photoUrl);
     paintCardMini($('#navCardAv'), nome, CARD.photoUrl);
+    // A foto do cartão é a foto da pessoa: aparece no perfil do rodapé do menu e no botão da conta (iniciais sem foto)
+    if (me) $$('[data-avatar]').forEach((a) => paintCardMini(a, me.name, CARD.photoUrl));
   }
   function paintCardActions(d) {
     $('#cardCopyWa').disabled = !d.waLink;
