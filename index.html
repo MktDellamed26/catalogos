@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+J3kXJjIzGtOGvE7bloNNOJGMlGc8kylrubcYJKJTMM=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-nQcPguwV8gDunaQztaJxZlcOM+7k/iOVBSzv40sEXAU=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -4461,8 +4461,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=d94c2e77';
-      s.integrity = 'sha384-onzGfNCJK5+8oHZag/7lE67nkDKIp7Dp9UM0/i+Z2G70ik2Shkl7urObdfbWJHbF';
+      s.src = 'painel.js?v=2b6beecb';
+      s.integrity = 'sha384-2Z0wb5tUhZRebGhUhF2RDPxMtMH96Z/+xrGODy2RFck9ujOG37twp+cPn2Q5OiYL';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));

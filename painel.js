@@ -4202,7 +4202,7 @@
       const tc = term.replace(/ /g, ''), f = line.fold, cs = [], cp = [];
       for (let i = 0; i < f.s.length; i++) if (f.s[i] !== ' ') { cs.push(f.s[i]); cp.push(i); }
       const s = cs.join('');
-      let at = tc.length >= 5 ? s.indexOf(tc) : -1;
+      let at = tc.length >= 5 || (tc.length >= 4 && /\d/.test(tc)) ? s.indexOf(tc) : -1;
       while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
         const nx = s[at + tc.length] || '';
         if (!(/\d$/.test(tc) && /\d/.test(nx))) { // D100 não vale dentro de D1000
@@ -4275,6 +4275,62 @@
     return { s, idx };
   }
   const foldTerm = (t) => foldMap(String(t || '')).s.trim();
+  /* ---------- nome parecido: o nome da base raramente é igual ao impresso ("CAD RODAS D100 LIGHT 44CM" × "Cadeira de Rodas D100 Light").
+     Palavras do nome (sem "de", "com"…, abreviação vale pelo começo: "cad" → cadeira) procuradas perto umas das outras na página.
+     Modelo com número (D100) tem de aparecer inteiro (D100 ≠ D1000). Vale com 70% das palavras; entre produtos parecidos
+     na mesma página, fica o mais completo (D100 Light na página da D100 Light; D100 na da D100). ---------- */
+  const NAME_STOP = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'com', 'para', 'p', 'c', 's', 'em', 'a', 'o', 'un', 'und', 'unid', 'pc', 'pct', 'kit']);
+  const MEASURE = /^\d+([.,]\d+)?(cm|mm|m|kg|g|ml|l|w|v|un|pcs?)$/;
+  function nameToks(nm) {
+    const all = [...new Set(nm.split(' ').filter((w) => w && !NAME_STOP.has(w) && !MEASURE.test(w) && (w.length >= 2 || /\d/.test(w))))];
+    return { model: all.filter((w) => /\d/.test(w) && /[a-z]/.test(w) || /^\d{3,}$/.test(w)), all };
+  }
+  const tokHit = (t, w) => w === t || (t.length >= 3 && w.startsWith(t) && !/\d/.test(t)) || (t.length >= 5 && w.length >= 5 && (t.startsWith(w) || w.replace(/s$/, '') === t.replace(/s$/, '')));
+  function fuzzyNames(s, idx, terms, found) {
+    const W = [], at = [];
+    for (let i = 1; i < s.length; i++) if (s[i - 1] === ' ' && s[i] !== ' ') { const j = s.indexOf(' ', i); W.push(s.slice(i, j)); at.push(i); }
+    if (!W.length) return [];
+    const modelAt = (m) => { const out = []; for (let i = 0; i < W.length; i++) if (W[i] === m || (i + 1 < W.length && W[i] + W[i + 1] === m)) out.push(i); return out; };
+    const cands = [];
+    for (const t of terms.names) {
+      const tk = t.tok; if (!tk || tk.all.length < 2) continue;
+      let anchors;
+      if (tk.model.length) { anchors = modelAt(tk.model[0]); if (!anchors.length) continue; }
+      else { const rare = [...tk.all].filter((w) => w.length >= 4).sort((a, b) => b.length - a.length)[0]; if (!rare) continue; anchors = []; W.forEach((w, i) => { if (tokHit(rare, w)) anchors.push(i); }); }
+      let best = null;
+      for (const a of anchors.slice(0, 12)) {
+        const lo = Math.max(0, a - 12), hi = Math.min(W.length, a + 13), win = W.slice(lo, hi), got = new Set(), pw = new Set();
+        for (const tw of tk.all) {
+          const k = win.findIndex((w, k2) => tokHit(tw, w) || (/\d/.test(tw) && w + (win[k2 + 1] || '') === tw));
+          if (k >= 0) { got.add(tw); pw.add(/\d/.test(tw) ? tw : win[k].replace(/s$/, '')); } // palavra da PÁGINA que bateu (para comparar produtos parecidos)
+        }
+        if (!tk.model.every((m) => got.has(m))) continue;
+        const cov = got.size / tk.all.length;
+        if (got.size >= 2 && cov >= 0.7 && (!best || cov > best.cov)) best = { cov, got, pw, a };
+      }
+      // Título com letras espaçadas ("T I P O I A V E L P E A U"): as palavras de 4+ letras no texto sem espaços, perto umas das outras
+      if (!best && !tk.model.length) {
+        const ws = tk.all.filter((w) => w.length >= 4);
+        if (ws.length >= 2) {
+          let cs = '', cmap = [];
+          for (let i = 0; i < s.length; i++) if (s[i] !== ' ') { cs += s[i]; cmap.push(i); }
+          const first = cs.indexOf(ws[0]);
+          if (first >= 0) {
+            const zone = cs.slice(Math.max(0, first - 60), first + 160), got = new Set(ws.filter((w) => zone.includes(w)));
+            if (got.size / ws.length >= 0.7) { const wi = W.findIndex((_, k) => at[k] >= cmap[first]); best = { cov: got.size / ws.length, got, pw: new Set([...got]), a: Math.max(0, wi - 1) }; }
+          }
+        }
+      }
+      if (best) cands.push({ t, ...best });
+    }
+    // Entre parecidos na mesma página fica o mais completo; produtos já achados (código ou nome exato) também contam na comparação
+    const keep = cands.filter((x) => !cands.some((y) => y !== x && y.t.sku !== x.t.sku && [...x.pw].every((w) => y.pw.has(w)) && (y.pw.size > x.pw.size || y.cov > x.cov)));
+    return keep.filter((x) => !found.has(x.t.sku)).map((x) => {
+      const term = x.t.tok.model[0] || [...x.got].sort((a, b) => b.length - a.length)[0];
+      const i = at[x.a];
+      return { sku: x.t.sku, conf: 'media', why: `nome parecido (${x.got.size} de ${x.t.tok.all.length} palavras)`, t: term, ean: false, a: idx[i], b: idx[i + W[x.a].length - 1] + 1 };
+    });
+  }
   // Termos de cada produto: código SAP e EAN (confiança alta) e o nome completo com 6+ letras (confiança média)
   function scanTerms(prods) {
     const codes = [], names = [];
@@ -4289,7 +4345,7 @@
       const sk = foldTerm(p.sku);
       if (sk && sk !== sap && /\d/.test(sk) && sk.replace(/ /g, '').length >= 5) codes.push({ sku: p.sku, t: sk, why: `SKU ${p.sku}` });
       const nm = foldTerm(p.name);
-      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, c: nm.replace(/ /g, ''), why: 'nome completo' });
+      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, c: nm.replace(/ /g, ''), why: 'nome completo', tok: nameToks(nm) });
     }
     // Final do código: o catálogo às vezes imprime só o fim do SAP ("05588" de "0001005588"). Só vale quando um produto só termina assim.
     const tails = new Map();
@@ -4363,6 +4419,8 @@
       const f0 = cpos[free], f1 = cpos[free + o.t.c.length - 1];
       found.set(o.t.sku, { sku: o.t.sku, conf: 'media', why: 'nome completo', t: o.t.t, ean: false, a: idx[f0], b: idx[f1] + 1 });
     }
+    // Nome parecido (abreviado, com palavras a mais ou a menos): só para quem ainda não foi achado nesta página
+    for (const m of fuzzyNames(s, idx, terms, found)) found.set(m.sku, m);
     return [...found.values()];
   }
   async function runScan() {
@@ -4440,7 +4498,7 @@
   function scanCardHtml() {
     return `<section class="card stack imp-card" id="pn-scanCard" aria-labelledby="pn-scanH">
       <div class="imp-head"><h2 id="pn-scanH">Marcação automática</h2><button class="btn ghost sm" type="button" id="pn-scanBtn">Encontrar produtos nas páginas</button></div>
-      <p class="muted">Procura o código SAP, o EAN e o nome completo de cada produto no texto das páginas dos catálogos e sugere em quais páginas cada um aparece.</p>
+      <p class="muted">Procura o código SAP, o EAN e o nome de cada produto (mesmo abreviado ou com palavras a mais, como “CAD RODAS D100 LIGHT 44CM”) no texto das páginas dos catálogos e sugere em quais páginas cada um aparece.</p>
       <p class="muted">Nos catálogos preparados para copiar, a marca sobre o produto sai pronta: o site desenha o “+” em cima do texto encontrado. Nos outros, o produto só fica ligado à página (o site mostra “N produtos nesta página”) — para ganhar a marca, use “Preparar para copiar” na linha do catálogo, em Catálogos, e rode a procura de novo. Toda área proposta pode ser movida ou refeita no editor abaixo antes de publicar.</p>
       <div id="pn-scanBox"></div>
     </section>`;
