@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-UR6/jCNxfFhMMIkPnySgNBYq28AdeiPMdHiOtkXAKlw=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+J3kXJjIzGtOGvE7bloNNOJGMlGc8kylrubcYJKJTMM=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -781,6 +781,7 @@
     .product-hotspot:hover .hs-txt { max-width: 110px; margin-left: 6px; opacity: 1; }
   }
   .hs-area.pulse .product-hotspot { animation: hs-pulse 1.25s ease-out 2; }
+  .hs-area.hs-small .hs-ficha { top: 50%; right: auto; left: calc(50% + 20px); transform: translateY(-50%); white-space: nowrap; }
   @keyframes hs-pulse {
     from { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 2px rgba(139, 184, 232, .95); }
     to { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 0 18px rgba(139, 184, 232, 0); }
@@ -4460,8 +4461,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=3a8e0df0';
-      s.integrity = 'sha384-m4dimGr12UW+W2/mFle7ZKkkxYb3VyM/reLFdB1jurjAhChYgBLCa7qQzIKPJk9p';
+      s.src = 'painel.js?v=d94c2e77';
+      s.integrity = 'sha384-onzGfNCJK5+8oHZag/7lE67nkDKIp7Dp9UM0/i+Z2G70ik2Shkl7urObdfbWJHbF';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -4969,16 +4970,25 @@
         if (Date.now() - (searchFail.get(id) || 0) < 30000) continue; // falhou há pouco: não insiste
         const gen = DATA_GEN;
         const job = (async () => {
-          // Leitura boa (texto do Modo Copiar, com posição); sem ela ou se falhar, o texto corrido antigo
-          if (c.texto && P.canLayout()) {
-            try {
-              const lay = await ensureLayout(c);
-              if (cat(id) === c && Array.isArray(lay) && lay.length) { SEARCH[id] = adoptLayout(c, lay); return; }
-            } catch (e) { if (!c.busca) throw e; }
+          // As duas leituras juntas: o texto corrido (busca.bin) garante que nenhuma palavra se perde; o do Modo Copiar (texto.bin)
+          // organiza os produtos e dá a posição. Página em que as duas não batem (Modo Copiar preparado com outro PDF): vale o texto corrido.
+          const [busca, lay] = await Promise.all([
+            c.busca ? getBuf(P.path.search(id) + '?v=' + encodeURIComponent(c.v || 1)).then((buf) => P.openSearch(KEYS.get(id), c, buf)).catch((e) => { if (!c.texto) throw e; return null; }) : null,
+            c.texto && P.canLayout() ? ensureLayout(c).catch((e) => { if (!c.busca) throw e; return null; }) : null
+          ]);
+          if (cat(id) !== c) return;
+          const B = (Array.isArray(busca) ? busca : []).map((t) => String(t || ''));
+          if (!Array.isArray(lay) || !lay.length) { SBLK.delete(id); SEARCH[id] = B; return; }
+          const Ltxt = adoptLayout(c, lay), blocks = SBLK.get(id), n = Math.max(B.length, Ltxt.length), out = [];
+          let stale = 0;
+          for (let i = 0; i < n; i++) {
+            const b = B[i] || '', l = Ltxt[i] || '';
+            if (!b.trim()) { out.push(l); continue; }                       // só o Modo Copiar tem texto aqui
+            if (!l.trim() || !textsAgree(b, l)) { if (l.trim()) stale++; blocks[i] = null; out.push(b); continue; }
+            out.push(l + '\n' + b);                                         // as duas batem: palavras das duas, blocos do Modo Copiar
           }
-          const buf = await getBuf(P.path.search(id) + '?v=' + encodeURIComponent(c.v || 1));
-          const pages = await P.openSearch(KEYS.get(id), c, buf);
-          if (cat(id) === c) { SBLK.delete(id); SEARCH[id] = (Array.isArray(pages) ? pages : []).map((t) => String(t || '')); }
+          if (stale) console.warn(`[busca] ${c.title}: ${stale} página(s) com o texto do Modo Copiar diferente do PDF publicado. Em Catálogos, use "Refazer leitura" com o PDF publicado.`);
+          SEARCH[id] = out;
         })();
         job.catch((e) => { searchFail.set(id, Date.now()); if (isDecryptFail(e) && gen === DATA_GEN) keysRotated(); })
           .finally(() => { if (searchLoads.get(id) === job) searchLoads.delete(id); });
@@ -5292,7 +5302,9 @@
   const isSeloSeg = (sg) => { const ws = norm(sg.s).split(/[^a-z]+/).filter(Boolean); return ws.length > 0 && ws.every((w) => SELOS.has(w)); };
   function layoutBlocks(pg, ratio) {
     const segs = segsOf(pg, ratio), heads = [], body = [], selos = [];
-    for (const sg of segs) (isSeloSeg(sg) ? selos : isHeadSeg(sg) ? heads : body).push(sg);
+    // Título fica sozinho na linha; rótulo de tabela em negrito ("Peso líquido" | "13,5 kg") tem valor ao lado e não é título
+    const alone = (sg) => !segs.some((o) => o !== sg && Math.min(o.y2, sg.y2) - Math.max(o.y, sg.y) > 0.5 * Math.min(o.y2 - o.y, sg.y2 - sg.y));
+    for (const sg of segs) (isSeloSeg(sg) ? selos : isHeadSeg(sg) && alone(sg) ? heads : body).push(sg);
     // Títulos em duas linhas (um embaixo do outro, mesma coluna) viram um título só
     heads.sort((a, b) => a.y - b.y || a.x - b.x);
     const tits = [];
@@ -5314,6 +5326,13 @@
     if (pre.body.length || pre.selos.length) out.push(mk(pre));
     tits.sort((a, b) => a.y - b.y || a.x - b.x).forEach((t) => out.push(mk(t)));
     return out;
+  }
+  // As duas leituras da página falam do mesmo conteúdo? (palavras de 4+ letras do texto corrido presentes no do Modo Copiar)
+  function textsAgree(b, l) {
+    const words = [...new Set(joinUnits(norm(b)).split(/[^a-z0-9]+/).filter((w) => w.length >= 4))];
+    if (words.length < 6) return true;
+    const lc = keyOf(l);
+    return words.filter((w) => lc.includes(w)).length / words.length >= 0.6;
   }
   // Blocos de uma página (com posição quando há texto.bin; senão pelo texto corrido)
   function blocksOf(cid, i) {
@@ -5351,6 +5370,20 @@
     });
     return { got, s, fz, exact, codeQ, raws };
   }
+  // Sem título destacado (texto corrido): o nome em volta da palavra achada — palavras com inicial maiúscula antes dela
+  // ("Cadeira de Rodas") e o complemento logo depois ("Light", "Pop"), parando em rótulos da ficha ("Apoio", "Código"…)
+  const NAME_STOP = new Set(['apoio', 'assento', 'protecao', 'suporta', 'peso', 'codigo', 'cod', 'ean', 'dimensoes', 'estrutura', 'material', 'largura', 'medida', 'medidas', 'indicacoes', 'tam', 'tamanho', 'encosto', 'pernas', 'pneus', 'rodas', 'aro', 'faixas', 'garantia', 'combina']);
+  function nameAround(text, raw) {
+    const ws = String(text || '').split(/\s+/).filter(Boolean);
+    const at = ws.findIndex((w) => keyOf(w).includes(raw));
+    if (at < 0) return [];
+    const cap = (w) => /^[A-ZÀ-Ý0-9]/.test(w), link = (w) => /^(de|da|do|das|dos|e)$/i.test(w);
+    let a = at, b = at;
+    while (a > 0 && at - a < 4 && (cap(ws[a - 1]) || (link(ws[a - 1]) && a > 1 && cap(ws[a - 2])))) a--;
+    while (b + 1 < ws.length && b - at < 2 && cap(ws[b + 1]) && !NAME_STOP.has(norm(ws[b + 1]).replace(/[^a-z]/g, '')) && !/\d{5,}/.test(ws[b + 1])) b++;
+    const out = ws.slice(a, b + 1).map((w) => w.replace(/[.,;:]+$/, ''));
+    return out.length >= 2 ? out : [];
+  }
   function groupHits(r) {
     const n = r.Q.terms.length, need = n >= 3 ? n - 1 : n;
     const prodKeys = new Set(r.prodHits.map((x) => keyOf(x.p.name)));
@@ -5363,12 +5396,16 @@
         const m = blockMatch(bk, r.Q);
         if (m.got < need || !m.got) continue;
         any = true;
-        const tw = bk.title.filter((w) => !SELOS.has(norm(w)));
+        let tw = bk.title.filter((w) => !SELOS.has(norm(w)));
+        let fromBody = false;
+        if (!tw.length && !bk.segs) { tw = nameAround(bk.body.t, m.raws[0] || ''); fromBody = tw.length > 0; }
         const tKey = tw.length ? keyOf(tw.join(' ')) : 'tok:' + m.raws.join('|');
-        if (tw.length ? prodKeys.has(tKey) : taken.has(h.c.id + ':' + h.page)) continue; // já está em "Produtos", com as páginas dele
+        // Já está em "Produtos", com as páginas dele (título igual, ou parte do nome: "D100 Light" em "Cadeira de Rodas D100 Light")
+        const tk = taken.has(h.c.id + ':' + h.page);
+        if (tw.length ? prodKeys.has(tKey) || (tk && [...prodKeys].some((k) => k.includes(tKey) || tKey.includes(k))) : tk) continue;
         const key = h.c.id + '|' + tKey;
         let g = G.get(key);
-        if (!g) G.set(key, g = { c: h.c, ci: h.ci, tw, badges: new Set(), exact: false, codeQ: m.codeQ, s: 0, fz: true, pages: new Set(), first: { page: h.page, bk } });
+        if (!g) G.set(key, g = { c: h.c, ci: h.ci, tw, fromBody, badges: new Set(), exact: false, codeQ: m.codeQ, s: 0, fz: true, pages: new Set(), first: { page: h.page, bk } });
         bk.badges.forEach((b) => g.badges.add(b));
         bk.title.filter((w) => SELOS.has(norm(w))).forEach((b) => g.badges.add(b));
         g.pages.add(h.page);
@@ -5393,7 +5430,10 @@
     const where = pages.length > 1 ? `<span class="res-page">${pages.length} páginas</span>` : `<span class="res-page">Pág. ${pages[0]}</span>`;
     const top = `<span class="res-top">${where}${onlyCat ? '' : `<span class="res-cat">${esc(g.c.title)}</span>`}${[...g.badges].map((b) => `<span class="res-badge">${esc(titleCase([b]))}</span>`).join('')}${kind}</span>`;
     const title = g.tw.length ? `<span class="res-title">${snippetHTML(titleCase(g.tw).slice(0, 90), terms)}</span>` : '';
-    const snip = bk.body.t ? `<span class="snip">${snippetHTML(bk.body.t, terms)}</span>` : '';
+    // Nome tirado do próprio texto: o trecho começa depois dele (sem repetir o título)
+    let bt = bk.body.t;
+    if (g.fromBody) { const nm = g.tw.join(' '), k = bt.indexOf(nm); if (k >= 0) bt = (bt.slice(0, k) + ' ' + bt.slice(k + nm.length)).replace(/\s+/g, ' ').trim(); }
+    const snip = bt ? `<span class="snip">${snippetHTML(bt, terms)}</span>` : '';
     const chip = (label, v) => `<span class="res-chip"><span>${label}</span> ${snippetHTML(v, terms)}</span>`;
     const chips = [...bk.body.codes.slice(0, 2).map((v) => chip('Cód.', v)), ...bk.body.eans.slice(0, 2).map((v) => chip('EAN', v))].join('');
     return `${resThumb(g.c, g.first.page)}<span class="res-body">${top}${title}${snip}${chips ? `<span class="res-chips">${chips}</span>` : ''}</span>`;
@@ -7099,7 +7139,9 @@
     // Produto com ficha técnica: etiqueta "Ficha" no canto da área (abre o balão ali mesmo)
     const tag = fichaRows(p).length ? `<button type="button" class="hs-ficha" data-page="${h.page}" data-i="${i}" aria-haspopup="dialog" aria-expanded="false" aria-label="Ficha técnica: ${esc(p.name)}">Ficha</button>` : '';
     // Um toque no "+" soma o produto ao carrinho; o toque seguinte abre o seletor − N + no mesmo lugar (a ficha fica na etiqueta)
-    return `<div class="hs-area" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-hs-cart data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-pressed="false" aria-label="Adicionar ao carrinho: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-n" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Adicionar</span></button><span class="hs-qty"></span>${tag}</div>`;
+    // Área pequena (marcação automática sobre uma linha de texto): a etiqueta "Ficha" vai para o lado do "+", senão cobre o botão
+    const small = h.width < 24 || h.height < 9;
+    return `<div class="hs-area${small ? ' hs-small' : ''}" style="left:${h.x}%;top:${h.y}%;width:${h.width}%;height:${h.height}%"><button type="button" class="product-hotspot" data-hs-cart data-page="${h.page}" data-i="${i}" data-sku="${esc(p.sku)}" aria-pressed="false" aria-label="Adicionar ao carrinho: ${esc(p.name)}"><span class="hs-plus" aria-hidden="true"></span><span class="hs-n" aria-hidden="true"></span><span class="hs-txt" aria-hidden="true">Adicionar</span></button><span class="hs-qty"></span>${tag}</div>`;
   }
   // Produtos ligados à página sem área (pageLinks): faixa no pé da página que abre a lista no "Nesta página"
   // e, ao lado, soma ao carrinho todos os produtos daquela página

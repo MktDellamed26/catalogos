@@ -1156,7 +1156,7 @@
   function pruneLayoutOps() {
     for (const [id, s] of [...stagedLayouts]) {
       const c = vault.catalogs.find((x) => x.id === id);
-      if (!c || (c.v || 1) !== s.v || (c.pages || 0) !== s.pages.length || c.texto) stagedLayouts.delete(id);
+      if (!c || (c.v || 1) !== s.v || (c.pages || 0) !== s.pages.length || (c.texto && !s.redo)) stagedLayouts.delete(id); // redo: "Refazer leitura" de catálogo que já tinha cópia
     }
   }
   // Na publicação: cifra o texto preparado com a chave e a versão do catálogo no rascunho e marca c.texto
@@ -1820,9 +1820,12 @@
     const changed = (c) => { const o = orig.get(c.id); return o && ((o.visible !== false) !== (c.visible !== false) || !!o.isNew !== !!c.isNew || o.order !== c.order || stagedLayouts.has(c.id)); };
     // Modo Copiar do leitor: selo quando o texto posicionado (texto.bin) existe; "Preparar para copiar" nos catálogos antigos
     // "Cópia ativa" ocupa o lugar do botão: sem esta explicação, quem procura "Preparar para copiar" acha que a função sumiu
-    const copyTag = (c) => (c.texto ? ' <span class="tag copy" title="A cópia já está ativa neste catálogo: quem vê pode copiar nomes, códigos e tabelas direto da página. Não é preciso preparar de novo.">Cópia ativa</span>'
+    const copyTag = (c) => (stagedLayouts.has(c.id) ? ' <span class="tag copy wait">Leitura nova pronta · falta publicar</span>' : c.texto ? ' <span class="tag copy" title="A cópia já está ativa neste catálogo: quem vê pode copiar nomes, códigos e tabelas direto da página. Não é preciso preparar de novo.">Cópia ativa</span>'
       : stagedLayouts.has(c.id) ? ' <span class="tag copy wait">Cópia pronta · falta publicar</span>' : '');
-    const copyBtn = (c) => (c.texto || stagedLayouts.has(c.id) ? '' : `<button class="btn ghost sm" type="button" data-k="layout" data-act="layout" title="Permite copiar nomes, códigos e tabelas direto da página.">Preparar para copiar</button>`);
+    // Com a cópia ativa, o mesmo botão vira "Refazer leitura": lê de novo o texto do PDF publicado (corrige texto antigo ou de outra versão do PDF)
+    const copyBtn = (c) => (stagedLayouts.has(c.id) ? '' : c.texto
+      ? `<button class="btn ghost sm" type="button" data-k="layout" data-act="layout" title="Lê de novo o texto do PDF publicado: corrige a busca e a posição dos produtos quando a cópia foi preparada com outra versão do PDF.">Refazer leitura</button>`
+      : `<button class="btn ghost sm" type="button" data-k="layout" data-act="layout" title="Permite copiar nomes, códigos e tabelas direto da página.">Preparar para copiar</button>`);
     keepFocus(() => {
       box.innerHTML = `${pageHead('cats', `<button class="btn primary" type="button" data-step="cat">${ICO.upload}Adicionar catálogo</button>`)}
         ${firstStepsHtml()}
@@ -2313,7 +2316,7 @@
     } catch (e) { /* sem o texto publicado para conferir: segue só com o número de páginas */ }
     const cur = vault && vault.catalogs.find((x) => x.id === c.id);
     if (!cur || (cur.v || 1) !== v) { alertBox('O catálogo mudou', 'Outro administrador publicou uma versão deste catálogo enquanto o PDF era lido. Clique em “Atualizar dados” e tente de novo.'); return; }
-    stagedLayouts.set(c.id, { v, pages: r.pages, texts: r.texts });
+    stagedLayouts.set(c.id, { v, pages: r.pages, texts: r.texts, redo: !!c.texto });
     refreshStage();
     if (tab === 'cats') renderCats();
     const n = r.pages.reduce((a, p) => a + p.it.length, 0);
@@ -4254,6 +4257,13 @@
     if (v === undefined) { const b = ch.normalize('NFD').charAt(0).toLowerCase(), bc = b.charCodeAt(0); v = (bc >= 97 && bc <= 122) || (bc >= 48 && bc <= 57) ? b : ' '; foldCache.set(ch, v); }
     return v;
   }
+  // As duas leituras da página falam do mesmo conteúdo? (palavras de 4+ letras do texto da busca presentes no texto posicionado)
+  function textsAgree(b, l) {
+    const words = [...new Set(foldTerm(b).split(' ').filter((w) => w.length >= 4))];
+    if (words.length < 6) return true;
+    const lc = foldTerm(l).replace(/ /g, '');
+    return words.filter((w) => lc.includes(w)).length / words.length >= 0.6;
+  }
   function foldMap(raw) {
     let s = ' ', sp = true; const idx = [-1];
     for (let i = 0; i < raw.length; i++) {
@@ -4366,7 +4376,7 @@
     const spotsBy = new Map();
     for (const h of viewSpots()) { const k = `${h.catalogId}|${h.page}`; if (!spotsBy.has(k)) spotsBy.set(k, []); spotsBy.get(k).push(h); }
     const pg = progressDialog('Procurando produtos nas páginas', true);
-    const props = [], semTexto = [], semPos = []; let pages = 0, jaTem = 0;
+    const props = [], semTexto = [], semPos = [], staleSet = new Set(); let pages = 0, jaTem = 0, semTextoPg = 0;
     try {
       for (let ci = 0; ci < cats.length && !pg.cancelled; ci++) {
         const c = cats[ci];
@@ -4388,11 +4398,18 @@
             if (pg.cancelled) break;
             if (!vault) throw cancelErr();
           }
-          const raw = String(texts[i] || ''); if (!raw.trim()) continue;
+          // Texto posicionado desta página. Se o da busca estiver vazio, ele serve de texto; se os dois não baterem
+          // (Modo Copiar preparado com outro PDF), a área não é proposta: ficaria no lugar errado.
+          const layTxt = lay && lay[i] && Array.isArray(lay[i].it) ? lay[i].it.map((e) => e[0]).join(' ') : '';
+          let raw = String(texts[i] || '');
+          if (!raw.trim() && layTxt.trim()) raw = layTxt;
+          if (!raw.trim()) { semTextoPg++; continue; }
           pages++;
+          const okLay = !!layTxt.trim() && textsAgree(raw, layTxt);
+          if (lay && layTxt.trim() && !okLay) staleSet.add(`${c.title} (pág. ${i + 1})`);
           const ms = pageMatches(raw, terms);
           // Linhas do texto posicionado desta página: uma vez só, e só quando há o que localizar
-          const lines = lay && ms.length ? layoutLines(lay[i]) : null;
+          const lines = okLay && ms.length ? layoutLines(lay[i]) : null;
           const here = (lines && lines.length && spotsBy.get(`${c.id}|${i + 1}`)) || [];
           for (const m of ms) {
             const key = linkKey({ catalogId: c.id, page: i + 1, product: m.sku });
@@ -4415,7 +4432,9 @@
       + ` · ${nB.toLocaleString('pt-BR')} com marca na página e ${(props.length - nB).toLocaleString('pt-BR')} só com ligação`
       + `${jaTem ? ` · ${plural(jaTem, 'já estava marcada ou descartada', 'já estavam marcadas ou descartadas')}` : ''}`
       + `${semTexto.length ? ` · sem texto para ler: ${semTexto.join(', ')}` : ''}`
-      + `${semPos.length ? ` · sem texto posicionado (só ligação): ${semPos.join(', ')} — prepare em Catálogos, botão “Preparar para copiar”` : ''}.`;
+      + `${semPos.length ? ` · sem texto posicionado (só ligação): ${semPos.join(', ')} — prepare em Catálogos, botão “Preparar para copiar”` : ''}`
+      + `${semTextoPg ? ` · ${plural(semTextoPg, 'página sem nenhum texto', 'páginas sem nenhum texto')} (imagem ou texto em curvas no PDF: produtos nelas só com marcação à mão)` : ''}`
+      + `${staleSet.size ? ` · ${plural(staleSet.size, 'página', 'páginas')} com o texto do Modo Copiar diferente do PDF publicado (${[...staleSet].slice(0, 4).join(', ')}${staleSet.size > 4 ? '…' : ''}): em Catálogos, use “Refazer leitura” com o PDF publicado` : ''}.`;
     if (tab === 'prods') renderScanBox();
   }
   function scanCardHtml() {
