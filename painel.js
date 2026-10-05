@@ -3599,7 +3599,7 @@
   // Campos da planilha: [chave, rótulo, títulos de coluna reconhecidos (sem acento, sem espaço, minúsculas)]
   const IMP_FIELDS = [
     ['grupo', 'Grupo (linha)', ['grupo', 'linha', 'categoria', 'familia']],
-    ['sap', 'Código SAP', ['codigosap', 'codsap', 'sap', 'codigo', 'codigodoproduto']],
+    ['sap', 'Código SAP', ['codigosap', 'codsap', 'sap', 'sku', 'codigosku', 'codigo', 'codigodoproduto', 'referencia', 'ref']],
     ['nome', 'Nome do produto', ['nomedoproduto', 'nome', 'produto', 'descricaodoproduto', 'descricao']],
     ['med', 'Medidas da caixa unitária', ['medidascxunitaria', 'medidascaixaunitaria', 'medidasunitaria', 'medidas']],
     ['peso', 'Peso bruto (kg)', ['pesobruto', 'peso']],
@@ -4195,6 +4195,21 @@
     };
     look(line.fold);
     if (!out.length && ean) look(line.joined()); // EAN que o PDF quebrou com espaço no meio
+    if (!out.length) { // sem espaços: palavra partida em pedaços ou título com letras espaçadas
+      const tc = term.replace(/ /g, ''), f = line.fold, cs = [], cp = [];
+      for (let i = 0; i < f.s.length; i++) if (f.s[i] !== ' ') { cs.push(f.s[i]); cp.push(i); }
+      const s = cs.join('');
+      let at = tc.length >= 5 ? s.indexOf(tc) : -1;
+      while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
+        const nx = s[at + tc.length] || '';
+        if (!(/\d$/.test(tc) && /\d/.test(nx))) { // D100 não vale dentro de D1000
+          const ks = new Set();
+          for (let q = at; q < at + tc.length; q++) { const k = line.own[f.idx[cp[q]]]; if (k >= 0) ks.add(k); }
+          if (ks.size) out.push([...ks].map((k) => line.list[k]));
+        }
+        at = s.indexOf(tc, at + 1);
+      }
+    }
     return out;
   }
   // Retângulo (% da página) que engloba os trechos, com folga e tamanho mínimo. fixBox arredonda, garante o mínimo e prende na página.
@@ -4261,10 +4276,19 @@
         codes.push({ sku: p.sku, t: e, why: `EAN ${e}`, ean: true });
         if (e.length === 13) codes.push({ sku: p.sku, t: `${e[0]} ${e.slice(1, 7)} ${e.slice(7)}`, why: `EAN ${e}` }); // como aparece sob o código de barras
       }
+      const sk = foldTerm(p.sku);
+      if (sk && sk !== sap && /\d/.test(sk) && sk.replace(/ /g, '').length >= 5) codes.push({ sku: p.sku, t: sk, why: `SKU ${p.sku}` });
       const nm = foldTerm(p.name);
-      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, why: 'nome completo' });
+      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, c: nm.replace(/ /g, ''), why: 'nome completo' });
     }
-    return { codes, names };
+    // Final do código: o catálogo às vezes imprime só o fim do SAP ("05588" de "0001005588"). Só vale quando um produto só termina assim.
+    const tails = new Map();
+    for (const c of codes) {
+      if (c.ean) continue;
+      const d = c.t.replace(/\D/g, '');
+      for (let n = 5; n < d.length; n++) { const k = d.slice(-n); tails.set(k, tails.has(k) && tails.get(k) !== c.sku ? null : c.sku); }
+    }
+    return { codes, names, tails };
   }
   // Mesmo texto com os números que o PDF quebrou com espaço juntados ("79086073107 08" → "7908607310708"), só para os EAN.
   // Usado no texto corrido da página e, igual, em cada linha do texto posicionado.
@@ -4296,6 +4320,15 @@
       if (at >= 0) { found.set(t.sku, hit(t, 'alta', at, idx)); continue; }
       if (t.ean) { const aj = joined().s.indexOf(' ' + t.t + ' '); if (aj >= 0) found.set(t.sku, hit(t, 'alta', aj, joined().idx)); }
     }
+    // Número da página que é o final de exatamente um código SAP/SKU (confiança média)
+    if (terms.tails && terms.tails.size) {
+      const re = / (\d{5,9}) /g; let mm;
+      while ((mm = re.exec(s))) {
+        const own = terms.tails.get(mm[1]);
+        if (own && !found.has(own)) found.set(own, { sku: own, conf: 'media', why: `final do código (${mm[1]})`, t: mm[1], ean: false, a: idx[mm.index + 1], b: idx[mm.index + mm[1].length] + 1 });
+        re.lastIndex = mm.index + mm[1].length;
+      }
+    }
     // Nomes: todos entram na conferência de "nome dentro de nome mais longo", mesmo os de produtos já achados pelo código
     const occ = [];
     for (const t of terms.names) { const pos = allAt(s, ' ' + t.t + ' '); if (pos.length) occ.push({ t, pos }); }
@@ -4303,6 +4336,22 @@
       if (found.has(o.t.sku)) continue;
       const free = o.pos.find((p) => !occ.some((q) => q !== o && q.t.t.length > o.t.t.length && q.pos.some((r) => r <= p && r + q.t.t.length >= p + o.t.t.length)));
       if (free !== undefined) found.set(o.t.sku, hit(o.t, 'media', free, idx));
+    }
+    // Nome com a palavra partida ou letras espaçadas no PDF ("D 100", "T I P O I A"): a mesma conferência no texto sem espaços
+    const cs = [], cpos = [];
+    for (let i = 0; i < s.length; i++) if (s[i] !== ' ') { cs.push(s[i]); cpos.push(i); }
+    const cst = cs.join(''), cocc = [];
+    for (const t of terms.names) {
+      if (!t.c || t.c.length < 8) continue;
+      const pos = allAt(cst, t.c).filter((k) => !(/\d$/.test(t.c) && /\d/.test(cst[k + t.c.length] || '')));
+      if (pos.length) cocc.push({ t, pos });
+    }
+    for (const o of cocc) {
+      if (found.has(o.t.sku)) continue;
+      const free = o.pos.find((q0) => !cocc.some((q) => q !== o && q.t.c.length > o.t.c.length && q.pos.some((r) => r <= q0 && r + q.t.c.length >= q0 + o.t.c.length)));
+      if (free === undefined) continue;
+      const f0 = cpos[free], f1 = cpos[free + o.t.c.length - 1];
+      found.set(o.t.sku, { sku: o.t.sku, conf: 'media', why: 'nome completo', t: o.t.t, ean: false, a: idx[f0], b: idx[f1] + 1 });
     }
     return [...found.values()];
   }

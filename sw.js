@@ -4,7 +4,7 @@
    Nada do Supabase, do GitHub ou de qualquer envio (POST) é guardado.
    A versão muda a cada publicação: o cache antigo é apagado quando a nova versão assume. */
 'use strict';
-const VER = '77e72732f62a';
+const VER = '04531a0aa8aa';
 const SHELL = 'dm-site-' + VER;      // site (index.html, painel.js, ícones, manifesto)
 const MEDIA = 'dm-catalogos';        // páginas, capas, miniaturas, busca e texto: NÃO leva a versão (senão o app baixaria tudo de novo a cada publicação)
 const CDN = 'dm-cdn-' + VER;         // bibliotecas e fontes externas, para o leitor abrir offline
