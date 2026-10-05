@@ -1168,6 +1168,8 @@
       const key = await P.aesKey(P.b64d(t.key || d.contentKey), ['encrypt']);
       files.push({ path: P.path.layout(id), data: await P.sealLayout(key, { id, v: t.v || 1 }, s.pages) });
       t.texto = true;
+      // Texto da busca (busca.bin) refeito com a leitura nova: corrige catálogos publicados antes da correção das palavras partidas
+      if (Array.isArray(s.texts) && s.texts.length === s.pages.length) { files.push({ path: P.path.search(id), data: await P.sealSearch(key, { id, v: t.v || 1 }, s.texts) }); t.busca = true; }
     }
     return { files, lost };
   }
@@ -2141,7 +2143,23 @@
 
   /* ================= texto posicionado (p/<id>/texto.bin): base do modo Copiar do leitor ================= */
   // Texto corrido da página (busca.bin): o mesmo cálculo na conversão e na conferência do "Preparar para copiar"
-  const pageText = (tc) => tc.items.map((it) => it.str + (it.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').trim();
+  // Junta os pedaços que o PDF entrega separados SEM espaço quando estão colados na mesma linha ("D" + "100" → "D100", "Ti" + "poia" → "Tipoia");
+  // espaço só quando há distância de palavra. Antes todo pedaço ganhava um espaço e a busca não achava palavras partidas.
+  function pageText(tc) {
+    let out = '', prev = null;
+    for (const it of tc.items) {
+      if (!it || typeof it.str !== 'string') continue;
+      const t = it.transform || [1, 0, 0, 1, 0, 0], h = Math.hypot(t[2], t[3]) || Math.abs(t[3]) || 10, x = t[4], y = t[5];
+      if (prev) {
+        const hh = Math.max(h, prev.h), gap = x - prev.x2;
+        const glue = !prev.eol && Math.abs(y - prev.y) <= 0.3 * hh && gap < 0.15 * hh && gap > -0.5 * hh && !/\s$/.test(prev.s) && !/^\s/.test(it.str);
+        out += prev.eol ? '\n' : glue ? '' : ' ';
+      }
+      out += it.str;
+      prev = { x2: x + (Number(it.width) || 0), y, h, eol: !!it.hasEOL, s: it.str };
+    }
+    return out.replace(/[ \t]+/g, ' ').replace(/ ?\n ?/g, '\n').trim();
+  }
   // Protocolo antigo (sem sealLayout) ou navegador sem CompressionStream: o catálogo segue sem texto.bin (c.texto = false), sem erro
   const canLayout = () => !!(P.path && typeof P.path.layout === 'function' && typeof P.sealLayout === 'function' && typeof P.canLayout === 'function' && P.canLayout());
   // Só LER o texto posicionado já publicado (a marcação automática usa isso para calcular a área): precisa de openLayout, não de sealLayout
@@ -2295,7 +2313,7 @@
     } catch (e) { /* sem o texto publicado para conferir: segue só com o número de páginas */ }
     const cur = vault && vault.catalogs.find((x) => x.id === c.id);
     if (!cur || (cur.v || 1) !== v) { alertBox('O catálogo mudou', 'Outro administrador publicou uma versão deste catálogo enquanto o PDF era lido. Clique em “Atualizar dados” e tente de novo.'); return; }
-    stagedLayouts.set(c.id, { v, pages: r.pages });
+    stagedLayouts.set(c.id, { v, pages: r.pages, texts: r.texts });
     refreshStage();
     if (tab === 'cats') renderCats();
     const n = r.pages.reduce((a, p) => a + p.it.length, 0);
