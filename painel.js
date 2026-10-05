@@ -351,6 +351,9 @@
   .dmp .scan-conf { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; vertical-align: 1px; }
   .dmp .scan-conf.alta { background: var(--sky); color: var(--navy); }
   .dmp .scan-conf.media { background: var(--light); color: var(--ink-2); border: 1px solid var(--silver); }
+  /* O que a sugestão vira ao ser aceita: marca sobre o produto (área calculada) ou só ligação com a página */
+  .dmp .scan-mark { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; vertical-align: 1px; background: var(--white); color: var(--ink-2); border: 1px dashed var(--silver); }
+  .dmp .scan-mark.spot { background: var(--white); color: var(--navy); border: 1px solid var(--navy); }
   .dmp .scan-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
 
   /* =================== responsivo =================== */
@@ -1644,9 +1647,16 @@
     if (!vault || (s && (!sb || s.uid === sb.uid))) return;
     authLost = true; checkAuthLost();
   });
+  // Aviso 5 minutos antes do bloqueio, só quando há alterações preparadas (elas se perdem no bloqueio). Qualquer toque na gestão adia.
+  let idleWarnAt = 0;
   setInterval(() => {
     checkAuthLost();
-    if (!vault || busy || Date.now() - lastAct < IDLE_MS) return;
+    const idle = Date.now() - lastAct;
+    if (vault && !busy && stageCount() && idle >= IDLE_MS - 5 * 60 * 1000 && idle < IDLE_MS && idleWarnAt !== lastAct) {
+      idleWarnAt = lastAct;
+      toast('A gestão bloqueia em 5 minutos sem uso e as alterações não publicadas serão descartadas. Publique agora ou toque em qualquer parte da gestão para continuar.');
+    }
+    if (!vault || busy || idle < IDLE_MS) return;
     const lost = stageCount() ? ' As alterações não publicadas foram descartadas.' : '';
     setIdleLocked(true); // nesta aba, só volta digitando a senha (sem entrada automática)
     lock('A gestão foi bloqueada depois de 30 minutos sem uso.' + lost + (H.mode === 'emergency' ? ' Digite a senha mestra de novo para continuar.' : ' Digite a senha de novo para continuar.'), 'idle');
@@ -1759,12 +1769,14 @@
   const pageCache = new Map(); // `${id}:${v}:${início da chave}:${arquivo}` → Promise<[blob URL de cada imagem do arquivo]>
   const PAGE_CACHE_MAX = 6;    // ≈ 4 blocos de páginas + as miniaturas
   const searchCache = new Map(); // `${id}:${v}:${início da chave}` → Promise<[texto de cada página]> (busca.bin decifrado, só na memória)
+  const layoutCache = new Map(); // mesma chave → Promise<[{ it: [...] } de cada página]> (texto.bin decifrado, só na memória)
   const revokeAll = (p) => p.then((urls) => urls.forEach((u) => URL.revokeObjectURL(u)), () => {});
   // Único ponto que revoga as imagens decifradas (capas, páginas e miniaturas): ao recarregar o cofre e ao sair
   function dropImageCache() {
     coverUrls.forEach((p) => p.then((u) => u && URL.revokeObjectURL(u))); coverUrls.clear();
     pageCache.forEach(revokeAll); pageCache.clear();
     searchCache.clear(); // texto das páginas decifrado para a marcação automática
+    layoutCache.clear(); // texto posicionado decifrado (posição do produto na página)
   }
   function packedImages(c, p) {
     const kb = catKeyB64(c), k = `${c.id}:${c.v || 1}:${kb.slice(0, 12)}:${p}`;
@@ -1805,7 +1817,8 @@
     const orig = new Map(vault.catalogs.map((c) => [c.id, c]));
     const changed = (c) => { const o = orig.get(c.id); return o && ((o.visible !== false) !== (c.visible !== false) || !!o.isNew !== !!c.isNew || o.order !== c.order || stagedLayouts.has(c.id)); };
     // Modo Copiar do leitor: selo quando o texto posicionado (texto.bin) existe; "Preparar para copiar" nos catálogos antigos
-    const copyTag = (c) => (c.texto ? ' <span class="tag copy" title="Quem vê o catálogo pode copiar nomes, códigos e tabelas direto da página.">Cópia ativa</span>'
+    // "Cópia ativa" ocupa o lugar do botão: sem esta explicação, quem procura "Preparar para copiar" acha que a função sumiu
+    const copyTag = (c) => (c.texto ? ' <span class="tag copy" title="A cópia já está ativa neste catálogo: quem vê pode copiar nomes, códigos e tabelas direto da página. Não é preciso preparar de novo.">Cópia ativa</span>'
       : stagedLayouts.has(c.id) ? ' <span class="tag copy wait">Cópia pronta · falta publicar</span>' : '');
     const copyBtn = (c) => (c.texto || stagedLayouts.has(c.id) ? '' : `<button class="btn ghost sm" type="button" data-k="layout" data-act="layout" title="Permite copiar nomes, códigos e tabelas direto da página.">Preparar para copiar</button>`);
     keepFocus(() => {
@@ -2076,7 +2089,11 @@
     let pdf = null;
     try {
       try { pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise; }
-      catch (e) { throw userErr('Não foi possível abrir este PDF. Confira se o arquivo abre normalmente e não tem senha.'); }
+      catch (e) {
+        // PDF com senha tem saída própria: com o recado genérico a pessoa vai procurar defeito no arquivo errado
+        if (e && e.name === 'PasswordException') throw userErr('Este PDF está protegido por senha. Abra o arquivo, salve uma cópia sem senha e tente de novo. Nada foi alterado.');
+        throw userErr('Não foi possível abrir este PDF. Confira se o arquivo abre normalmente e não tem senha.');
+      }
       const n = pdf.numPages;
       if ((n > 150 || file.size > 80 * 1048576) && !(await confirmBox('PDF grande', `<p>Este PDF tem ${plural(n, 'página', 'páginas')} e ${mb(file.size)} MB. A conversão pode levar muitos minutos e usar bastante memória.</p><p>Use um computador, deixe esta aba aberta e continue só se o arquivo estiver certo.</p>`, 'Converter assim mesmo'))) throw cancelErr();
       const key = await P.aesKey(P.b64d(c.key), ['encrypt']);
@@ -2127,6 +2144,8 @@
   const pageText = (tc) => tc.items.map((it) => it.str + (it.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').trim();
   // Protocolo antigo (sem sealLayout) ou navegador sem CompressionStream: o catálogo segue sem texto.bin (c.texto = false), sem erro
   const canLayout = () => !!(P.path && typeof P.path.layout === 'function' && typeof P.sealLayout === 'function' && typeof P.canLayout === 'function' && P.canLayout());
+  // Só LER o texto posicionado já publicado (a marcação automática usa isso para calcular a área): precisa de openLayout, não de sealLayout
+  const canReadLayout = () => !!(P.path && typeof P.path.layout === 'function' && typeof P.openLayout === 'function' && typeof P.canLayout === 'function' && P.canLayout());
   const LAYOUT_TXT_MAX = 400, LAYOUT_ITEMS_MAX = 4000;
   const BOLD_FONT = /bold|black|heavy/i; // cobre Bold, SemiBold, ExtraBold, Black, Heavy
   // Fonte em negrito pelo nome. O pdf.js só conhece o nome depois de carregar a fonte (página desenhada ou getOperatorList).
@@ -2187,7 +2206,11 @@
     let pdf = null;
     try {
       try { pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise; }
-      catch (e) { throw userErr('Não foi possível abrir este PDF. Confira se o arquivo abre normalmente e não tem senha.'); }
+      catch (e) {
+        // PDF com senha tem saída própria: com o recado genérico a pessoa vai procurar defeito no arquivo errado
+        if (e && e.name === 'PasswordException') throw userErr('Este PDF está protegido por senha. Abra o arquivo, salve uma cópia sem senha e tente de novo. Nada foi alterado.');
+        throw userErr('Não foi possível abrir este PDF. Confira se o arquivo abre normalmente e não tem senha.');
+      }
       const n = pdf.numPages;
       if (n !== (c.pages || 0)) throw userErr(`Este PDF tem ${plural(n, 'página', 'páginas')} e “${c.title}” tem ${plural(c.pages || 0, 'página', 'páginas')} no site. Escolha o PDF da versão publicada deste catálogo. Nada foi alterado.`);
       const pages = [], texts = [], bold = new Map();
@@ -2225,10 +2248,21 @@
     const dz = $('#pn-layoutDrop'), pick = () => { const inp = $('#pn-layoutInput'); inp.value = ''; inp.click(); };
     dz.addEventListener('click', pick);
     dz.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
-    dz.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); dz.classList.add('over'); });
-    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-    dz.addEventListener('drop', (e) => {
-      e.preventDefault(); e.stopPropagation(); dz.classList.remove('over');
+    armLayoutDrop();
+  }
+  // Soltar o PDF em qualquer canto do diálogo conta: a caixa indicada é pequena e, fora dela, o arquivo caía no vazio
+  // (com o diálogo aberto, o "solte em qualquer lugar" da aba está desligado). Registrado uma vez só, porque o
+  // conteúdo do diálogo é refeito a cada abertura: a caixa na tela é que diz se o momento é este.
+  let layoutDropReady = false;
+  function armLayoutDrop() {
+    if (layoutDropReady) return;
+    layoutDropReady = true;
+    const caixa = () => (dlg.open ? $('#pn-layoutDrop') : null);
+    dlg.addEventListener('dragover', (e) => { const b = caixa(); if (!b) return; e.preventDefault(); e.stopPropagation(); b.classList.add('over'); });
+    dlg.addEventListener('dragleave', (e) => { const b = caixa(); if (b && !dlg.contains(e.relatedTarget)) b.classList.remove('over'); });
+    dlg.addEventListener('drop', (e) => {
+      const b = caixa(); if (!b) return;
+      e.preventDefault(); e.stopPropagation(); b.classList.remove('over');
       const f = [...((e.dataTransfer && e.dataTransfer.files) || [])][0];
       if (f) takeLayoutFile(f);
     });
@@ -4078,6 +4112,104 @@
     }
     return searchCache.get(k);
   }
+  /* ---------- posição do produto na página: texto posicionado (texto.bin do "Preparar para copiar") ----------
+     Com ele a varredura propõe uma ÁREA de verdade (o "+" aparece sobre o produto no site); sem ele, só a ligação. */
+  // Páginas com posição, pelo mesmo caminho do texto corrido (repo + chave do catálogo). Devolve null quando não dá: sem texto.bin,
+  // navegador sem CompressionStream ou protocolo antigo. Nunca lança: a varredura continua como antes.
+  function layoutPages(c) {
+    const st = stagedLayouts.get(c.id); // preparado nesta sessão e ainda não publicado: já está pronto na memória
+    if (st && st.v === (c.v || 1) && Array.isArray(st.pages)) return Promise.resolve(st.pages);
+    if (!c.texto || !canReadLayout()) return Promise.resolve(null);
+    const k = searchKey(c);
+    if (!layoutCache.has(k)) {
+      const p = (async () => {
+        const enc = await repo.read(P.path.layout(c.id));
+        if (!enc || !vault) return null;
+        return P.openLayout(await P.aesKey(P.b64d(catKeyB64(c)), ['decrypt']), { id: c.id, v: c.v || 1 }, enc);
+      })();
+      p.catch(() => { if (layoutCache.get(k) === p) layoutCache.delete(k); });
+      layoutCache.set(k, p);
+    }
+    return layoutCache.get(k);
+  }
+  const LAYOUT_PAD = 1.5;                     // folga em volta do texto encontrado (pontos percentuais de cada lado)
+  const LAYOUT_MIN_W = 6, LAYOUT_MIN_H = 4;   // tamanho mínimo confortável para o dedo (% da página)
+  const LAYOUT_OCC_MAX = 8;                   // ocorrências do termo consideradas por linha (páginas com listas repetidas)
+  // Os trechos da página agrupados em linhas: o termo costuma vir quebrado em trechos vizinhos ("0007 | 000722"), e só na
+  // mesma linha faz sentido juntá-los. Cada linha guarda o texto simplificado e de qual trecho veio cada letra.
+  function layoutLines(pg) {
+    const list = (pg && Array.isArray(pg.it) ? pg.it : [])
+      .map((e) => ({ s: String(e[0] || ''), x: e[1], y: e[2], w: e[3], h: e[4] }))
+      .filter((t) => t.s && t.w > 0 && t.h > 0);
+    if (!list.length) return [];
+    list.sort((a, b) => (a.y + a.h / 2) - (b.y + b.h / 2) || a.x - b.x);
+    const rows = [];
+    for (const t of list) {
+      const mid = t.y + t.h / 2, cur = rows[rows.length - 1];
+      // Mesma linha quando o meio do trecho cai dentro da faixa vertical já aberta (colunas de tabela entram juntas)
+      if (cur && mid >= cur.top - 0.2 * t.h && mid <= cur.bot + 0.2 * t.h) { cur.list.push(t); cur.top = Math.min(cur.top, t.y); cur.bot = Math.max(cur.bot, t.y + t.h); }
+      else rows.push({ top: t.y, bot: t.y + t.h, list: [t] });
+    }
+    return rows.map((r) => {
+      r.list.sort((a, b) => a.x - b.x);
+      const own = []; // de qual trecho veio cada letra do texto cru da linha
+      r.list.forEach((t, k) => { if (k) own.push(-1); for (let j = 0; j < t.s.length; j++) own.push(k); });
+      const fold = foldMap(r.list.map((t) => t.s).join('\n')); // "\n" vira um espaço só, como no texto corrido
+      let dj = null;
+      return { list: r.list, own, fold, joined: () => { if (!dj) dj = joinDigits(fold.s, fold.idx); return dj; } };
+    });
+  }
+  // Onde o termo aparece numa linha: devolve, para cada ocorrência, os trechos que a formam
+  function termIn(line, term, ean) {
+    const out = [];
+    const look = (f) => {
+      const needle = ' ' + term + ' ';
+      let at = f.s.indexOf(needle);
+      while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
+        const p0 = f.idx[at + 1], p1 = f.idx[at + term.length];
+        if (p0 >= 0 && p1 >= p0) {
+          const ks = new Set();
+          for (let p = p0; p <= p1; p++) { const k = line.own[p]; if (k >= 0) ks.add(k); }
+          if (ks.size) out.push([...ks].map((k) => line.list[k]));
+        }
+        at = f.s.indexOf(needle, at + 1);
+      }
+    };
+    look(line.fold);
+    if (!out.length && ean) look(line.joined()); // EAN que o PDF quebrou com espaço no meio
+    return out;
+  }
+  // Retângulo (% da página) que engloba os trechos, com folga e tamanho mínimo. fixBox arredonda, garante o mínimo e prende na página.
+  function boxFromItems(items) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const t of items) { x0 = Math.min(x0, t.x); y0 = Math.min(y0, t.y); x1 = Math.max(x1, t.x + t.w); y1 = Math.max(y1, t.y + t.h); }
+    if (!(x1 > x0) || !(y1 > y0)) return null;
+    let x = x0 / 10 - LAYOUT_PAD, y = y0 / 10 - LAYOUT_PAD; // milésimos da página → porcentagem
+    let w = (x1 - x0) / 10 + 2 * LAYOUT_PAD, h = (y1 - y0) / 10 + 2 * LAYOUT_PAD;
+    if (w < LAYOUT_MIN_W) { x -= (LAYOUT_MIN_W - w) / 2; w = LAYOUT_MIN_W; }
+    if (h < LAYOUT_MIN_H) { y -= (LAYOUT_MIN_H - h) / 2; h = LAYOUT_MIN_H; }
+    return fixBox({ x, y, width: w, height: h });
+  }
+  // Área do produto nesta página. Mais de uma ocorrência do mesmo termo (mesma confiança): fica a que está mais acima.
+  // Sem o termo nos trechos posicionados devolve null — a sugestão continua sendo só ligação.
+  function spotFromLines(lines, m) {
+    let best = null;
+    for (const line of lines) {
+      for (const items of termIn(line, m.t, m.ean)) {
+        const b = boxFromItems(items);
+        if (b && (!best || b.y < best.y || (b.y === best.y && b.x < best.x))) best = b;
+      }
+    }
+    return best;
+  }
+  // Área desenhada à mão sempre vence: nada é proposto por cima de mais da metade de uma área que já existe na página
+  function boxClear(box, spots) {
+    return !spots.some((h) => {
+      const w = Math.min(box.x + box.width, h.x + h.width) - Math.max(box.x, h.x);
+      const t = Math.min(box.y + box.height, h.y + h.height) - Math.max(box.y, h.y);
+      return w > 0 && t > 0 && w * t > 0.5 * box.width * box.height;
+    });
+  }
   // Texto simplificado (sem acento, minúsculas, pontuação vira espaço, espaços juntos) com a posição de cada letra no original
   const foldCache = new Map();
   function foldChar(ch) {
@@ -4116,6 +4248,17 @@
     }
     return { codes, names };
   }
+  // Mesmo texto com os números que o PDF quebrou com espaço juntados ("79086073107 08" → "7908607310708"), só para os EAN.
+  // Usado no texto corrido da página e, igual, em cada linha do texto posicionado.
+  function joinDigits(s, idx) {
+    const dg = (k) => k >= 0 && k < s.length && s.charCodeAt(k) >= 48 && s.charCodeAt(k) <= 57;
+    let js = ''; const ji = [];
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] === ' ' && dg(i - 1) && dg(i + 1)) continue;
+      js += s[i]; ji.push(idx[i]);
+    }
+    return { s: js, idx: ji };
+  }
   const allAt = (s, t, max = 30) => { const out = []; let i = s.indexOf(t); while (i >= 0 && out.length < max) { out.push(i); i = s.indexOf(t, i + 1); } return out; };
   function snippetHtml(raw, a, b) {
     const x = Math.max(0, a - 50), y = Math.min(raw.length, b + 50), sq = (s) => esc(s.replace(/\s+/g, ' '));
@@ -4125,25 +4268,15 @@
   // (ex.: “Cadeira de rodas D100” não conta onde está escrito “Cadeira de rodas D100 Light”)
   function pageMatches(raw, terms) {
     const { s, idx } = foldMap(raw), found = new Map();
-    const hit = (t, conf, at, map) => ({ sku: t.sku, conf, why: t.why, a: map[at + 1], b: map[at + t.t.length] + 1 });
-    // Mesmo texto com os números que o PDF quebrou com espaço juntados ("79086073107 08" → "7908607310708"), só para os EAN
-    let sd = null, idd = null;
-    const joined = () => {
-      if (sd === null) {
-        sd = ''; idd = [];
-        for (let i = 0; i < s.length; i++) {
-          const dg = (k) => k >= 0 && k < s.length && s.charCodeAt(k) >= 48 && s.charCodeAt(k) <= 57;
-          if (s[i] === ' ' && dg(i - 1) && dg(i + 1)) continue;
-          sd += s[i]; idd.push(idx[i]);
-        }
-      }
-      return sd;
-    };
+    // t e ean viajam junto: é com eles que a área é procurada depois no texto posicionado, sem depender de a/b (índices do texto corrido)
+    const hit = (t, conf, at, map) => ({ sku: t.sku, conf, why: t.why, t: t.t, ean: !!t.ean, a: map[at + 1], b: map[at + t.t.length] + 1 });
+    let dj = null;
+    const joined = () => { if (!dj) dj = joinDigits(s, idx); return dj; };
     for (const t of terms.codes) {
       if (found.has(t.sku)) continue;
       const at = s.indexOf(' ' + t.t + ' ');
       if (at >= 0) { found.set(t.sku, hit(t, 'alta', at, idx)); continue; }
-      if (t.ean) { const aj = joined().indexOf(' ' + t.t + ' '); if (aj >= 0) found.set(t.sku, hit(t, 'alta', aj, idd)); }
+      if (t.ean) { const aj = joined().s.indexOf(' ' + t.t + ' '); if (aj >= 0) found.set(t.sku, hit(t, 'alta', aj, joined().idx)); }
     }
     // Nomes: todos entram na conferência de "nome dentro de nome mais longo", mesmo os de produtos já achados pelo código
     const occ = [];
@@ -4162,8 +4295,11 @@
     if (!cats.length) { alertBox('Nenhum catálogo', 'Adicione um catálogo antes de procurar os produtos nas páginas.'); return; }
     const terms = scanTerms(prods), names = new Map(prods.map((p) => [p.sku, p.name]));
     const skip = new Set([...viewSpots().map(linkKey), ...viewLinks().map(linkKey), ...viewDrops()]); // já marcado, já ligado ou descartado
+    // Áreas que já existem (publicadas e na barra), por página: nada é proposto por cima de uma área desenhada à mão
+    const spotsBy = new Map();
+    for (const h of viewSpots()) { const k = `${h.catalogId}|${h.page}`; if (!spotsBy.has(k)) spotsBy.set(k, []); spotsBy.get(k).push(h); }
     const pg = progressDialog('Procurando produtos nas páginas', true);
-    const props = [], semTexto = []; let pages = 0, jaTem = 0;
+    const props = [], semTexto = [], semPos = []; let pages = 0, jaTem = 0;
     try {
       for (let ci = 0; ci < cats.length && !pg.cancelled; ci++) {
         const c = cats[ci];
@@ -4172,6 +4308,11 @@
         try { texts = await searchPages(c); } catch (e) { console.error(e); }
         if (!vault) throw cancelErr();
         if (!Array.isArray(texts) || !texts.some((x) => String(x || '').trim())) { semTexto.push(c.title); continue; }
+        // Texto posicionado (opcional): com ele a sugestão já vem com a área calculada. Falhar aqui não atrapalha a varredura.
+        let lay = null;
+        try { lay = await layoutPages(c); } catch (e) { console.error(e); }
+        if (!vault) throw cancelErr();
+        if (!Array.isArray(lay) || !lay.length) { lay = null; semPos.push(c.title); }
         const n = Math.min(texts.length, c.pages || texts.length);
         for (let i = 0; i < n; i++) {
           if (i % 8 === 0) { // devolve a vez à tela a cada 8 páginas
@@ -4182,10 +4323,16 @@
           }
           const raw = String(texts[i] || ''); if (!raw.trim()) continue;
           pages++;
-          for (const m of pageMatches(raw, terms)) {
+          const ms = pageMatches(raw, terms);
+          // Linhas do texto posicionado desta página: uma vez só, e só quando há o que localizar
+          const lines = lay && ms.length ? layoutLines(lay[i]) : null;
+          const here = (lines && lines.length && spotsBy.get(`${c.id}|${i + 1}`)) || [];
+          for (const m of ms) {
             const key = linkKey({ catalogId: c.id, page: i + 1, product: m.sku });
             if (skip.has(key)) { jaTem++; continue; }
-            props.push({ key, catalogId: c.id, cat: c.title, page: i + 1, sku: m.sku, name: names.get(m.sku) || m.sku, conf: m.conf, why: m.why, html: snippetHtml(raw, m.a, m.b) });
+            let box = lines && lines.length ? spotFromLines(lines, m) : null;
+            if (box && !boxClear(box, here)) box = null; // em cima de área que já existe: vira só ligação
+            props.push({ key, catalogId: c.id, cat: c.title, page: i + 1, sku: m.sku, name: names.get(m.sku) || m.sku, conf: m.conf, why: m.why, box, html: snippetHtml(raw, m.a, m.b) });
           }
         }
       }
@@ -4196,14 +4343,19 @@
     const cancelled = pg.cancelled;
     pg.close();
     scan.props = props; scan.ran = true;
-    const nA = props.filter((p) => p.conf === 'alta').length;
-    scan.info = `${cancelled ? 'Procura cancelada. ' : ''}${plural(pages, 'página lida', 'páginas lidas')} · ${plural(props.length, 'sugestão', 'sugestões')} (${nA.toLocaleString('pt-BR')} de confiança alta, ${(props.length - nA).toLocaleString('pt-BR')} média)${jaTem ? ` · ${plural(jaTem, 'já estava marcada ou descartada', 'já estavam marcadas ou descartadas')}` : ''}${semTexto.length ? ` · sem texto para ler: ${semTexto.join(', ')}` : ''}.`;
+    const nA = props.filter((p) => p.conf === 'alta').length, nB = props.filter((p) => p.box).length;
+    scan.info = `${cancelled ? 'Procura cancelada. ' : ''}${plural(pages, 'página lida', 'páginas lidas')} · ${plural(props.length, 'sugestão', 'sugestões')} (${nA.toLocaleString('pt-BR')} de confiança alta, ${(props.length - nA).toLocaleString('pt-BR')} média)`
+      + ` · ${nB.toLocaleString('pt-BR')} com marca na página e ${(props.length - nB).toLocaleString('pt-BR')} só com ligação`
+      + `${jaTem ? ` · ${plural(jaTem, 'já estava marcada ou descartada', 'já estavam marcadas ou descartadas')}` : ''}`
+      + `${semTexto.length ? ` · sem texto para ler: ${semTexto.join(', ')}` : ''}`
+      + `${semPos.length ? ` · sem texto posicionado (só ligação): ${semPos.join(', ')} — prepare em Catálogos, botão “Preparar para copiar”` : ''}.`;
     if (tab === 'prods') renderScanBox();
   }
   function scanCardHtml() {
     return `<section class="card stack imp-card" id="pn-scanCard" aria-labelledby="pn-scanH">
       <div class="imp-head"><h2 id="pn-scanH">Marcação automática</h2><button class="btn ghost sm" type="button" id="pn-scanBtn">Encontrar produtos nas páginas</button></div>
-      <p class="muted">Procura o código SAP, o EAN e o nome completo de cada produto no texto das páginas dos catálogos e sugere em quais páginas cada um aparece. Ao aceitar, o produto fica ligado à página sem área (o site mostra “N produtos nesta página”); depois, se quiser, desenhe a área sobre a foto no editor abaixo.</p>
+      <p class="muted">Procura o código SAP, o EAN e o nome completo de cada produto no texto das páginas dos catálogos e sugere em quais páginas cada um aparece.</p>
+      <p class="muted">Nos catálogos preparados para copiar, a marca sobre o produto sai pronta: o site desenha o “+” em cima do texto encontrado. Nos outros, o produto só fica ligado à página (o site mostra “N produtos nesta página”) — para ganhar a marca, use “Preparar para copiar” na linha do catálogo, em Catálogos, e rode a procura de novo. Toda área proposta pode ser movida ou refeita no editor abaixo antes de publicar.</p>
       <div id="pn-scanBox"></div>
     </section>`;
   }
@@ -4216,7 +4368,7 @@
       <div class="scan-acts"><button class="link" type="button" data-scan="all">Selecionar todas</button><button class="link" type="button" data-scan="high">Só as de confiança alta</button><button class="link" type="button" data-scan="none">Nenhuma</button></div>
       <div class="scan-groups" id="pn-scanList">${[...groups.values()].map((g) => `<fieldset class="scan-cat"><legend>${esc(g[0].cat)} · ${plural(g.length, 'sugestão', 'sugestões')}</legend><ul class="scan-list">
         ${g.sort((a, b) => a.page - b.page || a.name.localeCompare(b.name, 'pt-BR')).map((p) => `<li><label class="scan-it" data-key="${esc(p.key)}"><input type="checkbox" value="${esc(p.key)}" ${p.conf === 'alta' ? 'checked' : ''}>
-          <span class="scan-t">Página ${p.page} · ${esc(p.name)} <span class="scan-conf ${p.conf}">${p.conf === 'alta' ? 'confiança alta' : 'confiança média'}</span></span>
+          <span class="scan-t">Página ${p.page} · ${esc(p.name)} <span class="scan-conf ${p.conf}">${p.conf === 'alta' ? 'confiança alta' : 'confiança média'}</span><span class="scan-mark${p.box ? ' spot' : ''}">${p.box ? 'marca na página' : 'só ligação, sem área'}</span></span>
           <span class="scan-s">SKU ${esc(p.sku)} · pelo ${esc(p.why)}</span>
           <span class="scan-s">${p.html}</span></label></li>`).join('')}
       </ul></fieldset>`).join('')}</div>
@@ -4238,19 +4390,37 @@
     });
     renderScanBox();
   }
-  // Aceitar: produto ligado à página SEM área (pageLink), na barra de alterações. Nada de retângulo automático.
+  // Aceitar: com área calculada vira marca na página (hotspot, igual à desenhada à mão); sem ela, o produto fica só ligado à
+  // página (pageLink). Nos dois casos a alteração vai para a barra e só vale depois de publicar.
   function acceptScan(keys) {
     const vd = { ...viewData(), hotspots: viewSpots() }, have = new Set(viewLinks().map(linkKey));
-    let n = 0, first = null;
+    const marked = new Set(vd.hotspots.map(linkKey));
+    let n = 0, nb = 0, first = null, firstId = '';
     for (const k of keys) {
       const p = scan.props.find((x) => x.key === k); if (!p) continue;
+      if (marked.has(k)) continue; // área desenhada à mão (ou já aceita agora) vence: nada por cima
+      if (p.box) {
+        const h = { id: P.randHex(6), catalogId: p.catalogId, page: p.page, product: p.sku, ...p.box };
+        if (spotFits(vd, h)) {
+          stagedSpots.set(h.id, h); vd.hotspots.push(h); marked.add(k);
+          if (have.has(k)) { // a ligação sem área do mesmo produto sai: quem manda é a área
+            if ((vault.pageLinks || []).some((x) => linkKey(x) === k)) stagedLinks.set(k, null); else stagedLinks.delete(k);
+            have.delete(k);
+          }
+          n++; nb++;
+          if (!first) { first = h; firstId = h.id; }
+          continue;
+        }
+      }
       const l = { catalogId: p.catalogId, page: p.page, product: p.sku, auto: true };
       if (!have.has(k) && linkFits(vd, l)) { stagedLinks.set(k, l); have.add(k); n++; if (!first) first = l; }
     }
     scan.props = scan.props.filter((x) => !keys.includes(x.key));
     refreshStage(); renderProdRows(); renderScanBox();
-    if (first && $('#pn-hsEd')) { ed.cat = first.catalogId; ed.page = first.page; ed.sel = ''; ed.draft = null; renderEditor(); } // editor na primeira página aceita
-    toast(n ? `${plural(n, 'produto ligado', 'produtos ligados')} às páginas (sem área), na barra de alterações.` : 'Essas sugestões já estavam ligadas às páginas.');
+    if (first && $('#pn-hsEd')) { ed.cat = first.catalogId; ed.page = first.page; ed.sel = firstId; ed.draft = null; renderEditor(); } // editor na primeira página aceita
+    const nl = n - nb;
+    const partes = [nb && `${plural(nb, 'produto marcado', 'produtos marcados')} na página`, nl && `${plural(nl, 'produto ligado', 'produtos ligados')} à página (sem área)`].filter(Boolean);
+    toast(n ? `${partes.join(' e ')}, na barra de alterações.` : 'Essas sugestões já estavam marcadas ou ligadas às páginas.');
   }
   function dropScan(keys) {
     for (const k of keys) stagedDrops.add(k);

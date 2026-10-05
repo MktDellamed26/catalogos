@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VybrWeklvuJX0emnt2ZDRd4taI1wV6nBuATuxJz/Pb4=' 'sha256-ySHDrR+q0hu9TXdYF4s2f0eNCtztphbeyCDsOXNy/uU=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-UCUo9R3dq6ATGQclNq5xZgBCAWFvAOBUfTvxW0TJ9lA=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -341,6 +341,7 @@
   /* Estados do painel: sem resultado e "continue digitando" */
   .res-empty { padding: 18px 14px; font-size: 13px; color: var(--ink-2); line-height: 1.6; }
   .res-empty b { color: var(--navy); }
+  .res-approx { padding: 10px 14px 4px; font-size: 12px; color: var(--ink-2); }
   .res-hint { display: flex; align-items: center; gap: 10px; padding: 14px; font-size: 13px; color: var(--ink-2); }
   .res-hint .ico { color: var(--navy); opacity: .7; }
   .res-hint b { color: var(--navy); }
@@ -557,6 +558,28 @@
   /* Separador entre os grupos da barra do leitor (voltar/título · busca · página · conteúdo/compartilhar) */
   .r-sep { flex: none; width: 1px; height: 22px; margin: 0 2px; background: var(--line-soft); }
   .panel-btn[aria-expanded="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); }
+  /* Anotar: só o ícone (o nome fica para leitores de tela); com texto a partir de 1680 px */
+  .r-top .notes-btn { position: relative; flex: none; width: 36px; padding: 0; justify-content: center; }
+  .r-top .notes-btn .txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .notes-btn[aria-expanded="true"] { background: rgba(139, 184, 232, .18); border-color: var(--sky); }
+  .notes-btn[aria-expanded="true"]:hover { background: rgba(139, 184, 232, .32); color: var(--white); }
+  .notes-dot { position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: var(--sky); box-shadow: 0 0 0 2px var(--navy); }
+  .notes-dot[hidden] { display: none; }
+  .rp-tabs { display: flex; gap: 4px; padding: 0 12px; background: var(--white); border-bottom: 1px solid var(--clin-line); }
+  .rp-tabs .cart-tab { flex: 1 1 0; }
+  .rp-tabs .notes-dot { position: static; display: inline-block; width: 7px; height: 7px; margin-left: 7px; vertical-align: 2px; background: var(--navy); box-shadow: none; }
+  .nt { display: grid; gap: 12px; }
+  .nt textarea { min-height: 220px; font-size: 14px; }
+  .nt-ins { display: flex; flex-wrap: wrap; gap: 8px; }
+  .nt-status { font-size: 12px; color: var(--ink-2); }
+  .nt-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (min-width: 1440px) {
+    .r-top .notes-btn { width: auto; padding: 0 14px; }
+    .r-top .notes-btn .txt { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+  }
+  @media (max-width: 1199px) { .r-top .notes-btn { width: 44px; min-width: 44px; } }
+  .rp-fichas { margin: 0 0 12px; font-size: 13px; }
+  @media (max-width: 479px) { .r-top .fichas-btn { display: none; } }
   .panel-btn[aria-expanded="true"]:hover { background: rgba(139, 184, 232, .32); color: var(--white); }
   .int-n { min-width: 20px; height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background: var(--sky); color: var(--navy); font-size: 11px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
   /* Controles (anterior, contador, próxima, zoom, som, tela cheia): na barra superior no computador; pílula flutuante nas telas menores */
@@ -682,6 +705,8 @@
   .dlg-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 24px 20px; }
   .toast-wrap { position: fixed; left: 0; right: 0; bottom: 28px; z-index: 90; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; }
   .reader .toast-wrap { bottom: 24px; }
+  body.on-cart > .toast-wrap { bottom: calc(var(--cart-foot-h, 0px) + 16px); }
+  @media (max-width: 767px) { body.on-cart > .toast-wrap { bottom: calc(var(--cart-foot-h, 0px) + var(--tab-h) + 12px + var(--safe-b)); } }
   .toast { max-width: 100%; padding: 12px 20px; border-radius: 999px; background: var(--navy); color: var(--white); font-size: 13px; font-weight: 600; text-align: center; box-shadow: 0 16px 34px -12px rgba(20, 32, 60, .6); opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
   .reader .toast { background: var(--white); color: var(--navy); box-shadow: 0 0 0 1px var(--clin-line), 0 16px 34px -14px rgba(20, 32, 60, .55); } /* sobre o palco claro, um fio de borda separa o aviso do fundo */
   .toast[data-kind="err"] { background: var(--graphite); color: var(--white); }
@@ -882,6 +907,7 @@
   .pc-cart { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
   .pc-cart[data-st="in"] { padding: 10px 12px; border: 1px solid var(--hair); border-radius: 14px; background: var(--light); }
   .pc-cart > .btn { flex: 1 1 100%; }
+  .pc-cart-top { margin: 2px 0 6px; }
   .pc-qty-l { flex: 1 1 auto; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
   .pc-qty-rm { flex: none; }
   /* Tela do carrinho (#/carrinho): lista e rodapé fixo com os totais */
@@ -1054,6 +1080,18 @@
   .su-photo { gap: 10px 12px; }
   .su-photo .card-thumb { width: 56px; height: 56px; font-size: 18px; }
   .su-photo .card-photo-hint { flex-basis: 100%; }
+  /* Cadastro: formulário mais largo no computador, pares lado a lado quando cabem, foto em destaque no topo */
+  .login-panel form.su-form { max-width: 520px; gap: 16px; container-type: inline-size; }
+  .req { color: var(--navy); font-weight: 700; margin-left: 1px; }
+  .su-pair { display: grid; gap: 16px; }
+  @container (min-width: 430px) { .su-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; } }
+  .su-photo { flex-wrap: nowrap; align-items: center; padding: 12px 14px; border: 1px dashed var(--line-ui); border-radius: 14px; background: var(--clin); flex-wrap: wrap; }
+  .su-photo .card-thumb { width: 64px; height: 64px; font-size: 20px; }
+  .su-photo-main { display: grid; gap: 8px; min-width: 0; flex: 1 1 180px; }
+  .su-photo .card-photo-hint { margin: 0; }
+  .field.invalid .su-photo { border: 2px solid var(--graphite); }
+  .su-terms-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .su-terms-row .terms-read { margin: 0; flex: none; line-height: 1.45; }
   /* Cartão: azul-marinho com degradê sutil, brilho azul-claro e um arco discreto da marca; ou claro (branco, texto azul-marinho) */
   .vcard { --u: 4px; position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; width: 100%; aspect-ratio: 4 / 5; padding: calc(var(--u) * 6.667); border-radius: calc(var(--u) * 4.4); background: linear-gradient(168deg, #24365e 0%, #1e2c4f 48%, #17223a 100%); color: var(--white); text-align: center; line-height: 1.2; box-shadow: 0 2px 4px rgba(20, 32, 60, .1), 0 30px 60px -34px rgba(20, 32, 60, .75); }
   /* Brilho: uma luz azul-céu no alto à direita e um halo muito baixo embaixo à esquerda */
@@ -1569,6 +1607,8 @@
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
 <p class="old-browser" id="oldBrowser" role="alert" hidden>Seu navegador é antigo demais para abrir a Prateleira. Atualize o Chrome, Edge, Safari ou Firefox.</p>
+<!-- O script principal não rodou em 20 s (arquivo incompleto, bloqueio de rede ou erro): explica em vez de deixar "Carregando…" para sempre -->
+<p class="old-browser" id="bootFail" role="alert" hidden>A Prateleira não terminou de abrir. Verifique a internet e recarregue a página. Se continuar, atualize o navegador.</p>
 <script>
 /* ES5 apenas: roda antes de tudo, inclusive em navegadores antigos */
 (function () {
@@ -1584,6 +1624,12 @@
     window.__dmVelho = true;
     var m = document.getElementById('oldBrowser');
     if (m) m.removeAttribute('hidden');
+  } else {
+    window.__dmBootT = setTimeout(function () {
+      if (window.__dmOk) return;
+      var f = document.getElementById('bootFail');
+      if (f) f.removeAttribute('hidden');
+    }, 20000);
   }
 })();
 </script>
@@ -1605,11 +1651,11 @@
   <div class="login-panel">
     <form id="loginForm" novalidate>
       <h2 id="loginH" tabindex="-1">Entrar</h2>
-      <p class="sub">Entre com o seu e-mail e a sua senha. No primeiro acesso, use o código provisório que você recebeu.</p>
+      <p class="sub">Entre com o seu e-mail e a sua senha.</p>
       <div class="alert error" id="loginAlert" role="alert" hidden></div>
       <div class="alert error" id="netBox" role="alert" hidden><span class="warn-ico" id="netIco" aria-hidden="true"></span><span><span id="netMsg">Sem conexão com a internet.</span><br><button type="button" class="btn ghost sm" id="netRetry">Tentar de novo</button></span></div>
       <div class="field" id="fEmail"><label class="field-label" for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="username" inputmode="email" required><em class="err" id="errEmail" hidden></em></div>
-      <div class="field" id="fPass"><label class="field-label" for="loginPass">Senha ou código provisório</label>
+      <div class="field" id="fPass"><label class="field-label" for="loginPass">Senha</label>
         <div class="pw"><input id="loginPass" type="password" autocomplete="current-password" required><button type="button" class="pw-toggle ico" id="pwToggle" aria-label="Mostrar senha" aria-pressed="false"></button></div>
         <em class="err" id="errPass" hidden></em>
       </div>
@@ -1662,47 +1708,60 @@
       <p class="contact" data-contact="Dúvidas? Fale com o marketing:" hidden></p>
       <button type="button" class="link" id="actBack" style="justify-self:center">Voltar para o login</button>
     </div>
-    <!-- Cadastro próprio (#/cadastro): só e-mail @dellamed.com.br; a conta nasce pendente e o marketing aprova -->
-    <form id="signupForm" novalidate hidden>
+    <!-- Cadastro próprio (#/cadastro): só e-mail @dellamed.com.br. Com a aprovação automática ligada no painel, entra depois de confirmar o e-mail;
+         sem ela, o pedido fica pendente até o marketing aprovar. Campos com * são obrigatórios (foto e WhatsApp inclusive). -->
+    <form id="signupForm" class="su-form" novalidate hidden>
       <p class="label-caps">Cadastro</p>
       <h2 id="signupH" tabindex="-1">Crie sua conta</h2>
-      <p class="sub">Para a equipe Dellamed. Depois do cadastro, o marketing aprova o seu acesso.</p>
+      <p class="sub">Para a equipe Dellamed. Os campos com <span class="req" aria-hidden="true">*</span> são obrigatórios.</p>
       <div class="alert error" id="signupAlert" role="alert" hidden></div>
-      <div class="field" id="fSuNome"><label class="field-label" for="suNome">Nome completo</label><input id="suNome" data-su="nome" type="text" autocomplete="name" maxlength="120" required><em class="err" id="errSuNome" hidden></em></div>
-      <div class="field" id="fSuEmail"><label class="field-label" for="suEmail">E-mail</label><input id="suEmail" data-su="email" type="email" autocomplete="email" inputmode="email" placeholder="nome@dellamed.com.br" maxlength="120" required><em class="err" id="errSuEmail" hidden></em></div>
-      <div class="field" id="fSuWa"><label class="field-label" for="suWa">WhatsApp <span class="field-opt">(opcional)</span></label><input id="suWa" data-su="wa" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="(00) 00000-0000" maxlength="16"><em class="err" id="errSuWa" hidden></em></div>
-      <!-- Foto opcional: fica só neste aparelho (IndexedDB 'dm-cadastro') e vira a foto inicial do cartão no primeiro acesso. Nada é enviado no cadastro. -->
-      <div class="field" id="fSuFoto"><span class="field-label" id="suFotoL">Sua foto <span class="field-opt">(opcional)</span></span>
-        <div class="card-photo su-photo" id="suPhotoBox" role="group" aria-labelledby="suFotoL">
+      <!-- Foto: fica só neste aparelho (IndexedDB 'dm-cadastro') e vira a foto do cartão no primeiro acesso. Nada é enviado no cadastro. -->
+      <div class="field su-photo-field" id="fSuFoto">
+        <div class="card-photo su-photo" id="suPhotoBox" role="group" aria-labelledby="suFotoL" aria-describedby="suFotoHint">
           <span class="card-thumb" id="suThumb" aria-hidden="true"></span>
-          <div class="card-photo-btns">
-            <label class="btn ghost sm card-file"><input class="sr-only" id="suPhoto" type="file" accept="image/*"><span class="photo-pick-d">Escolher foto</span><span class="photo-pick-m">Escolher da galeria</span></label>
-            <label class="btn ghost sm card-file photo-cam"><input class="sr-only" id="suPhotoCam" type="file" accept="image/*" capture="user">Tirar foto</label>
-            <button class="btn ghost sm" type="button" id="suPhotoRm" hidden>Remover</button>
+          <div class="su-photo-main">
+            <span class="field-label" id="suFotoL">Sua foto <span class="req" aria-hidden="true">*</span><span class="sr-only"> (obrigatório)</span></span>
+            <div class="card-photo-btns">
+              <label class="btn ghost sm card-file"><input class="sr-only" id="suPhoto" data-su="foto" type="file" accept="image/*" aria-required="true"><span class="photo-pick-d">Escolher foto</span><span class="photo-pick-m">Galeria</span></label>
+              <label class="btn ghost sm card-file photo-cam"><input class="sr-only" id="suPhotoCam" type="file" accept="image/*" capture="user">Tirar foto</label>
+              <button class="btn ghost sm" type="button" id="suPhotoRm" hidden>Remover</button>
+            </div>
           </div>
-          <p class="card-photo-hint">Serve para o seu cartão de visita digital. Fica guardada só neste aparelho até o seu primeiro acesso — não é enviada agora.<span class="photo-pick-d"> Você também pode arrastar a foto para cá.</span></p>
+          <p class="card-photo-hint" id="suFotoHint">Vai para o seu cartão de visita digital. Fica neste aparelho até o primeiro acesso.<span class="photo-pick-d"> Pode arrastar a foto para cá.</span></p>
         </div>
         <em class="err" id="errSuFoto" hidden></em>
       </div>
-      <div class="field" id="fSuSetor"><label class="field-label" for="suSetor">Setor</label>
-        <div class="select"><select id="suSetor" data-su="setor" required disabled><option value="">Carregando os setores…</option></select><span class="ico" data-ico="more" aria-hidden="true"></span></div>
-        <p class="field-note" id="suSetorNote" role="status" hidden><span id="suSetorMsg"></span><button type="button" class="link" id="suSetorRetry">Tentar de novo</button></p>
-        <em class="err" id="errSuSetor" hidden></em>
+      <div class="field" id="fSuNome"><label class="field-label" for="suNome">Nome completo <span class="req" aria-hidden="true">*</span></label><input id="suNome" data-su="nome" type="text" autocomplete="name" maxlength="120" required aria-required="true"><em class="err" id="errSuNome" hidden></em></div>
+      <div class="field" id="fSuEmail"><label class="field-label" for="suEmail">E-mail <span class="req" aria-hidden="true">*</span></label><input id="suEmail" data-su="email" type="email" autocomplete="email" inputmode="email" placeholder="nome@dellamed.com.br" maxlength="120" required aria-required="true"><em class="err" id="errSuEmail" hidden></em></div>
+      <div class="su-pair">
+        <div class="field" id="fSuWa"><label class="field-label" for="suWa">WhatsApp <span class="req" aria-hidden="true">*</span></label><input id="suWa" data-su="wa" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="(54) 99999-9999" maxlength="16" required aria-required="true"><em class="err" id="errSuWa" hidden></em></div>
+        <div class="field" id="fSuSetor"><label class="field-label" for="suSetor">Setor <span class="req" aria-hidden="true">*</span></label>
+          <div class="select"><select id="suSetor" data-su="setor" required aria-required="true" disabled><option value="">Carregando…</option></select><span class="ico" data-ico="more" aria-hidden="true"></span></div>
+          <p class="field-note" id="suSetorNote" role="status" hidden><span id="suSetorMsg"></span><button type="button" class="link" id="suSetorRetry">Tentar de novo</button></p>
+          <em class="err" id="errSuSetor" hidden></em>
+        </div>
       </div>
-      <div class="field" id="fSuPass"><label class="field-label" for="suPass">Senha</label>
-        <div class="pw"><input id="suPass" data-su="pass" type="password" autocomplete="new-password" required><button type="button" class="pw-toggle ico" id="suPwToggle" aria-label="Mostrar senha" aria-pressed="false"></button></div>
-        <div class="pw-meter" id="suMeter" data-level="0" aria-hidden="true"><i></i><i></i><i></i></div>
-        <p class="pw-meter-t" id="suMeterTxt" aria-live="polite">Use pelo menos 12 caracteres, sem partes do seu e-mail.</p>
-        <em class="err" id="errSuPass" hidden></em>
+      <div class="su-pair">
+        <div class="field" id="fSuPass"><label class="field-label" for="suPass">Senha <span class="req" aria-hidden="true">*</span></label>
+          <div class="pw"><input id="suPass" data-su="pass" type="password" autocomplete="new-password" required aria-required="true"><button type="button" class="pw-toggle ico" id="suPwToggle" aria-label="Mostrar senha" aria-pressed="false"></button></div>
+          <div class="pw-meter" id="suMeter" data-level="0" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="pw-meter-t" id="suMeterTxt" aria-live="polite">Mínimo de 12 caracteres, sem partes do seu e-mail.</p>
+          <em class="err" id="errSuPass" hidden></em>
+        </div>
+        <div class="field" id="fSuPass2"><label class="field-label" for="suPass2">Confirmar senha <span class="req" aria-hidden="true">*</span></label>
+          <div class="pw"><input id="suPass2" data-su="pass2" type="password" autocomplete="new-password" required aria-required="true"><button type="button" class="pw-toggle ico" id="suPwToggle2" aria-label="Mostrar senha" aria-pressed="false"></button></div>
+          <em class="err" id="errSuPass2" hidden></em>
+        </div>
       </div>
-      <div class="field" id="fSuPass2"><label class="field-label" for="suPass2">Confirmar senha</label>
-        <div class="pw"><input id="suPass2" data-su="pass2" type="password" autocomplete="new-password" required><button type="button" class="pw-toggle ico" id="suPwToggle2" aria-label="Mostrar senha" aria-pressed="false"></button></div>
-        <em class="err" id="errSuPass2" hidden></em>
+      <div class="field su-terms" id="fSuTerms">
+        <div class="su-terms-row">
+          <label class="check check-terms"><input type="checkbox" id="suTerms" data-su="termos" required aria-required="true"> <span>Li e aceito os termos de uso e a política de privacidade <span class="req" aria-hidden="true">*</span></span></label>
+          <button type="button" class="link terms-read" id="suTermsLink">Ler</button>
+        </div>
+        <em class="err" id="errSuTerms" hidden></em>
       </div>
-      <div class="field" id="fSuTerms"><label class="check check-terms"><input type="checkbox" id="suTerms" data-su="termos" required> <span>Li e aceito os termos de uso e a política de privacidade</span></label><em class="err" id="errSuTerms" hidden></em></div>
-      <button type="button" class="link terms-read" id="suTermsLink">Ler os termos de uso e a política de privacidade</button>
       <button class="btn primary block" type="submit" id="signupSubmit">Criar conta</button>
-      <p class="signup-cta">Já tenho conta · <button type="button" class="link" id="suToLogin">Entrar</button></p>
+      <p class="signup-cta">Já tem conta? <button type="button" class="link" id="suToLogin">Entrar</button></p>
     </form>
     <!-- Cadastro enviado ("Confira seu e-mail") ou e-mail confirmado com o pedido em análise -->
     <div class="stack-login" id="signupMsgView" hidden>
@@ -1795,7 +1854,7 @@
         <!-- Acesso antigo (acessos.json): aviso de uma linha; "Entendi" dispensa de vez (gravado nas preferências do usuário) -->
         <div class="legacy-note" id="legacyNote" role="note" hidden>
           <span class="ico" data-ico="lock" aria-hidden="true"></span>
-          <p>Você está no acesso antigo. Peça o convite ao marketing.</p>
+          <p>Você está no acesso antigo. Saia e use “Cadastre-se” com este mesmo e-mail: favoritos e carrinhos vêm junto.</p>
           <button class="btn ghost sm" type="button" id="legacyNoteX">Entendi</button>
         </div>
         <div class="greet"><h1 id="greet"></h1><p id="greetSub"></p></div>
@@ -2049,6 +2108,8 @@
     <button class="pill-btn fichas-btn" id="btnFichas" type="button" hidden aria-pressed="true" title="Fichas na página: mostrar ou esconder"><span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg></span><span class="txt">Fichas</span></button>
     <!-- Modo Copiar: texto da página selecionável, toque num código/EAN/medida/nome para copiar e "Copiar tabela". Com ele ligado, a página só vira por ‹ › e pelas setas -->
     <button class="pill-btn copy-btn" id="btnCopy" type="button" aria-pressed="false" aria-label="Modo Copiar" title="Modo Copiar: copiar nomes, códigos, medidas e tabelas da página"><span class="ico" data-ico="copy"></span><span class="txt">Copiar</span></button>
+    <!-- Anotar: bloco de notas deste catálogo (pedidos ditados numa call), na aba "Anotações" do painel lateral -->
+    <button class="pill-btn notes-btn" id="btnNotes" type="button" aria-controls="rPanel" aria-expanded="false" aria-label="Anotar" title="Anotações deste catálogo: anote os pedidos durante a call"><span class="ico" data-ico="pencil"></span><span class="txt">Anotar</span><span class="notes-dot" id="notesDot" hidden></span></button>
     <!-- Grupo "conteúdo e envio": "Nesta página" e, por último, a ação principal (Compartilhar) -->
     <span class="r-sep" aria-hidden="true"></span>
     <button class="pill-btn panel-btn" id="rPanelBtn" type="button" aria-controls="rPanel" aria-expanded="false" title="Produtos das páginas abertas"><span class="ico" data-ico="panel"></span><span class="txt">Nesta página</span><span class="int-n" id="rPanelN" hidden>0</span></button>
@@ -2083,15 +2144,37 @@
     <!-- Nesta página: produtos com "+" (e ligados à página) nas páginas abertas. O texto da página se copia em cima dela (Modo Copiar) -->
     <aside class="r-panel" id="rPanel" aria-labelledby="rPanelTitle" tabindex="-1">
       <div class="rp-head">
-        <h2 id="rPanelTitle" tabindex="-1">Nesta página <span class="rp-pages" id="rPanelPages"></span></h2>
+        <h2 id="rPanelTitle" tabindex="-1"><span id="rPanelTitleT">Nesta página</span> <span class="rp-pages" id="rPanelPages"></span></h2>
         <!-- Soma ao carrinho todos os produtos das páginas abertas (a faixa na própria página tem o mesmo atalho) -->
         <button class="rp-add" id="rpAddAll" type="button" hidden>Adicionar todos</button>
         <button class="icon-btn rp-close" id="rPanelClose" type="button" aria-label="Fechar o painel Nesta página" title="Fechar o painel"><span class="ico" data-ico="close"></span></button>
       </div>
+      <div class="rp-tabs" role="tablist" aria-label="Painel do catálogo">
+        <button class="cart-tab" type="button" role="tab" id="rpTabProd" aria-selected="true" aria-controls="rpProdPane" data-rp-tab="prod">Produtos</button>
+        <button class="cart-tab" type="button" role="tab" id="rpTabNotes" aria-selected="false" aria-controls="rpNotesPane" data-rp-tab="notes" tabindex="-1">Anotações<span class="notes-dot" data-notes-dot hidden></span></button>
+      </div>
       <div class="rp-body">
-        <div id="rpProd"></div>
+        <div id="rpProdPane" role="tabpanel" aria-labelledby="rpTabProd">
+          <!-- Celular estreito: a chave "Fichas" sai da barra (lugar do "Anotar") e fica aqui -->
+          <label class="check rp-fichas" id="rpFichasRow" hidden><input type="checkbox" id="rpFichas"> Mostrar as fichas na página</label>
+          <div id="rpProd"></div>
+        </div>
+        <!-- Anotações: uma por catálogo, só neste aparelho (localStorage dm.notas.<uid>), gravadas enquanto a pessoa digita -->
+        <div id="rpNotesPane" class="nt" role="tabpanel" aria-labelledby="rpTabNotes" hidden>
+          <div class="field"><label class="field-label" for="ntCli">Cliente</label><input id="ntCli" type="text" maxlength="80" autocomplete="off" placeholder="Nome do cliente ou da loja"></div>
+          <div class="field"><label class="field-label" for="ntTxt">Anotações</label><textarea id="ntTxt" rows="11" maxlength="20000" placeholder="Ex.: Cadeira D750 — 4 un — entregar até dia 20" aria-describedby="ntStatus"></textarea></div>
+          <div class="nt-ins" role="group" aria-label="Inserir na anotação">
+            <button class="btn ghost sm" type="button" data-nt="page" id="ntPage">+ Página</button>
+            <button class="btn ghost sm" type="button" data-nt="prods">+ Produtos destas páginas</button>
+          </div>
+          <p class="nt-status" id="ntStatus" role="status">Fica só neste aparelho, separada por catálogo.</p>
+        </div>
       </div>
       <div class="rp-foot" id="rpFoot"></div>
+      <div class="rp-foot" id="rpNotesFoot" hidden>
+        <button type="button" class="btn primary block" data-nt="wa">Enviar pelo WhatsApp</button>
+        <div class="nt-acts"><button type="button" class="btn ghost" data-nt="copy">Copiar</button><button type="button" class="btn ghost" data-nt="clear">Limpar</button></div>
+      </div>
     </aside>
   </div>
   <div class="r-scrim" id="rScrim" hidden></div>
@@ -2108,6 +2191,8 @@
 (() => {
   'use strict';
   if (window.__dmVelho) return; // navegador antigo: a mensagem estática já está na tela
+  window.__dmOk = true; clearTimeout(window.__dmBootT); // o script principal começou: o aviso de falha na abertura não aparece
+  { const bf = document.getElementById('bootFail'); if (bf) bf.hidden = true; }
 
     /* ================= Protocolo da Prateleira (compartilhado) =================
      Este bloco é inserido pelo build em index.html e em admin.html, no lugar do marcador de protocolo dos modelos.
@@ -2675,6 +2760,7 @@
     chat: '<svg viewBox="0 0 24 24"><path d="M20.5 11.6a7.9 7.9 0 0 1-11.8 6.9L4 20l1.5-4.6A7.9 7.9 0 1 1 20.5 11.6z"/></svg>', /* mensagem (WhatsApp): balão genérico, sem a marca */
     panel: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M14.5 4.5v15M17 8.5h1M17 11.5h1"/></svg>',
     ajustes: '<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>',
+    note: '<svg viewBox="0 0 24 24"><path d="M6 3.5h9l3.5 3.5v13.5H6z"/><path d="M15 3.5V7h3.5M9 11h6.5M9 14.5h6.5M9 18h4"/></svg>',
     users: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M15.5 4.8a3.5 3.5 0 0 1 0 6.4M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>'
   };
   const WARN = `<span class="warn-ico" aria-hidden="true">${I.warn}</span>`;
@@ -2736,12 +2822,14 @@
   function trackCatalogEvent(name, params = {}) {
     const c = R.cat;
     const ev = { event: name, catalog_id: c ? c.id : null, catalog_title: c ? c.title : null, page_number: c ? curIndex() + 1 : null, user_role: me ? me.role : null, ...params, ts: new Date().toISOString() };
-    const log = window.__catalogEvents || (window.__catalogEvents = []); // últimos 50, para testes
-    log.push(ev);
-    if (log.length > 50) log.splice(0, log.length - 50);
     let debug = ANALYTICS.debug;
     try { debug = debug || localStorage.getItem('dm.analytics.debug') === '1'; } catch (e) { /* noop */ }
-    if (debug) console.info('[catálogo]', name, ev);
+    if (debug) { // últimos 50 eventos em window.__catalogEvents, só para testes
+      const log = window.__catalogEvents || (window.__catalogEvents = []);
+      log.push(ev);
+      if (log.length > 50) log.splice(0, log.length - 50);
+      console.info('[catálogo]', name, ev);
+    }
     if (ANALYTICS.enabled) { window.dataLayer = window.dataLayer || []; window.dataLayer.push(ev); }
   }
   // Tempo por página: começa quando a página assenta e termina na troca, ao fechar ou ao esconder a aba (sem temporizador contínuo)
@@ -2836,6 +2924,7 @@
     const prodData = await prodJob;
     ROOT = rootKey; CATALOGS = list; KEYS = keys; DATA_GEN++;
     PROD = buildProd(prodData, list);
+    PROD_FAIL = prodData === null; // produtos.bin não abriu: carrinho, fichas e "+" ficam fora até recarregar (avisado na tela)
     for (const k of Object.keys(SEARCH)) delete SEARCH[k];
     for (const k of Object.keys(SEARCH_N)) delete SEARCH_N[k];
     searchLoads.clear(); searchFail.clear();
@@ -2846,9 +2935,16 @@
 
   /* ================= produtos.bin (produtos e hotspots; opcional) ================= */
   // Ausente (404), antigo ou impossível de abrir: o site funciona normalmente, só sem produtos
+  let PROD_FAIL = false, prodFailShown = false;
   async function loadProdutos(rootKey) {
     try { return await P.openProdutos(rootKey, await getBuf('produtos.bin', { cache: 'no-store' })); }
-    catch (e) { return null; }
+    catch (e) { if (!(e instanceof HttpError && e.status === 404)) console.warn('[produtos]', e); return e instanceof HttpError && e.status === 404 ? {} : null; } // 404 = ainda sem produtos publicados (não é falha)
+  }
+  // Uma vez por sessão: sem produtos, o carrinho não tem o que mostrar; melhor dizer do que deixar os "+" sumirem em silêncio
+  function warnProdFail() {
+    if (!PROD_FAIL || prodFailShown || !me) return;
+    prodFailShown = true;
+    toast('Os produtos não carregaram agora: o carrinho e as fichas voltam ao recarregar a página.', 'err', { label: 'Recarregar', onClick: () => location.reload() });
   }
   function buildProd(data, list) {
     const out = { comercial: {}, bySku: new Map(), spots: new Map(), byCatPage: new Map(), links: new Map(), linkSpots: new Map() };
@@ -3089,7 +3185,7 @@
 
   /* ================= preferências (neste aparelho; mescladas entre abas) ================= */
   const prefsKey = () => 'dm.prefs.' + me.uid;
-  let prefsT = null, prefsDirty = false;
+  let prefsT = null, prefsDirty = false, prefsWarned = false;
   const favOps = new Map(); // favoritos alterados nesta aba e ainda não gravados
   // Carrinho alterado nesta aba: "idDaLista::skuKey" → { lista, k, item } (item null = removido)
   const cartOps = new Map();
@@ -3228,7 +3324,10 @@
     out.logins = Math.max(st.logins, prefs.logins || 0);
     if (prefs.appInvite || st.appInvite) out.appInvite = true;
     if (cardDirty && prefs.card) out.card = prefs.card; else prefs.card = st.card; // sem edição aqui: fica o que outra aba gravou
-    try { localStorage.setItem(prefsKey(), JSON.stringify(out)); } catch (e) { /* armazenamento indisponível */ }
+    try { localStorage.setItem(prefsKey(), JSON.stringify(out)); }
+    catch (e) { // armazenamento cheio ou bloqueado (navegação privada): o carrinho e os favoritos só valem até fechar a página — avisa uma vez
+      if (!prefsWarned) { prefsWarned = true; setTimeout(() => toast('Este navegador não está deixando salvar neste aparelho. Carrinho, favoritos e anotações valem só até fechar a página.', 'err'), 0); }
+    }
     prefs.favorites = out.favorites; prefs.progress = out.progress;
     prefs.carts = out.carts; prefs.cartAtual = out.cartAtual; prefs.cartHist = out.cartHist;
     prefs.logins = out.logins; prefs.appInvite = out.appInvite === true ? true : undefined;
@@ -3457,7 +3556,8 @@
     V.cart.hidden = name !== 'cart';
     V.ger.hidden = name !== 'ger';
     $('#gerBar').hidden = name !== 'ger'; // a barra de publicação só aparece na gestão
-    document.body.classList.toggle('on-card', name === 'card'); // celular: o aviso (toast) sobe acima da barra fixa do cartão
+    document.body.classList.toggle('on-card', name === 'card');
+    document.body.classList.toggle('on-cart', name === 'cart'); // o aviso (toast) sobe acima do rodapé fixo do carrinho // celular: o aviso (toast) sobe acima da barra fixa do cartão
     // Gestão de emergência sem login no site: só o shell com "Gerenciar" e "Voltar ao login"
     document.body.classList.toggle('ger-on', name === 'ger');
     document.body.classList.toggle('ger-only', name === 'ger' && !me);
@@ -3492,6 +3592,8 @@
   }
   function route(forced) {
     const h = forced || location.hash || lastRoute;
+    // Trocou de tela (voltar do celular, link, "Ver carrinho"): diálogo aberto não fica por cima da tela nova bloqueando os toques
+    if (dlg.open) closeDialog();
     // Endereço de produto: #/catalogo/<id>/<página>?produto=<SKU>
     const qi = h.indexOf('?');
     const parts = (qi >= 0 ? h.slice(0, qi) : h).replace(/^#\/?/, '').split('/');
@@ -3513,7 +3615,7 @@
     if (!(parts[0] === 'cartao' && parts[1] === 'editar') && cardLeaveBlocked(h)) return;
     // Gestão: só admin do Supabase (acesso antigo tem papel ''); os demais voltam à prateleira sem carregar painel.js
     if (parts[0] === 'gerenciar' || parts[0] === 'emergencia') {
-      if (!gerEmerg && me.papel !== 'admin') { redirect('#/prateleira'); return; }
+      if (!gerEmerg && me.papel !== 'admin') { redirect('#/prateleira'); setTimeout(() => toast('A gestão é só para administradores. Você está na Prateleira.'), 50); return; }
       routeGer(parts);
       return;
     }
@@ -3646,7 +3748,7 @@
     const email = $('#loginEmail').value.trim(), pass = $('#loginPass').value;
     loginAlert(''); hideNet();
     const okE = setErr($('#fEmail'), !email ? 'Informe o e-mail.' : !emailOk(email) ? 'Confira o formato do e-mail.' : '');
-    const okP = setErr($('#fPass'), !pass ? 'Informe a senha ou o código provisório.' : '');
+    const okP = setErr($('#fPass'), !pass ? 'Informe a sua senha.' : '');
     if (!okE || !okP) { focusFirstInvalid(loginForm); return; }
     if (!ACCESS) return;
     if (accessTooNew()) { loginAlert(MSG_UPDATE); return; }
@@ -3666,7 +3768,8 @@
         if (await supaEnter(remember, retry)) trackCatalogEvent('auth_login', { method: 'supabase' });
         return;
       }
-      // 2) Acesso antigo
+      // 2) Acesso antigo (só se acessos.json carregou)
+      if (!ACCESS.salt) { loginAlert(supaErr ? (supaErr.status === 429 ? 'Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo.' : 'Não foi possível verificar o acesso agora. Tente de novo em alguns minutos.') : 'E-mail ou senha incorretos.'); return; }
       const id = await P.userId(ACCESS.salt, email, ACCESS.v);
       const prof = await tryLogin(id, pass);
       if (!prof) {
@@ -3791,7 +3894,7 @@
   const TERMOS_VERSAO = '2026-09';
   const SIGNUP_DOMAIN = null; // trava de domínio no site (regra de verdade fica no banco; null = qualquer e-mail)
   const SU = { busy: false, setores: null, loading: null, photo: null, photoUrl: '' };
-  const suField = { nome: '#fSuNome', email: '#fSuEmail', wa: '#fSuWa', setor: '#fSuSetor', pass: '#fSuPass', pass2: '#fSuPass2', termos: '#fSuTerms' };
+  const suField = { foto: '#fSuFoto', nome: '#fSuNome', email: '#fSuEmail', wa: '#fSuWa', setor: '#fSuSetor', pass: '#fSuPass', pass2: '#fSuPass2', termos: '#fSuTerms' };
   function signupAlert(msg) { const a = $('#signupAlert'); a.innerHTML = msg ? `${WARN}<span>${esc(msg)}</span>` : ''; a.hidden = !msg; }
   // Força da senha (só orienta; as regras obrigatórias são o mínimo de 12 caracteres e não conter o e-mail). level: 0 vazio, 1 fraca, 2 boa, 3 forte
   function suPwInfo(pwd) {
@@ -3807,7 +3910,7 @@
   function paintSuMeter() {
     const info = suPwInfo($('#suPass').value), m = $('#suMeter'), t = $('#suMeterTxt');
     m.dataset.level = String(info.level);
-    const html = !info.level ? 'Use pelo menos 12 caracteres, sem partes do seu e-mail.'
+    const html = !info.level ? 'Mínimo de 12 caracteres, sem partes do seu e-mail.'
       : `Força da senha: <b>${['', 'fraca', 'boa', 'forte'][info.level]}</b>${info.problem ? ` · ${esc(info.problem)}` : info.level === 1 ? ' · use letras, números e símbolos' : ''}`;
     if (t.innerHTML !== html) t.innerHTML = html;
     return info;
@@ -3825,7 +3928,9 @@
       msg = !v ? 'Informe o seu e-mail.' : !emailOk(v) ? 'Confira o formato do e-mail.' : (SIGNUP_DOMAIN && !SIGNUP_DOMAIN.test(v)) ? 'Use o seu e-mail @dellamed.com.br' : '';
     } else if (key === 'wa') {
       const d = onlyDigits($('#suWa').value);
-      msg = d && (d.length < 10 || d.length > 11) ? 'Informe DDD e número, como (54) 99999-9999.' : '';
+      msg = !d ? 'Informe o seu WhatsApp com DDD.' : d.length < 10 || d.length > 11 ? 'Informe DDD e número, como (54) 99999-9999.' : '';
+    } else if (key === 'foto') {
+      msg = SU.photo ? '' : 'Adicione uma foto sua: ela vai para o seu cartão de visita digital.';
     } else if (key === 'setor') {
       msg = SU.loading ? 'Aguarde a lista de setores carregar.' : !SU.setores ? 'Não foi possível carregar os setores. Use “Tentar de novo”.' : !$('#suSetor').value ? 'Escolha o seu setor.' : '';
     } else if (key === 'pass') {
@@ -3891,7 +3996,7 @@
     $('#suMsgCaps').textContent = sent ? 'Cadastro enviado' : 'Cadastro';
     $('#suMsgH').textContent = sent ? 'Confira seu e-mail' : 'E-mail confirmado!';
     $('#suMsgText').innerHTML = sent
-      ? `Enviamos um link de confirmação para <span class="su-email">${esc(email)}</span>. Depois de confirmar, seu pedido vai para aprovação do marketing. Você recebe um e-mail quando o acesso for liberado.`
+      ? `Enviamos um link de confirmação para <span class="su-email">${esc(email)}</span>. Abra o link para ativar o seu acesso. Se o cadastro precisar de aprovação do marketing, você recebe um e-mail quando for liberado.`
       : 'Seu pedido de acesso está em análise. Você recebe um e-mail quando for liberado.';
     $('#suMsgNote').hidden = !sent;
     hideNet();
@@ -4260,6 +4365,7 @@
     document.body.classList.toggle('card-tab', cardOn);
     if (cardOn) { loadCard(); adoptSignupPhoto().catch(() => { /* a foto do cadastro é um extra: nunca atrapalha a entrada */ }); }
     updateCartUI();
+    setTimeout(warnProdFail, 600);
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
       lastRoute = '#/prateleira';
@@ -4319,8 +4425,8 @@
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=aedab7d7';
-      s.integrity = 'sha384-610r3abbmw5YPVCuOpQvBpUf1Y54ubijMnbNQ2BZwItiLWv6pXvT082RUlVFdL1X';
+      s.src = 'painel.js?v=63fc21e5';
+      s.integrity = 'sha384-+8PbSQ1ELGGPypHdN59ioZF/o8PtJVqduXKS4S0hfxcErU7WU3htiDdeOExNvxFM';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -4397,8 +4503,14 @@
     try { api = await gerStart(mode); }
     catch (e) {
       if (seq !== GER.seq || view !== 'ger') return;
-      root.innerHTML = `<div class="ger-state" role="alert">${WARN}<p>Não foi possível carregar a gestão. Verifique a internet e tente de novo.</p><button class="btn primary" type="button">Tentar de novo</button></div>`;
-      $('button', root).addEventListener('click', () => route());
+      // Arquivo chegou mas não confere com este site (versão nova publicada no meio do caminho): recarregar resolve; sem resposta: internet
+      let novo = false;
+      try { novo = navigator.onLine !== false && (await fetch('painel.js', { method: 'HEAD', cache: 'no-store' })).ok; } catch (_) { novo = false; }
+      if (seq !== GER.seq || view !== 'ger') return;
+      root.innerHTML = novo
+        ? `<div class="ger-state" role="alert">${WARN}<p>Há uma versão nova da Prateleira. Recarregue a página para abrir a gestão.</p><button class="btn primary" type="button">Recarregar</button></div>`
+        : `<div class="ger-state" role="alert">${WARN}<p>Não foi possível carregar a gestão. Verifique a internet e tente de novo.</p><button class="btn primary" type="button">Tentar de novo</button></div>`;
+      $('button', root).addEventListener('click', () => (novo ? location.reload() : route()));
       return;
     }
     if (seq !== GER.seq || view !== 'ger' || !section) return;
@@ -4837,39 +4949,185 @@
   const searchLoading = (ids) => ids.some((id) => searchLoads.has(id) && !SEARCH[id]);
   function normPages(id) { if (!SEARCH_N[id] && SEARCH[id]) SEARCH_N[id] = SEARCH[id].map((t) => joinUnits(norm(t))); return SEARCH_N[id]; }
   const wordRe = (t) => new RegExp('(^|[^a-z0-9])' + reEsc(t) + '(?=$|[^a-z0-9])');
-  function search(q, onlyCat) {
-    const nq = joinUnits(norm(q.trim()));
-    if (nq.length < 2) return null;
-    const terms = [...new Set(nq.split(/\s+/).filter(Boolean))];
-    const res = terms.map(wordRe);
-    const score = (txt) => res.reduce((a, r) => a + (r.test(txt) ? 1 : 0), 0);
-    const cats = expiredLast(visibleCatalogs().filter((c) => !onlyCat || c.id === onlyCat));
-    const catHits = onlyCat ? [] : cats
-      .map((c, ci) => { const t = joinUnits(norm(`${c.title} ${c.kind} ${(c.lines || []).join(' ')} ${c.desc || ''}`)); return terms.every((x) => t.includes(x)) ? { c, ci, s: score(t) } : null; })
-      .filter(Boolean).sort((a, b) => b.s - a.s || a.ci - b.ci).map((x) => x.c);
-    // Produtos: código exato primeiro, depois início do código; senão todas as palavras (nome, categoria, benefício, capacidade, descrição)
-    // Código exato: SKU e também o código SAP e o EAN da ficha técnica (busca local nos produtos já carregados; busca.bin intacto)
-    const qk = P.skuKey(nq), qd = nq.replace(/\D/g, ''), prodAll = [];
-    const fichaCode = (f) => !!f && ((qk.length >= 2 && P.skuKey(f.sap) === qk) ||
-      (qd.length >= 8 && (String(f.ean || '').replace(/\D/g, '') === qd || String(f.eanCx || '').replace(/\D/g, '') === qd)));
-    if (PROD) for (const p of PROD.bySku.values()) {
-      const spot = productSpots(p.sku, onlyCat)[0] || productLinks(p.sku, onlyCat)[0] || null; // área desenhada ou, sem ela, a página ligada
-      if (onlyCat && (!spot || spot.catalogId !== onlyCat)) continue; // busca do leitor: só produtos deste catálogo
-      const key = P.skuKey(p.sku);
-      const s = key === qk || fichaCode(p.ficha) ? 1000 : qk.length >= 2 && key.startsWith(qk) ? 500 : terms.every((x) => p._n.includes(x)) ? score(p._n) : -1;
-      if (s >= 0) prodAll.push({ p, spot, s });
+  /* ----- motor da busca: palavras sem acento, plural/singular, palavra incompleta, erro de digitação e códigos parciais -----
+     Cada catálogo ganha um vocabulário (palavra → páginas) feito uma vez, na primeira busca depois que o texto carrega.
+     Cada palavra da busca é comparada com o vocabulário (não com cada página): exata > começo da palavra > parte da palavra > erro de digitação.
+     Palavras vazias ("de", "para", "com"…) não contam; com 3 palavras ou mais, uma pode faltar (o resultado completo vem antes). */
+  const STOP = new Set(['a', 'o', 'as', 'os', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'na', 'no', 'nas', 'nos', 'para', 'pra', 'pro', 'com', 'sem', 'por', 'um', 'uma', 'p', 'c']);
+  function stem(w) {
+    if (w.length <= 3 || /\d/.test(w)) return w;
+    if (/(oes|aes)$/.test(w)) return w.slice(0, -3) + 'ao';
+    if (/ais$/.test(w)) return w.slice(0, -3) + 'al';
+    if (/eis$/.test(w)) return w.slice(0, -3) + 'el';
+    if (/(res|zes|ses)$/.test(w)) return w.slice(0, -2);
+    if (/ns$/.test(w)) return w.slice(0, -2) + 'm';
+    if (/s$/.test(w) && !/(ss|us|is)$/.test(w)) return w.slice(0, -1);
+    return w;
+  }
+  const toks = (s) => joinUnits(norm(s)).split(/[^a-z0-9]+/).filter(Boolean);
+  // Distância de edição com teto (troca de duas letras vizinhas conta como 1): para cedo quando passa do teto
+  function editDist(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let p2 = null, p1 = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i]; let low = i;
+      for (let j = 1; j <= b.length; j++) {
+        let v = Math.min(p1[j] + 1, cur[j - 1] + 1, p1[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (p2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, p2[j - 2] + 1);
+        cur.push(v); if (v < low) low = v;
+      }
+      if (low > max) return max + 1;
+      p2 = p1; p1 = cur;
     }
-    const prodHits = prodAll.sort((a, b) => b.s - a.s || a.p.name.localeCompare(b.p.name, 'pt-BR')).slice(0, 8);
-    // A página que já aparece como produto não se repete em "Nas páginas"
-    const taken = new Set(prodHits.filter((x) => x.spot).map((x) => x.spot.catalogId + ':' + x.spot.page));
-    const pageHits = [];
-    cats.forEach((c, ci) => {
-      const arr = normPages(c.id); if (!arr) return;
-      arr.forEach((txt, i) => { if (!taken.has(c.id + ':' + (i + 1)) && terms.every((x) => txt.includes(x))) pageHits.push({ c, ci, page: i + 1, s: score(txt) }); });
+    return p1[b.length];
+  }
+  // Comparador de uma palavra buscada (t, já sem acento; ts = radical) contra cada palavra do texto (raw; rs = radical).
+  // Devolve o peso (0 = não atende); peso negativo = só por erro de digitação. Feito uma vez por palavra buscada: o laço fica leve.
+  function matcher(t, ts, last) {
+    const digits = /^\d+$/.test(t), hasDigit = /\d/.test(t), long = t.length >= 4, max = t.length >= 7 ? 2 : 1, t0 = t[0], tl = t.length;
+    return (raw, rs) => {
+      if (raw === t) return 1;
+      if (rs === ts) return 0.97;
+      if (digits) return tl >= 4 && raw.includes(t) ? 0.8 : 0; // EAN e números: trecho com 4 dígitos ou mais
+      if (tl >= 2 && raw.startsWith(t)) return last ? 0.9 : 0.8; // palavra ainda sendo digitada ("cade" → cadeira)
+      if (!long || raw.length < 3) return 0;
+      if (raw.length >= 4 && (raw.includes(t) || (rs.length >= 5 && t.startsWith(rs)))) return 0.6;
+      if (hasDigit || raw[0] !== t0 || Math.abs(raw.length - tl) > max + 1) return 0;
+      const d = rs === raw && ts === t ? editDist(t, raw, max) : Math.min(editDist(ts, rs, max), editDist(t, raw, max));
+      return d <= max ? (d === 1 ? -0.55 : -0.4) : 0;
+    };
+  }
+  function parseQuery(q) {
+    const nq = joinUnits(norm(String(q || '').trim()));
+    const all = nq.split(/[^a-z0-9]+/).filter(Boolean);
+    let terms = all.filter((w) => !STOP.has(w));
+    if (!terms.length) terms = all;
+    terms = [...new Set(terms)];
+    return { nq, terms, stems: terms.map(stem), phrase: terms.join(' '), compact: nq.replace(/[^a-z0-9]/g, '') };
+  }
+  // Vocabulário do texto das páginas de um catálogo (refeito se o texto mudar)
+  const SIDX = new Map();
+  function catIndex(id) {
+    const pages = normPages(id); if (!pages) return null;
+    let x = SIDX.get(id);
+    if (x && x.src === pages) return x;
+    const vocab = new Map();
+    pages.forEach((txt, i) => { for (const w of txt.split(/[^a-z0-9]+/)) { if (!w) continue; let s = vocab.get(w); if (!s) vocab.set(w, (s = new Set())); s.add(i); } });
+    x = { src: pages, vocab: vocabList(vocab), compact: pages.map((t) => t.replace(/[^a-z0-9]/g, '')), flat: pages.map((t) => t.split(/[^a-z0-9]+/).filter((w) => w && !STOP.has(w)).join(' ')) };
+    SIDX.set(id, x);
+    return x;
+  }
+  // Para cada palavra buscada: { chave → { w, fz, raw } } com a melhor palavra do texto. where: Set de chaves ou Map chave → peso do campo
+  // Vocabulário em lista, com o radical (plural → singular) calculado uma vez só
+  const vocabList = (vocab) => [...vocab].map(([raw, where]) => ({ raw, rs: stem(raw), where }));
+  function matchVocab(list, Q) {
+    return Q.terms.map((t, ti) => {
+      const best = new Map(), m = matcher(t, Q.stems[ti], ti === Q.terms.length - 1);
+      for (const e of list) {
+        let w = m(e.raw, e.rs); if (!w) continue;
+        const fz = w < 0; if (fz) w = -w;
+        const where = e.where;
+        if (where instanceof Map) { for (const [k, fw] of where) { const v = w * fw, b = best.get(k); if (!b || v > b.w) best.set(k, { w: v, fz, raw: e.raw }); } }
+        else for (const k of where) { const b = best.get(k); if (!b || w > b.w) best.set(k, { w, fz, raw: e.raw }); }
+      }
+      return best;
     });
-    // Palavra ou código exato primeiro; depois ocorrências parciais
+  }
+  // Junta as palavras: exige todas (ou todas menos uma, com 3+ palavras) e soma os pesos
+  function combine(per, n, keys, extra) {
+    const need = n >= 3 ? n - 1 : n, out = [];
+    for (const k of keys) {
+      let s = 0, got = 0, fz = false; const raws = [];
+      per.forEach((m) => { const h = m.get(k); if (h) { s += h.w; got++; fz = fz || h.fz; raws.push(h.raw); } });
+      if (got < need || !got) continue;
+      s += (got === n ? 1 : 0) + (extra ? extra(k) : 0);
+      out.push({ k, s, fz, full: got === n, raws });
+    }
+    return out;
+  }
+  // Produtos: nome pesa mais que categoria e descrição; códigos (SKU, SAP, EAN) por igualdade, começo ou trecho
+  let PIDX = null;
+  function prodIndex() {
+    if (!PROD) return null;
+    if (PIDX && PIDX.src === PROD) return PIDX;
+    const vocab = new Map(), info = new Map();
+    const add = (w, key, fw) => { if (!w || STOP.has(w)) return; let m = vocab.get(w); if (!m) vocab.set(w, (m = new Map())); if ((m.get(key) || 0) < fw) m.set(key, fw); };
+    for (const [key, p] of PROD.bySku) {
+      const f = p.ficha || {};
+      toks(p.name).forEach((w) => add(w, key, 3));
+      toks(`${p.category || ''} ${f.grupo || ''}`).forEach((w) => add(w, key, 1.5));
+      toks(`${p.benefit || ''} ${p.capacity || ''} ${p.description || ''} ${f.med || ''}`).forEach((w) => add(w, key, 1));
+      toks(`${p.sku} ${f.sap || ''}`).forEach((w) => add(w, key, 2));
+      const codes = [key, P.skuKey(f.sap || '')].filter(Boolean);
+      const eans = [f.ean, f.eanCx].map((v) => String(v || '').replace(/\D/g, '')).filter(Boolean);
+      info.set(key, { codes, eans, name: joinUnits(norm(p.name)) });
+    }
+    PIDX = { src: PROD, vocab: vocabList(vocab), info };
+    return PIDX;
+  }
+  function search(q, onlyCat) {
+    const Q = parseQuery(q);
+    if (Q.nq.replace(/\s/g, '').length < 2 || !Q.terms.length) return null;
+    const n = Q.terms.length, cats = expiredLast(visibleCatalogs().filter((c) => !onlyCat || c.id === onlyCat));
+    let approx = true, any = false;
+    const note = (list) => { for (const x of list) { any = true; if (!x.fz) approx = false; } return list; };
+    // Catálogos: título, tipo, linhas e descrição
+    let catHits = [];
+    if (!onlyCat) {
+      const vocab = new Map();
+      cats.forEach((c, ci) => toks(`${c.title} ${c.kind || ''} ${(c.lines || []).join(' ')} ${c.desc || ''}`).forEach((w) => { let s = vocab.get(w); if (!s) vocab.set(w, (s = new Set())); s.add(ci); }));
+      const per = matchVocab(vocabList(vocab), Q);
+      catHits = note(combine(per, n, cats.map((_, ci) => ci)).filter((x) => x.full)).sort((a, b) => b.s - a.s || a.k - b.k).map((x) => cats[x.k]);
+    }
+    // Produtos
+    const prodAll = [], PI = prodIndex();
+    if (PI) {
+      const qk = P.skuKey(Q.nq), qd = Q.nq.replace(/\D/g, '');
+      const words = new Map(combine(matchVocab(PI.vocab, Q), n, [...PI.info.keys()]).map((x) => [x.k, x]));
+      for (const [key, inf] of PI.info) {
+        let s = -1, fz = false;
+        const code = qk.length >= 2 && inf.codes.some((c) => c === qk);
+        const ean = qd.length >= 8 && inf.eans.some((e) => e === qd);
+        if (code || ean) s = 1000;
+        else if (qk.length >= 2 && inf.codes.some((c) => c.startsWith(qk))) s = 500;
+        else if (qk.length >= 3 && /\d/.test(qk) && inf.codes.some((c) => c.includes(qk))) s = 300;
+        else if (qd.length >= 4 && qd.length === qk.length && inf.eans.some((e) => e.includes(qd))) s = 250;
+        const w = words.get(key);
+        if (w) {
+          const ws = w.s + (w.full ? 1 : 0) + (inf.name.includes(Q.phrase) ? 3 : 0);
+          if (ws > s) { s = ws; fz = w.fz; }
+        }
+        if (s < 0) continue;
+        const p = PROD.bySku.get(key);
+        const spot = productSpots(p.sku, onlyCat)[0] || productLinks(p.sku, onlyCat)[0] || null;
+        if (onlyCat && (!spot || spot.catalogId !== onlyCat)) continue; // busca do leitor: só produtos deste catálogo
+        prodAll.push({ p, spot, s, fz });
+      }
+    }
+    const prodHits = note(prodAll.sort((a, b) => b.s - a.s || a.p.name.localeCompare(b.p.name, 'pt-BR')).slice(0, 10));
+    // Páginas
+    const taken = new Set(prodHits.filter((x) => x.spot).map((x) => x.spot.catalogId + ':' + x.spot.page));
+    const pageHits = [], marks = new Set();
+    cats.forEach((c, ci) => {
+      const X = catIndex(c.id); if (!X) return;
+      const per = matchVocab(X.vocab, Q);
+      // Códigos com hífen ou espaço ("D750-L", "7898 765"): trecho no texto sem separadores
+      const codeTerm = Q.compact.length >= 4 && /\d/.test(Q.compact) ? Q.compact : '';
+      const keys = new Set(); per.forEach((m) => m.forEach((_, k) => keys.add(k)));
+      if (codeTerm) X.compact.forEach((t, i) => { if (t.includes(codeTerm)) keys.add(i); });
+      const extra = (i) => (n > 1 && X.flat[i].includes(Q.phrase) ? 2 : 0) + (codeTerm && X.compact[i].includes(codeTerm) ? 3 : 0);
+      let hits = combine(per, n, [...keys], extra);
+      if (codeTerm) for (const i of keys) if (X.compact[i].includes(codeTerm) && !hits.some((h) => h.k === i)) hits.push({ k: i, s: 4, fz: false, full: true, raws: [] });
+      for (const h of hits) {
+        if (taken.has(c.id + ':' + (h.k + 1))) continue;
+        h.raws.forEach((r) => marks.add(r));
+        pageHits.push({ c, ci, page: h.k + 1, s: h.s, fz: h.fz });
+      }
+    });
+    note(pageHits);
     pageHits.sort((a, b) => b.s - a.s || a.ci - b.ci || a.page - b.page);
-    return { terms, catHits, prodHits, pageHits: pageHits.slice(0, 40), total: pageHits.length };
+    const terms = [...new Set([...Q.terms, ...marks])].sort((a, b) => b.length - a.length);
+    return { terms, catHits, prodHits, pageHits: pageHits.slice(0, 40), total: pageHits.length, approx: any && approx };
   }
   // Normaliza caractere a caractere para achar a posição exata no texto original
   function normMap(s) {
@@ -4958,8 +5216,12 @@
       html += `<p class="res-group" role="presentation"><span>${onlyCat ? 'Neste catálogo' : 'Nas páginas'}</span><span>${r.total > r.pageHits.length ? `${r.pageHits.length} de ${fmtN(r.total)}` : fmtN(r.total)}</span></p>` + r.pageHits.map((h) =>
         opt(`${resThumb(h.c, h.page)}<span><span class="where">${esc(h.c.title)} · página ${h.page}</span><span class="snip">${snippetHTML(SEARCH[h.c.id][h.page - 1], r.terms)}</span></span>`, h.c.id, h.page)).join('');
     }
+    if (html && r.approx) html = `<p class="res-approx" role="presentation">Nada exato para “${esc(q.trim())}”. Estes são os mais parecidos.</p>` + html;
+    // Texto de algum catálogo não carregou (sem internet, por exemplo): avisa e deixa tentar de novo, em vez de parecer que não existe
+    const failed = ids.filter((id) => !SEARCH[id] && !searchLoads.has(id) && searchFail.has(id));
     if (loading) html += `<p class="res-loading" role="presentation">Carregando a busca…</p>`;
-    else if (!html) html = `<p class="res-empty" role="presentation">Nenhum resultado para “${esc(q)}”. Tente o código do produto, como <b>D30</b>, ou o nome, como <b>cadeira de banho</b>.</p>`;
+    else if (failed.length) html += `<p class="res-loading" role="presentation">${failed.length === 1 ? 'A busca de 1 catálogo não carregou.' : `A busca de ${failed.length} catálogos não carregou.`} <button type="button" class="link" data-search-retry>Tentar de novo</button></p>`;
+    else if (!html) html = `<p class="res-empty" role="presentation">Nenhum resultado para “${esc(q)}”. Tente o código do produto, como <b>D30</b>, parte do EAN ou o nome, como <b>cadeira de banho</b>.</p>`;
     setHTML(box, html);
     showBox(box, input);
     setActive(box, input, -1);
@@ -5011,6 +5273,7 @@
     });
     box.addEventListener('mousedown', (e) => { if (!e.target.closest('[data-cart-tog]')) e.preventDefault(); }); // mantém o foco no campo (o "+" do carrinho recebe o foco normalmente)
     box.addEventListener('click', (e) => {
+      if (e.target.closest('[data-search-retry]')) { searchFail.clear(); run(); input.focus(); return; }
       if (cartTogClick(e.target)) return; // o "+" do carrinho não abre o resultado
       const b = e.target.closest('.res'); if (b) choose(b);
     });
@@ -5139,7 +5402,7 @@
       t.appendChild(b);
     }
     t.classList.add('show');
-    t._t = setTimeout(hideToast, act ? 6000 : 3200);
+    t._t = setTimeout(hideToast, Math.max(act ? 6000 : 3200, String(msg).length * 60)); // texto longo fica o tempo de ser lido
   }
   function hideToast() {
     const t = $('#toast');
@@ -5304,13 +5567,13 @@
       title: p.name, variant: 'panel',
       body: `<div class="pc-media loading" id="pcMedia"></div>
         ${p.benefit ? `<p class="pc-benefit">${esc(p.benefit)}</p>` : ''}
+        <div class="pc-cart pc-cart-top" id="pcCart"></div>
         <dl class="pc-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
         ${p.description ? `<p class="pc-desc">${esc(p.description)}</p>` : ''}
         ${fichaHTML(p)}
         <div class="pc-actions">
-          ${url ? `<a class="btn primary block" id="pcVer" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Ver produto</a>` : ''}
-          ${contact ? `<button type="button" class="btn ${url ? 'ghost' : 'primary'} block" id="pcTalk">${contact === 'wa' ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}
-          <div class="pc-cart" id="pcCart"></div>
+          ${url ? `<a class="btn ghost block" id="pcVer" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Ver produto</a>` : ''}
+          ${contact ? `<button type="button" class="btn ghost block" id="pcTalk">${contact === 'wa' ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}
           ${c ? '<button type="button" class="btn ghost block" id="pcShare">Compartilhar</button>' : ''}
         </div>
         ${c ? `<p class="dlg-note">${esc(c.title)} · página ${page}</p>` : ''}`,
@@ -5335,7 +5598,7 @@
         cb.dataset.st = st;
         cb.innerHTML = q
           ? `<span class="pc-qty-l">No carrinho</span>${qtyHTML(p.sku, q, p.name)}<button type="button" class="link pc-qty-rm" data-cart-rm>Remover</button>`
-          : `<button type="button" class="btn ghost block" data-cart-add>${I.cart} Adicionar ao carrinho</button>`;
+          : `<button type="button" class="btn primary block" data-cart-add>${I.cart} Adicionar ao carrinho</button>`;
       }
       const box = $('[data-qty]', cb);
       if (box) paintQty(box, p);
@@ -5818,8 +6081,8 @@
       ? `${plural(list.length, 'produto', 'produtos')} em ${cur.nome}, neste aparelho. Ajuste a quantidade e envie a lista ao cliente.`
       : `${cur.nome}: guarde aqui os produtos que você vai enviar ao cliente.`;
     if (!list.length) {
-      setHTML(body, `<div class="empty"><h3>${esc(cur.nome)} está vazia</h3>
-        <p>${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo: ele entra na lista na hora. ${coarse ? 'Tocando' : 'Clicando'} de novo aparece o seletor de quantidade.</p>
+      setHTML(body, `<div class="empty"><h3>Nenhum produto em ${esc(cur.nome)}</h3>
+        <p>${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo, na busca ou na ficha do produto: ele entra na lista na hora. ${coarse ? 'Tocando' : 'Clicando'} de novo no + da página aparece o seletor de quantidade.</p>
         <button class="btn primary" type="button" data-cart-act="catalogos">Ver catálogos</button></div>`);
       renderCartFoot(list);
       return;
@@ -6664,7 +6927,12 @@
     btn.fichas.setAttribute('aria-pressed', String(on));
     btn.fichas.hidden = !(R.cat && catHasFichas(R.cat.id));
     if (!on) closeFichaPop(false);
+    $('#rpFichas').checked = on;
+    $('#rpFichasRow').hidden = btn.fichas.hidden || !narrowMq.matches;
   }
+  const narrowMq = matchMedia('(max-width: 479px)');
+  onMq(narrowMq, () => applyFichas());
+  $('#rpFichas').addEventListener('change', () => btn.fichas.click());
   btn.fichas.addEventListener('click', () => {
     prefs.fichas = prefs.fichas === false;
     savePrefs();
@@ -7194,6 +7462,7 @@
     if (p) p.then(() => { if (R.cat === c) fillPageTexts(); });
     fillPageTexts();
     paintCartButtons(); // "+" das páginas já com a quantidade de cada produto
+    loadNote(); // anotação deste catálogo (e o ponto no botão "Anotar")
     trackCatalogEvent('catalog_open', { page_number: R.cur + 1, product_sku: t ? t.p.sku : undefined });
     if (t && !t.page) openProductCard(t.p, { catalogId: id, page: R.cur + 1 }); // produto sem "+" neste catálogo
   }
@@ -7202,6 +7471,8 @@
     const id = R.cat.id;
     pageTimer.end('close');
     saveProgressNow();
+    saveNoteNow(); // anotação ainda no atraso de 400 ms: grava antes de sair do catálogo
+    NT.cid = '';
     closeFichaPop(false);
     closeHsQty(false); // seletor de quantidade aberto sobre a página
     setCopy(false); // fechar o leitor desliga o Modo Copiar
@@ -7221,7 +7492,11 @@
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     return id;
   }
-  new ResizeObserver(() => { if (!R.cat) return; layout(); refreshFlip(); clampPan(); applyTransform(); syncUI(); }).observe(stage);
+  let stageRaf = 0;
+  new ResizeObserver(() => {
+    if (stageRaf) return;
+    stageRaf = requestAnimationFrame(() => { stageRaf = 0; if (!R.cat) return; layout(); refreshFlip(); clampPan(); applyTransform(); syncUI(); });
+  }).observe(stage);
 
   /* ================= painel "Nesta página": produtos com "+" (e ligados à página) nas páginas visíveis =================
      O texto da página se copia em cima dela (Modo Copiar); a antiga aba "Texto da página" saiu.
@@ -7232,6 +7507,7 @@
   const sheet = modalLayer(rPanel, $('#rScrim'), () => [rTop, stage, thumbs], (on) => {
     rPanelBtn.setAttribute('aria-expanded', String(on));
     if (on) renderPanel();
+    if (typeof paintNotesBtn === 'function') paintNotesBtn();
   });
   const visibleIdx = () => (R.simple ? [R.cur] : spreadOf(curIndex()));
   const panelShown = () => !!R.cat && (deskMq.matches ? prefs.panel !== false : sheet.isOpen());
@@ -7239,7 +7515,8 @@
     const desk = deskMq.matches;
     V.reader.classList.toggle('panel-off', desk && prefs.panel === false);
     rPanelBtn.setAttribute('aria-expanded', String(desk ? prefs.panel !== false : sheet.isOpen()));
-    $('#rPanelClose').setAttribute('aria-label', desk ? 'Recolher o painel Nesta página' : 'Fechar o painel Nesta página');
+    $('#rPanelClose').setAttribute('aria-label', desk ? 'Recolher o painel' : 'Fechar o painel');
+    if (typeof paintNotesBtn === 'function') paintNotesBtn();
   }
   function togglePanel() {
     if (!R.cat) return;
@@ -7253,7 +7530,7 @@
     if (sheet.isOpen()) sheet.close();
     else { sheet.open(rPanelBtn); $('#rPanelTitle').focus(); }
   }
-  rPanelBtn.addEventListener('click', togglePanel);
+  rPanelBtn.addEventListener('click', () => openPanelAt('prod', rPanelBtn));
   $('#rPanelClose').addEventListener('click', togglePanel);
   $('#rpAddAll').addEventListener('click', (e) => { e.stopPropagation(); cartAddMany($('#rpAddAll')._itens || NP.prod || []); });
   onMq(deskMq, () => {
@@ -7292,7 +7569,8 @@
     badge.hidden = !items.length;
     // "Adicionar todos desta página" no cabeçalho do painel
     const addAll = $('#rpAddAll');
-    addAll.hidden = !items.length;
+    addAll.hidden = !items.length || NT.tab === 'notes';
+    paintNtPage();
     addAll.innerHTML = `${I.cart}Adicionar todos`;
     addAll.setAttribute('aria-label', `Adicionar ao carrinho os ${plural(items.length, 'produto', 'produtos')} destas páginas`);
     addAll._itens = items;
@@ -7396,6 +7674,146 @@
       return;
     }
     if (t.closest('[data-np-cart]')) navigate('#/carrinho');
+  });
+  /* ================= anotações do catálogo (aba "Anotações" do painel; botão "Anotar" na barra do leitor) =================
+     Para o vendedor anotar os pedidos durante uma call sem sair do catálogo. Uma anotação por catálogo e por pessoa,
+     só neste aparelho (localStorage "dm.notas.<uid>" → { idDoCatálogo: { t, cli, at } }), gravada 400 ms depois da última tecla.
+     Outra aba gravou: atualiza aqui, a não ser que a pessoa esteja digitando. */
+  const NT = { tab: 'prod', cid: '', t: null, dirty: false };
+  const ntTxt = $('#ntTxt'), ntCli = $('#ntCli'), btnNotes = $('#btnNotes');
+  const NT_MAX = 20000;
+  const notesKey = () => 'dm.notas.' + (me ? me.uid : '');
+  function readNotes() { try { const o = JSON.parse(localStorage.getItem(notesKey())); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
+  function noteOf(cid) {
+    const n = readNotes()[cid];
+    return n && typeof n === 'object' ? { t: String(n.t || '').slice(0, NT_MAX), cli: String(n.cli || '').slice(0, 80), at: String(n.at || '') } : { t: '', cli: '', at: '' };
+  }
+  function writeNote(cid, n) {
+    const all = readNotes();
+    if (!n.t.trim() && !n.cli.trim()) delete all[cid]; else all[cid] = n;
+    try { localStorage.setItem(notesKey(), JSON.stringify(all)); return true; } catch (e) { return false; }
+  }
+  const hhmm = (iso) => { const d = new Date(iso); return isFinite(d.getTime()) ? `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : ''; };
+  function ntStatus(txt) { $('#ntStatus').textContent = txt; }
+  function paintNoteDot() {
+    const has = !!R.cat && !!noteOf(R.cat.id).t.trim();
+    $('#notesDot').hidden = !has;
+    $('[data-notes-dot]').hidden = !has;
+    btnNotes.setAttribute('aria-label', has ? 'Anotar (este catálogo tem anotação)' : 'Anotar');
+  }
+  function loadNote() {
+    if (!R.cat) return;
+    NT.cid = R.cat.id; NT.dirty = false; clearTimeout(NT.t);
+    const n = noteOf(NT.cid);
+    ntTxt.value = n.t; ntCli.value = n.cli;
+    ntStatus(n.at ? `Salva neste aparelho às ${hhmm(n.at)} (${fmtDate(n.at.slice(0, 10))}).` : 'Fica só neste aparelho, separada por catálogo.');
+    paintNoteDot();
+  }
+  function saveNoteNow() {
+    clearTimeout(NT.t); NT.t = null;
+    if (!NT.dirty || !NT.cid || !me) return;
+    NT.dirty = false;
+    const at = new Date().toISOString();
+    const ok = writeNote(NT.cid, { t: ntTxt.value.slice(0, NT_MAX), cli: ntCli.value.trim().slice(0, 80), at });
+    ntStatus(ok ? `Salva neste aparelho às ${hhmm(at)}.` : 'Não deu para salvar neste aparelho (armazenamento cheio ou bloqueado). Copie o texto para não perder.');
+    paintNoteDot();
+  }
+  function saveNoteSoon() { NT.dirty = true; clearTimeout(NT.t); NT.t = setTimeout(saveNoteNow, 400); ntStatus('Salvando…'); }
+  ntTxt.addEventListener('input', saveNoteSoon);
+  ntCli.addEventListener('input', saveNoteSoon);
+  ntTxt.addEventListener('blur', saveNoteNow);
+  ntCli.addEventListener('blur', saveNoteNow);
+  window.addEventListener('pagehide', saveNoteNow);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNoteNow(); });
+  window.addEventListener('storage', (e) => {
+    if (!me || !R.cat || e.key !== notesKey()) return;
+    if (document.activeElement === ntTxt || document.activeElement === ntCli || NT.dirty) return; // digitando aqui: o que está na tela vence
+    loadNote();
+  });
+  // Insere no ponto do cursor (ou no fim), sempre começando numa linha nova
+  function insertNote(text) {
+    const ta = ntTxt, a = ta.selectionStart ?? ta.value.length, b = ta.selectionEnd ?? a;
+    const before = ta.value.slice(0, a), lead = before && !before.endsWith('\n') ? '\n' : '';
+    ta.focus();
+    ta.setRangeText(lead + text, a, b, 'end');
+    saveNoteSoon();
+  }
+  const visiblePagesTxt = () => { const v = visibleIdx().map((i) => i + 1); return v.length === 2 ? `Págs. ${v[0]}–${v[1]}` : `Pág. ${v[0]}`; };
+  function paintNtPage() { if (R.cat) $('#ntPage').textContent = `+ ${visiblePagesTxt()}`; }
+  function noteText() {
+    const head = [`Anotações · ${R.cat ? R.cat.title : ''}`, ntCli.value.trim() && `Cliente: ${ntCli.value.trim()}`].filter(Boolean).join('\n');
+    return `${head}\n\n${ntTxt.value.trim()}`;
+  }
+  function setRpTab(tab, focusIt) {
+    NT.tab = tab === 'notes' ? 'notes' : 'prod';
+    const notes = NT.tab === 'notes';
+    $('#rpTabProd').setAttribute('aria-selected', String(!notes)); $('#rpTabProd').tabIndex = notes ? -1 : 0;
+    $('#rpTabNotes').setAttribute('aria-selected', String(notes)); $('#rpTabNotes').tabIndex = notes ? 0 : -1;
+    $('#rpProdPane').hidden = notes; $('#rpNotesPane').hidden = !notes;
+    $('#rpFoot').hidden = notes; $('#rpNotesFoot').hidden = !notes;
+    $('#rPanelTitleT').textContent = notes ? 'Anotações' : 'Nesta página';
+    $('#rPanelPages').hidden = notes;
+    if (notes) { $('#rpAddAll').hidden = true; if (NT.cid !== (R.cat && R.cat.id)) loadNote(); paintNtPage(); }
+    else renderPanel();
+    paintNotesBtn();
+    if (focusIt) (notes ? ntTxt : $('#rpTabProd')).focus({ preventScroll: true });
+  }
+  function paintNotesBtn() {
+    const open = panelShown();
+    btnNotes.setAttribute('aria-expanded', String(open && NT.tab === 'notes'));
+    rPanelBtn.setAttribute('aria-expanded', String(open && NT.tab === 'prod'));
+  }
+  // "Anotar": abre o painel já na aba Anotações (de novo com ela aberta: fecha); "Nesta página": a aba Produtos
+  function openPanelAt(tab, from) {
+    if (!R.cat) return;
+    if (panelShown() && NT.tab === tab) { togglePanel(); paintNotesBtn(); return; }
+    setRpTab(tab);
+    if (!panelShown()) {
+      if (deskMq.matches) togglePanel(); else sheet.open(from);
+    }
+    paintNotesBtn();
+    setTimeout(() => (tab === 'notes' ? ntTxt : $('#rPanelTitle')).focus({ preventScroll: true }), 30);
+  }
+  btnNotes.addEventListener('click', () => openPanelAt('notes', btnNotes));
+  $('.rp-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-rp-tab]'); if (b) setRpTab(b.dataset.rpTab, false); });
+  $('.rp-tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    setRpTab(NT.tab === 'notes' ? 'prod' : 'notes', false);
+    (NT.tab === 'notes' ? $('#rpTabNotes') : $('#rpTabProd')).focus();
+  });
+  $('#rpNotesPane').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-nt]'); if (!b || !R.cat) return;
+    if (b.dataset.nt === 'page') insertNote(`${visiblePagesTxt()}: `);
+    else if (b.dataset.nt === 'prods') {
+      const items = panelProducts(R.cat.id, visibleIdx());
+      if (!items.length) { toast('Nenhum produto marcado nestas páginas. Escreva o nome ou o código direto na anotação.'); ntTxt.focus(); return; }
+      insertNote(items.map((x) => { const code = shownCode(x.p) || x.p.sku; return `• ${x.p.name}${code ? ` (${code})` : ''} — qtd: `; }).join('\n'));
+    }
+  });
+  $('#rpNotesFoot').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-nt]'); if (!b || !R.cat) return;
+    saveNoteNow();
+    const empty = !ntTxt.value.trim();
+    if (b.dataset.nt === 'clear') {
+      if (empty && !ntCli.value.trim()) { ntTxt.focus(); return; }
+      openDialog({
+        title: 'Limpar a anotação deste catálogo?',
+        body: '<p class="dlg-sub">O texto e o nome do cliente saem deste aparelho. As anotações dos outros catálogos não mudam.</p>',
+        actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Limpar', kind: 'primary', onClick: () => {
+          writeNote(R.cat.id, { t: '', cli: '', at: '' }); loadNote(); ntStatus('Anotação limpa.'); dlg._ret = ntTxt;
+        } }]
+      });
+      return;
+    }
+    if (empty) { toast('A anotação está em branco.'); ntTxt.focus(); return; }
+    const txt = noteText();
+    if (b.dataset.nt === 'copy') { await copyText(txt, 'Anotação copiada.'); trackCatalogEvent('catalog_note', { action: 'copiar' }); return; }
+    if (b.dataset.nt === 'wa') {
+      if (txt.length > CART_MSG_MAX) { if (await copyText(txt, 'Anotação longa demais para o WhatsApp: copiada. Cole na conversa.')) trackCatalogEvent('catalog_note', { action: 'copiar' }); return; }
+      window.open(waUrl('', txt), '_blank', 'noopener');
+      trackCatalogEvent('catalog_note', { action: 'whatsapp' });
+    }
   });
   function rerenderCurrent() {
     if (R.cat) {
@@ -9013,7 +9431,11 @@
     try { await loadAccess(); }
     catch (e) {
       if (/^#\/?emergencia(?:[/?]|$)/.test(location.hash)) { route(); return; } // gestão de emergência não depende de acessos.json
-      showNet(e instanceof NetError ? MSG_OFFLINE : 'Não foi possível carregar a página de acesso agora.', boot);
+      // acessos.json ausente ou inválido (não é falta de internet): segue só com o login novo; o acesso antigo fica desligado
+      if (!(e instanceof NetError)) { console.warn('[acesso antigo indisponível]', e); ACCESS = { v: P.ACESSOS_V, users: {}, pend: {}, salt: '' }; }
+    }
+    if (!ACCESS) { // só chega aqui sem internet
+      showNet(MSG_OFFLINE, boot);
       if (/^#\/?cadastro(?:[/?]|$)/.test(location.hash)) route(); // o cadastro também não depende de acessos.json
       return;
     }
