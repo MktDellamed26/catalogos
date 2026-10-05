@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-0lL5QBNe/c+b2Y6+z1OSTlpjYRum9OL8Al6fKIG21hY=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-LpDqFjAGeWrummkouWH4XUYqdfTgM/xbx+adFJEy+Po=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -1811,6 +1811,9 @@
     [data-view="grade"] .cat:hover, [data-view="grade"] .cat:focus-within { box-shadow: none; }
     [data-view="grade"] .cover { order: 0; padding: 24px 22px 0; border-radius: var(--ds-r-card); background: linear-gradient(165deg, #e7ecf5 0%, #dbe3ef 100%); transition: background .25s; }
     [data-view="grade"] .cat:hover .cover { background: linear-gradient(165deg, #dde5f1 0%, #cfd9ea 100%); }
+    /* Capa na proporção do PDF: a imagem nunca é cortada (antes a largura máxima apertava a capa e o "cover" cortava as laterais) */
+    [data-view="grade"] .cover-open { justify-content: center; }
+    [data-view="grade"] .cover-open img[src] { width: auto; height: auto; max-width: 100%; max-height: 100%; aspect-ratio: auto; object-fit: contain; }
     [data-view="grade"] .cover-open img { border-radius: 3px 5px 0 0; box-shadow: 0 -2px 18px -6px rgba(20, 32, 60, .25), 0 22px 30px -16px rgba(20, 32, 60, .6); transition: transform .25s var(--ds-ease), box-shadow .25s; }
     [data-view="grade"] .cat:hover .cover-open img, [data-view="grade"] .cat:focus-within .cover-open img { transform: translateY(-6px); box-shadow: 0 -2px 18px -6px rgba(20, 32, 60, .25), 0 34px 40px -18px rgba(20, 32, 60, .7); }
     [data-view="grade"] .tags { order: 1; margin-top: 10px; }
@@ -1944,6 +1947,128 @@
   @media (prefers-reduced-motion: reduce) {
     .rail-cover img { transition: none; }
     .rail-open:hover .rail-cover img { transform: none; }
+  }
+  /* =====================================================================================================
+     LEITOR no mesmo clima do início: barra e trilho de miniaturas azul-marinho (continuação do menu lateral),
+     botões sem contorno sobre superfície translúcida, ativo em azul-céu, palco claro com luz no centro e painel editorial.
+     ===================================================================================================== */
+  .r-top { height: 64px; background: linear-gradient(90deg, var(--ds-navy-3), var(--navy) 38%); border-bottom: 0; box-shadow: 0 10px 30px -22px rgba(10, 18, 40, .9); }
+  .r-top .back { height: 38px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .08); transition: background-color .18s, color .18s; }
+  .r-top .back:hover { background: var(--sky); color: var(--navy); }
+  .doc h1 { font-size: 15px; }
+  .doc span { color: rgba(255, 255, 255, .6); }
+  .r-search input { height: 38px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .09); transition: background-color .18s, box-shadow .18s; }
+  .r-search input:hover { background: rgba(255, 255, 255, .14); }
+  .r-search input:focus { box-shadow: 0 0 0 3px rgba(139, 184, 232, .45); }
+  .r-search > .ico { top: 10px; }
+  .pill-btn { height: 38px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .08); transition: background-color .18s, color .18s, box-shadow .18s; }
+  .pill-btn:hover { background: rgba(255, 255, 255, .16); color: var(--white); }
+  .fichas-btn[aria-pressed="true"] { background: rgba(139, 184, 232, .22); border: 0; }
+  .fichas-btn[aria-pressed="true"]:hover { background: rgba(139, 184, 232, .34); }
+  /* Modo Copiar ligado: azul-céu cheio (é um modo). Painel e anotações abertos: azul-céu translúcido + traço embaixo,
+     para não competir com "Enviar ao cliente", a única ação principal da barra */
+  .copy-btn[aria-pressed="true"] { background: var(--sky); border: 0; color: var(--navy); }
+  .copy-btn[aria-pressed="true"]:hover { background: #a2c7ee; color: var(--navy); }
+  .panel-btn[aria-expanded="true"], .notes-btn[aria-expanded="true"] { position: relative; background: rgba(139, 184, 232, .24); border: 0; color: var(--white); box-shadow: inset 0 -2px 0 var(--sky); }
+  .panel-btn[aria-expanded="true"]:hover, .notes-btn[aria-expanded="true"]:hover { background: rgba(139, 184, 232, .36); color: var(--white); }
+  .r-top .r-sep { background: rgba(255, 255, 255, .14); }
+  .r-top #rShare { border: 0; border-radius: 12px; height: 38px; padding: 0 18px; }
+  .r-top #rShare:hover { background: var(--white); }
+  .r-top .counter { height: 38px; border: 0; border-radius: 12px; background: rgba(255, 255, 255, .1); }
+  .r-top .counter:hover { background: rgba(255, 255, 255, .18); }
+  .r-top .jump { height: 38px; border-radius: 12px; }
+  .r-top .bar .icon-btn { border-radius: 10px; }
+  .r-top .bar .icon-btn:hover { background: rgba(255, 255, 255, .1); }
+  .r-top .bar .icon-btn[aria-pressed="true"] { background: rgba(139, 184, 232, .2); color: var(--sky); }
+  .r-top .divider { background: rgba(255, 255, 255, .14); }
+
+  /* Palco: claro, com luz no centro, e as páginas com sombra mais funda (o papel é o protagonista) */
+  :root { --r-paper: rgba(20, 32, 60, .42); }
+  .stage { background: radial-gradient(ellipse 70% 65% at 50% 48%, #ffffff 0%, #eef1f6 55%, #e2e7ef 100%); }
+  /* Linhas do catálogo no topo do palco: o mesmo "capítulo" do início */
+  .stage > .lines { top: 20px; left: 28px; display: flex; align-items: center; gap: 10px; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+  .stage > .lines::before { content: ""; width: 28px; height: 1px; background: currentColor; opacity: .4; }
+  /* Setas: pastilhas maiores, sem contorno */
+  .arrow { width: 52px; height: 52px; margin-top: -26px; border: 0; box-shadow: var(--ds-soft); transition: background-color .18s, color .18s, box-shadow .2s, transform .18s var(--ds-ease); }
+  .arrow:hover { box-shadow: var(--ds-lift); transform: scale(1.05); }
+  .arrow:disabled { border: 0; box-shadow: none; transform: none; }
+  .arrow.prev { left: 20px; }
+  .arrow.next { right: 20px; }
+
+  /* Miniaturas no computador: trilho azul-marinho, continuação do menu lateral; a página aberta em azul-céu */
+  @media (min-width: 1200px) {
+    .r-body { grid-template-columns: 108px minmax(0, 1fr) 360px; }
+    .thumbs { background: linear-gradient(180deg, var(--navy), var(--ds-navy-3)); border-right: 0; padding: 14px 10px; gap: 8px; scrollbar-width: thin; scrollbar-color: rgba(139, 184, 232, .4) transparent; }
+    .spread { color: rgba(255, 255, 255, .6); border-radius: 12px; transition: background-color .18s, color .18s; }
+    .spread:hover { background: rgba(255, 255, 255, .08); color: var(--white); }
+    .spread .sheets { box-shadow: 0 8px 16px -8px rgba(0, 0, 0, .6); transition: transform .2s var(--ds-ease); }
+    .spread:hover .sheets { transform: translateY(-2px); }
+    .spread.active { background: var(--sky); }
+    .spread.active span { color: var(--navy); }
+  }
+
+  /* Painel "Nesta página": editorial — título maior, abas com traço azul-céu, cartões sem moldura */
+  .r-panel { background: #f6f8fb; border-left: 0; box-shadow: -18px 0 40px -34px rgba(20, 32, 60, .6); }
+  .rp-head { padding: 18px 12px 12px 22px; border-bottom: 0; }
+  .rp-head h2 { font-size: 19px; color: var(--navy); letter-spacing: -.01em; }
+  .rp-add { border: 0; border-radius: 10px; background: rgba(139, 184, 232, .2); }
+  .rp-add:hover { background: rgba(139, 184, 232, .34); }
+  .rp-tabs { padding: 0 16px; border-bottom: 1px solid rgba(30, 44, 79, .08); }
+  .rp-tabs .cart-tab[aria-selected="true"]::after { height: 3px; background: var(--sky); left: 14px; right: 14px; }
+  .rp-body { padding: 18px 18px 18px; }
+  .np-empty, .np-note { border: 0; border-radius: 16px; box-shadow: var(--ds-soft); }
+  .rp-foot { padding: 14px 18px calc(14px + var(--safe-b)); border-top: 0; box-shadow: 0 -12px 24px -22px rgba(20, 32, 60, .5); }
+  .rp-foot .btn { height: 46px; }
+  .rp-foot .int-n { margin-left: 2px; }
+  /* =====================================================================================================
+     CATÁLOGOS EM FAIXA AZUL-MARINHO + FECHAMENTO. Cada catálogo aparece uma vez; o ritmo vem da alternância
+     claro (abertura) → escuro (destaque) → claro (continue) → escuro (catálogos) → claro (fechamento).
+     ===================================================================================================== */
+  #viewShelf .cats { position: relative; padding: 64px 0 72px; background: var(--navy); box-shadow: 0 0 0 100vmax var(--navy); clip-path: inset(0 -100vmax); color: var(--white); scroll-margin-top: 0; }
+  #viewShelf .cats .chap { margin: 0 0 16px; color: var(--sky); }
+  #viewShelf .cats-title h2 { color: var(--white); }
+  #viewShelf #catsSub { color: rgba(255, 255, 255, .6); }
+  #viewShelf .cats .chip { background: transparent; color: rgba(255, 255, 255, .82); box-shadow: none; }
+  #viewShelf .cats .chip:hover { background: rgba(255, 255, 255, .1); color: var(--white); }
+  #viewShelf .cats .chip[aria-pressed="true"] { background: var(--sky); color: var(--navy); box-shadow: none; }
+  #viewShelf .cats .chip:focus-visible { outline-color: var(--sky); }
+  #viewShelf .cats .sort { color: rgba(255, 255, 255, .6); }
+  #viewShelf .cats .sort select { color: var(--white); }
+  #viewShelf .cats .sort select option { color: var(--ink); }
+  #viewShelf .cats .sort select:hover { background: rgba(255, 255, 255, .1); }
+  #viewShelf .cats #viewSeg { background: rgba(255, 255, 255, .08); }
+  #viewShelf .cats #viewSeg button { color: rgba(255, 255, 255, .8); }
+  #viewShelf .cats #viewSeg button:hover { background: rgba(255, 255, 255, .1); }
+  #viewShelf .cats #viewSeg button[aria-pressed="true"] { background: var(--white); color: var(--navy); }
+  /* Grade sobre o azul-marinho (computador e tablet; no celular os cartões continuam brancos) */
+  @media (min-width: 768px) {
+    #viewShelf .cats [data-view="grade"] .cover { background: linear-gradient(165deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)); }
+    #viewShelf .cats [data-view="grade"] .cat:hover .cover { background: linear-gradient(165deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)); }
+    #viewShelf .cats [data-view="grade"] .cover-open img { box-shadow: 0 -2px 18px -6px rgba(0, 0, 0, .4), 0 24px 32px -16px rgba(0, 0, 0, .7); }
+    #viewShelf .cats [data-view="grade"] .cat h3 { color: var(--white); }
+    #viewShelf .cats [data-view="grade"] .cat .meta { color: rgba(255, 255, 255, .6); }
+    #viewShelf .cats [data-view="grade"] .tag { background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .88); }
+    #viewShelf .cats [data-view="grade"] .tag.new { background: var(--sky); color: var(--navy); }
+    #viewShelf .cats [data-view="grade"] .validity { color: var(--sky); }
+    #viewShelf .cats [data-view="grade"] .cat-open { background: var(--sky); color: var(--navy); }
+    #viewShelf .cats [data-view="grade"] .cat-open:hover { background: var(--white); box-shadow: 0 10px 22px -12px rgba(0, 0, 0, .6); }
+    #viewShelf .cats [data-view="grade"] .cat-share { border: 0; background: rgba(255, 255, 255, .1); color: var(--white); }
+    #viewShelf .cats [data-view="grade"] .cat-share:hover { background: rgba(255, 255, 255, .2); }
+    #viewShelf .cats [data-view="grade"] .cat-open:focus-visible, #viewShelf .cats [data-view="grade"] .cat-share:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+    #viewShelf .cats [data-view="lista"] .cat { box-shadow: 0 1px 2px rgba(0, 0, 0, .2); }
+  }
+  /* Fechamento: a assinatura da marca, grande, no fundo claro */
+  #viewShelf .closing { padding: 72px 0 8px; }
+  #viewShelf .closing .chap { margin: 0 0 18px; }
+  .closing-t { max-width: 18ch; font-family: var(--font-title); font-size: clamp(34px, 5vw, 72px); font-weight: 300; line-height: 1.02; letter-spacing: -.03em; color: var(--navy); }
+  .closing-t b { font-weight: 700; }
+  .closing-t mark { padding: 0 .06em; background: linear-gradient(transparent 60%, rgba(139, 184, 232, .6) 60%); color: inherit; }
+  .closing-contact { margin-top: 22px; text-align: left; font-size: 14px; color: var(--ds-ink-3); }
+  .closing-contact a { color: var(--navy); font-weight: 600; }
+  @media (max-width: 767px) {
+    #viewShelf .cats { padding: 44px 0 48px; }
+    #viewShelf .cats .sort select { background: var(--white); color: var(--navy); } /* no celular o "Ordenar" é uma pílula branca */
+    #viewShelf .closing { padding-top: 48px; }
   }
 </style>
 
@@ -2213,8 +2338,8 @@
         <!-- Catálogos: o título fica só para leitores de tela (os chips já indicam o filtro); a barra reúne chips, Ordenar e Lista/Grade -->
         <!-- Coleções por linha (Home Care, Health Care, Wellness, Ortho Care…): faixas alternando escuro e claro, montadas com os catálogos que já existem -->
         <div class="line-chapters" id="lineChapters" hidden></div>
-        <p class="chap" data-chap="Explore" aria-hidden="true"></p>
         <section class="cats" id="cats" aria-labelledby="catsTitle">
+          <p class="chap" data-chap="Catálogos" aria-hidden="true"></p>
           <div class="cats-title"><p class="eyebrow cats-eyebrow" aria-hidden="true">Explore os catálogos</p><h2 id="catsTitle" tabindex="-1"><b>Todos os catálogos</b></h2><span id="catsSub"></span></div>
           <div class="cats-bar">
             <div class="chips" id="chips" role="group" aria-label="Filtrar por linha"></div>
@@ -2233,6 +2358,12 @@
             </div>
           </div>
           <div id="shelves" data-view="lista"></div>
+        </section>
+        <!-- Fechamento: a página termina com a assinatura da marca (e o contato do marketing, quando configurado) -->
+        <section class="closing" aria-label="Dellamed">
+          <p class="chap" data-chap="Dellamed" aria-hidden="true"></p>
+          <p class="closing-t"><b>Saúde e <mark>bem-estar</mark></b> para todos.</p>
+          <p class="contact closing-contact" data-contact="Dúvidas sobre os catálogos? Fale com o marketing:" hidden></p>
         </section>
       </div>
     </main>
@@ -5053,8 +5184,8 @@
   const LINE_SUB = { 'Home Care': 'Mobilidade e acessibilidade', 'Health Care': 'Saúde e prevenção', 'Wellness': 'Massagem e bem-estar', 'Ortho Care': 'Órteses e recuperação', 'Canal Farma': 'Linha para farmácias' };
   function renderLines(list) {
     const box = $('#lineChapters');
-    const lines = [...LINES, 'Canal Farma'].map((l) => ({ l, cs: sortList(filterList(list, l)) })).filter((x) => x.cs.length);
-    box.hidden = lines.length < 2 || list.length < 3;
+    const lines = [...LINES, 'Canal Farma'].map((l) => ({ l, cs: sortList(filterList(list, l)) })).filter((x) => x.cs.length >= 3);
+    box.hidden = lines.length < 2 || list.length < 8; // adormecidas até a biblioteca crescer: com poucos catálogos só repetiriam a lista
     if (box.hidden) { setHTML(box, ''); return; }
     setHTML(box, lines.map((x, i) => {
       const hid = 'ln' + i;
@@ -5081,7 +5212,7 @@
   if (revealIO) document.documentElement.classList.add('ds-anim');
   function revealWatch() {
     if (!revealIO) return;
-    $$('#viewShelf .wrap > .hero, #viewShelf .wrap > .bento, #lineChapters .line-ch, #viewShelf .wrap > .cats').forEach((el) => { if (!el.classList.contains('reveal')) { el.classList.add('reveal'); revealIO.observe(el); } });
+    $$('#viewShelf .wrap > .hero, #viewShelf .wrap > .bento, #lineChapters .line-ch, #viewShelf .wrap > .cats, #viewShelf .wrap > .closing').forEach((el) => { if (!el.classList.contains('reveal')) { el.classList.add('reveal'); revealIO.observe(el); } });
   }
   // Blocos visíveis: o grid se ajusta a 1, 2 ou 3 colunas
   function syncBento() {
@@ -5657,7 +5788,9 @@
   function layoutBlocks(pg, ratio) {
     const segs = segsOf(pg, ratio), heads = [], body = [], selos = [];
     // Título fica sozinho na linha; rótulo de tabela em negrito ("Peso líquido" | "13,5 kg") tem valor ao lado e não é título
-    const alone = (sg) => !segs.some((o) => o !== sg && Math.min(o.y2, sg.y2) - Math.max(o.y, sg.y) > 0.5 * Math.min(o.y2 - o.y, sg.y2 - sg.y));
+    // (vizinho na mesma linha, logo à direita, que não é título). Dois títulos lado a lado (duas colunas de produtos) continuam títulos.
+    const alone = (sg) => !segs.some((o) => o !== sg && Math.min(o.y2, sg.y2) - Math.max(o.y, sg.y) > 0.5 * Math.min(o.y2 - o.y, sg.y2 - sg.y)
+      && o.x >= sg.x2 - 5 && o.x - sg.x2 < 300 && !isHeadSeg(o));
     for (const sg of segs) (isSeloSeg(sg) ? selos : isHeadSeg(sg) && alone(sg) ? heads : body).push(sg);
     // Títulos em duas linhas (um embaixo do outro, mesma coluna) viram um título só
     heads.sort((a, b) => a.y - b.y || a.x - b.x);
@@ -8356,7 +8489,7 @@
   function renderPanelFoot(items) {
     const com = commercialInfo();
     NP.footItems = items;
-    $('#rpFoot').innerHTML = `${items.length && (com.wa || com.mail) ? `<button type="button" class="btn primary block" data-np-talk>${com.wa ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}<button type="button" class="btn ghost block" data-np-cart>${I.cart} Ver o carrinho (<span data-cart-count>${fmtN(cartCount())}</span>)</button>`;
+    $('#rpFoot').innerHTML = `${items.length && (com.wa || com.mail) ? `<button type="button" class="btn primary block" data-np-talk>${com.wa ? 'Falar com consultor' : 'Falar com consultor por e-mail'}</button>` : ''}<button type="button" class="btn ghost block" data-np-cart>${I.cart} Ver o carrinho <span class="int-n" data-cart-count>${fmtN(cartCount())}</span></button>`;
   }
   rPanel.addEventListener('click', (e) => {
     if (!R.cat) return;
