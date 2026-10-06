@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-B0eSVt3eQeErsgkJv2kafqsWZQMwj3razgx35EA7tSk=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-Q7MPY32CPBDVKxhgwAqTaStZBMJJuqHyT0PNX9GWsZw=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2338,12 +2338,8 @@
           <p>Você está no acesso antigo. Saia e use “Cadastre-se” com este mesmo e-mail: favoritos e carrinhos vêm junto.</p>
           <button class="btn ghost sm" type="button" id="legacyNoteX">Entendi</button>
         </div>
-        <!-- Capítulos (DIGITAL SHELF): o número vem de um contador CSS e pula os capítulos ocultos -->
-        <p class="chap" data-chap="Abertura" aria-hidden="true"></p>
         <div class="greet"><h1 id="greet"></h1><p id="greetSub"></p></div>
-        <p class="chap" data-chap="Destaque" aria-hidden="true"></p>
         <section class="hero" id="hero" hidden aria-labelledby="heroTitle"></section>
-        <p class="chap" data-chap="Continue" aria-hidden="true"></p>
         <div class="bento" id="bento" hidden>
           <section class="tile cont" id="continue" hidden aria-label="Continuar lendo"></section>
           <section class="tile cart-tile" id="cartTile" hidden aria-labelledby="cartTileH"></section>
@@ -2353,7 +2349,6 @@
         <!-- Coleções por linha (Home Care, Health Care, Wellness, Ortho Care…): faixas alternando escuro e claro, montadas com os catálogos que já existem -->
         <div class="line-chapters" id="lineChapters" hidden></div>
         <section class="cats" id="cats" aria-labelledby="catsTitle">
-          <p class="chap" data-chap="Catálogos" aria-hidden="true"></p>
           <div class="cats-title"><p class="eyebrow cats-eyebrow" aria-hidden="true">Explore os catálogos</p><h2 id="catsTitle" tabindex="-1"><b>Todos os catálogos</b></h2><span id="catsSub"></span></div>
           <div class="cats-bar">
             <div class="chips" id="chips" role="group" aria-label="Filtrar por linha"></div>
@@ -2375,7 +2370,6 @@
         </section>
         <!-- Fechamento: a página termina com a assinatura da marca (e o contato do marketing, quando configurado) -->
         <section class="closing" aria-label="Dellamed">
-          <p class="chap" data-chap="Dellamed" aria-hidden="true"></p>
           <p class="closing-t"><b>Saúde e <mark>bem-estar</mark></b> para todos.</p>
           <p class="contact closing-contact" data-contact="Dúvidas sobre os catálogos? Fale com o marketing:" hidden></p>
         </section>
@@ -5204,7 +5198,6 @@
     setHTML(box, lines.map((x, i) => {
       const hid = 'ln' + i;
       return `<section class="line-ch" data-tone="${i % 2 ? 'light' : 'dark'}" aria-labelledby="${hid}">
-        <p class="chap" data-chap="${esc(x.l)}" aria-hidden="true"></p>
         <div class="line-head">
           <div class="line-t"><h2 id="${hid}">${esc(x.l)}</h2><p class="line-sub">${esc(LINE_SUB[x.l] || 'Catálogos Dellamed')} · ${plural(x.cs.length, 'catálogo', 'catálogos')}</p></div>
           <button class="btn ${i % 2 ? 'ghost' : 'sky'} sm" type="button" data-line-all="${esc(x.l)}" aria-describedby="${hid}">Ver todos</button>
