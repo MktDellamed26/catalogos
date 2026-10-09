@@ -2435,7 +2435,7 @@
   // 401/403 com mensagem da própria função: mostra o motivo real (o texto genérico escondia, por exemplo, uma chave de serviço recusada)
   const sbFnErr = (e, acao) => (e && e.status === 409 && acao === 'convidar' ? 'Este e-mail já tem acesso. Use Reenviar acesso.'
     : e && e.status === 404 ? "A função 'pessoas' ainda não foi publicada no Supabase."
-    : e && (e.status === 401 || e.status === 403) && e.message && !/^HTTP \d+$/.test(e.message) ? `A função "pessoas" recusou o pedido: ${e.message}`
+    : e && e.status && e.message && !/^HTTP \d+$/.test(e.message) ? `A função "pessoas" respondeu: ${e.message}` // qualquer erro com motivo da própria função (inclusive 500)
     : sbErrText(e));
   async function sbIsAdmin(t, uid) {
     const rows = await P.supa.select(t, 'perfis', `id=eq.${encodeURIComponent(uid || '')}&select=papel,ativo`);
