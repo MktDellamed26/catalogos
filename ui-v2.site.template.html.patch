@@ -1,0 +1,692 @@
+--- a/seguro/site.template.html
++++ b/seguro/site.template.html
+@@ -2066,6 +2066,200 @@
+   .avatar { overflow: hidden; }
+   .nav-thumb[hidden] { display: none; }
+   .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
++  /* =====================================================================================================
++     UI v2 — login e cadastro no clima da home, "Cadastro concluído", carrinho com resumo lateral,
++     cartão em palco, duas portas no início, capa que abre ao passar o mouse e a textura 0/1 da marca.
++     ===================================================================================================== */
++  :root {
++    /* Textura de 0 e 1 (a "transformação digital" do brandbook): usada bem fraca sobre o azul-marinho */
++    --bits: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='132'%3E%3Cg fill='%23ffffff' font-family='Menlo,Consolas,monospace' font-size='12' letter-spacing='5'%3E%3Ctext x='2' y='14'%3E0110 1 0010%3C/text%3E%3Ctext x='10' y='36'%3E1 0101 1001%3C/text%3E%3Ctext x='0' y='58'%3E01 1 0 1101%3C/text%3E%3Ctext x='18' y='80'%3E1001 0 110%3C/text%3E%3Ctext x='4' y='102'%3E0 1011 0101%3C/text%3E%3Ctext x='12' y='124'%3E110 0 1 01 0%3C/text%3E%3C/g%3E%3C/svg%3E");
++  }
++  h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus { outline: none; } /* títulos recebem foco só pelo script (leitor de tela): sem moldura */
++
++  /* ---------- login e cadastro ---------- */
++  .login { background: var(--white); }
++  .login-brand::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--bits) 0 0 / 168px 132px repeat; opacity: .07; -webkit-mask-image: radial-gradient(ellipse 60% 70% at 80% 50%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 60% 70% at 80% 50%, #000 0%, transparent 75%); }
++  .login-hero { position: relative; z-index: 1; }
++  .login-hero h1 { font-size: clamp(34px, 4vw, 58px); line-height: 1.04; letter-spacing: -.025em; }
++  @media (max-width: 1099px) { .login-stack { display: none; } }
++  @media (min-width: 1100px) { .login-hero { max-width: min(560px, calc(60% - 60px)); } }
++  @media (prefers-reduced-motion: reduce) { .login-stack { transition: none; } }
++  /* Formulário mais leve: sem caixa no computador, o branco do lado direito já é a superfície */
++  @media (min-width: 768px) {
++    .login-panel { background: var(--white); }
++    .login-panel form, .login-panel .stack-login { padding: 8px 4px; box-shadow: none; border-radius: 0; }
++    .login-panel h2 { font-size: 30px; font-weight: 300; letter-spacing: -.02em; }
++    #loginH, #signupH { font-weight: 700; }
++    .login-panel .field input, .login-panel .field select { border-color: #d5dbe6; background: #f7f9fc; transition: border-color .15s, background-color .15s; }
++    .login-panel .field input:hover, .login-panel .field select:hover { border-color: #b9c3d6; }
++    .login-panel .field input:focus { background: var(--white); }
++    .login-panel .btn.primary.block { height: 50px; border-radius: 14px; font-size: 15px; }
++    .login-foot { color: var(--ds-ink-3); }
++  }
++  @container (min-width: 380px) { .su-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; } }
++  .su-photo { border-style: solid; border-color: #dfe5ef; background: linear-gradient(135deg, #f4f7fc, #eaf1fa); }
++
++  /* ---------- cadastro concluído ---------- */
++  .su-done { justify-items: start; }
++  .su-done-mark { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50%; background: var(--navy); box-shadow: 0 0 0 8px rgba(139, 184, 232, .28), 0 18px 30px -14px rgba(20, 32, 60, .6); }
++  .su-done-mark svg { width: 40px; height: 40px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
++  .su-done-mark circle { stroke: var(--sky); stroke-width: 2.5; stroke-dasharray: 145; stroke-dashoffset: 145; animation: su-draw .7s .1s var(--ds-ease) forwards; }
++  .su-done-mark path { stroke: var(--white); stroke-width: 3.5; stroke-dasharray: 40; stroke-dashoffset: 40; animation: su-draw .45s .6s var(--ds-ease) forwards; }
++  .su-done[data-mode="pending"] .su-done-mark, .su-done[data-mode="confirm"] .su-done-mark { background: var(--sky); }
++  .su-done[data-mode="pending"] .su-done-mark circle, .su-done[data-mode="confirm"] .su-done-mark circle { stroke: var(--white); }
++  .su-done[data-mode="pending"] .su-done-mark path, .su-done[data-mode="confirm"] .su-done-mark path { stroke: var(--navy); }
++  @keyframes su-draw { to { stroke-dashoffset: 0; } }
++  @media (prefers-reduced-motion: reduce) { .su-done-mark circle, .su-done-mark path { animation: none; stroke-dashoffset: 0; } }
++  .su-done h2 { font-size: 32px !important; font-weight: 700 !important; letter-spacing: -.02em; }
++  .su-done .sub { margin-top: -8px; font-size: 15px; line-height: 1.6; }
++  .su-done-list { width: 100%; list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 2px; border-top: 1px solid var(--clin-line); }
++  .su-done-list li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--clin-line); font-size: 13px; color: var(--ink-2); }
++  .su-done-list li > span:last-child { display: grid; gap: 1px; }
++  .su-done-list b { font-size: 14px; color: var(--navy); }
++  .su-done-list .ico { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 12px; background: rgba(139, 184, 232, .22); color: var(--navy); }
++  .su-done-list .ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
++  .su-done .btn.block { width: 100%; }
++  .su-done .alert { width: 100%; }
++
++  /* ---------- carrinho: listas em pílulas + resumo do pedido ---------- */
++  #viewCart .cart-head h1 { font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -.02em; }
++  .cart-pick { gap: 10px 12px; padding: 0; border: 0; background: none; }
++  .cart-lists { flex: 1 1 320px; min-width: 0; display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: none; }
++  .cart-lists::-webkit-scrollbar { display: none; }
++  .cl-chip { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px 0 16px; border: 1px solid var(--clin-line); border-radius: 999px; background: var(--white); color: var(--navy); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: var(--ds-soft); transition: background-color .15s, border-color .15s, color .15s; touch-action: manipulation; }
++  .cl-chip:hover { border-color: var(--sky); }
++  .cl-chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--white); }
++  .cl-t { max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++  .cl-n { min-width: 24px; height: 24px; display: grid; place-items: center; padding: 0 6px; border-radius: 999px; background: rgba(139, 184, 232, .3); font-size: 12px; font-variant-numeric: tabular-nums; }
++  .cl-chip[aria-pressed="true"] .cl-n { background: var(--sky); color: var(--navy); }
++  .cart-pick-l { flex: 0 0 100%; }
++  .cart-pick-act { background: transparent; border-color: transparent; }
++  .cart-pick-act:hover { background: var(--white); border-color: var(--clin-line); }
++  .cart-pick-act:disabled { opacity: .45; cursor: default; }
++  .cart-item { border-color: transparent; box-shadow: var(--ds-soft); transition: box-shadow .2s; }
++  .cart-item:hover { box-shadow: var(--ds-lift); }
++  .cart-img { width: 72px; height: 72px; border-radius: 12px; }
++  .cart-item { grid-template-columns: 72px minmax(0, 1fr) auto; }
++  .cart-txt b { font-size: 15px; }
++  .cs-head, .cs-list, .cs-nums { display: none; }
++  .cart-wa svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
++  @media (min-width: 1200px) {
++    #viewCart .wrap { grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto auto auto 1fr; column-gap: 32px; padding-bottom: 72px; }
++    #viewCart .wrap > * { grid-column: 1; }
++    #viewCart .cart-head { grid-column: 1 / -1; }
++    #viewCart .wrap:has(> .cart-foot[hidden]) { grid-template-columns: minmax(0, 1fr); }
++    .cart-foot { position: sticky; top: 24px; z-index: 1; grid-column: 2 !important; grid-row: 2 / span 3; align-self: start; left: auto; right: auto; bottom: auto; gap: 14px; padding: 26px 24px 22px; border: 0; border-radius: var(--ds-r-hero); color: var(--white); background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(139, 184, 232, .25), transparent 70%), linear-gradient(160deg, var(--ds-navy-2), var(--navy) 50%, var(--ds-navy-3)); box-shadow: var(--ds-lift); overflow: hidden; isolation: isolate; }
++    .cart-foot::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--bits) 0 0 / 168px 132px; opacity: .06; -webkit-mask-image: linear-gradient(200deg, #000, transparent 55%); mask-image: linear-gradient(200deg, #000, transparent 55%); }
++    .cs-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
++    .cs-eyebrow { font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sky); }
++    .cs-head .cart-parcial { border-color: rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .08); color: var(--white); }
++    .cs-list { display: block; margin-top: -8px; font-family: var(--font-title); font-size: 20px; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
++    .cs-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 4px 0 0; border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, .12); }
++    .cs-nums > div { display: grid; gap: 2px; padding: 12px 14px; background: rgba(23, 34, 62, .55); }
++    .cs-nums dt { font-size: 11px; font-weight: 600; letter-spacing: .04em; color: rgba(255, 255, 255, .62); }
++    .cs-nums dd { margin: 0; font-family: var(--font-title); font-size: 22px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--white); }
++    .cs-nums dd small { font-size: 13px; font-weight: 400; color: rgba(255, 255, 255, .7); }
++    .cs-nums .cs-big dd { font-size: 30px; font-weight: 300; letter-spacing: -.02em; line-height: 1; }
++    .cart-foot .cart-tot { display: none; }
++    .cart-foot .cart-note { color: rgba(255, 255, 255, .62); }
++    .cart-foot .cart-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
++    .cart-foot .cart-acts .btn { min-width: 0; height: 44px; padding: 0 12px; }
++    .cart-foot .cart-acts .btn.primary { grid-column: 1 / -1; height: 52px; border-radius: 14px; background: var(--sky); border-color: var(--sky); color: var(--navy); font-size: 15px; }
++    .cart-foot .cart-acts .btn.primary:hover { background: var(--white); border-color: var(--white); }
++    .cart-foot .cart-acts .btn.ghost { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .22); color: var(--white); }
++    .cart-foot .cart-acts .btn.ghost:hover { background: rgba(255, 255, 255, .16); }
++    .cart-foot .cart-acts .cart-clear { grid-column: 1 / -1; justify-self: center; margin: 2px 0 0; color: rgba(255, 255, 255, .7); }
++    .cart-foot :focus-visible { outline-color: var(--sky); }
++  }
++
++  /* ---------- cartão: palco ---------- */
++  @media (min-width: 1200px) {
++    .card-view .greet h1 { font-size: clamp(28px, 3vw, 40px); }
++    .card-stage { position: relative; padding: 40px 32px 28px; border-radius: var(--ds-r-hero); background: radial-gradient(ellipse 60% 55% at 50% 40%, rgba(139, 184, 232, .38), transparent 70%), linear-gradient(180deg, #e9eef6, #dfe6f1); overflow: hidden; isolation: isolate; }
++    .card-stage::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(rgba(30, 44, 79, .14) 1px, transparent 1.4px) 0 0 / 18px 18px; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, transparent 30%, #000 80%); mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, transparent 30%, #000 80%); }
++    .card-frame { transform: perspective(1400px) rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg)); transition: transform .5s var(--ds-ease); }
++    .card-frame .card-prev { box-shadow: 0 50px 80px -40px rgba(20, 32, 60, .75), 0 4px 10px rgba(20, 32, 60, .1); }
++    .card-stage .card-qr-pick, .card-stage .card-status { position: relative; }
++    .card-act-show { min-height: 84px; padding: 18px; border-radius: 18px; background: radial-gradient(ellipse 80% 90% at 100% 0%, rgba(139, 184, 232, .35), transparent 70%), var(--navy); }
++    .card-act-show b { font-size: 17px; }
++    .card-act-show > .ico { width: 44px; height: 44px; background: var(--sky) !important; color: var(--navy) !important; }
++  }
++  @media (prefers-reduced-motion: reduce) { .card-frame { transform: none !important; transition: none; } }
++
++  /* ---------- início: duas portas (apresentar · montar pedido) ---------- */
++  .door-tile { display: grid; align-content: start; gap: 10px; padding: 22px 22px 20px; }
++  .door-row { display: flex; align-items: center; gap: 12px; }
++  .door-row h2 { font-size: 22px; font-weight: 700; line-height: 1.15; color: var(--navy); }
++  .door-av { width: 44px; height: 44px; flex: none; box-shadow: 0 0 0 3px rgba(139, 184, 232, .45); }
++  .door-t { font-size: 13px; line-height: 1.5; color: var(--ink-2); }
++  .door-tile .tile-act { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: auto; }
++  .door-tile .btn .ico svg { width: 16px; height: 16px; }
++  .bento > .tile.door-tile { border-color: transparent; background: linear-gradient(160deg, #ffffff 0%, #eef3fa 100%); box-shadow: var(--ds-soft); }
++  @media (min-width: 1200px) { .bento[data-n="3"] { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 1fr); } }
++  /* Com as duas portas no início, a faixa "Seu cartão" do topo fica só no celular */
++  @media (min-width: 768px) { #viewShelf:has(#presentTile:not([hidden])) #cardStrip { display: none; } }
++
++  /* ---------- capa que abre ao passar o mouse (grade): mostra a página 2 ---------- */
++  [data-view="grade"] .cover-open.can-peek { perspective: 1100px; }
++  [data-view="grade"] .cover-open img.peek { position: absolute; z-index: 0; object-fit: cover; border-radius: 0 4px 0 0; background: var(--white); box-shadow: inset 0 0 0 1px rgba(20, 32, 60, .08), 0 22px 30px -16px rgba(20, 32, 60, .55); pointer-events: none; opacity: 0; transition: opacity .2s; }
++  [data-view="grade"] .cover-open.can-peek img[data-cover] { position: relative; z-index: 1; transform-origin: left center; }
++  [data-view="grade"] .cat:hover .cover-open.can-peek img.peek { opacity: 1; }
++  [data-view="grade"] .cat:hover .cover-open.can-peek img[data-cover] { transform: translateY(-6px) rotateY(-34deg); box-shadow: 18px 22px 30px -16px rgba(20, 32, 60, .6); }
++  @media (prefers-reduced-motion: reduce) { [data-view="grade"] .cover-open img.peek { display: none; } }
++
++  /* ---------- textura 0/1 no azul-marinho do início ---------- */
++  #viewShelf .cats { isolation: isolate; }
++  #viewShelf .cats::before { content: ""; position: absolute; inset: 0; /* nunca além da faixa: um pseudo largo cria rolagem lateral (o celular "afastava" a página inteira) */ z-index: -1; pointer-events: none; background: var(--bits) 0 0 / 168px 132px; opacity: .045; -webkit-mask-image: linear-gradient(180deg, #000, transparent 45%); mask-image: linear-gradient(180deg, #000, transparent 45%); }
++
++  /* ---------- gestão (painel.js dentro do site): mesmo clima do início ---------- */
++  #gerView .dmp .page-head h1 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -.02em; line-height: 1.1; }
++  #gerView .dmp .card, #gerView .dmp .tile:not(.navy):not(.sky) { border-radius: var(--ds-r-card); box-shadow: var(--ds-soft); }
++  #gerView .dmp .tile.navy { position: relative; overflow: hidden; isolation: isolate; border-radius: var(--ds-r-card); background: radial-gradient(ellipse 80% 70% at 100% 0%, rgba(139, 184, 232, .28), transparent 70%), linear-gradient(160deg, var(--ds-navy-2), var(--navy) 55%, var(--ds-navy-3)); box-shadow: var(--ds-lift); }
++  #gerView .dmp .tile.navy::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: var(--bits) 0 0 / 168px 132px; opacity: .06; }
++  #gerView .dmp .tile.sky { border-radius: var(--ds-r-card); }
++  #gerView .dmp .input, #gerView .dmp select, #gerView .dmp textarea { border-color: #d5dbe6; }
++  #gerView .dmp .btn.sm { border-radius: 999px; }
++
++  /* ---------- catálogo em 3D com espessura real (--bk = largura × 11/210): login e destaque do início ---------- */
++  .login-stack { position: absolute; z-index: 0; right: 48px; top: 50%; width: clamp(200px, calc(40% - 48px), 380px); aspect-ratio: 210 / 297; transform: translateY(-50%) perspective(1600px) rotateX(var(--ry, 4deg)) rotateY(var(--rx, 32deg)); transform-style: preserve-3d; transition: transform .6s var(--ds-ease); pointer-events: none; }
++  .login-stack > .ls-b, .login-stack > .ls-m { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border-radius: 2px 6px 6px 2px; }
++  .login-stack .ls-b { transform: translate3d(22%, -6%, -120px) rotate(7deg); background: linear-gradient(160deg, #9dc2ec, var(--sky)); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .6); }
++  .login-stack .ls-m { transform: translate3d(11%, -3%, -60px) rotate(3.5deg); object-fit: cover; box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .6); }
++  .bk { position: absolute; inset: 0; display: block; transform-style: preserve-3d; }
++  .bk > img, .bk > i { position: absolute; display: block; }
++  .bk-front, .bk-back { inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 1px 4px 4px 1px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
++  .bk-front { transform: translateZ(calc(var(--bk, 0px) / 2)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
++  .bk-back { transform: translateZ(calc(var(--bk, 0px) / -2)) rotateY(180deg); }
++  .bk-spine { top: 0; left: 0; width: var(--bk, 0px); height: 100%; object-fit: cover; transform-origin: left center; transform: translateZ(calc(var(--bk, 0px) / -2)) rotateY(-90deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
++  .bk-edge { top: 1.2%; right: 0; width: var(--bk, 0px); height: 97.6%; transform-origin: right center; transform: translateZ(calc(var(--bk, 0px) / -2)) rotateY(90deg); backface-visibility: hidden; -webkit-backface-visibility: hidden;
++    background: linear-gradient(90deg, rgba(0, 0, 0, .18), transparent 30%, transparent 70%, rgba(0, 0, 0, .12)), repeating-linear-gradient(90deg, #fbfbf8 0 1px, #e3e5ea 1px 2px); }
++  .login-stack .bk-front { box-shadow: 0 40px 60px -24px rgba(0, 0, 0, .7), inset 0 0 0 1px rgba(255, 255, 255, .06); } /* sombra no próprio papel: filter achataria o 3D */
++  /* Destaque do início: o mesmo livro, com lombada azul-marinho e a marca (a capa de cada catálogo não traz a lombada) */
++  .hero .cover-open { --bk: 10px; }
++  .hero .cover-open img { transform: translateZ(calc(var(--bk) / 2)); }
++  .hero .cover-open::before, .hero .cover-open::after { transform: translateZ(calc(var(--bk) / -2)) rotateY(180deg); }
++  .hero .cover-open > .bk-spine { background: linear-gradient(90deg, #0e1731, var(--ds-navy-2) 45%, #121d3a); }
++  .hero .cover-open > .bk-spine::after { content: ""; position: absolute; left: 50%; top: 8%; width: calc(var(--bk) * 5.2); height: calc(var(--bk) * .62); margin-left: calc(var(--bk) * -2.6); transform: translateY(calc(var(--bk) * 2.6)) rotate(90deg); background: var(--white); opacity: .9; -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
++  .hero .cover-open > .bk-edge { top: .8%; height: 98.4%; }
++  .hero .cover-open > i { position: absolute; display: block; pointer-events: none; }
++  @media (min-width: 768px) { .hero .cover::before { inset: 0; transform: translate(16%, 4%) rotate(7deg) scale(.96); } } /* folha de trás: mesma proporção da capa */
++  @media (prefers-reduced-motion: reduce) { .hero .cover-open > i { display: none; } }
++
++  /* ---------- logo = botão Início ---------- */
++  .logo-home { display: inline-flex; align-items: center; margin: 0; padding: 6px 8px; margin-inline: -8px; border: 0; border-radius: 10px; background: transparent; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color .15s, opacity .15s; }
++  .logo-home .logo { display: block; }
++  .logo-home:hover { background: rgba(255, 255, 255, .1); }
++  .logo-home:active { opacity: .7; }
++  .logo-home:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
++  .topbar .logo-home { margin-right: auto; }
++  .r-top .logo-home { margin-inline: 0; padding: 4px 6px; }
++  .r-top .logo-home + .doc { padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .2); }
++  .login-brand .logo-home { margin: -6px -8px; }
++  @media (max-width: 1439px) { .r-top .logo-home { display: none; } .r-top .logo-home + .doc { padding-left: 0; border-left: 0; } } /* como antes: a marca sai antes do nome do catálogo */
++
++  /* Rede de segurança do celular: nada pode alargar a página além da tela. Sem isso, um único elemento largo faz o
++     Android "afastar" o site inteiro (tudo minúsculo). clip não cria rolagem própria, então sticky e fixed seguem iguais. */
++  html, body { max-width: 100%; overflow-x: clip; }
+ </style>
+ 
+ <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
+@@ -2101,7 +2295,7 @@
+ <section class="login" id="viewLogin" hidden>
+   <div class="login-brand">
+     <div>
+-      <span class="logo" role="img" aria-label="Dellamed"></span>
++      <button class="logo-home" type="button" id="loginHome" aria-label="Dellamed — voltar ao início do acesso"><span class="logo" aria-hidden="true"></span></button>
+       <p class="lines" aria-hidden="true">Home Care<span>•</span>Health Care<span>•</span>Wellness<span>•</span>Ortho Care</p>
+     </div>
+     <div class="login-hero">
+@@ -2110,6 +2304,17 @@
+       <p>Consulte, folheie e compartilhe os catálogos oficiais, sempre na versão mais recente.</p>
+     </div>
+     <p class="tagline"><b>Saúde e bem-estar</b> para todos.</p>
++    <!-- Catálogo 2026 em 3D (capa, lombada e contracapa da arte de impressão, A4 com lombada de 11 mm): inclina com o ponteiro -->
++    <div class="login-stack" id="loginStack" aria-hidden="true">
++      <i class="ls-b"></i>
++      <img class="ls-m" src="__B64_JPEG__" alt="">
++      <span class="bk ls-book">
++        <img class="bk-front" src="__B64_JPEG__" alt="">
++        <img class="bk-spine" src="__B64_JPEG__" alt="">
++        <i class="bk-edge"></i>
++        <img class="bk-back" src="__B64_JPEG__" alt="">
++      </span>
++    </div>
+   </div>
+   <div class="login-panel">
+     <form id="loginForm" novalidate>
+@@ -2226,15 +2431,21 @@
+       <button class="btn primary block" type="submit" id="signupSubmit">Criar conta</button>
+       <p class="signup-cta">Já tem conta? <button type="button" class="link" id="suToLogin">Entrar</button></p>
+     </form>
+-    <!-- Cadastro enviado ("Confira seu e-mail") ou e-mail confirmado com o pedido em análise -->
+-    <div class="stack-login" id="signupMsgView" hidden>
+-      <span class="ico done-ico" data-ico="check" aria-hidden="true"></span>
+-      <p class="label-caps" id="suMsgCaps">Cadastro enviado</p>
+-      <h2 id="suMsgH" tabindex="-1">Confira seu e-mail</h2>
++    <!-- Cadastro concluído: conta pronta (entra direto), em análise do marketing, ou (só se o Supabase exigir) confirmação por e-mail -->
++    <div class="stack-login su-done" id="signupMsgView" hidden>
++      <span class="su-done-mark" aria-hidden="true"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="23"/><path d="M15.5 27l7 7 14-15"/></svg></span>
++      <p class="label-caps" id="suMsgCaps">Cadastro concluído</p>
++      <h2 id="suMsgH" tabindex="-1">Tudo certo!</h2>
+       <p class="sub" id="suMsgText"></p>
+-      <p class="alert ok" id="suMsgNote">Não chegou em alguns minutos? Confira também a caixa de spam.</p>
++      <ul class="su-done-list" id="suMsgList" aria-label="O que você encontra na Prateleira">
++        <li><span class="ico" data-ico="book" aria-hidden="true"></span><span><b>Catálogos sempre atualizados</b>Consulte e compartilhe a versão mais recente.</span></li>
++        <li><span class="ico" data-ico="cart" aria-hidden="true"></span><span><b>Pedido montado na hora</b>Carrinho com caixas, peso e cubagem.</span></li>
++        <li><span class="ico" data-ico="qr" aria-hidden="true"></span><span><b>Seu cartão digital</b>QR do seu WhatsApp para o cliente escanear.</span></li>
++      </ul>
++      <p class="alert ok" id="suMsgNote" hidden></p>
++      <button type="button" class="btn primary block" id="suMsgGo">Entrar na Prateleira</button>
++      <button type="button" class="link" id="suMsgBack" style="justify-self:center">Voltar ao login</button>
+       <p class="contact contact-sm" data-contact="Dúvidas? Fale com o marketing:" hidden></p>
+-      <button type="button" class="btn primary block" id="suMsgBack">Voltar ao login</button>
+     </div>
+     <p class="login-foot"><span class="secure" id="secureNote"></span></p>
+   </div>
+@@ -2291,7 +2502,7 @@
+   <div class="main-col" id="mainCol">
+     <header class="topbar">
+       <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="side"><span class="ico" data-ico="menu"></span></button>
+-      <span class="logo" role="img" aria-label="Dellamed"></span>
++      <button class="logo-home" type="button" data-home aria-label="Dellamed — ir para o Início"><span class="logo" aria-hidden="true"></span></button>
+       <button class="avatar-btn" id="avatarBtn" type="button" aria-label="Conta" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu" data-menu-trigger="top"><span class="avatar" data-avatar></span></button>
+     </header>
+     <main id="viewShelf">
+@@ -2324,6 +2535,13 @@
+         <section class="hero" id="hero" hidden aria-labelledby="heroTitle"></section>
+         <div class="bento" id="bento" hidden>
+           <section class="tile cont" id="continue" hidden aria-label="Continuar lendo"></section>
++          <!-- Duas portas do atendimento: apresentar o cartão (este bloco) e montar o pedido (carrinho, ao lado) -->
++          <section class="tile door-tile" id="presentTile" hidden aria-labelledby="presentTileH">
++            <p class="eyebrow">Atender agora</p>
++            <div class="door-row"><span class="card-thumb door-av" data-avatar aria-hidden="true"></span><h2 id="presentTileH">Apresentar ao cliente</h2></div>
++            <p class="door-t">Seu cartão em tela cheia, com o QR do seu WhatsApp. O cliente escaneia e já fala com você.</p>
++            <div class="tile-act"><button class="btn primary sm" type="button" data-present-tile="show"><span class="ico" data-ico="present" aria-hidden="true"></span>Apresentar</button><button class="link" type="button" data-present-tile="card">Ver meu cartão</button></div>
++          </section>
+           <section class="tile cart-tile" id="cartTile" hidden aria-labelledby="cartTileH"></section>
+           <section class="tile upd-tile" id="updTile" hidden aria-labelledby="updTileH"></section>
+         </div>
+@@ -2389,11 +2607,11 @@
+             <div class="card-side">
+               <section class="card-grp" aria-labelledby="cardGrpShow">
+                 <h2 class="card-grp-h" id="cardGrpShow">Mostrar</h2>
+-                <button class="card-act" type="button" id="cardPresent"><span class="ico" data-ico="present" aria-hidden="true"></span><span class="card-act-t"><b>Apresentar</b><span>Tela cheia com o QR grande para o cliente escanear na hora.</span></span></button>
++                <button class="card-act card-act-main card-act-show" type="button" id="cardPresent"><span class="ico" data-ico="present" aria-hidden="true"></span><span class="card-act-t"><b>Apresentar ao cliente</b><span>Tela cheia com o QR grande para o cliente escanear na hora.</span></span></button>
+               </section>
+               <section class="card-grp" aria-labelledby="cardGrpSend">
+                 <h2 class="card-grp-h" id="cardGrpSend">Enviar</h2>
+-                <button class="card-act card-act-main" type="button" id="cardShareBtn"><span class="ico" data-ico="share" aria-hidden="true"></span><span class="card-act-t"><b>Compartilhar</b><span>Manda a imagem do cartão e o contato pelo WhatsApp.</span></span></button>
++                <button class="card-act" type="button" id="cardShareBtn"><span class="ico" data-ico="share" aria-hidden="true"></span><span class="card-act-t"><b>Compartilhar</b><span>Manda a imagem do cartão e o contato pelo WhatsApp.</span></span></button>
+                 <button class="card-act" type="button" id="cardCopyWa"><span class="ico" data-ico="copy" aria-hidden="true"></span><span class="card-act-t"><b>Copiar link do WhatsApp</b><span>Cole numa conversa para abrirem direto no seu número.</span></span></button>
+               </section>
+               <section class="card-grp" aria-labelledby="cardGrpSave">
+@@ -2495,9 +2713,9 @@
+         </div>
+         <div id="cartBody" role="tabpanel" aria-labelledby="cartTabProd" tabindex="-1"></div>
+         <div id="cartHist" role="tabpanel" aria-labelledby="cartTabHist" tabindex="-1" hidden></div>
++        <!-- Resumo do pedido: coluna fixa à direita no computador; rodapé fixo no tablet e no celular -->
++        <aside class="cart-foot" id="cartFoot" aria-label="Resumo do pedido" hidden></aside>
+       </div>
+-      <!-- Rodapé fixo: totais somados da ficha técnica e as ações de envio -->
+-      <div class="cart-foot" id="cartFoot" hidden></div>
+     </main>
+     <!-- Gestão (#/gerenciar/<seção> e #/emergencia): #gerView é o host.root do painel.js (vazio; o site só escreve nele antes de start: carregando/erro) -->
+     <main class="ger-main" id="viewGer" hidden>
+@@ -2539,7 +2757,7 @@
+ <section class="reader" id="viewReader" hidden>
+   <header class="r-top">
+     <button class="back" id="rBack" type="button"><span class="ico" id="icoBack"></span><span class="txt">Prateleira</span></button>
+-    <span class="logo" role="img" aria-label="Dellamed"></span>
++    <button class="logo-home" type="button" data-home aria-label="Dellamed — ir para o Início"><span class="logo" aria-hidden="true"></span></button>
+     <div class="doc"><h1 id="rTitle" tabindex="-1"></h1><span id="rMeta"></span></div>
+     <button class="icon-btn r-search-btn" id="rSearchBtn" type="button" aria-label="Buscar neste catálogo" aria-expanded="false" aria-controls="rSearchBox" title="Buscar neste catálogo"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></svg></button>
+     <div class="r-search" id="rSearchBox" role="search">
+@@ -4462,18 +4680,47 @@
+   wirePwToggle($('#suPwToggle'), [$('#suPass')]);
+   wirePwToggle($('#suPwToggle2'), [$('#suPass2')]);
+   // mode 'sent' (cadastro enviado) ou 'confirmed' (link do e-mail aberto, pedido em análise)
+-  function showSignupMsg(mode, email) {
+-    const sent = mode === 'sent';
+-    $('#suMsgCaps').textContent = sent ? 'Cadastro enviado' : 'Cadastro';
+-    $('#suMsgH').textContent = sent ? 'Confira seu e-mail' : 'E-mail confirmado!';
+-    $('#suMsgText').innerHTML = sent
+-      ? `Enviamos um link de confirmação para <span class="su-email">${esc(email)}</span>. Abra o link para ativar o seu acesso. Se o cadastro precisar de aprovação do marketing, você recebe um e-mail quando for liberado.`
+-      : 'Seu pedido de acesso está em análise. Você recebe um e-mail quando for liberado.';
+-    $('#suMsgNote').hidden = !sent;
++  /* Tela final do cadastro. mode:
++       ready     → conta criada e liberada: "Entrar na Prateleira" entra direto (a sessão já está no aparelho)
++       pending   → conta criada, aguardando a aprovação do marketing (sessão encerrada)
++       login     → cadastro recebido, mas sem sessão: o botão leva ao login com o e-mail preenchido
++       confirm   → o Supabase exige confirmar o e-mail antes do primeiro acesso (só com "Confirm email" ligado)
++       confirmed → voltou pelo link de confirmação e o pedido ainda está em análise */
++  const SU_DONE = { mode: '', email: '' };
++  function showSignupMsg(mode, email, nome) {
++    SU_DONE.mode = mode; SU_DONE.email = email || '';
++    const first = String(nome || '').trim().split(/\s+/)[0] || '';
++    const em = email ? `<span class="su-email">${esc(email)}</span>` : 'o seu e-mail';
++    const T = {
++      ready: ['Cadastro concluído', first ? `Tudo certo, ${first}!` : 'Tudo certo!', 'Sua conta está pronta. Entre agora e comece a consultar, apresentar e vender com os catálogos Dellamed.', '', 'Entrar na Prateleira'],
++      pending: ['Cadastro concluído', first ? `Recebemos, ${first}!` : 'Cadastro recebido!', 'Sua conta foi criada e agora passa pela liberação do marketing. Assim que for aprovada, é só entrar com o seu e-mail e a senha que você acabou de criar.', 'Quer agilizar? Avise o marketing que você se cadastrou.', 'Ir para o login'],
++      login: ['Cadastro concluído', 'Cadastro recebido!', `Agora é só entrar com ${em} e a senha que você criou.`, '', 'Ir para o login'],
++      confirm: ['Falta um passo', 'Confirme o seu e-mail', `Enviamos um link para ${em}. Abra o link para ativar o acesso.`, 'Não chegou em alguns minutos? Confira a caixa de spam ou fale com o marketing.', 'Ir para o login'],
++      confirmed: ['Cadastro', 'E-mail confirmado!', 'Seu pedido de acesso está com o marketing. Assim que for aprovado, é só entrar com o seu e-mail e senha.', '', 'Ir para o login']
++    }[mode] || [];
++    $('#suMsgCaps').textContent = T[0];
++    $('#suMsgH').textContent = T[1];
++    $('#suMsgText').innerHTML = T[2];
++    $('#suMsgNote').textContent = T[3]; $('#suMsgNote').hidden = !T[3];
++    $('#suMsgGo').textContent = T[4]; $('#suMsgGo').disabled = false;
++    $('#suMsgList').hidden = mode !== 'ready';
++    $('#suMsgBack').hidden = mode !== 'ready';
++    signupMsgView.dataset.mode = mode;
+     hideNet();
+     showLoginPart('signupMsg');
+     $('#suMsgH').focus();
+   }
++  $('#suMsgGo').addEventListener('click', async () => {
++    if (SU_DONE.mode !== 'ready') { if (SU_DONE.email) $('#loginEmail').value = SU_DONE.email; signupToLogin(); return; }
++    if (loginBusy) return;
++    const b = $('#suMsgGo');
++    loginBusy = true; b.disabled = true; b.textContent = 'Abrindo a Prateleira…';
++    let ok = false;
++    try { ok = await supaEnter(false, () => $('#suMsgGo').click()); }
++    finally { loginBusy = false; b.disabled = false; b.textContent = 'Entrar na Prateleira'; }
++    if (ok) { trackCatalogEvent('auth_login', { method: 'cadastro' }); return; }
++    signupToLogin(); // o motivo (sem internet, acesso bloqueado…) já está no aviso do login
++  });
+   function openTerms() {
+     openDialog({
+       title: 'Termos de uso e privacidade',
+@@ -4579,6 +4826,26 @@
+     if (/sending (confirmation|invite)?\s*(e-?mail|mail)/i.test(text) || code === 'unexpected_failure' && /mail/i.test(text)) return 'O envio de e-mail está indisponível agora. Fale com o marketing para liberar o seu acesso.';
+     return 'Não foi possível concluir o cadastro. Confira os campos e tente de novo; se continuar, fale com o marketing.';
+   }
++  /* Depois do cadastro: descobre se a conta já pode entrar. Com "Confirm email" desligado no Supabase, o cadastro já devolve a sessão
++     (ou o login com a senha recém-criada funciona); com ele ligado, o login responde email_not_confirmed. → modo da tela final */
++  async function signupOutcome(res, email, pass) {
++    try {
++      let sess = res && res.access_token ? res : null;
++      if (!sess) {
++        try { sess = await P.supa.signIn(email, pass); }
++        catch (err) { return err && (err.code === 'email_not_confirmed' || /not confirmed/i.test(String(err.message || ''))) ? 'confirm' : 'login'; }
++      }
++      if (!sess || !sess.access_token) return 'login';
++      const rec = P.auth.save(sess, false);
++      const row = await supaPerfilRow(await supaToken(), rec.uid);
++      if (row && row.ativo === true && row.situacao !== 'pendente' && row.situacao !== 'recusado') return 'ready';
++      await supaSignOut(rec.uid); // ainda sem acesso: não deixa sessão aberta no aparelho
++      return row && row.situacao === 'recusado' ? 'login' : 'pending';
++    } catch (e) {
++      try { P.auth.clear(); } catch (_) { /* noop */ }
++      return 'login';
++    }
++  }
+   signupForm.addEventListener('submit', async (e) => {
+     e.preventDefault();
+     if (SU.busy) return;
+@@ -4592,7 +4859,8 @@
+     const b = $('#signupSubmit');
+     SU.busy = true; b.disabled = true; b.textContent = 'Criando a conta…';
+     try {
+-      try { await P.supa.signUp(email, pass, data, redirectTo); }
++      let res = null, exists = false;
++      try { res = await P.supa.signUp(email, pass, data, redirectTo); }
+       catch (err) {
+         // E-mail já cadastrado (quando o Supabase avisa): mesma resposta neutra de sucesso
+         if (!(err && (err.code === 'user_already_exists' || err.code === 'email_exists'))) {
+@@ -4601,6 +4869,7 @@
+           else { signupAlert(msg); $('#signupH').focus(); }
+           return;
+         }
++        exists = true;
+       }
+       trackCatalogEvent('auth_signup_request');
+       // A foto fica SÓ neste aparelho (não vai no cadastro): entra no cartão no primeiro acesso desta pessoa
+@@ -4613,7 +4882,8 @@
+       setPwVisible($('#suPwToggle2'), [$('#suPass2')], false);
+       Object.values(suField).forEach((s) => setErr($(s), ''));
+       paintSuMeter();
+-      showSignupMsg('sent', email);
++      b.textContent = 'Concluindo…';
++      showSignupMsg(exists ? 'login' : await signupOutcome(res, email, pass), email, data.nome);
+     } finally { SU.busy = false; b.disabled = false; b.textContent = 'Criar conta'; }
+   });
+ 
+@@ -4891,12 +5161,13 @@
+   // mode: modo em que start foi chamado ('' = ainda não); ready: promessa de load + start; uid: conta que abriu; seq: última rota pedida
+   const GER = { mode: '', ready: null, uid: '', section: '', seq: 0 };
+   let painelLoad = null;
++  const PAINEL_SRC = 'painel.js?v=6c95c7ff'; // endereço com a versão (o mesmo que o app guarda)
+   function loadPainel() {
+     if (window.DellamedPainel) return Promise.resolve(window.DellamedPainel);
+     if (painelLoad) return painelLoad;
+     const s = document.createElement('script');
+     painelLoad = new Promise((res, rej) => {
+-      s.src = 'painel.js?v=6c95c7ff';
++      s.src = PAINEL_SRC;
+       s.integrity = 'sha384-Ii0rpz6bTcch3/N+q3+irVMDCID5l2NHk8RiQEOzwjgxrJw+1UmDyBluI8Nr5BIw';
+       s.async = true;
+       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
+@@ -4963,6 +5234,20 @@
+     GER.ready = job;
+     job.catch(() => { if (GER.ready !== job) return; GER.ready = null; GER.mode = ''; GER.uid = ''; syncGerEntries(); });
+     return job;
++  }
++  /* painel.js guardado velho (cache do app ou do navegador) não confere com este site: apaga a cópia guardada,
++     baixa de novo sem cache e recarrega. Favoritos, carrinhos, anotações e login ficam intactos (só o arquivo da gestão sai). */
++  async function refreshPainel() {
++    const b = $('#gerView button'); if (b) { b.disabled = true; b.textContent = 'Atualizando…'; }
++    try {
++      for (const k of await caches.keys()) {
++        if (!k.startsWith('dm-site-')) continue;
++        const c = await caches.open(k);
++        for (const r of await c.keys()) if (/\/painel\.js$/.test(new URL(r.url).pathname)) await c.delete(r);
++      }
++    } catch (e) { /* sem Cache Storage: segue */ }
++    try { await fetch(PAINEL_SRC, { cache: 'reload' }); } catch (e) { /* sem internet: o recarregar mostra o aviso certo */ }
++    location.reload();
+   }
+   async function gerOpen(mode, section) {
+     const seq = ++GER.seq, root = $('#gerView'), note = $('#gerNote');
+@@ -4981,7 +5266,7 @@
+       root.innerHTML = novo
+         ? `<div class="ger-state" role="alert">${WARN}<p>Há uma versão nova da Prateleira. Recarregue a página para abrir a gestão.</p><button class="btn primary" type="button">Recarregar</button></div>`
+         : `<div class="ger-state" role="alert">${WARN}<p>Não foi possível carregar a gestão. Verifique a internet e tente de novo.</p><button class="btn primary" type="button">Tentar de novo</button></div>`;
+-      $('button', root).addEventListener('click', () => (novo ? location.reload() : route()));
++      $('button', root).addEventListener('click', () => (novo ? refreshPainel() : route()));
+       return;
+     }
+     if (seq !== GER.seq || view !== 'ger' || !section) return;
+@@ -5204,13 +5489,16 @@
+     $$('#viewShelf .wrap > .hero, #viewShelf .wrap > .bento, #lineChapters .line-ch, #viewShelf .wrap > .cats, #viewShelf .wrap > .closing').forEach((el) => { if (!el.classList.contains('reveal')) { el.classList.add('reveal'); revealIO.observe(el); } });
+   }
+   // Blocos visíveis: o grid se ajusta a 1, 2 ou 3 colunas
++  const BENTO_WIDE = window.matchMedia('(min-width: 768px)');
++  try { BENTO_WIDE.addEventListener('change', () => { if (me) syncBento(); }); } catch (e) { /* navegador antigo: vale o tamanho da entrada */ }
+   function syncBento() {
+-    const n = ['#continue', '#cartTile', '#updTile'].filter((s) => !$(s).hidden).length;
++    $('#presentTile').hidden = !(me && cardAllowed() && !$('#cartTile').hidden && BENTO_WIDE.matches); // no celular a faixa "Seu cartão" do topo já é essa porta // as duas portas andam juntas: sem carrinho, a faixa do cartão basta
++    const n = ['#continue', '#presentTile', '#cartTile', '#updTile'].filter((s) => !$(s).hidden).length;
+     const b = $('#bento');
+     b.dataset.n = String(n);
+     b.hidden = !n;
+     // Só a linha de "carrinho vazio": o capítulo "Continue" não ganha número (é uma nota, não um capítulo)
+-    b.classList.toggle('only-note', !!n && ['#continue', '#cartTile', '#updTile'].every((s) => $(s).hidden || $(s).classList.contains('tile-note')));
++    b.classList.toggle('only-note', !!n && ['#continue', '#presentTile', '#cartTile', '#updTile'].every((s) => $(s).hidden || $(s).classList.contains('tile-note')));
+   }
+   // Destaque: primeiro catálogo na ordem atual (um "Novo" e dentro da validade, se houver), com a capa ao lado.
+   // Compacto: tarja, nome, subtítulo em até 2 linhas e um botão. Os três números viram texto corrido (só no computador).
+@@ -5235,7 +5523,7 @@
+           ${page ? `<button class="link on-dark" type="button" data-open="${esc(c.id)}" data-page="${page}" aria-describedby="heroTitle">Continuar da página ${page}</button>` : ''}
+         </div>
+       </div>
+-      <div class="hero-art"><div class="cover a"><div class="cover-open" data-open="${esc(c.id)}"><img data-cover="${esc(c.id)}" style="--r:${Number(c.ratio) || 0.707}" alt=""></div></div></div>`);
++      <div class="hero-art"><div class="cover a"><div class="cover-open" data-open="${esc(c.id)}"><img data-cover="${esc(c.id)}" style="--r:${Number(c.ratio) || 0.707}" alt=""><i class="bk-spine" aria-hidden="true"></i><i class="bk-edge" aria-hidden="true"></i></div></div></div>`);
+     hydrate(box);
+     heroSpin.start = null; heroScrollSpin(); // giro da capa recomeça da frente
+   }
+@@ -5243,15 +5531,19 @@
+      (no meio aparece o verso azul-marinho com a marca) e completa a volta quando o destaque está quase saindo da tela.
+      Rolando de volta, gira ao contrário. Um cálculo por quadro; nada com "reduzir movimento" ligado. */
+   const heroSpin = { raf: 0, start: null };
++  // Espessura do catálogo: lombada de 11 mm numa capa A4 de 210 mm (arte de impressão da capa 2026) → 5,24% da largura
++  const BK_RATIO = 11 / 210;
+   function heroScrollSpin() {
+     heroSpin.raf = 0;
+     const co = $('#hero .cover-open'), hero = $('#hero');
++    if (co) co.style.setProperty('--bk', (co.offsetWidth * BK_RATIO).toFixed(1) + 'px');
+     if (!co || reduceMotion || view !== 'shelf' || hero.hidden) return;
+     const r = hero.getBoundingClientRect(), sc = (document.scrollingElement || document.documentElement).scrollTop;
+     if (heroSpin.start === null) heroSpin.start = r.top + sc;   // onde o destaque fica com a página no topo
+     const dist = Math.max(200, heroSpin.start + r.height * 0.85); // a volta termina com o destaque quase fora da tela
+     const p = Math.min(Math.max(sc / dist, 0), 1);
+     co.style.setProperty('--spin', (p * 360).toFixed(1) + 'deg');
++    co.style.setProperty('--bk', (co.offsetWidth * BK_RATIO).toFixed(1) + 'px');
+   }
+   window.addEventListener('scroll', () => { if (!heroSpin.raf) heroSpin.raf = requestAnimationFrame(heroScrollSpin); }, { passive: true, capture: true });
+   window.addEventListener('resize', () => { heroSpin.start = null; if (!heroSpin.raf) heroSpin.raf = requestAnimationFrame(heroScrollSpin); });
+@@ -5292,6 +5584,11 @@
+         <p>Carrinho vazio. ${coarse ? 'Toque' : 'Clique'} no <b>+</b> de um produto dentro do catálogo para começar a lista.</p>`;
+     syncBento();
+   }
++  $('#presentTile').addEventListener('click', (e) => {
++    const b = e.target.closest('[data-present-tile]');
++    if (!b) return;
++    if (b.dataset.presentTile === 'show') openPresent(b, 'inicio'); else navigate('#/cartao');
++  });
+   $('#cartTile').addEventListener('click', (e) => {
+     const b = e.target.closest('[data-cart-tile]');
+     if (!b) return;
+@@ -6885,18 +7182,23 @@
+     if (!box) return;
+     if (!box.dataset.on) {
+       box.dataset.on = '1';
+-      box.innerHTML = `<span class="cart-pick-l" id="cartPickL">Lista</span>
+-        <select id="cartPickSel" aria-labelledby="cartPickL"></select>
++      box.innerHTML = `<span class="cart-pick-l" id="cartPickL">Listas</span>
++        <div class="cart-lists" id="cartLists" role="group" aria-labelledby="cartPickL"></div>
+         <span class="cart-pick-acts">
+           <button type="button" class="cart-pick-act" data-cart-act="nova">${I.plus}Nova lista</button>
+           <button type="button" class="cart-pick-act" data-cart-act="renomear">${I.pencil}Renomear</button>
+-          <button type="button" class="cart-pick-act" data-cart-act="apagar">${I.close}Apagar lista</button>
++          <button type="button" class="cart-pick-act" data-cart-act="apagar">${I.close}Apagar</button>
+         </span>`;
+     }
+-    const sel = $('#cartPickSel', box);
+-    const assin = listas.map((c) => `${c.id}::${c.itens.length}::${c.nome}`).join('##');
+-    if (sel.dataset.k !== assin) { sel.dataset.k = assin; sel.innerHTML = listas.map((c) => `<option value="${esc(c.id)}">${esc(c.nome)} (${fmtN(c.itens.length)})</option>`).join(''); }
+-    sel.value = cur.id;
++    const row = $('#cartLists', box);
++    const assin = cur.id + '##' + listas.map((c) => `${c.id}::${c.itens.length}::${c.nome}`).join('##');
++    if (row.dataset.k !== assin) {
++      row.dataset.k = assin;
++      // Uma pílula por cliente: a lista em uso fica marcada (aria-pressed); o número é a quantidade de produtos
++      row.innerHTML = listas.map((c) => `<button type="button" class="cl-chip" data-cart-list="${esc(c.id)}" aria-pressed="${c.id === cur.id}"><span class="cl-t">${esc(c.nome)}</span><span class="cl-n" aria-label="${plural(c.itens.length, 'produto', 'produtos')}">${fmtN(c.itens.length)}</span></button>`).join('');
++      const on = $('[aria-pressed="true"]', row);
++      if (on && row.scrollWidth > row.clientWidth) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
++    }
+     $('[data-cart-act="apagar"]', box).disabled = listas.length < 2; // a última lista não pode ser apagada
+   }
+   function paintCartTabs() {
+@@ -7012,11 +7314,22 @@
+     const foot = $('#cartFoot');
+     if (!list.length || CART.tab === 'envios') { foot.hidden = true; foot.innerHTML = ''; setCartFootH(); return; }
+     const t = cartTotals(list);
++    const num = (v, ok) => (ok ? v : '—');
++    const temPeso = t.semPeso.length < list.length, temCub = t.semCub.length < list.length;
+     foot.hidden = false;
+-    foot.innerHTML = `<p class="cart-tot">${t.parcial ? '<span class="cart-parcial">Parcial</span>' : ''}<span>${esc(cartTotalLine(t))}</span></p>
++    // .cs-*: resumo em coluna (computador). .cart-tot: a mesma conta numa linha (rodapé do tablet e do celular)
++    foot.innerHTML = `<div class="cs-head"><p class="cs-eyebrow">Resumo do pedido</p>${t.parcial ? '<span class="cart-parcial">Parcial</span>' : ''}</div>
++      <p class="cs-list">${esc(curCart().nome)}</p>
++      <dl class="cs-nums">
++        <div class="cs-big"><dt>Itens</dt><dd>${fmtN(t.itens)}</dd></div>
++        <div><dt>Caixas master</dt><dd>${fmtN(t.caixas)}</dd></div>
++        <div><dt>Peso</dt><dd>${num(`${fmtDec(t.peso, 0, 1)} <small>kg</small>`, temPeso)}</dd></div>
++        <div><dt>Cubagem</dt><dd>${num(`${fmtCub(t.cub)} <small>m³</small>`, temCub)}</dd></div>
++      </dl>
++      <p class="cart-tot">${t.parcial ? '<span class="cart-parcial">Parcial</span>' : ''}<span>${esc(cartTotalLine(t))}</span></p>
+       <p class="cart-note">Estimativa a partir da ficha técnica.${t.parcial ? ` ${esc(cartFaltaTxt(t))}` : ''}</p>
+       <div class="cart-acts">
+-        <button type="button" class="btn primary" data-cart-act="whatsapp">Enviar pelo WhatsApp</button>
++        <button type="button" class="btn primary cart-wa" data-cart-act="whatsapp">${I.chat}Enviar pelo WhatsApp</button>
+         <button type="button" class="btn ghost" data-cart-act="copy">Copiar lista</button>
+         <button type="button" class="btn ghost" data-cart-act="email">Enviar por e-mail</button>
+         <button type="button" class="link cart-clear" data-cart-act="clear">Esvaziar lista</button>
+@@ -7026,7 +7339,8 @@
+   // Altura do rodapé fixo: o conteúdo rola acima dele (mesma ideia da barra de publicação da gestão)
+   function setCartFootH() {
+     const foot = $('#cartFoot');
+-    const h = foot.hidden ? 0 : foot.offsetHeight;
++    const side = window.matchMedia('(min-width: 1200px)').matches; // computador: o resumo é uma coluna, não um rodapé
++    const h = foot.hidden || side ? 0 : foot.offsetHeight;
+     document.documentElement.style.setProperty('--cart-foot-h', h + 'px');
+   }
+   try { new ResizeObserver(setCartFootH).observe($('#cartFoot')); } catch (e) { window.addEventListener('resize', setCartFootH); }
+@@ -7067,6 +7381,8 @@
+       else histRecreate(h);
+       return;
+     }
++    const li = t.closest('[data-cart-list]');
++    if (li) { if (setCartAtual(li.dataset.cartList)) toast(`${cartListName()} é a lista em uso.`); return; }
+     const rm = t.closest('[data-cart-rm]');
+     if (rm) { const p = prodBySku(rm.dataset.cartRm) || { sku: rm.dataset.cartRm, name: rm.dataset.cartRm }; setCart(p, 0); return; }
+     const act = t.closest('[data-cart-act]');
+@@ -7085,8 +7401,6 @@
+     openCartSend(a === 'email' ? 'email' : 'whatsapp');
+   });
+   $('#viewCart').addEventListener('change', (e) => {
+-    const sel = e.target.closest && e.target.closest('#cartPickSel');
+-    if (sel) { if (setCartAtual(sel.value)) toast(`${cartListName()} é a lista em uso.`); return; }
+     qtyChange(e.target);
+   });
+   // Nome da lista: até CART_NOME_MAX caracteres, num diálogo curto (mesmo padrão dos demais)
+@@ -10199,6 +10513,74 @@
+   window.addEventListener('online', pintarOffline);
+   pintarOffline();
+ 
++  /* ================= a marca Dellamed é o botão "Início" =================
++     Área logada: barra do celular/tablet e topo do leitor levam ao Início (do leitor, fecha o catálogo; da gestão e do carrinho,
++     passam pela mesma saída do menu, que pergunta antes de perder um rascunho). Login: volta para a tela de entrada. */
++  function goHome() {
++    if (view === 'reader') {
++      lastRoute = '#/prateleira';
++      try { history.pushState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
++      route('#/prateleira'); // fecha o catálogo agora (sem esperar o hashchange)
++      if (filter !== 'todos') setFilter('todos');
++      window.scrollTo(0, 0);
++      const g = $('#greet'); g.setAttribute('tabindex', '-1'); g.focus({ preventScroll: true });
++      return;
++    }
++    $('#side [data-nav="inicio"]').click();
++  }
++  $$('[data-home]').forEach((b) => b.addEventListener('click', goHome));
++  $('#loginHome').addEventListener('click', () => {
++    if (loginBusy || SU.busy) return; // não interrompe uma entrada ou um cadastro em andamento
++    if (loginPart !== 'login') { signupToLogin(); return; }
++    window.scrollTo({ top: 0, behavior: scrollBehavior() });
++    $('#loginEmail').focus();
++  });
++  // Livro do login: a espessura acompanha a largura (mesma proporção da lombada impressa)
++  function sizeLoginBook() { const st = $('#loginStack'); if (st && st.offsetWidth) st.style.setProperty('--bk', (st.offsetWidth * 11 / 210).toFixed(1) + 'px'); }
++  sizeLoginBook();
++  window.addEventListener('resize', sizeLoginBook);
++  try { new ResizeObserver(sizeLoginBook).observe($('#loginStack')); } catch (e) { /* noop */ }
++
++  /* ================= movimento sutil (só mouse, sem "reduzir movimento") =================
++     Login: a pilha de catálogos inclina com o ponteiro. Cartão: o cartão acompanha o ponteiro no palco.
++     Grade: ao passar o mouse, a capa abre um pouco e mostra a página 2 (miniatura já publicada). */
++  const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
++  function tiltOn(area, target, rx, ry, vx, vy) {
++    let raf = 0, ev = null;
++    area.addEventListener('pointermove', (e) => {
++      ev = e;
++      if (raf) return;
++      raf = requestAnimationFrame(() => {
++        raf = 0;
++        const r = area.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width - .5, y = (ev.clientY - r.top) / r.height - .5;
++        target.style.setProperty(vx, (rx[0] + x * rx[1]).toFixed(2) + 'deg');
++        target.style.setProperty(vy, (ry[0] - y * ry[1]).toFixed(2) + 'deg');
++      });
++    });
++    area.addEventListener('pointerleave', () => { target.style.removeProperty(vx); target.style.removeProperty(vy); });
++  }
++  if (fineHover) {
++    tiltOn($('.login-brand'), $('#loginStack'), [32, 18], [4, 10], '--rx', '--ry');
++    tiltOn($('#cardStage'), $('#cardStage .card-frame'), [0, 10], [0, 8], '--tx', '--ty');
++    $('#shelves').addEventListener('pointerover', (e) => {
++      const box = e.target.closest && e.target.closest('[data-view="grade"] .cat');
++      if (!box || box.dataset.peek) return;
++      const op = $('.cover-open', box), cv = op && $('img[data-cover]', op), c = op && cat(op.dataset.open);
++      if (!cv || !cv.getAttribute('src') || !c || c.pages < 2 || !hasThumb(c, 2)) return;
++      box.dataset.peek = '1';
++      thumbURL(c.id, 2).then((u) => {
++        if (!op.isConnected) return;
++        const pk = document.createElement('img');
++        pk.className = 'peek'; pk.alt = ''; pk.decoding = 'async'; pk.src = u;
++        const place = () => { pk.style.left = cv.offsetLeft + 'px'; pk.style.top = cv.offsetTop + 'px'; pk.style.width = cv.offsetWidth + 'px'; pk.style.height = cv.offsetHeight + 'px'; };
++        place();
++        op.prepend(pk);
++        op.classList.add('can-peek');
++        box.addEventListener('pointerenter', place);
++      }).catch(() => { delete box.dataset.peek; }); // sem miniatura: a capa só sobe, como antes
++    });
++  }
++
+   /* ================= início ================= */
+   // Sessão do Supabase guardada: renova o token (P.auth), confere o perfil e a chave. → { status } para parar, ou { key } (nova ou null = a guardada).
+   // Sem internet (ou servidor fora), segue com a chave guardada, como o acesso antigo.

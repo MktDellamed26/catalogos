@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-OJTrj9LSDBifS0SYR8i0ZqS0q7yDw48Apz34OtOWnGw=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+pxONkgfMqoWlLxd6LSe0xvljfCPbXCHSRUi+u7b+5A=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -5179,12 +5179,13 @@
   // mode: modo em que start foi chamado ('' = ainda não); ready: promessa de load + start; uid: conta que abriu; seq: última rota pedida
   const GER = { mode: '', ready: null, uid: '', section: '', seq: 0 };
   let painelLoad = null;
+  const PAINEL_SRC = 'painel.js?v=6c95c7ff'; // endereço com a versão (o mesmo que o app guarda)
   function loadPainel() {
     if (window.DellamedPainel) return Promise.resolve(window.DellamedPainel);
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
-      s.src = 'painel.js?v=6c95c7ff';
+      s.src = PAINEL_SRC;
       s.integrity = 'sha384-Ii0rpz6bTcch3/N+q3+irVMDCID5l2NHk8RiQEOzwjgxrJw+1UmDyBluI8Nr5BIw';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
@@ -5252,6 +5253,20 @@
     job.catch(() => { if (GER.ready !== job) return; GER.ready = null; GER.mode = ''; GER.uid = ''; syncGerEntries(); });
     return job;
   }
+  /* painel.js guardado velho (cache do app ou do navegador) não confere com este site: apaga a cópia guardada,
+     baixa de novo sem cache e recarrega. Favoritos, carrinhos, anotações e login ficam intactos (só o arquivo da gestão sai). */
+  async function refreshPainel() {
+    const b = $('#gerView button'); if (b) { b.disabled = true; b.textContent = 'Atualizando…'; }
+    try {
+      for (const k of await caches.keys()) {
+        if (!k.startsWith('dm-site-')) continue;
+        const c = await caches.open(k);
+        for (const r of await c.keys()) if (/\/painel\.js$/.test(new URL(r.url).pathname)) await c.delete(r);
+      }
+    } catch (e) { /* sem Cache Storage: segue */ }
+    try { await fetch(PAINEL_SRC, { cache: 'reload' }); } catch (e) { /* sem internet: o recarregar mostra o aviso certo */ }
+    location.reload();
+  }
   async function gerOpen(mode, section) {
     const seq = ++GER.seq, root = $('#gerView'), note = $('#gerNote');
     // Gestão já aberta com o login (unified) e a pessoa foi para #/emergencia: só avisa, com o link para Gerenciar
@@ -5269,7 +5284,7 @@
       root.innerHTML = novo
         ? `<div class="ger-state" role="alert">${WARN}<p>Há uma versão nova da Prateleira. Recarregue a página para abrir a gestão.</p><button class="btn primary" type="button">Recarregar</button></div>`
         : `<div class="ger-state" role="alert">${WARN}<p>Não foi possível carregar a gestão. Verifique a internet e tente de novo.</p><button class="btn primary" type="button">Tentar de novo</button></div>`;
-      $('button', root).addEventListener('click', () => (novo ? location.reload() : route()));
+      $('button', root).addEventListener('click', () => (novo ? refreshPainel() : route()));
       return;
     }
     if (seq !== GER.seq || view !== 'ger' || !section) return;

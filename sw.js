@@ -4,7 +4,7 @@
    Nada do Supabase, do GitHub ou de qualquer envio (POST) é guardado.
    A versão muda a cada publicação: o cache antigo é apagado quando a nova versão assume. */
 'use strict';
-const VER = '136b50eda025';
+const VER = 'd79a52c3b7a0';
 const SHELL = 'dm-site-' + VER;      // site (index.html, painel.js, ícones, manifesto)
 const MEDIA = 'dm-catalogos';        // páginas, capas, miniaturas, busca e texto: NÃO leva a versão (senão o app baixaria tudo de novo a cada publicação)
 const CDN = 'dm-cdn-' + VER;         // bibliotecas e fontes externas, para o leitor abrir offline
@@ -89,6 +89,8 @@ self.addEventListener('fetch', (e) => {
   }
   const p = u.pathname;
   if (EH_DADOS(p)) { e.respondWith(redeAntes(SHELL, req, 2500)); return; }
+  // painel.js: primeiro a rede (o site confere a integridade; uma cópia velha guardada travaria a gestão até a próxima versão)
+  if (/\/painel\.js$/.test(p)) { e.respondWith(redeAntes(SHELL, req, 4000)); return; }
   if (EH_MEDIA(p)) { e.respondWith(guardadoAntes(MEDIA, req)); return; }
   if (/\.(js|css|png|webmanifest|ico|svg|jpg|jpeg|webp)$/i.test(p)) { e.respondWith(guardadoAntes(SHELL, req)); return; }
 });
