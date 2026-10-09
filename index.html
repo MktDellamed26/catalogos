@@ -2227,7 +2227,7 @@
 
   /* ---------- textura 0/1 no azul-marinho do início ---------- */
   #viewShelf .cats { isolation: isolate; }
-  #viewShelf .cats::before { content: ""; position: absolute; inset: 0 -100vmax; z-index: -1; pointer-events: none; background: var(--bits) 0 0 / 168px 132px; opacity: .045; -webkit-mask-image: linear-gradient(180deg, #000, transparent 45%); mask-image: linear-gradient(180deg, #000, transparent 45%); }
+  #viewShelf .cats::before { content: ""; position: absolute; inset: 0; /* nunca além da faixa: um pseudo largo cria rolagem lateral (o celular "afastava" a página inteira) */ z-index: -1; pointer-events: none; background: var(--bits) 0 0 / 168px 132px; opacity: .045; -webkit-mask-image: linear-gradient(180deg, #000, transparent 45%); mask-image: linear-gradient(180deg, #000, transparent 45%); }
 
   /* ---------- gestão (painel.js dentro do site): mesmo clima do início ---------- */
   #gerView .dmp .page-head h1 { font-size: clamp(26px, 2.6vw, 34px); letter-spacing: -.02em; line-height: 1.1; }
@@ -2274,6 +2274,10 @@
   .r-top .logo-home + .doc { padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, .2); }
   .login-brand .logo-home { margin: -6px -8px; }
   @media (max-width: 1439px) { .r-top .logo-home { display: none; } .r-top .logo-home + .doc { padding-left: 0; border-left: 0; } } /* como antes: a marca sai antes do nome do catálogo */
+
+  /* Rede de segurança do celular: nada pode alargar a página além da tela. Sem isso, um único elemento largo faz o
+     Android "afastar" o site inteiro (tudo minúsculo). clip não cria rolagem própria, então sticky e fixed seguem iguais. */
+  html, body { max-width: 100%; overflow-x: clip; }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
