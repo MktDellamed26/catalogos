@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+pxONkgfMqoWlLxd6LSe0xvljfCPbXCHSRUi+u7b+5A=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-D/G6ngWwYtBoVcHY2EkLQ84aZEnhDH0CIEQFijuQT7w=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2278,6 +2278,22 @@
   /* Rede de segurança do celular: nada pode alargar a página além da tela. Sem isso, um único elemento largo faz o
      Android "afastar" o site inteiro (tudo minúsculo). clip não cria rolagem própria, então sticky e fixed seguem iguais. */
   html, body { max-width: 100%; overflow-x: clip; }
+
+  /* ---------- download do catálogo em PDF ---------- */
+  .pdf-job { pointer-events: auto; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; column-gap: 12px; row-gap: 8px; width: min(440px, 100%); padding: 12px 12px 12px 14px; border-radius: 16px; background: var(--navy); color: var(--white); box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .55); }
+  .pdf-job[hidden] { display: none; }
+  .pj-ico { width: 34px; height: 34px; grid-row: 1 / span 2; border-radius: 10px; background: var(--sky) center / 18px no-repeat; -webkit-mask: none; position: relative; }
+  .pj-ico::after { content: "PDF"; position: absolute; inset: 0; display: grid; place-items: center; font: 700 10px/1 var(--font-title); letter-spacing: .04em; color: var(--navy); }
+  .pj-txt { display: grid; min-width: 0; line-height: 1.3; }
+  .pj-txt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+  .pj-txt span { font-size: 12px; color: rgba(255, 255, 255, .72); font-variant-numeric: tabular-nums; }
+  .pj-bar { grid-column: 2 / span 2; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .15); overflow: hidden; }
+  .pj-bar b { display: block; height: 100%; width: 0; border-radius: 4px; background: var(--sky); transition: width .25s; }
+  .pj-x { height: 32px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, .3); border-radius: 999px; background: transparent; color: var(--white); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .pj-x:hover { background: rgba(255, 255, 255, .1); }
+  .pj-x:disabled { opacity: .5; cursor: default; }
+  .toast-wrap { flex-direction: column; align-items: center; gap: 8px; }
+  body.pdf-busy #btnPdf { pointer-events: none; opacity: .45; }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -2805,6 +2821,7 @@
         <button class="icon-btn" id="btnZoomIn" type="button" aria-label="Ampliar" title="Ampliar (+)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3M11 8v6M8 11h6"/></svg></button>
         <span class="divider" aria-hidden="true"></span>
         <button class="icon-btn btn-sound" id="btnSound" type="button" aria-pressed="false" aria-label="Som ao virar a página" title="Som ao virar a página"><svg viewBox="0 0 24 24" id="icoSound"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
+        <button class="icon-btn btn-pdf" id="btnPdf" type="button" aria-label="Baixar o catálogo em PDF" title="Baixar o catálogo em PDF"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
         <button class="icon-btn" id="btnFs" type="button" aria-label="Tela cheia" title="Tela cheia"><svg viewBox="0 0 24 24" id="icoFs"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
       </div>
     </div>
@@ -2890,7 +2907,9 @@
 <dialog id="dlg" aria-labelledby="dlgTitle"></dialog>
 <!-- Faixas do app (nova versão, sem internet, convite para instalar): discretas, sem prender o foco e fora do #shell -->
 <div class="app-bars" id="appBars" aria-live="polite"></div>
-<div class="toast-wrap" id="toastWrap"><div class="toast" id="toast" role="status" aria-live="polite"></div></div>
+<div class="toast-wrap" id="toastWrap"><div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <!-- Download do catálogo em PDF: andamento (fica até terminar ou cancelar; a pessoa pode continuar navegando) -->
+  <div class="pdf-job" id="pdfJob" role="status" hidden><span class="pj-ico" aria-hidden="true"></span><span class="pj-txt"><b id="pdfJobT">Preparando o PDF</b><span id="pdfJobS">0%</span></span><i class="pj-bar" aria-hidden="true"><b id="pdfJobBar"></b></i><button type="button" class="pj-x" id="pdfJobX">Cancelar</button></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js" integrity="sha384-L4eWrYFdqQ+LoGA0MMuqLqzV13x7SKkQaqacy4MED8e815dS37tTKlO/6xBEUpZW" crossorigin="anonymous"></script>
 <script>
@@ -6465,6 +6484,7 @@
       type: product ? 'product' : page ? 'page' : 'catalog',
       params: { catalog_id: c.id, catalog_title: c.title, page_number: page || null, product_sku: product ? product.sku : undefined },
       variant: product ? 'panel' : '',
+      pdf: product ? null : c, // catálogo ou página: dá para baixar o PDF inteiro daqui
       // O que vai ser compartilhado, dito no topo do diálogo: o catálogo e onde o link abre (nenhuma regra de link muda aqui)
       ctx: {
         id: c.id,
@@ -6480,7 +6500,7 @@
   // Diálogo de envio: no topo, o que vai ser compartilhado (capa, nome e onde o link abre); depois a mensagem editável
   // e um canal por linha — WhatsApp, e-mail, compartilhar do sistema e copiar. As ações são as mesmas de sempre
   // (mesmos endereços, mesmo texto, mesma métrica); só o desenho mudou. A métrica sai só na ação real.
-  function shareDialog({ title, msg, name, subject, warn, type, params, variant, note, ctx }) {
+  function shareDialog({ title, msg, name, subject, warn, type, params, variant, note, ctx, pdf }) {
     const sent = (method) => trackCatalogEvent('catalog_share', { ...params, content_type: type, method });
     const capa = ctx && ctx.id ? `<img data-cover="${esc(ctx.id)}" alt="">` : `<span class="ico" aria-hidden="true">${I.share}</span>`;
     // Uma linha por canal: ícone, o que é e, embaixo, o que acontece ao tocar
@@ -6497,6 +6517,7 @@
           ${opt('a', 'id="shareMail"', I.email, 'E-mail', 'Abre seu e-mail com o assunto e a mensagem.')}
           ${navigator.share ? opt('button', 'type="button" id="shareNative"', I.share, 'Compartilhar…', 'Usa o compartilhamento do aparelho.') : ''}
           ${opt('button', 'type="button" id="shareCopy"', I.copy, 'Copiar mensagem', 'Copia o texto com o link para colar onde quiser.')}
+          ${pdf ? opt('button', 'type="button" id="sharePdf"', I.download, 'Baixar PDF', `Salva o catálogo inteiro (${plural(pdf.pages, 'página', 'páginas')}) neste aparelho, para enviar como arquivo.`) : ''}
         </div>
         <p class="dlg-note">${esc(note || 'O link abre direto na página. Quem receber precisa ter acesso à Prateleira.')}</p>`,
       actions: [{ label: 'Fechar', kind: 'ghost' }]
@@ -6512,6 +6533,8 @@
     $('#shareWa').addEventListener('click', () => sent('whatsapp'));
     $('#shareMail').addEventListener('click', () => sent('email'));
     $('#shareCopy').addEventListener('click', async () => { const ok = await copyFrom(ta, 'Mensagem copiada.'); if (ok) { sent('copy'); closeDialog(); } });
+    const pb = $('#sharePdf');
+    if (pb) pb.addEventListener('click', () => { closeDialog(); downloadCatalogPdf(pdf, 'compartilhar'); });
     const nb = $('#shareNative');
     if (nb) nb.addEventListener('click', async () => {
       try { await navigator.share({ title: name, text: ta.value }); sent('native'); closeDialog(); }
@@ -10530,6 +10553,120 @@
   window.addEventListener('offline', pintarOffline);
   window.addEventListener('online', pintarOffline);
   pintarOffline();
+
+  /* ================= catálogo em PDF (download) =================
+     As páginas publicadas já são JPEG (p/<id>/NNN.bin, 4 por arquivo): o site decifra cada bloco e monta um PDF simples
+     no próprio aparelho, uma imagem por página, sem biblioteca externa e sem enviar nada a lugar nenhum.
+     O PDF sai na mesma resolução das páginas do leitor (não é o arquivo original da gráfica). */
+  const PDFW = (() => {
+    const te = new TextEncoder();
+    // Largura, altura e componentes de cor de um JPEG (marcador SOF); null se não for JPEG
+    function jpegInfo(u) {
+      if (!(u && u[0] === 0xFF && u[1] === 0xD8)) return null;
+      let i = 2;
+      while (i + 9 < u.length) {
+        if (u[i] !== 0xFF) { i++; continue; }
+        const m = u[i + 1];
+        if (m === 0xFF) { i++; continue; }
+        if (m === 0x01 || (m >= 0xD0 && m <= 0xD8)) { i += 2; continue; }
+        const len = (u[i + 2] << 8) | u[i + 3];
+        if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) return { h: (u[i + 5] << 8) | u[i + 6], w: (u[i + 7] << 8) | u[i + 8], c: u[i + 9] };
+        i += 2 + len;
+      }
+      return null;
+    }
+    const utf16hex = (str) => { let h = 'FEFF'; for (const ch of String(str)) { const cp = ch.codePointAt(0); const units = cp > 0xFFFF ? [0xD800 + ((cp - 0x10000) >> 10), 0xDC00 + ((cp - 0x10000) & 0x3FF)] : [cp]; units.forEach((x) => { h += x.toString(16).toUpperCase().padStart(4, '0'); }); } return h; };
+    const pad = (n) => String(n).padStart(2, '0');
+    // pages: [{ data: Uint8Array (JPEG), w, h, c }] → Blob application/pdf. Página A4 de largura (595 pt) na proporção da imagem.
+    function build(pages, title) {
+      const parts = [], offs = [];
+      let off = 0;
+      const push = (x) => { const b = typeof x === 'string' ? te.encode(x) : x; parts.push(b); off += b.length; };
+      const obj = (id, fill) => { offs[id] = off; push(id + ' 0 obj\n'); fill(); push('\nendobj\n'); };
+      const n = pages.length, d = new Date();
+      push('%PDF-1.4\n%âãÏÓ\n');
+      obj(1, () => push('<< /Type /Catalog /Pages 2 0 R >>'));
+      obj(2, () => push(`<< /Type /Pages /Count ${n} /Kids [${pages.map((_, k) => `${4 + 3 * k} 0 R`).join(' ')}] >>`));
+      obj(3, () => push(`<< /Title <${utf16hex(title)}> /Producer (Prateleira de Catalogos Dellamed) /CreationDate (D:${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}) >>`));
+      pages.forEach((p, k) => {
+        const W = 595.28, H = +(W * p.h / p.w).toFixed(2), pid = 4 + 3 * k;
+        obj(pid, () => push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im ${pid + 2} 0 R >> >> /Contents ${pid + 1} 0 R >>`));
+        const cs = `q ${W} 0 0 ${H} 0 0 cm /Im Do Q`;
+        obj(pid + 1, () => push(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`));
+        const space = p.c === 1 ? '/DeviceGray' : p.c === 4 ? '/DeviceCMYK /Decode [1 0 1 0 1 0 1 0]' : '/DeviceRGB';
+        obj(pid + 2, () => { push(`<< /Type /XObject /Subtype /Image /Width ${p.w} /Height ${p.h} /ColorSpace ${space} /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.data.length} >>\nstream\n`); push(p.data); push('\nendstream'); });
+      });
+      const size = 4 + 3 * n, xref = off;
+      let x = `xref\n0 ${size}\n0000000000 65535 f \n`;
+      for (let i = 1; i < size; i++) x += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+      push(`${x}trailer\n<< /Size ${size} /Root 1 0 R /Info 3 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+      return new Blob(parts, { type: 'application/pdf' });
+    }
+    return { jpegInfo, build };
+  })();
+  // Página que não veio em JPEG (formato antigo): redesenha num canvas e exporta JPEG
+  async function pdfJpeg(bytes) {
+    const info = PDFW.jpegInfo(bytes);
+    if (info && info.w && info.h) return { data: bytes, ...info };
+    const bmp = await createImageBitmap(new Blob([bytes]));
+    const cv = document.createElement('canvas'); cv.width = bmp.width; cv.height = bmp.height;
+    cv.getContext('2d').drawImage(bmp, 0, 0);
+    if (bmp.close) bmp.close();
+    const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9));
+    const data = new Uint8Array(await blob.arrayBuffer());
+    return { data, ...PDFW.jpegInfo(data) };
+  }
+  const pdfName = (c) => (String(c.title || 'Catalogo Dellamed').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'Catalogo-Dellamed') + '.pdf';
+  const PDFJOB = { on: false, cancel: false };
+  function pdfJobUI(on, c) {
+    const el = $('#pdfJob');
+    el.hidden = !on;
+    document.body.classList.toggle('pdf-busy', on);
+    if (on) { $('#pdfJobT').textContent = `Preparando o PDF · ${c.title}`; pdfJobSet(0); $('#pdfJobX').disabled = false; }
+  }
+  function pdfJobSet(f, label) {
+    const pct = Math.round(f * 100);
+    $('#pdfJobS').textContent = label || `${pct}%`;
+    $('#pdfJobBar').style.width = pct + '%';
+  }
+  $('#pdfJobX').addEventListener('click', () => { PDFJOB.cancel = true; $('#pdfJobX').disabled = true; $('#pdfJobS').textContent = 'Cancelando…'; });
+  async function downloadCatalogPdf(c, from) {
+    if (!c) return;
+    if (PDFJOB.on) { toast('Já tem um PDF sendo preparado. Aguarde terminar.'); return; }
+    PDFJOB.on = true; PDFJOB.cancel = false;
+    const gen = DATA_GEN, cancel = new Error('cancelado');
+    pdfJobUI(true, c);
+    try {
+      const pages = [], blocks = Math.ceil(c.pages / P.CHUNK);
+      for (let ci = 0; ci < blocks; ci++) {
+        if (PDFJOB.cancel) throw cancel;
+        if (gen !== DATA_GEN) throw new Error('catálogo atualizado');
+        const parts = P.unpackImages(await fetchOpen(c, P.path.chunk(c.id, ci)));
+        for (const part of parts) { if (pages.length < c.pages) pages.push(await pdfJpeg(part)); }
+        pdfJobSet(pages.length / c.pages * 0.96, `${pages.length} de ${plural(c.pages, 'página', 'páginas')}`);
+      }
+      if (PDFJOB.cancel) throw cancel;
+      pdfJobSet(0.98, 'Montando o arquivo…');
+      await new Promise((r) => setTimeout(r, 30)); // deixa a tela mostrar o passo antes do trabalho pesado
+      const blob = PDFW.build(pages, c.title), name = pdfName(c);
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = name; a.hidden = true;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 120000); // arquivo grande: o navegador lê o blob com calma
+      pdfJobUI(false);
+      trackCatalogEvent('catalog_download', { catalog_id: c.id, catalog_title: c.title, pages: c.pages, from: from || 'leitor' });
+      const mb = (blob.size / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+      const file = new File([blob], name, { type: 'application/pdf' });
+      const canShare = coarse && navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
+      toast(`PDF baixado: ${name} (${mb} MB).`, '', canShare ? { label: 'Enviar', onClick: () => navigator.share({ files: [file], title: c.title }).catch(() => {}) } : null);
+    } catch (e) {
+      pdfJobUI(false);
+      if (e === cancel) toast('Download do PDF cancelado.');
+      else if (offlineErr(e)) toast(`${MSG_OFFLINE} O PDF precisa baixar as páginas: tente com internet.`, 'err');
+      else { console.warn('[pdf]', e); toast('Não foi possível montar o PDF agora. Tente de novo.', 'err'); }
+    } finally { PDFJOB.on = false; }
+  }
+  $('#btnPdf').addEventListener('click', () => downloadCatalogPdf(R.cat, 'leitor'));
 
   /* ================= a marca Dellamed é o botão "Início" =================
      Área logada: barra do celular/tablet e topo do leitor levam ao Início (do leitor, fecha o catálogo; da gestão e do carrinho,
