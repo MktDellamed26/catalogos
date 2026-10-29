@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-D/G6ngWwYtBoVcHY2EkLQ84aZEnhDH0CIEQFijuQT7w=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-GaW0eNJv0hVzUj51vlfR8vnuMVmTlSXheg46rMZzpiA=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2294,6 +2294,12 @@
   .pj-x:disabled { opacity: .5; cursor: default; }
   .toast-wrap { flex-direction: column; align-items: center; gap: 8px; }
   body.pdf-busy #btnPdf { pointer-events: none; opacity: .45; }
+
+  .pdf-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; padding: 12px 14px; border-radius: 14px; background: rgba(139, 184, 232, .14); }
+  .pdf-pick[hidden] { display: none; }
+  .pdf-pick .field { margin: 0; }
+  .pdf-pick .btn { height: 46px; }
+  @media (max-width: 480px) { .pdf-pick { grid-template-columns: minmax(0, 1fr); } }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -6484,7 +6490,8 @@
       type: product ? 'product' : page ? 'page' : 'catalog',
       params: { catalog_id: c.id, catalog_title: c.title, page_number: page || null, product_sku: product ? product.sku : undefined },
       variant: product ? 'panel' : '',
-      pdf: product ? null : c, // catálogo ou página: dá para baixar o PDF inteiro daqui
+      pdf: product ? null : c, // catálogo ou página: dá para baixar o PDF daqui (página, algumas ou o catálogo inteiro)
+      pdfPage: page || 0,
       // O que vai ser compartilhado, dito no topo do diálogo: o catálogo e onde o link abre (nenhuma regra de link muda aqui)
       ctx: {
         id: c.id,
@@ -6500,7 +6507,7 @@
   // Diálogo de envio: no topo, o que vai ser compartilhado (capa, nome e onde o link abre); depois a mensagem editável
   // e um canal por linha — WhatsApp, e-mail, compartilhar do sistema e copiar. As ações são as mesmas de sempre
   // (mesmos endereços, mesmo texto, mesma métrica); só o desenho mudou. A métrica sai só na ação real.
-  function shareDialog({ title, msg, name, subject, warn, type, params, variant, note, ctx, pdf }) {
+  function shareDialog({ title, msg, name, subject, warn, type, params, variant, note, ctx, pdf, pdfPage }) {
     const sent = (method) => trackCatalogEvent('catalog_share', { ...params, content_type: type, method });
     const capa = ctx && ctx.id ? `<img data-cover="${esc(ctx.id)}" alt="">` : `<span class="ico" aria-hidden="true">${I.share}</span>`;
     // Uma linha por canal: ícone, o que é e, embaixo, o que acontece ao tocar
@@ -6517,7 +6524,7 @@
           ${opt('a', 'id="shareMail"', I.email, 'E-mail', 'Abre seu e-mail com o assunto e a mensagem.')}
           ${navigator.share ? opt('button', 'type="button" id="shareNative"', I.share, 'Compartilhar…', 'Usa o compartilhamento do aparelho.') : ''}
           ${opt('button', 'type="button" id="shareCopy"', I.copy, 'Copiar mensagem', 'Copia o texto com o link para colar onde quiser.')}
-          ${pdf ? opt('button', 'type="button" id="sharePdf"', I.download, 'Baixar PDF', `Salva o catálogo inteiro (${plural(pdf.pages, 'página', 'páginas')}) neste aparelho, para enviar como arquivo.`) : ''}
+          ${pdf ? opt('button', 'type="button" id="sharePdf"', I.download, 'Baixar PDF', 'Esta página, algumas páginas ou o catálogo inteiro, para enviar como arquivo.') : ''}
         </div>
         <p class="dlg-note">${esc(note || 'O link abre direto na página. Quem receber precisa ter acesso à Prateleira.')}</p>`,
       actions: [{ label: 'Fechar', kind: 'ghost' }]
@@ -6534,7 +6541,7 @@
     $('#shareMail').addEventListener('click', () => sent('email'));
     $('#shareCopy').addEventListener('click', async () => { const ok = await copyFrom(ta, 'Mensagem copiada.'); if (ok) { sent('copy'); closeDialog(); } });
     const pb = $('#sharePdf');
-    if (pb) pb.addEventListener('click', () => { closeDialog(); downloadCatalogPdf(pdf, 'compartilhar'); });
+    if (pb) pb.addEventListener('click', () => askPdf(pdf, 'compartilhar', pdfPage ? [pdfPage] : (R.cat && R.cat.id === pdf.id && view === 'reader' ? visibleIdx().map((i) => i + 1) : [])));
     const nb = $('#shareNative');
     if (nb) nb.addEventListener('click', async () => {
       try { await navigator.share({ title: name, text: ta.value }); sent('native'); closeDialog(); }
@@ -10616,7 +10623,67 @@
     const data = new Uint8Array(await blob.arrayBuffer());
     return { data, ...PDFW.jpegInfo(data) };
   }
-  const pdfName = (c) => (String(c.title || 'Catalogo Dellamed').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'Catalogo-Dellamed') + '.pdf';
+  // "3", "2 e 3", "5 a 9", "3, 8 a 12 e 20": as páginas em faixas, para o nome do arquivo e o título do PDF
+  function pdfPagesTxt(nums) {
+    const r = [];
+    for (const n of nums) { const l = r[r.length - 1]; if (l && n === l[1] + 1) l[1] = n; else r.push([n, n]); }
+    const parts = r.map(([a, b]) => (a === b ? String(a) : b === a + 1 ? `${a} e ${b}` : `${a} a ${b}`));
+    return (nums.length === 1 ? 'pág. ' : 'págs. ') + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' e ' + parts[parts.length - 1] : parts[0]);
+  }
+  const slugPdf = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const pdfName = (c, want) => (slugPdf(c.title || '') || 'Catalogo-Dellamed') + (want ? '-' + slugPdf(pdfPagesTxt(want)) : '') + '.pdf';
+  // "3, 8-12, 20" → [3, 8, 9, 10, 11, 12, 20]; texto inválido ou fora do catálogo → { err }
+  function parsePages(txt, max) {
+    const out = new Set(), raw = String(txt || '').replace(/\s+/g, '').replace(/[;e]/g, ',');
+    if (!raw) return { err: 'Informe as páginas. Ex.: 3, 8-12' };
+    for (const part of raw.split(',').filter(Boolean)) {
+      const m = /^(\d+)(?:[-–a](\d+))?$/.exec(part);
+      if (!m) return { err: `Não entendi "${part}". Use números e traço, ex.: 3, 8-12` };
+      let a = +m[1], b = m[2] ? +m[2] : a;
+      if (a > b) [a, b] = [b, a];
+      if (a < 1 || b > max) return { err: `Este catálogo vai da página 1 à ${max}.` };
+      for (let n = a; n <= b; n++) out.add(n);
+    }
+    return { nums: [...out].sort((x, y) => x - y) };
+  }
+  // Escolha do que baixar: as páginas abertas, algumas páginas ou o catálogo inteiro
+  function askPdf(c, from, cur) {
+    if (!c) return;
+    if (PDFJOB.on) { toast('Já tem um PDF sendo preparado. Aguarde terminar.'); return; }
+    const curP = (cur || []).filter((n) => n >= 1 && n <= c.pages);
+    const opt = (id, ico, lbl, desc) => `<button type="button" class="sh-opt" id="${id}"><span class="ico" aria-hidden="true">${ico}</span><span class="card-act-t"><b>${lbl}</b><span>${desc}</span></span></button>`;
+    const pgIco = '<svg viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4"/></svg>';
+    const rgIco = '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="7" height="14" rx="1"/><rect x="13" y="5" width="7" height="14" rx="1"/></svg>';
+    openDialog({
+      title: 'Baixar PDF',
+      body: `<div class="sh-ctx"><img data-cover="${esc(c.id)}" alt=""><span class="sh-ctx-t"><b>${esc(c.title)}</b><span>${plural(c.pages, 'página', 'páginas')} · PDF na qualidade do leitor</span></span></div>
+        <p class="sh-h">O que baixar</p>
+        <div class="sh-list">
+          ${curP.length ? opt('pdfCur', pgIco, curP.length > 1 ? `Estas páginas (${curP.join(' e ')})` : `Esta página (${curP[0]})`, curP.length > 1 ? 'As duas páginas abertas agora, num PDF só.' : 'Só a página aberta agora. Arquivo leve, bom para o WhatsApp.') : ''}
+          ${opt('pdfPick', rgIco, 'Escolher páginas', 'Uma ou várias, em faixas. Ex.: 3, 8-12, 20.')}
+          <div class="pdf-pick" id="pdfPickBox" hidden>
+            <div class="field" id="fPdfPick"><label class="field-label" for="pdfPickIn">Páginas</label><input id="pdfPickIn" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex.: 3, 8-12, 20"><em class="err" id="errPdfPick" hidden></em></div>
+            <button type="button" class="btn primary" id="pdfPickGo">Baixar páginas</button>
+          </div>
+          ${opt('pdfAll', I.book, 'Catálogo completo', `Todas as ${plural(c.pages, 'página', 'páginas')}. Pode levar alguns segundos.`)}
+        </div>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }]
+    });
+    hydrate(dlg);
+    const go = (nums, how) => { closeDialog(); downloadCatalogPdf(c, from + ':' + how, nums); };
+    const cb = $('#pdfCur'); if (cb) cb.addEventListener('click', () => go(curP, 'atual'));
+    $('#pdfAll').addEventListener('click', () => go(null, 'completo'));
+    $('#pdfPick').addEventListener('click', () => { $('#pdfPickBox').hidden = false; $('#pdfPick').setAttribute('aria-expanded', 'true'); $('#pdfPickIn').focus(); });
+    const pick = () => {
+      const r = parsePages($('#pdfPickIn').value, c.pages);
+      setErr($('#fPdfPick'), r.err || '');
+      if (r.err) { $('#pdfPickIn').focus(); return; }
+      go(r.nums.length === c.pages ? null : r.nums, 'escolha');
+    };
+    $('#pdfPickGo').addEventListener('click', pick);
+    $('#pdfPickIn').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pick(); } });
+    $('#pdfPickIn').addEventListener('input', () => setErr($('#fPdfPick'), ''));
+  }
   const PDFJOB = { on: false, cancel: false };
   function pdfJobUI(on, c) {
     const el = $('#pdfJob');
@@ -10630,31 +10697,35 @@
     $('#pdfJobBar').style.width = pct + '%';
   }
   $('#pdfJobX').addEventListener('click', () => { PDFJOB.cancel = true; $('#pdfJobX').disabled = true; $('#pdfJobS').textContent = 'Cancelando…'; });
-  async function downloadCatalogPdf(c, from) {
+  // pick: lista de páginas (1, 2…) para baixar só parte; vazio = catálogo inteiro
+  async function downloadCatalogPdf(c, from, pick) {
     if (!c) return;
+    const want = Array.isArray(pick) && pick.length ? [...new Set(pick)].filter((n) => n >= 1 && n <= c.pages).sort((a, b) => a - b) : null;
     if (PDFJOB.on) { toast('Já tem um PDF sendo preparado. Aguarde terminar.'); return; }
     PDFJOB.on = true; PDFJOB.cancel = false;
     const gen = DATA_GEN, cancel = new Error('cancelado');
     pdfJobUI(true, c);
     try {
-      const pages = [], blocks = Math.ceil(c.pages / P.CHUNK);
-      for (let ci = 0; ci < blocks; ci++) {
+      const nums = want || Array.from({ length: c.pages }, (_, i) => i + 1), total = nums.length;
+      const blocks = [...new Set(nums.map((n) => Math.floor((n - 1) / P.CHUNK)))]; // só os arquivos que têm as páginas pedidas
+      const pages = [];
+      for (const ci of blocks) {
         if (PDFJOB.cancel) throw cancel;
         if (gen !== DATA_GEN) throw new Error('catálogo atualizado');
         const parts = P.unpackImages(await fetchOpen(c, P.path.chunk(c.id, ci)));
-        for (const part of parts) { if (pages.length < c.pages) pages.push(await pdfJpeg(part)); }
-        pdfJobSet(pages.length / c.pages * 0.96, `${pages.length} de ${plural(c.pages, 'página', 'páginas')}`);
+        for (let k = 0; k < parts.length; k++) { if (nums.includes(ci * P.CHUNK + k + 1)) pages.push(await pdfJpeg(parts[k])); }
+        pdfJobSet(pages.length / total * 0.96, `${pages.length} de ${plural(total, 'página', 'páginas')}`);
       }
       if (PDFJOB.cancel) throw cancel;
       pdfJobSet(0.98, 'Montando o arquivo…');
       await new Promise((r) => setTimeout(r, 30)); // deixa a tela mostrar o passo antes do trabalho pesado
-      const blob = PDFW.build(pages, c.title), name = pdfName(c);
+      const blob = PDFW.build(pages, want ? `${c.title} · ${pdfPagesTxt(want)}` : c.title), name = pdfName(c, want);
       const url = URL.createObjectURL(blob), a = document.createElement('a');
       a.href = url; a.download = name; a.hidden = true;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 120000); // arquivo grande: o navegador lê o blob com calma
       pdfJobUI(false);
-      trackCatalogEvent('catalog_download', { catalog_id: c.id, catalog_title: c.title, pages: c.pages, from: from || 'leitor' });
+      trackCatalogEvent('catalog_download', { catalog_id: c.id, catalog_title: c.title, pages: want ? want.length : c.pages, partial: !!want, from: from || 'leitor' });
       const mb = (blob.size / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
       const file = new File([blob], name, { type: 'application/pdf' });
       const canShare = coarse && navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
@@ -10666,7 +10737,7 @@
       else { console.warn('[pdf]', e); toast('Não foi possível montar o PDF agora. Tente de novo.', 'err'); }
     } finally { PDFJOB.on = false; }
   }
-  $('#btnPdf').addEventListener('click', () => downloadCatalogPdf(R.cat, 'leitor'));
+  $('#btnPdf').addEventListener('click', () => askPdf(R.cat, 'leitor', R.cat ? visibleIdx().map((i) => i + 1) : []));
 
   /* ================= a marca Dellamed é o botão "Início" =================
      Área logada: barra do celular/tablet e topo do leitor levam ao Início (do leitor, fecha o catálogo; da gestão e do carrinho,
