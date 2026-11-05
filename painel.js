@@ -339,21 +339,9 @@
   .dmp .imp-list b { color: var(--navy); }
   .dmp .imp-dif { display: block; color: var(--ink-2); }
   .dmp .imp-list select.input { margin-top: 6px; height: 36px; padding: 0 10px; font-size: 13px; }
-  .dmp .scan-groups { display: grid; gap: 14px; max-height: 460px; overflow: auto; padding-right: 2px; }
-  .dmp .scan-cat { min-width: 0; margin: 0; padding: 0; border: 0; }
-  .dmp .scan-cat > legend { padding: 0 0 6px; font-family: var(--font-title); font-size: 13px; font-weight: 700; color: var(--navy); }
-  .dmp .scan-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .dmp .scan-it { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; padding: 10px 12px; border: 1px solid var(--hair); border-radius: 12px; background: var(--white); }
-  .dmp .scan-it > input { width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--navy); grid-row: span 3; }
-  .dmp .scan-t { font-size: 13px; font-weight: 600; color: var(--navy); overflow-wrap: anywhere; }
-  .dmp .scan-s { font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
-  .dmp .scan-s mark { background: rgba(139, 184, 232, .55); color: var(--navy); border-radius: 3px; padding: 0 2px; }
-  .dmp .scan-conf { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; vertical-align: 1px; }
-  .dmp .scan-conf.alta { background: var(--sky); color: var(--navy); }
-  .dmp .scan-conf.media { background: var(--light); color: var(--ink-2); border: 1px solid var(--silver); }
-  /* O que a sugestão vira ao ser aceita: marca sobre o produto (área calculada) ou só ligação com a página */
-  .dmp .scan-mark { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; vertical-align: 1px; background: var(--white); color: var(--ink-2); border: 1px dashed var(--silver); }
-  .dmp .scan-mark.spot { background: var(--white); color: var(--navy); border: 1px solid var(--navy); }
+  /* Resumo da marcação automática: frases, aviso das marcas antigas e listas, com respiro entre eles */
+  .dmp #pn-scanBox { display: grid; gap: 10px; }
+  .dmp #pn-scanBox > p { margin: 0; }
   .dmp .scan-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
 
   /* =================== responsivo =================== */
@@ -436,7 +424,6 @@
     .dmp .dlg-actions .btn { width: 100%; height: auto; min-height: 44px; white-space: normal; }
     .dmp .grid2 { grid-template-columns: minmax(0, 1fr); }
     .dmp .imp-map .field { grid-template-columns: minmax(0, 1fr); }
-    .dmp .scan-groups { max-height: none; }
     .dmp .secret { font-size: 18px; }
   }
   @media (max-width: 479px) {
@@ -880,7 +867,7 @@
   const BOX_KEYS = ['catalogId', 'page', 'x', 'y', 'width', 'height'];
   const boxOf = (r) => Object.fromEntries(BOX_KEYS.map((k) => [k, r[k]]));
   const sameBox = (a, b) => BOX_KEYS.every((k) => a[k] === b[k]);
-  const sameSpot = (a, b) => a.product === b.product && sameBox(a, b);
+  const sameSpot = (a, b) => a.product === b.product && sameBox(a, b) && a.auto === b.auto; // auto: true = marcação automática, false = à mão, ausente = de antes da marcação exata
   // A área cabe nos dados: o catálogo existe, a página existe, o produto existe e as medidas são válidas
   function spotFits(d, h) {
     const c = d.catalogs.find((x) => x.id === h.catalogId);
@@ -1178,9 +1165,10 @@
     const parts = [cats && plural(cats, 'alteração nos catálogos', 'alterações nos catálogos'), stagedProds.size && plural(stagedProds.size, 'ficha de produto da planilha', 'fichas de produtos da planilha'),
       stagedSpots.size && plural(stagedSpots.size, 'área de produto', 'áreas de produto'),
       stagedLinks.size && plural(stagedLinks.size, 'ligação de produto à página (sem área)', 'ligações de produtos às páginas (sem área)'),
-      stagedDrops.size && plural(stagedDrops.size, 'sugestão descartada', 'sugestões descartadas'),
+
       stagedImages.size && plural(stagedImages.size, 'imagem de produto', 'imagens de produto'),
       stagedLayouts.size && plural(stagedLayouts.size, 'cópia preparada de catálogo', 'cópias preparadas de catálogos')].filter(Boolean);
+    if (!parts.length && stagedDrops.size) parts.push(plural(stagedDrops.size, 'ajuste da marcação automática', 'ajustes da marcação automática')); // produto tirado à mão: só aparece sozinho
     const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} e ${parts[parts.length - 1]}` : parts[0];
     $('#pn-stageBar').hidden = !n || !vault;
     $('#pn-wrap').classList.toggle('has-bar', !!n && !!vault); // espaço no fim do conteúdo para a barra (host.bar)
@@ -3550,7 +3538,7 @@
     const h = spotById(b.closest('[data-row]').dataset.row); if (!h) return;
     const a = b.dataset.sa;
     if (a === 'sel') { ed.sel = h.id; paintSpots(); focusStage(); }
-    else if (a === 'prod') pickProduct('Trocar o produto desta área', (sku) => { const cur = spotById(h.id); if (cur) { saveSpot({ ...cur, product: sku }, true); focusStage(); } });
+    else if (a === 'prod') pickProduct('Trocar o produto desta área', (sku) => { const cur = spotById(h.id); if (cur) { if (cur.product !== sku) stagedDrops.add(linkKey(cur)); saveSpot({ ...cur, product: sku }, true); focusStage(); } });
     else if (a === 'img') { useAsImage(h); focusStage(); }
     else removeSpot(h);
   }
@@ -3574,6 +3562,7 @@
   }
   // Toda mudança de área vai para a barra de alterações (publicada junto com o resto)
   function saveSpot(h, recount) {
+    h = { ...h, auto: false }; // mexida à mão: a marcação automática não tira nem refaz
     stagedSpots.set(h.id, h); ed.sel = h.id;
     // Área do mesmo produto na mesma página: a ligação sem área (pageLink) sai
     if (h && viewLinks().some((l) => linkKey(l) === linkKey(h))) { stagedLinks.set(linkKey(h), null); recount = true; }
@@ -3582,6 +3571,7 @@
   }
   function removeSpot(h) {
     stagedSpots.set(h.id, null);
+    if (!viewSpots().some((x) => linkKey(x) === linkKey(h))) stagedDrops.add(linkKey(h)); // tirado à mão: a marcação automática não põe de volta
     if (ed.sel === h.id) ed.sel = '';
     refreshStage(); paintSpots(); renderProdRows(); focusStage();
     toast('Área removida.');
@@ -3627,8 +3617,8 @@
   const impKey = (s) => norm(s).replace(/[^a-z0-9]+/g, '');
   const isNA = (v) => /^(na|nao|naoaplicavel|naoseaplica|isento|semregistro)$/.test(impKey(v));
   let lastImport = null;    // { em, arquivo, problemas: [texto] } — "Ver problemas" (só nesta sessão)
-  const scan = { props: [], ran: false, info: '' }; // sugestões da última varredura
-  function resetImportState() { lastImport = null; scan.props = []; scan.ran = false; scan.info = ''; }
+  const scan = { ran: false, res: null }; // resumo da última leitura (marcação automática)
+  function resetImportState() { lastImport = null; scan.ran = false; scan.res = null; }
 
   /* ---------- produtos, ligações sem área e descartes: como vão ficar depois de publicar ---------- */
   function viewProducts() {
@@ -4183,38 +4173,42 @@
       return { list: r.list, own, fold, joined: () => { if (!dj) dj = joinDigits(fold.s, fold.idx); return dj; } };
     });
   }
-  // Onde o termo aparece numa linha: devolve, para cada ocorrência, os trechos que a formam
-  function termIn(line, term, ean) {
+  // Onde o termo aparece numa linha: devolve, para cada ocorrência, os trechos que a formam.
+  // Exato (padrão): o termo inteiro entre espaços, como palavra solta. loose: no texto sem espaços (código partido em trechos
+  // pelo PDF, "0001 005588"), sem número colado antes ou depois (05588 não vale dentro de 1005588 nem de 055881).
+  function termIn(line, term, ean, loose) {
     const out = [];
-    const look = (f) => {
-      const needle = ' ' + term + ' ';
-      let at = f.s.indexOf(needle);
-      while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
-        const p0 = f.idx[at + 1], p1 = f.idx[at + term.length];
-        if (p0 >= 0 && p1 >= p0) {
-          const ks = new Set();
-          for (let p = p0; p <= p1; p++) { const k = line.own[p]; if (k >= 0) ks.add(k); }
-          if (ks.size) out.push([...ks].map((k) => line.list[k]));
+    if (!loose) {
+      const look = (f) => {
+        const needle = ' ' + term + ' ';
+        let at = f.s.indexOf(needle);
+        while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
+          const p0 = f.idx[at + 1], p1 = f.idx[at + term.length];
+          if (p0 >= 0 && p1 >= p0) {
+            const ks = new Set();
+            for (let p = p0; p <= p1; p++) { const k = line.own[p]; if (k >= 0) ks.add(k); }
+            if (ks.size) out.push([...ks].map((k) => line.list[k]));
+          }
+          at = f.s.indexOf(needle, at + 1);
         }
-        at = f.s.indexOf(needle, at + 1);
+      };
+      look(line.fold);
+      if (!out.length && ean) look(line.joined()); // EAN que o PDF quebrou com espaço no meio
+      return out;
+    }
+    const tc = term.replace(/ /g, ''), f = line.fold, cs = [], cp = [];
+    if (tc.length < 5) return out;
+    for (let i = 0; i < f.s.length; i++) if (f.s[i] !== ' ') { cs.push(f.s[i]); cp.push(i); }
+    const s = cs.join(''), dg = (ch) => !!ch && ch >= '0' && ch <= '9';
+    let at = s.indexOf(tc);
+    while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
+      const ok = !(dg(tc[0]) && dg(s[at - 1])) && !(dg(tc[tc.length - 1]) && dg(s[at + tc.length]));
+      if (ok) {
+        const ks = new Set();
+        for (let q = at; q < at + tc.length; q++) { const k = line.own[f.idx[cp[q]]]; if (k >= 0) ks.add(k); }
+        if (ks.size) out.push([...ks].map((k) => line.list[k]));
       }
-    };
-    look(line.fold);
-    if (!out.length && ean) look(line.joined()); // EAN que o PDF quebrou com espaço no meio
-    if (!out.length) { // sem espaços: palavra partida em pedaços ou título com letras espaçadas
-      const tc = term.replace(/ /g, ''), f = line.fold, cs = [], cp = [];
-      for (let i = 0; i < f.s.length; i++) if (f.s[i] !== ' ') { cs.push(f.s[i]); cp.push(i); }
-      const s = cs.join('');
-      let at = tc.length >= 5 || (tc.length >= 4 && /\d/.test(tc)) ? s.indexOf(tc) : -1;
-      while (at >= 0 && out.length < LAYOUT_OCC_MAX) {
-        const nx = s[at + tc.length] || '';
-        if (!(/\d$/.test(tc) && /\d/.test(nx))) { // D100 não vale dentro de D1000
-          const ks = new Set();
-          for (let q = at; q < at + tc.length; q++) { const k = line.own[f.idx[cp[q]]]; if (k >= 0) ks.add(k); }
-          if (ks.size) out.push([...ks].map((k) => line.list[k]));
-        }
-        at = s.indexOf(tc, at + 1);
-      }
+      at = s.indexOf(tc, at + 1);
     }
     return out;
   }
@@ -4229,17 +4223,21 @@
     if (h < LAYOUT_MIN_H) { y -= (LAYOUT_MIN_H - h) / 2; h = LAYOUT_MIN_H; }
     return fixBox({ x, y, width: w, height: h });
   }
-  // Área do produto nesta página. Mais de uma ocorrência do mesmo termo (mesma confiança): fica a que está mais acima.
-  // Sem o termo nos trechos posicionados devolve null — a sugestão continua sendo só ligação.
+  // Área do produto nesta página, em cima do código encontrado. Primeiro o código inteiro em todas as linhas; só se ele não
+  // aparecer inteiro em nenhuma, o código partido em trechos. Mais de uma ocorrência: fica a que está mais acima.
+  // Sem o código nos trechos posicionados devolve null — o produto fica só ligado à página.
   function spotFromLines(lines, m) {
-    let best = null;
-    for (const line of lines) {
-      for (const items of termIn(line, m.t, m.ean)) {
-        const b = boxFromItems(items);
-        if (b && (!best || b.y < best.y || (b.y === best.y && b.x < best.x))) best = b;
+    for (const loose of [false, true]) {
+      let best = null;
+      for (const line of lines) {
+        for (const items of termIn(line, m.t, m.ean, loose)) {
+          const b = boxFromItems(items);
+          if (b && (!best || b.y < best.y || (b.y === best.y && b.x < best.x))) best = b;
+        }
       }
+      if (best) return best;
     }
-    return best;
+    return null;
   }
   // Área desenhada à mão sempre vence: nada é proposto por cima de mais da metade de uma área que já existe na página
   function boxClear(box, spots) {
@@ -4278,86 +4276,47 @@
     return { s, idx };
   }
   const foldTerm = (t) => foldMap(String(t || '')).s.trim();
-  /* ---------- nome parecido: o nome da base raramente é igual ao impresso ("CAD RODAS D100 LIGHT 44CM" × "Cadeira de Rodas D100 Light").
-     Palavras do nome (sem "de", "com"…, abreviação vale pelo começo: "cad" → cadeira) procuradas perto umas das outras na página.
-     Modelo com número (D100) tem de aparecer inteiro (D100 ≠ D1000). Vale com 70% das palavras; entre produtos parecidos
-     na mesma página, fica o mais completo (D100 Light na página da D100 Light; D100 na da D100). ---------- */
-  const NAME_STOP = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'com', 'para', 'p', 'c', 's', 'em', 'a', 'o', 'un', 'und', 'unid', 'pc', 'pct', 'kit']);
-  const MEASURE = /^\d+([.,]\d+)?(cm|mm|m|kg|g|ml|l|w|v|un|pcs?)$/;
-  function nameToks(nm) {
-    const all = [...new Set(nm.split(' ').filter((w) => w && !NAME_STOP.has(w) && !MEASURE.test(w) && (w.length >= 2 || /\d/.test(w))))];
-    return { model: all.filter((w) => /\d/.test(w) && /[a-z]/.test(w) || /^\d{3,}$/.test(w)), all };
-  }
-  const tokHit = (t, w) => w === t || (t.length >= 3 && w.startsWith(t) && !/\d/.test(t)) || (t.length >= 5 && w.length >= 5 && (t.startsWith(w) || w.replace(/s$/, '') === t.replace(/s$/, '')));
-  function fuzzyNames(s, idx, terms, found) {
-    const W = [], at = [];
-    for (let i = 1; i < s.length; i++) if (s[i - 1] === ' ' && s[i] !== ' ') { const j = s.indexOf(' ', i); W.push(s.slice(i, j)); at.push(i); }
-    if (!W.length) return [];
-    const modelAt = (m) => { const out = []; for (let i = 0; i < W.length; i++) if (W[i] === m || (i + 1 < W.length && W[i] + W[i + 1] === m)) out.push(i); return out; };
-    const cands = [];
-    for (const t of terms.names) {
-      const tk = t.tok; if (!tk || tk.all.length < 2) continue;
-      let anchors;
-      if (tk.model.length) { anchors = modelAt(tk.model[0]); if (!anchors.length) continue; }
-      else { const rare = [...tk.all].filter((w) => w.length >= 4).sort((a, b) => b.length - a.length)[0]; if (!rare) continue; anchors = []; W.forEach((w, i) => { if (tokHit(rare, w)) anchors.push(i); }); }
-      let best = null;
-      for (const a of anchors.slice(0, 12)) {
-        const lo = Math.max(0, a - 12), hi = Math.min(W.length, a + 13), win = W.slice(lo, hi), got = new Set(), pw = new Set();
-        for (const tw of tk.all) {
-          const k = win.findIndex((w, k2) => tokHit(tw, w) || (/\d/.test(tw) && w + (win[k2 + 1] || '') === tw));
-          if (k >= 0) { got.add(tw); pw.add(/\d/.test(tw) ? tw : win[k].replace(/s$/, '')); } // palavra da PÁGINA que bateu (para comparar produtos parecidos)
-        }
-        if (!tk.model.every((m) => got.has(m))) continue;
-        const cov = got.size / tk.all.length;
-        if (got.size >= 2 && cov >= 0.7 && (!best || cov > best.cov)) best = { cov, got, pw, a };
-      }
-      // Título com letras espaçadas ("T I P O I A V E L P E A U"): as palavras de 4+ letras no texto sem espaços, perto umas das outras
-      if (!best && !tk.model.length) {
-        const ws = tk.all.filter((w) => w.length >= 4);
-        if (ws.length >= 2) {
-          let cs = '', cmap = [];
-          for (let i = 0; i < s.length; i++) if (s[i] !== ' ') { cs += s[i]; cmap.push(i); }
-          const first = cs.indexOf(ws[0]);
-          if (first >= 0) {
-            const zone = cs.slice(Math.max(0, first - 60), first + 160), got = new Set(ws.filter((w) => zone.includes(w)));
-            if (got.size / ws.length >= 0.7) { const wi = W.findIndex((_, k) => at[k] >= cmap[first]); best = { cov: got.size / ws.length, got, pw: new Set([...got]), a: Math.max(0, wi - 1) }; }
-          }
-        }
-      }
-      if (best) cands.push({ t, ...best });
-    }
-    // Entre parecidos na mesma página fica o mais completo; produtos já achados (código ou nome exato) também contam na comparação
-    const keep = cands.filter((x) => !cands.some((y) => y !== x && y.t.sku !== x.t.sku && [...x.pw].every((w) => y.pw.has(w)) && (y.pw.size > x.pw.size || y.cov > x.cov)));
-    return keep.filter((x) => !found.has(x.t.sku)).map((x) => {
-      const term = x.t.tok.model[0] || [...x.got].sort((a, b) => b.length - a.length)[0];
-      const i = at[x.a];
-      return { sku: x.t.sku, conf: 'media', why: `nome parecido (${x.got.size} de ${x.t.tok.all.length} palavras)`, t: term, ean: false, a: idx[i], b: idx[i + W[x.a].length - 1] + 1 };
-    });
-  }
-  // Termos de cada produto: código SAP e EAN (confiança alta) e o nome completo com 6+ letras (confiança média)
+  /* ---------- marcação automática exata: só marca o que é identificador impresso inteiro ----------
+     Vale: código SAP (também sem os zeros da frente: 0001005588 → 1005588), SKU com 5+ caracteres e número, e EAN.
+     Código curto ("05588" de "0001005588") só vale logo depois de "Cód.", "Código", "Ref." ou "SAP", e quando um único
+     produto da base termina assim. Não vale: nome (parecido, abreviado ou exato), palavras soltas e código repetido em dois
+     produtos da base — erravam a página ou o produto. Na dúvida, não marca. */
+  const CODE_LABEL = new Set(['cod', 'codigo', 'codigos', 'ref', 'referencia', 'sap']);
+  const CODE_FILL = new Set(['n', 'no', 'nr', 'num', 'numero', 'do', 'de', 'produto', 'item']); // "Código do produto: 05588", "Cód. nº 05588"
+  const codeOk = (t) => !!t && /\d/.test(t) && t.replace(/ /g, '').length >= 5;
+  // Termos de busca de cada produto: código → { t, why, ean, skus }. Um código de dois produtos fica com os dois em skus (e não marca).
   function scanTerms(prods) {
-    const codes = [], names = [];
+    const exact = new Map(), tails = new Map(), noCode = [];
+    let maxTok = 1, hasEan = false;
+    const add = (t, sku, why, ean) => {
+      if (!codeOk(t)) return false;
+      let e = exact.get(t);
+      if (!e) { e = { t, why, ean: !!ean, skus: new Set() }; exact.set(t, e); maxTok = Math.max(maxTok, t.split(' ').length); }
+      if (ean) { e.ean = true; hasEan = true; }
+      e.skus.add(sku);
+      return true;
+    };
     for (const p of prods) {
-      const f = p.ficha || {};
-      const sap = foldTerm(f.sap);
-      if (sap && /\d/.test(sap) && sap.replace(/ /g, '').length >= 5) codes.push({ sku: p.sku, t: sap, why: `código SAP ${f.sap}` });
-      for (const e of String(f.ean || '').split('/').map((x) => x.replace(/\D/g, '')).filter((x) => P.eanOk(x))) {
-        codes.push({ sku: p.sku, t: e, why: `EAN ${e}`, ean: true });
-        if (e.length === 13) codes.push({ sku: p.sku, t: `${e[0]} ${e.slice(1, 7)} ${e.slice(7)}`, why: `EAN ${e}` }); // como aparece sob o código de barras
+      const f = p.ficha || {}, digits = new Set();
+      let any = false;
+      for (const [raw, lbl] of [[f.sap, 'código SAP'], [p.sku, 'SKU']]) {
+        const t = foldTerm(raw); if (!codeOk(t)) continue;
+        const why = `${lbl} ${raw}`;
+        if (add(t, p.sku, why)) any = true;
+        const cp = t.replace(/ /g, '');
+        if (cp !== t) add(cp, p.sku, why); // "DM-1050" impresso como "DM1050"
+        if (/^\d+$/.test(cp)) { add(cp.replace(/^0+/, ''), p.sku, why); digits.add(cp); }
       }
-      const sk = foldTerm(p.sku);
-      if (sk && sk !== sap && /\d/.test(sk) && sk.replace(/ /g, '').length >= 5) codes.push({ sku: p.sku, t: sk, why: `SKU ${p.sku}` });
-      const nm = foldTerm(p.name);
-      if (nm.replace(/ /g, '').length >= 6) names.push({ sku: p.sku, t: nm, c: nm.replace(/ /g, ''), why: 'nome completo', tok: nameToks(nm) });
+      for (const e of String(f.ean || '').split('/').map((x) => x.replace(/\D/g, '')).filter((x) => P.eanOk(x))) {
+        if (add(e, p.sku, `EAN ${e}`, true)) any = true;
+        if (e.length === 13) add(`${e[0]} ${e.slice(1, 7)} ${e.slice(7)}`, p.sku, `EAN ${e}`); // como aparece sob o código de barras
+      }
+      for (const d of digits) for (let n = 5; n < d.length; n++) { const k = d.slice(-n), prev = tails.get(k); tails.set(k, prev === undefined || prev === p.sku ? p.sku : null); }
+      if (!any) noCode.push(p.sku);
     }
-    // Final do código: o catálogo às vezes imprime só o fim do SAP ("05588" de "0001005588"). Só vale quando um produto só termina assim.
-    const tails = new Map();
-    for (const c of codes) {
-      if (c.ean) continue;
-      const d = c.t.replace(/\D/g, '');
-      for (let n = 5; n < d.length; n++) { const k = d.slice(-n); tails.set(k, tails.has(k) && tails.get(k) !== c.sku ? null : c.sku); }
-    }
-    return { codes, names, tails };
+    for (const k of [...tails.keys()]) if (exact.has(k)) tails.delete(k); // final que é o código inteiro de alguém não vale como final
+    const dup = [...exact.values()].filter((e) => e.skus.size > 1 && !/ /.test(e.t));
+    return { exact, tails, maxTok, hasEan, noCode, dup };
   }
   // Mesmo texto com os números que o PDF quebrou com espaço juntados ("79086073107 08" → "7908607310708"), só para os EAN.
   // Usado no texto corrido da página e, igual, em cada linha do texto posicionado.
@@ -4370,74 +4329,95 @@
     }
     return { s: js, idx: ji };
   }
-  const allAt = (s, t, max = 30) => { const out = []; let i = s.indexOf(t); while (i >= 0 && out.length < max) { out.push(i); i = s.indexOf(t, i + 1); } return out; };
-  function snippetHtml(raw, a, b) {
-    const x = Math.max(0, a - 50), y = Math.min(raw.length, b + 50), sq = (s) => esc(s.replace(/\s+/g, ' '));
-    return `${x > 0 ? '…' : ''}${sq(raw.slice(x, a))}<mark>${sq(raw.slice(a, b))}</mark>${sq(raw.slice(b, y))}${y < raw.length ? '…' : ''}`;
+  // Palavras do texto simplificado (" a b c ") e onde cada uma começa
+  function pageWords(s) {
+    const w = [], at = [];
+    for (let i = 1; i < s.length; i++) if (s[i - 1] === ' ' && s[i] !== ' ') { const j = s.indexOf(' ', i); w.push(s.slice(i, j)); at.push(i); i = j; }
+    return { w, at };
   }
-  // Uma página: códigos primeiro; nome só se nenhum código do produto bateu e se não estiver dentro do nome mais longo de outro produto
-  // (ex.: “Cadeira de rodas D100” não conta onde está escrito “Cadeira de rodas D100 Light”)
+  // "Cód.", "Código do produto", "Ref. nº"… logo antes da palavra i
+  function labelBefore(w, i) {
+    for (let k = i - 1, n = 0; k >= 0 && n < 3; k--, n++) {
+      if (CODE_LABEL.has(w[k])) return true;
+      if (!CODE_FILL.has(w[k])) return false;
+    }
+    return false;
+  }
+  // Uma página → produtos encontrados: [{ sku, why, t, ean, a, b }]. t e ean servem para achar a área no texto posicionado.
   function pageMatches(raw, terms) {
     const { s, idx } = foldMap(raw), found = new Map();
-    // t e ean viajam junto: é com eles que a área é procurada depois no texto posicionado, sem depender de a/b (índices do texto corrido)
-    const hit = (t, conf, at, map) => ({ sku: t.sku, conf, why: t.why, t: t.t, ean: !!t.ean, a: map[at + 1], b: map[at + t.t.length] + 1 });
-    let dj = null;
-    const joined = () => { if (!dj) dj = joinDigits(s, idx); return dj; };
-    for (const t of terms.codes) {
-      if (found.has(t.sku)) continue;
-      const at = s.indexOf(' ' + t.t + ' ');
-      if (at >= 0) { found.set(t.sku, hit(t, 'alta', at, idx)); continue; }
-      if (t.ean) { const aj = joined().s.indexOf(' ' + t.t + ' '); if (aj >= 0) found.set(t.sku, hit(t, 'alta', aj, joined().idx)); }
-    }
-    // Número da página que é o final de exatamente um código SAP/SKU (confiança média)
-    if (terms.tails && terms.tails.size) {
-      const re = / (\d{5,9}) /g; let mm;
-      while ((mm = re.exec(s))) {
-        const own = terms.tails.get(mm[1]);
-        if (own && !found.has(own)) found.set(own, { sku: own, conf: 'media', why: `final do código (${mm[1]})`, t: mm[1], ean: false, a: idx[mm.index + 1], b: idx[mm.index + mm[1].length] + 1 });
-        re.lastIndex = mm.index + mm[1].length;
+    const scanWords = (str, map, onlyEan) => {
+      const { w, at } = pageWords(str);
+      for (let i = 0; i < w.length; i++) {
+        let g = '';
+        for (let n = 0; n < terms.maxTok && i + n < w.length; n++) {
+          g = n ? `${g} ${w[i + n]}` : w[i];
+          const e = terms.exact.get(g);
+          if (!e || (onlyEan && !e.ean) || e.skus.size !== 1) continue; // código de dois produtos: na dúvida, não marca
+          const sku = e.skus.values().next().value;
+          if (!found.has(sku)) found.set(sku, { sku, why: e.why, t: g, ean: e.ean, a: map[at[i]], b: map[at[i] + g.length - 1] + 1 });
+        }
+      }
+      return { w, at };
+    };
+    const { w, at } = scanWords(s, idx, false);
+    if (terms.hasEan) { const j = joinDigits(s, idx); scanWords(j.s, j.idx, true); }
+    if (terms.tails.size) {
+      for (let i = 0; i < w.length; i++) {
+        const x = w[i];
+        if (x.length < 5 || !/^\d+$/.test(x)) continue;
+        const sku = terms.tails.get(x);
+        if (!sku || found.has(sku) || !labelBefore(w, i)) continue;
+        found.set(sku, { sku, why: `código ${x} depois de “${w[i - 1]}”`, t: x, ean: false, a: idx[at[i]], b: idx[at[i] + x.length - 1] + 1 });
       }
     }
-    // Nomes: todos entram na conferência de "nome dentro de nome mais longo", mesmo os de produtos já achados pelo código
-    const occ = [];
-    for (const t of terms.names) { const pos = allAt(s, ' ' + t.t + ' '); if (pos.length) occ.push({ t, pos }); }
-    for (const o of occ) {
-      if (found.has(o.t.sku)) continue;
-      const free = o.pos.find((p) => !occ.some((q) => q !== o && q.t.t.length > o.t.t.length && q.pos.some((r) => r <= p && r + q.t.t.length >= p + o.t.t.length)));
-      if (free !== undefined) found.set(o.t.sku, hit(o.t, 'media', free, idx));
-    }
-    // Nome com a palavra partida ou letras espaçadas no PDF ("D 100", "T I P O I A"): a mesma conferência no texto sem espaços
-    const cs = [], cpos = [];
-    for (let i = 0; i < s.length; i++) if (s[i] !== ' ') { cs.push(s[i]); cpos.push(i); }
-    const cst = cs.join(''), cocc = [];
-    for (const t of terms.names) {
-      if (!t.c || t.c.length < 8) continue;
-      const pos = allAt(cst, t.c).filter((k) => !(/\d$/.test(t.c) && /\d/.test(cst[k + t.c.length] || '')));
-      if (pos.length) cocc.push({ t, pos });
-    }
-    for (const o of cocc) {
-      if (found.has(o.t.sku)) continue;
-      const free = o.pos.find((q0) => !cocc.some((q) => q !== o && q.t.c.length > o.t.c.length && q.pos.some((r) => r <= q0 && r + q.t.c.length >= q0 + o.t.c.length)));
-      if (free === undefined) continue;
-      const f0 = cpos[free], f1 = cpos[free + o.t.c.length - 1];
-      found.set(o.t.sku, { sku: o.t.sku, conf: 'media', why: 'nome completo', t: o.t.t, ean: false, a: idx[f0], b: idx[f1] + 1 });
-    }
-    // Nome parecido (abreviado, com palavras a mais ou a menos): só para quem ainda não foi achado nesta página
-    for (const m of fuzzyNames(s, idx, terms, found)) found.set(m.sku, m);
     return [...found.values()];
+  }
+  // O que a leitura muda, sem tocar em nada (testável à parte):
+  //  · marca nova onde o código foi achado e o produto ainda não está na página (com área quando deu para calcular);
+  //  · ligação sem área vira marca quando agora há área;
+  //  · marca ou ligação AUTOMÁTICA antiga que a leitura não confirma mais sai (só em páginas que foram lidas);
+  //  · marca antiga sem origem conhecida (feita antes desta versão) e não confirmada fica numa lista para decidir;
+  //  · marca feita à mão nunca sai; produto tirado da página à mão (descartes) não volta.
+  function planScan({ hits, readPages, spots, links, drops }) {
+    const want = new Map();
+    for (const h of hits) if (!drops.has(h.key) && !want.has(h.key)) want.set(h.key, h);
+    const pk = (r) => `${r.catalogId}|${r.page}`;
+    const out = { addSpots: [], addLinks: [], dropSpots: [], dropLinks: [], legacy: [], kept: 0 };
+    for (const h of spots) {
+      if (!readPages.has(pk(h)) || want.has(linkKey(h))) continue;
+      if (h.auto === true) out.dropSpots.push(h); else if (h.auto === undefined) out.legacy.push(h);
+    }
+    for (const l of links) if (l.auto && readPages.has(pk(l)) && !want.has(linkKey(l))) out.dropLinks.push(l);
+    const gone = new Set(out.dropSpots.map((h) => h.id)), byPage = new Map(), spotKeys = new Set(), linkBy = new Map(links.map((l) => [linkKey(l), l]));
+    for (const h of spots) {
+      if (gone.has(h.id)) continue;
+      spotKeys.add(linkKey(h));
+      if (!byPage.has(pk(h))) byPage.set(pk(h), []);
+      byPage.get(pk(h)).push(h);
+    }
+    for (const x of want.values()) {
+      if (spotKeys.has(x.key)) { out.kept++; continue; }
+      const here = byPage.get(pk(x)) || [];
+      if (x.box && boxClear(x.box, here)) {
+        out.addSpots.push({ ...x, up: linkBy.get(x.key) || null }); // up: ligação sem área do mesmo produto, que sai quando a marca entra
+        here.push({ ...x.box }); byPage.set(pk(x), here);
+        continue;
+      }
+      if (linkBy.has(x.key)) { out.kept++; continue; }
+      out.addLinks.push(x);
+    }
+    return out;
   }
   async function runScan() {
     if (!vault || busy) return;
     const prods = Object.values(viewProducts()), cats = viewCatalogs();
     if (!prods.length) { alertBox('Nenhum produto cadastrado', 'Importe a planilha de produtos (ou cadastre os produtos) antes de procurar nas páginas.'); return; }
     if (!cats.length) { alertBox('Nenhum catálogo', 'Adicione um catálogo antes de procurar os produtos nas páginas.'); return; }
-    const terms = scanTerms(prods), names = new Map(prods.map((p) => [p.sku, p.name]));
-    const skip = new Set([...viewSpots().map(linkKey), ...viewLinks().map(linkKey), ...viewDrops()]); // já marcado, já ligado ou descartado
-    // Áreas que já existem (publicadas e na barra), por página: nada é proposto por cima de uma área desenhada à mão
-    const spotsBy = new Map();
-    for (const h of viewSpots()) { const k = `${h.catalogId}|${h.page}`; if (!spotsBy.has(k)) spotsBy.set(k, []); spotsBy.get(k).push(h); }
-    const pg = progressDialog('Procurando produtos nas páginas', true);
-    const props = [], semTexto = [], semPos = [], staleSet = new Set(); let pages = 0, jaTem = 0, semTextoPg = 0;
+    const terms = scanTerms(prods);
+    if (!terms.exact.size) { alertBox('Nenhum código para procurar', 'Os produtos da base estão sem código SAP, SKU ou EAN. Importe a planilha mestre com a coluna do código e tente de novo.'); return; }
+    const pg = progressDialog('Marcando produtos nas páginas', true);
+    const hits = [], readPages = new Set(), semTexto = [], semPos = [], staleSet = new Set(); let pages = 0, semTextoPg = 0;
     try {
       for (let ci = 0; ci < cats.length && !pg.cancelled; ci++) {
         const c = cats[ci];
@@ -4446,7 +4426,7 @@
         try { texts = await searchPages(c); } catch (e) { console.error(e); }
         if (!vault) throw cancelErr();
         if (!Array.isArray(texts) || !texts.some((x) => String(x || '').trim())) { semTexto.push(c.title); continue; }
-        // Texto posicionado (opcional): com ele a sugestão já vem com a área calculada. Falhar aqui não atrapalha a varredura.
+        // Texto posicionado (opcional): com ele a marca sai em cima do código. Falhar aqui não atrapalha a leitura.
         let lay = null;
         try { lay = await layoutPages(c); } catch (e) { console.error(e); }
         if (!vault) throw cancelErr();
@@ -4460,120 +4440,132 @@
             if (!vault) throw cancelErr();
           }
           // Texto posicionado desta página. Se o da busca estiver vazio, ele serve de texto; se os dois não baterem
-          // (Modo Copiar preparado com outro PDF), a área não é proposta: ficaria no lugar errado.
+          // (Modo Copiar preparado com outro PDF), a área não é calculada: ficaria no lugar errado.
           const layTxt = lay && lay[i] && Array.isArray(lay[i].it) ? lay[i].it.map((e) => e[0]).join(' ') : '';
           let raw = String(texts[i] || '');
           if (!raw.trim() && layTxt.trim()) raw = layTxt;
           if (!raw.trim()) { semTextoPg++; continue; }
-          pages++;
+          pages++; readPages.add(`${c.id}|${i + 1}`);
           const okLay = !!layTxt.trim() && textsAgree(raw, layTxt);
           if (lay && layTxt.trim() && !okLay) staleSet.add(`${c.title} (pág. ${i + 1})`);
           const ms = pageMatches(raw, terms);
-          // Linhas do texto posicionado desta página: uma vez só, e só quando há o que localizar
-          const lines = okLay && ms.length ? layoutLines(lay[i]) : null;
-          const here = (lines && lines.length && spotsBy.get(`${c.id}|${i + 1}`)) || [];
+          const lines = okLay && ms.length ? layoutLines(lay[i]) : null; // uma vez só, e só quando há o que localizar
           for (const m of ms) {
             const key = linkKey({ catalogId: c.id, page: i + 1, product: m.sku });
-            if (skip.has(key)) { jaTem++; continue; }
-            let box = lines && lines.length ? spotFromLines(lines, m) : null;
-            if (box && !boxClear(box, here)) box = null; // em cima de área que já existe: vira só ligação
-            props.push({ key, catalogId: c.id, cat: c.title, page: i + 1, sku: m.sku, name: names.get(m.sku) || m.sku, conf: m.conf, why: m.why, box, html: snippetHtml(raw, m.a, m.b) });
+            const box = lines && lines.length ? spotFromLines(lines, m) : null;
+            hits.push({ key, catalogId: c.id, page: i + 1, sku: m.sku, box, why: m.why });
           }
         }
       }
     } catch (e) {
-      if (!e.cancelled) { console.error(e); alertBox('Não foi possível terminar a procura', 'Confira a internet, clique em “Atualizar dados” e tente de novo.'); }
+      if (!e.cancelled) { console.error(e); alertBox('Não foi possível terminar a leitura', 'Confira a internet, clique em “Atualizar dados” e tente de novo. Nada foi marcado.'); }
       pg.close(); return;
     }
     const cancelled = pg.cancelled;
     pg.close();
-    scan.props = props; scan.ran = true;
-    const nA = props.filter((p) => p.conf === 'alta').length, nB = props.filter((p) => p.box).length;
-    scan.info = `${cancelled ? 'Procura cancelada. ' : ''}${plural(pages, 'página lida', 'páginas lidas')} · ${plural(props.length, 'sugestão', 'sugestões')} (${nA.toLocaleString('pt-BR')} de confiança alta, ${(props.length - nA).toLocaleString('pt-BR')} média)`
-      + ` · ${nB.toLocaleString('pt-BR')} com marca na página e ${(props.length - nB).toLocaleString('pt-BR')} só com ligação`
-      + `${jaTem ? ` · ${plural(jaTem, 'já estava marcada ou descartada', 'já estavam marcadas ou descartadas')}` : ''}`
-      + `${semTexto.length ? ` · sem texto para ler: ${semTexto.join(', ')}` : ''}`
-      + `${semPos.length ? ` · sem texto posicionado (só ligação): ${semPos.join(', ')} — prepare em Catálogos, botão “Preparar para copiar”` : ''}`
-      + `${semTextoPg ? ` · ${plural(semTextoPg, 'página sem nenhum texto', 'páginas sem nenhum texto')} (imagem ou texto em curvas no PDF: produtos nelas só com marcação à mão)` : ''}`
-      + `${staleSet.size ? ` · ${plural(staleSet.size, 'página', 'páginas')} com o texto do Modo Copiar diferente do PDF publicado (${[...staleSet].slice(0, 4).join(', ')}${staleSet.size > 4 ? '…' : ''}): em Catálogos, use “Refazer leitura” com o PDF publicado` : ''}.`;
-    if (tab === 'prods') renderScanBox();
+    scan.ran = true;
+    if (cancelled) { scan.res = { cancelled: true }; if (tab === 'prods') renderScanBox(); return; } // pela metade não muda nada: a limpeza precisa da leitura inteira
+    const plan = planScan({ hits, readPages, spots: viewSpots(), links: viewLinks(), drops: viewDrops() });
+    const done = applyScanPlan(plan);
+    // Produtos sem nenhuma página depois da leitura (com código, mas não impresso em nenhuma página lida)
+    const placed = new Set([...viewSpots().map((h) => h.product), ...viewLinks().map((l) => l.product)]);
+    const noCode = new Set(terms.noCode);
+    scan.res = {
+      pages, ...done, legacy: plan.legacy.map((h) => h.id),
+      notFound: prods.filter((p) => !noCode.has(p.sku) && !placed.has(p.sku)).map((p) => p.sku),
+      noCode: terms.noCode.filter((s) => !placed.has(s)),
+      dup: terms.dup.map((e) => ({ t: e.t, skus: [...e.skus] })),
+      semTexto, semPos, stale: [...staleSet], semTextoPg
+    };
+    refreshStage(); renderProdRows(); renderScanBox();
+    if (done.first && $('#pn-hsEd')) { ed.cat = done.first.catalogId; ed.page = done.first.page; ed.sel = done.first.id || ''; ed.draft = null; renderEditor(); } // editor na primeira página marcada
+    const n = done.nb + done.nl;
+    toast(n || done.out ? 'Marcação feita. Confira o resumo e publique na barra de alterações.' : 'Leitura feita: nada mudou nas marcas.');
+  }
+  // Põe o plano na barra de alterações (vale depois de publicar)
+  function applyScanPlan(plan) {
+    const pubSpot = (id) => (vault.hotspots || []).some((x) => x.id === id);
+    const pubLink = (k) => (vault.pageLinks || []).some((x) => linkKey(x) === k);
+    const unLink = (k) => { if (pubLink(k)) stagedLinks.set(k, null); else stagedLinks.delete(k); };
+    const outList = [];
+    for (const h of plan.dropSpots) { if (pubSpot(h.id)) stagedSpots.set(h.id, null); else stagedSpots.delete(h.id); outList.push(h); }
+    for (const l of plan.dropLinks) { unLink(linkKey(l)); outList.push(l); }
+    const vd = { ...viewData(), hotspots: viewSpots() }, addList = [];
+    let nb = 0, nl = 0, first = null;
+    for (const x of plan.addSpots) {
+      const h = { id: P.randHex(6), catalogId: x.catalogId, page: x.page, product: x.sku, ...x.box, auto: true };
+      if (spotFits(vd, h)) {
+        stagedSpots.set(h.id, h); vd.hotspots.push(h); nb++; addList.push({ ...h, spot: true });
+        if (x.up) unLink(linkKey(x.up)); // a ligação sem área do mesmo produto sai: quem manda é a marca
+        if (!first) first = h;
+      } else if (!x.up) plan.addLinks.push({ ...x, box: null });
+    }
+    for (const x of plan.addLinks) {
+      const l = { catalogId: x.catalogId, page: x.page, product: x.sku, auto: true };
+      if (linkFits(vd, l)) { stagedLinks.set(linkKey(l), l); nl++; addList.push(l); if (!first) first = l; }
+    }
+    return { nb, nl, out: outList.length, kept: plan.kept, first, added: addList.map(linkKey), removed: outList.map(linkKey) };
   }
   function scanCardHtml() {
     return `<section class="card stack imp-card" id="pn-scanCard" aria-labelledby="pn-scanH">
-      <div class="imp-head"><h2 id="pn-scanH">Marcação automática</h2><button class="btn ghost sm" type="button" id="pn-scanBtn">Encontrar produtos nas páginas</button></div>
-      <p class="muted">Procura o código SAP, o EAN e o nome de cada produto (mesmo abreviado ou com palavras a mais, como “CAD RODAS D100 LIGHT 44CM”) no texto das páginas dos catálogos e sugere em quais páginas cada um aparece.</p>
-      <p class="muted">Nos catálogos preparados para copiar, a marca sobre o produto sai pronta: o site desenha o “+” em cima do texto encontrado. Nos outros, o produto só fica ligado à página (o site mostra “N produtos nesta página”) — para ganhar a marca, use “Preparar para copiar” na linha do catálogo, em Catálogos, e rode a procura de novo. Toda área proposta pode ser movida ou refeita no editor abaixo antes de publicar.</p>
+      <div class="imp-head"><h2 id="pn-scanH">Marcação automática</h2><button class="btn ghost sm" type="button" id="pn-scanBtn">Marcar produtos nas páginas</button></div>
+      <p class="muted">Lê o texto de todas as páginas e marca sozinha o produto onde o código dele está impresso inteiro: código SAP, SKU ou EAN. Código curto, como “Cód. 05588”, só vale com “Cód.” ou “Ref.” antes e quando um único produto termina assim. Nome não marca. Na dúvida, não marca.</p>
+      <p class="muted">Nos catálogos preparados para copiar, o “+” sai em cima do código; nos outros, o produto fica ligado à página. Rodar de novo atualiza só as marcas automáticas: o que foi desenhado ou tirado à mão fica como está. Tudo vai para a barra de alterações e vale no site depois de publicar.</p>
       <div id="pn-scanBox"></div>
     </section>`;
   }
+  const scanName = (sku) => { const p = viewProducts()[sku]; return p ? p.name : sku; };
+  const scanCat = (id) => { const c = (vault.catalogs || []).find((x) => x.id === id); return c ? c.title : id; };
+  const scanKeyLi = (k) => { const [cid, pg, sku] = k.split('|'); return `<li><b>${esc(scanName(sku))}</b> · SKU ${esc(sku)}<span class="imp-dif">${esc(scanCat(cid))} · página ${esc(pg)}</span></li>`; };
+  // Marcas antigas (de antes desta versão) que a leitura não confirmou e ainda estão de pé
+  const scanLegacy = () => { const ids = new Set((scan.res && scan.res.legacy) || []); return viewSpots().filter((h) => ids.has(h.id) && h.auto === undefined); };
   function renderScanBox() {
     const box = $('#pn-scanBox'); if (!box) return;
-    if (!scan.ran) { box.innerHTML = ''; return; }
-    const props = scan.props, groups = new Map();
-    for (const p of props) { if (!groups.has(p.catalogId)) groups.set(p.catalogId, []); groups.get(p.catalogId).push(p); }
-    box.innerHTML = `<p class="muted" role="status">${esc(scan.info)}</p>${props.length ? `
-      <div class="scan-acts"><button class="link" type="button" data-scan="all">Selecionar todas</button><button class="link" type="button" data-scan="high">Só as de confiança alta</button><button class="link" type="button" data-scan="none">Nenhuma</button></div>
-      <div class="scan-groups" id="pn-scanList">${[...groups.values()].map((g) => `<fieldset class="scan-cat"><legend>${esc(g[0].cat)} · ${plural(g.length, 'sugestão', 'sugestões')}</legend><ul class="scan-list">
-        ${g.sort((a, b) => a.page - b.page || a.name.localeCompare(b.name, 'pt-BR')).map((p) => `<li><label class="scan-it" data-key="${esc(p.key)}"><input type="checkbox" value="${esc(p.key)}" ${p.conf === 'alta' ? 'checked' : ''}>
-          <span class="scan-t">Página ${p.page} · ${esc(p.name)} <span class="scan-conf ${p.conf}">${p.conf === 'alta' ? 'confiança alta' : 'confiança média'}</span><span class="scan-mark${p.box ? ' spot' : ''}">${p.box ? 'marca na página' : 'só ligação, sem área'}</span></span>
-          <span class="scan-s">SKU ${esc(p.sku)} · pelo ${esc(p.why)}</span>
-          <span class="scan-s">${p.html}</span></label></li>`).join('')}
-      </ul></fieldset>`).join('')}</div>
-      <div class="scan-acts"><button class="btn primary sm" type="button" id="pn-scanAccept">Aceitar selecionadas</button><button class="btn ghost sm" type="button" id="pn-scanDrop">Descartar selecionadas</button><span class="muted" id="pn-scanSel" aria-live="polite"></span></div>` : ''}`;
-    paintScanSel();
+    const r = scan.res;
+    if (!scan.ran || !r) { box.innerHTML = ''; return; }
+    if (r.cancelled) { box.innerHTML = '<p class="muted" role="status">Leitura cancelada antes do fim: nenhuma marca mudou. Rode de novo quando puder esperar até o fim.</p>'; return; }
+    const n = r.nb + r.nl, fmt = (x) => x.toLocaleString('pt-BR');
+    const head = `${plural(r.pages, 'página lida', 'páginas lidas')}. ${n ? `${plural(n, 'produto marcado', 'produtos marcados')} agora (${fmt(r.nb)} com “+” na página, ${fmt(r.nl)} só ligados à página)` : 'Nenhum produto novo marcado'}`
+      + `${r.kept ? `, ${plural(r.kept, 'já estava marcado', 'já estavam marcados')}` : ''}${r.out ? `, ${plural(r.out, 'marcação automática antiga saiu', 'marcações automáticas antigas saíram')} (o código não está na página)` : ''}.`
+      + `${n || r.out ? ' Publique na barra de alterações para valer no site.' : ''}`;
+    const notes = [
+      r.semTexto.length && `Sem texto para ler: ${r.semTexto.join(', ')}.`,
+      r.semPos.length && `Sem texto posicionado (produto só ligado, sem “+”): ${r.semPos.join(', ')}. Em Catálogos, use “Preparar para copiar” e rode de novo.`,
+      r.semTextoPg && `${plural(r.semTextoPg, 'página sem nenhum texto', 'páginas sem nenhum texto')} (imagem ou texto em curvas no PDF): produtos nelas só com marcação à mão.`,
+      r.stale.length && `${plural(r.stale.length, 'página', 'páginas')} com o texto do Modo Copiar diferente do PDF publicado (${r.stale.slice(0, 4).join(', ')}${r.stale.length > 4 ? '…' : ''}): em Catálogos, use “Refazer leitura” com o PDF publicado.`
+    ].filter(Boolean);
+    const legacy = scanLegacy();
+    box.innerHTML = `<p class="muted" role="status">${esc(head)}</p>${notes.map((t) => `<p class="muted">${esc(t)}</p>`).join('')}
+      ${legacy.length ? `<div class="alert warn stack" id="pn-scanLegacy"><p><b>${plural(legacy.length, 'marca antiga não foi confirmada', 'marcas antigas não foram confirmadas')}.</b> ${legacy.length === 1 ? 'Ela foi feita' : 'Elas foram feitas'} antes desta versão, à mão ou pela marcação antiga, e o código do produto não aparece na página. As erradas saem com o botão; as que você desenhou à mão podem ficar.</p>
+        <div class="imp-sum">${impSec('Ver quais são', legacy, (h) => `<li><b>${esc(scanName(h.product))}</b> · SKU ${esc(h.product)}<span class="imp-dif">${esc(scanCat(h.catalogId))} · página ${h.page} · <button class="link" type="button" data-scan-go="${esc(h.id)}">Ver no editor</button></span></li>`)}</div>
+        <div class="scan-acts"><button class="btn primary sm" type="button" data-scan-legacy="out">Remover ${legacy.length === 1 ? 'a marca' : `as ${fmt(legacy.length)} marcas`}</button><button class="btn ghost sm" type="button" data-scan-legacy="keep">Manter ${legacy.length === 1 ? 'a marca' : `as ${fmt(legacy.length)}`}</button></div></div>` : ''}
+      <div class="imp-sum">
+        ${impSec('Marcados agora', r.added, scanKeyLi)}
+        ${impSec('Marcações automáticas que saíram', r.removed, scanKeyLi)}
+        ${impSec('Produtos da base sem página nos catálogos (o código não foi achado impresso)', r.notFound, (s) => `<li><b>${esc(scanName(s))}</b> · SKU ${esc(s)}</li>`)}
+        ${impSec('Produtos sem código SAP, SKU ou EAN na base (marcar à mão)', r.noCode, (s) => `<li><b>${esc(scanName(s))}</b> · SKU ${esc(s)}</li>`)}
+        ${impSec('Códigos repetidos em mais de um produto da base (não marcam)', r.dup, (d) => `<li><b>${esc(d.t)}</b><span class="imp-dif">${esc(d.skus.map((s) => `${scanName(s)} (${s})`).join(' · '))}</span></li>`)}
+      </div>`;
   }
-  const scanChecked = () => $$('#pn-scanList input[type="checkbox"]:checked').map((i) => i.value);
-  function paintScanSel() { const el = $('#pn-scanSel'); if (el) el.textContent = `${plural(scanChecked().length, 'selecionada', 'selecionadas')} de ${scan.props.length.toLocaleString('pt-BR')}`; }
   function bindScanCard() {
     const card = $('#pn-scanCard'); if (!card) return;
     $('#pn-scanBtn').addEventListener('click', runScan);
-    card.addEventListener('change', (e) => { if (e.target.matches('#pn-scanList input')) paintScanSel(); });
     card.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-scan], #pn-scanAccept, #pn-scanDrop'); if (!b) return;
-      if (b.dataset.scan) { $$('#pn-scanList input').forEach((i) => { const p = scan.props.find((x) => x.key === i.value); i.checked = b.dataset.scan === 'all' || (b.dataset.scan === 'high' && p && p.conf === 'alta'); }); paintScanSel(); return; }
-      const keys = scanChecked();
-      if (!keys.length) { toast('Selecione pelo menos uma sugestão.'); return; }
-      if (b.id === 'pn-scanAccept') acceptScan(keys); else dropScan(keys);
+      const go = e.target.closest('[data-scan-go]');
+      if (go) {
+        const h = viewSpots().find((x) => x.id === go.dataset.scanGo); if (!h || !$('#pn-hsEd')) return;
+        ed.cat = h.catalogId; ed.page = h.page; ed.sel = h.id; ed.draft = null; renderEditor();
+        $('#pn-hsEd').scrollIntoView({ block: 'start' });
+        return;
+      }
+      const b = e.target.closest('[data-scan-legacy]'); if (!b) return;
+      const list = scanLegacy(); if (!list.length) return;
+      if (b.dataset.scanLegacy === 'out') for (const h of list) { if ((vault.hotspots || []).some((x) => x.id === h.id)) stagedSpots.set(h.id, null); else stagedSpots.delete(h.id); }
+      else for (const h of list) stagedSpots.set(h.id, { ...h, auto: false }); // fica como marca à mão: não volta a ser perguntada
+      refreshStage(); renderProdRows(); renderScanBox(); paintSpots();
+      toast(b.dataset.scanLegacy === 'out' ? `${plural(list.length, 'marca antiga removida', 'marcas antigas removidas')}, na barra de alterações.` : `${plural(list.length, 'marca antiga mantida', 'marcas antigas mantidas')} como marcação à mão.`);
     });
     renderScanBox();
-  }
-  // Aceitar: com área calculada vira marca na página (hotspot, igual à desenhada à mão); sem ela, o produto fica só ligado à
-  // página (pageLink). Nos dois casos a alteração vai para a barra e só vale depois de publicar.
-  function acceptScan(keys) {
-    const vd = { ...viewData(), hotspots: viewSpots() }, have = new Set(viewLinks().map(linkKey));
-    const marked = new Set(vd.hotspots.map(linkKey));
-    let n = 0, nb = 0, first = null, firstId = '';
-    for (const k of keys) {
-      const p = scan.props.find((x) => x.key === k); if (!p) continue;
-      if (marked.has(k)) continue; // área desenhada à mão (ou já aceita agora) vence: nada por cima
-      if (p.box) {
-        const h = { id: P.randHex(6), catalogId: p.catalogId, page: p.page, product: p.sku, ...p.box };
-        if (spotFits(vd, h)) {
-          stagedSpots.set(h.id, h); vd.hotspots.push(h); marked.add(k);
-          if (have.has(k)) { // a ligação sem área do mesmo produto sai: quem manda é a área
-            if ((vault.pageLinks || []).some((x) => linkKey(x) === k)) stagedLinks.set(k, null); else stagedLinks.delete(k);
-            have.delete(k);
-          }
-          n++; nb++;
-          if (!first) { first = h; firstId = h.id; }
-          continue;
-        }
-      }
-      const l = { catalogId: p.catalogId, page: p.page, product: p.sku, auto: true };
-      if (!have.has(k) && linkFits(vd, l)) { stagedLinks.set(k, l); have.add(k); n++; if (!first) first = l; }
-    }
-    scan.props = scan.props.filter((x) => !keys.includes(x.key));
-    refreshStage(); renderProdRows(); renderScanBox();
-    if (first && $('#pn-hsEd')) { ed.cat = first.catalogId; ed.page = first.page; ed.sel = firstId; ed.draft = null; renderEditor(); } // editor na primeira página aceita
-    const nl = n - nb;
-    const partes = [nb && `${plural(nb, 'produto marcado', 'produtos marcados')} na página`, nl && `${plural(nl, 'produto ligado', 'produtos ligados')} à página (sem área)`].filter(Boolean);
-    toast(n ? `${partes.join(' e ')}, na barra de alterações.` : 'Essas sugestões já estavam marcadas ou ligadas às páginas.');
-  }
-  function dropScan(keys) {
-    for (const k of keys) stagedDrops.add(k);
-    scan.props = scan.props.filter((x) => !keys.includes(x.key));
-    refreshStage(); renderScanBox();
-    toast(`${plural(keys.length, 'sugestão descartada', 'sugestões descartadas')}: não ${keys.length === 1 ? 'será proposta' : 'serão propostas'} de novo depois de publicar.`);
   }
 
   /* ---------- produtos na página sem área, no editor: "Na página (sem área)" ---------- */

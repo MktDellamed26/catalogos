@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-RT7E+4pk0bhMxbIZHJsBgbb6oDgkOIfx0xac4VSKDo4=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+bcYdYaNyGzlUV2bJtS6s/4BXi9142MCqwabQw0yigE=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2367,10 +2367,6 @@
   .mont-sum .btn.primary:hover { background: var(--white); border-color: var(--white); }
   .mont-sum .link { justify-self: center; color: rgba(255, 255, 255, .8); }
   .mont-sum :focus-visible { outline-color: var(--sky); }
-  .mont-res { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; max-height: min(52vh, 460px); overflow-y: auto; }
-  .mont-res .sh-opt:disabled { opacity: .5; cursor: default; }
-  .mont-place-img { width: 44px; flex: none; aspect-ratio: 210 / 297; overflow: hidden; border-radius: 3px; background: var(--light); }
-  .mont-place-img img { width: 100%; height: 100%; object-fit: contain; }
   .cart-acts .btn.primary { order: 0; } .cart-acts [data-cart-act="copy"] { order: 1; } .cart-acts [data-cart-act="email"] { order: 2; } .cart-acts .cart-mont { order: 3; } .cart-acts .cart-clear { order: 4; }
   @media (min-width: 1200px) { .cart-foot .cart-acts .cart-mont { grid-column: 1 / -1; } }
   @media (max-width: 767px) {
@@ -2381,6 +2377,87 @@
   }
   .mont-sum-warn { padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, .1); font-size: 12.5px; line-height: 1.45; color: var(--white); }
   @media (max-width: 480px) { #rDock .btn-sound { display: none; } } /* celular: o som de virar a página dá lugar aos botões de montar e baixar */
+  /* ===== Catálogo personalizado v2 =====
+     Editor = prévia do PDF (capa → páginas na ordem → contracapa) com o "+" de adicionar no meio da grade.
+     Escolher páginas (#/montar/<id>/paginas): miniaturas de cada catálogo, toque para marcar (número da ordem no selo),
+     bandeja fixa embaixo com a pilha das últimas marcadas e o botão de adicionar. */
+  .mont-pg-acts .icon-btn { color: var(--navy); }
+  .mont-pg-acts .icon-btn:hover:not(:disabled) { background: var(--light); }
+  .mont-fx { display: grid; gap: 8px; align-content: start; padding: 8px; border-radius: 14px; background: var(--white); box-shadow: var(--ds-soft); }
+  .mont-fx .mont-pg-img { background: var(--navy); }
+  .mont-fx .mont-pg-img img { position: relative; z-index: 1; object-fit: cover; background: var(--navy); } /* a imagem real cobre o desenho simples */
+  .mont-fx .mont-pg-t b { font-family: var(--font-title); font-weight: 700; }
+  .mont-fx-tag { position: absolute; z-index: 2; left: 6px; top: 6px; padding: 3px 8px; border-radius: 999px; background: var(--sky); color: var(--navy); font: 700 10.5px/1.2 var(--font-title); letter-spacing: .06em; text-transform: uppercase; }
+  .mont-fx-def { position: absolute; inset: 0; display: grid; align-content: center; padding: 0 12px; background: linear-gradient(160deg, var(--ds-navy-3), var(--navy) 55%, var(--ds-navy-2)); color: var(--white); font-family: var(--font-title); font-size: 15px; line-height: 1.15; }
+  .mont-fx-def b:first-child { font-weight: 300; }
+  .mont-fx-add { padding: 0; background: none; box-shadow: none; }
+  .mont-add-pg { display: grid; place-content: center; justify-items: center; gap: 6px; width: 100%; height: 100%; min-height: 220px; padding: 16px 10px; border: 2px dashed var(--line-ui); border-radius: 14px; background: transparent; color: var(--navy); font: inherit; text-align: center; cursor: pointer; transition: border-color .15s, background-color .15s, transform .2s var(--ds-ease); }
+  .mont-add-pg .ico { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: var(--navy); color: var(--white); box-shadow: var(--ds-lift); transition: transform .25s var(--ds-ease); }
+  .mont-add-pg .ico svg { width: 24px; height: 24px; stroke-width: 2.2; }
+  .mont-add-pg b { font-family: var(--font-title); font-size: 14px; }
+  .mont-add-pg span:last-child { font-size: 12px; color: var(--ink-2); }
+  .mont-add-pg:hover { border-color: var(--navy); background: var(--white); }
+  .mont-add-pg:hover .ico { transform: rotate(90deg) scale(1.06); }
+  .mont-pg.is-new { animation: mont-pop .5s var(--ds-ease) both; }
+  @keyframes mont-pop { 0% { transform: translateY(14px) scale(.9); opacity: 0; } 60% { transform: translateY(-3px) scale(1.02); opacity: 1; } 100% { transform: none; } }
+  .mont-order-note { font-size: 12.5px; color: var(--ink-2); }
+  /* Escolher páginas */
+  .mpk { display: grid; gap: 18px; min-width: 0; }
+  .mpk-top { margin-bottom: 0; }
+  .mpk-cats { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: thin; }
+  .mpk-cat { flex: none; display: flex; align-items: center; gap: 10px; max-width: 260px; padding: 8px 14px 8px 8px; border: 1px solid var(--hair); border-radius: 14px; background: var(--white); color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+  .mpk-cat:hover { border-color: var(--line-ui); }
+  .mpk-cat[aria-pressed="true"] { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
+  .mpk-cat-img { width: 34px; flex: none; aspect-ratio: 210 / 297; overflow: hidden; border-radius: 2px 3px 3px 2px; background: var(--navy); }
+  .mpk-cat-img img { width: 100%; height: 100%; object-fit: cover; }
+  .mpk-cat-t { display: grid; min-width: 0; line-height: 1.3; }
+  .mpk-cat-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--navy); }
+  .mpk-cat-t span { font-size: 11.5px; color: var(--ink-2); }
+  .mpk-cat-t span.on { color: var(--navy); font-weight: 600; }
+  .mpk-h { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; }
+  .mpk-grid { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 128px), 1fr)); gap: 14px; }
+  .mpk-pg { position: relative; display: grid; gap: 6px; width: 100%; padding: 6px; border: 0; border-radius: 12px; background: transparent; color: var(--ink-2); font: inherit; cursor: pointer; transition: background-color .15s; }
+  .mpk-pg:hover:not(:disabled) { background: var(--white); }
+  .mpk-img { position: relative; display: block; aspect-ratio: var(--r, .707); overflow: hidden; border-radius: 3px; background: var(--white); box-shadow: var(--ds-soft); transition: transform .2s var(--ds-ease), box-shadow .2s; }
+  .mpk-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .mpk-n { font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+  .mpk-ck { position: absolute; right: 0; top: 0; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--white); background: rgba(255, 255, 255, .9); color: var(--navy); font: 700 12px/1 var(--font-title); box-shadow: 0 0 0 1px var(--line-ui); transition: transform .2s var(--ds-ease), background-color .15s; }
+  .mpk-pg[aria-pressed="true"] .mpk-img { transform: translateY(-4px) rotate(-1.5deg); box-shadow: 0 0 0 3px var(--navy), var(--ds-lift); }
+  .mpk-pg[aria-pressed="true"] .mpk-ck { background: var(--navy); color: var(--white); box-shadow: none; transform: scale(1.08); }
+  .mpk-pg[aria-pressed="true"] .mpk-n { color: var(--navy); font-weight: 600; }
+  .mpk-pg:disabled { cursor: default; }
+  .mpk-pg:disabled .mpk-img img { opacity: .45; }
+  .mpk-pg:disabled .mpk-ck { display: none; }
+  .mpk-in { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); padding: 4px 9px; border-radius: 999px; background: var(--navy); color: var(--white); font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .mpk-tray { position: sticky; bottom: max(16px, var(--safe-b)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 12px 14px 12px 18px; border-radius: 18px; background: linear-gradient(160deg, var(--ds-navy-3), var(--navy) 60%, var(--ds-navy-2)); color: var(--white); box-shadow: var(--ds-pop); }
+  .mpk-stack { position: relative; width: 74px; height: 56px; flex: none; }
+  .mpk-stack img, .mpk-stack .mpk-empty { position: absolute; left: 50%; bottom: 0; width: 36px; aspect-ratio: 210 / 297; margin-left: -18px; border-radius: 2px; background: var(--white); object-fit: cover; box-shadow: 0 6px 14px -6px rgba(0, 0, 0, .6); transform: translateX(calc(var(--i, 0) * 15px)) rotate(calc(var(--i, 0) * 8deg)); transform-origin: 50% 100%; }
+  .mpk-stack .mpk-empty { display: grid; place-items: center; background: rgba(255, 255, 255, .12); color: var(--sky); box-shadow: none; }
+  .mpk-stack .mpk-empty svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+  .mpk-stack img.pop { animation: mpk-drop .38s var(--ds-ease); }
+  @keyframes mpk-drop { 0% { transform: translate(0, -46px) rotate(0) scale(1.25); opacity: 0; } 100% { opacity: 1; } }
+  .mpk-count { flex: 1 1 140px; font-size: 14px; color: rgba(255, 255, 255, .85); }
+  .mpk-count b { font-family: var(--font-title); font-size: 26px; font-weight: 300; color: var(--white); margin-right: 4px; vertical-align: -3px; }
+  .mpk-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .mpk-tray .btn.ghost { color: var(--white); border-color: var(--line-dark); background: transparent; }
+  .mpk-tray .btn.primary { background: var(--sky); border-color: var(--sky); color: var(--navy); }
+  .mpk-tray .btn.primary:hover:not(:disabled) { background: var(--white); border-color: var(--white); }
+  .mpk-tray .btn.primary:disabled { opacity: .55; }
+  .mpk-tray :focus-visible { outline-color: var(--sky); }
+  @media (max-width: 767px) {
+    .mpk-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .mpk-pg { padding: 4px; }
+    .mpk-ck { width: 26px; height: 26px; }
+    .mpk-tray { bottom: calc(var(--tab-h) + 10px + var(--safe-b)); padding: 10px 12px; }
+    .mpk-acts { width: 100%; }
+    .mpk-acts .btn { flex: 1 1 auto; min-height: 44px; }
+    .mont-add-pg { min-height: 180px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mont-pg.is-new, .mpk-stack img.pop { animation: none; }
+    .mpk-pg[aria-pressed="true"] .mpk-img { transform: none; }
+    .mont-add-pg:hover .ico { transform: none; }
+  }
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -4449,8 +4526,8 @@
       openReader(id, parseInt(parts[2], 10) || 1, sku);
       return;
     }
-    // Catálogo personalizado: #/montar (lista) e #/montar/<id> (editor), só representante e equipe
-    if (parts[0] === 'montar') { let id = parts[1] || ''; try { id = decodeURIComponent(id); } catch (e) { /* mantém */ } openMont(id); return; }
+    // Catálogo personalizado: #/montar (lista), #/montar/<id> (editor) e #/montar/<id>/paginas (escolher páginas), só representante e equipe
+    if (parts[0] === 'montar') { let id = parts[1] || ''; try { id = decodeURIComponent(id); } catch (e) { /* mantém */ } openMont(id, parts[2] === 'paginas'); return; }
     // Cartão de visita digital: só representante e equipe interna. #/cartao = visualização; #/cartao/editar = edição
     if (parts[0] === 'cartao') {
       if (!cardAllowed()) { navigate('#/prateleira'); return; }
@@ -5298,14 +5375,14 @@
   // mode: modo em que start foi chamado ('' = ainda não); ready: promessa de load + start; uid: conta que abriu; seq: última rota pedida
   const GER = { mode: '', ready: null, uid: '', section: '', seq: 0 };
   let painelLoad = null;
-  const PAINEL_SRC = 'painel.js?v=6c95c7ff'; // endereço com a versão (o mesmo que o app guarda)
+  const PAINEL_SRC = 'painel.js?v=fbd40245'; // endereço com a versão (o mesmo que o app guarda)
   function loadPainel() {
     if (window.DellamedPainel) return Promise.resolve(window.DellamedPainel);
     if (painelLoad) return painelLoad;
     const s = document.createElement('script');
     painelLoad = new Promise((res, rej) => {
       s.src = PAINEL_SRC;
-      s.integrity = 'sha384-Ii0rpz6bTcch3/N+q3+irVMDCID5l2NHk8RiQEOzwjgxrJw+1UmDyBluI8Nr5BIw';
+      s.integrity = 'sha384-vAYmC2OX0Wnk4EEn/gVgRzKuWxmleibi1cDd34d7ST6HoGWJHNa/oOVPasbdS3Z8';
       s.async = true;
       s.onload = () => { if (window.DellamedPainel) res(window.DellamedPainel); else rej(new Error('painel ausente')); };
       s.onerror = () => rej(new Error('painel indisponível'));
@@ -10836,38 +10913,117 @@
   }
   $('#btnPdf').addEventListener('click', () => askPdf(R.cat, 'leitor', R.cat ? visibleIdx().map((i) => i + 1) : []));
 
-  /* ================= catálogo personalizado (#/montar e #/montar/<id>) — fase 1: fica neste aparelho =================
-     O vendedor junta páginas oficiais (escolhidas por página ou por produto), escolhe uma das capas do marketing
-     (capas/capa-1.jpg … capa-5.jpg no site; sem elas, a capa padrão Dellamed) e gera um PDF com a contracapa do cartão.
-     Nada é copiado: cada item guarda { catalogId, page, v (versão do catálogo), skus }. Catálogo republicado (v mudou):
-     com produto, o app reencontra a página; sem produto, a página fica marcada para conferir.
-     Gravação: localStorage "dm.montados.<uid>" (fase 2: tabela no Supabase, mesmo formato). */
-  const MONT_MAX = 30, MONT_PAGES = 80, MONT_CAPAS = 5;
-  const MONT = { list: null, uid: '', atual: '', capas: null, capasJob: null, drag: null };
+  /* ================= catálogo personalizado (#/montar, #/montar/<id> e #/montar/<id>/paginas) =================
+     O vendedor junta páginas oficiais (escolhidas pelas miniaturas ou "Adicionar ao meu catálogo" no leitor), escolhe uma das
+     duas capas do marketing (capas/capa-1 e capa-2, .jpg ou .png; sem elas, a capa Dellamed desenhada aqui) e gera um PDF
+     com a contracapa do cartão. Nada é copiado: cada item guarda { catalogId, page, v (versão do catálogo), skus }.
+     Catálogo republicado (v mudou): com produto, o app reencontra a página; sem produto, a página fica marcada para conferir.
+     Gravação: localStorage "dm.montados.<uid>" (abre na hora e funciona sem internet) e, com a tabela catalogos_montados
+     criada no Supabase, a mesma lista no login da pessoa (uma linha por pessoa; pelo RLS, só ela lê e grava). */
+  const MONT_MAX = 30, MONT_PAGES = 80, MONT_CAPAS = 2, MONT_TABLE = 'catalogos_montados';
+  const MONT = { list: null, uid: '', atual: '', apagados: {}, capas: null, capasJob: null, drag: null, pick: null, flash: null, back: null };
+  // Gravação no login (tabela catalogos_montados): state '' (ainda não sabe) | 'ok' | 'off' (sem a tabela: só neste aparelho) | 'err' (sem internet)
+  const MSYNC = { state: '', at: 0, job: null, t: null, dirty: false, again: false };
   const montKey = () => 'dm.montados.' + me.uid;
+  const montCapaOk = (n) => (Number.isInteger(n) && n >= 1 && n <= MONT_CAPAS ? n : 1); // modelos antigos (padrão, 3 a 5) viram o modelo 1
+  // Lista gravada (neste aparelho ou no login) → formato conferido
+  function montNorm(o) {
+    const apagados = {};
+    if (o && o.apagados && typeof o.apagados === 'object') for (const [id, t] of Object.entries(o.apagados)) if (typeof t === 'string') apagados[id.slice(0, 40)] = t;
+    const list = (o && Array.isArray(o.list) ? o.list : []).filter((m) => m && typeof m.id === 'string' && Array.isArray(m.itens)).slice(0, MONT_MAX).map((m) => ({
+      id: m.id.slice(0, 40), nome: String(m.nome || 'Catálogo').slice(0, 60), capa: montCapaOk(m.capa | 0),
+      itens: m.itens.filter((x) => x && typeof x.catalogId === 'string' && Number.isInteger(x.page)).slice(0, MONT_PAGES)
+        .map((x) => ({ catalogId: x.catalogId, page: x.page, v: x.v || 0, skus: Array.isArray(x.skus) ? x.skus.filter((s) => typeof s === 'string').slice(0, 12) : [], conferir: !!x.conferir })),
+      criadoEm: String(m.criadoEm || ''), atualizadoEm: String(m.atualizadoEm || '')
+    }));
+    return { list, apagados };
+  }
   function montAll() {
     if (!me) return [];
     if (MONT.list && MONT.uid === me.uid) return MONT.list;
-    MONT.uid = me.uid; MONT.list = []; MONT.atual = '';
+    MONT.uid = me.uid; MONT.list = []; MONT.atual = ''; MONT.apagados = {}; MONT.pick = null;
+    MSYNC.state = ''; MSYNC.at = 0; MSYNC.dirty = false;
     try {
-      const o = JSON.parse(localStorage.getItem(montKey()) || 'null');
-      if (o && Array.isArray(o.list)) {
-        MONT.list = o.list.filter((m) => m && typeof m.id === 'string' && Array.isArray(m.itens)).slice(0, MONT_MAX).map((m) => ({
-          id: m.id.slice(0, 40), nome: String(m.nome || 'Catálogo').slice(0, 60), capa: Math.max(0, Math.min(MONT_CAPAS, m.capa | 0)),
-          itens: m.itens.filter((x) => x && typeof x.catalogId === 'string' && Number.isInteger(x.page)).slice(0, MONT_PAGES)
-            .map((x) => ({ catalogId: x.catalogId, page: x.page, v: x.v || 0, skus: Array.isArray(x.skus) ? x.skus.filter((s) => typeof s === 'string').slice(0, 12) : [], conferir: !!x.conferir })),
-          criadoEm: String(m.criadoEm || ''), atualizadoEm: String(m.atualizadoEm || '')
-        }));
-        MONT.atual = typeof o.atual === 'string' ? o.atual : '';
-      }
+      const o = JSON.parse(localStorage.getItem(montKey()) || 'null'), n = montNorm(o);
+      MONT.list = n.list; MONT.apagados = n.apagados;
+      MONT.atual = o && typeof o.atual === 'string' ? o.atual : '';
     } catch (e) { MONT.list = []; }
+    montPull(); // traz o que está no login (feito em outro aparelho)
     return MONT.list;
   }
-  function montSave() {
-    try { localStorage.setItem(montKey(), JSON.stringify({ v: 1, atual: MONT.atual, list: MONT.list })); }
-    catch (e) { toast('Não foi possível salvar neste aparelho (armazenamento cheio ou bloqueado).', 'err'); }
-    paintMontCount();
+  function montWriteLocal() {
+    try { localStorage.setItem(montKey(), JSON.stringify({ v: 1, atual: MONT.atual, list: MONT.list, apagados: MONT.apagados })); return true; }
+    catch (e) { return false; }
   }
+  function montSave() {
+    if (!montWriteLocal() && MSYNC.state !== 'ok') toast('Não foi possível salvar neste aparelho (armazenamento cheio ou bloqueado).', 'err');
+    paintMontCount();
+    montPushSoon();
+  }
+  /* ----- no login: tabela catalogos_montados no Supabase ----- */
+  const montSyncOn = () => !!me && me.auth === 'supabase' && MSYNC.state !== 'off';
+  const montOffErr = (e) => !!e && (e.status === 404 || e.status === 403 || ['PGRST205', 'PGRST106', '42P01', '42501'].includes(e.code));
+  // Junta duas listas: cada catálogo fica com a versão mais nova; apagado num aparelho some nos outros
+  function montMerge(a, b) {
+    const del = { ...a.apagados };
+    for (const [id, t] of Object.entries(b.apagados || {})) if (!del[id] || del[id] < t) del[id] = t;
+    const by = new Map();
+    for (const m of [...a.list, ...b.list]) { const cur = by.get(m.id); if (!cur || m.atualizadoEm > cur.atualizadoEm) by.set(m.id, m); }
+    const list = [...by.values()].filter((m) => !(del[m.id] && del[m.id] >= m.atualizadoEm))
+      .sort((x, y) => (y.criadoEm || '').localeCompare(x.criadoEm || '')).slice(0, MONT_MAX);
+    const keep = Object.entries(del).sort((x, y) => y[1].localeCompare(x[1])).slice(0, 200); // lembra os 200 apagados mais recentes
+    return { list, apagados: Object.fromEntries(keep) };
+  }
+  const montSig = (x) => JSON.stringify([x.list, x.apagados]);
+  // Lê o login, junta com o daqui e grava nos dois lugares quando algo mudou (push: grava no login de qualquer jeito)
+  function montSync(push) {
+    if (!montSyncOn()) return Promise.resolve(false);
+    if (MSYNC.job) { MSYNC.again = MSYNC.again || !!push; return MSYNC.job; }
+    const uid = me.uid;
+    MSYNC.job = (async () => {
+      try {
+        const token = await supaToken();
+        const rows = await P.supa.select(token, MONT_TABLE, 'user_id=eq.' + encodeURIComponent(uid) + '&select=dados');
+        if (!me || me.uid !== uid) return false;
+        const remote = montNorm(Array.isArray(rows) && rows[0] ? rows[0].dados : null), was = MSYNC.state;
+        MSYNC.state = 'ok';
+        if (was !== 'ok') paintMontWhere();
+        const local = { list: montAll(), apagados: MONT.apagados };
+        const merged = montMerge(local, remote);
+        if (montSig(merged) !== montSig(local)) { MONT.list = merged.list; MONT.apagados = merged.apagados; montWriteLocal(); paintMontCount(); montRefreshView(); }
+        if (push || montSig(merged) !== montSig(remote)) {
+          await P.supa.upsert(token, MONT_TABLE, { user_id: uid, dados: { v: 1, list: merged.list, apagados: merged.apagados }, atualizado_em: new Date().toISOString() }, 'user_id');
+        }
+        MSYNC.state = 'ok'; MSYNC.dirty = false; MSYNC.at = Date.now();
+        return true;
+      } catch (e) {
+        if (montOffErr(e)) MSYNC.state = 'off'; // tabela ainda não criada (ou sem permissão): fica só neste aparelho, sem aviso
+        else { if (MSYNC.state !== 'ok') MSYNC.state = 'err'; MSYNC.dirty = true; } // sem internet: tenta de novo na próxima mudança ou quando a internet voltar
+        return false;
+      } finally {
+        MSYNC.job = null;
+        if (MSYNC.again) { MSYNC.again = false; montPushSoon(); }
+      }
+    })();
+    return MSYNC.job;
+  }
+  function montPushSoon() { if (!montSyncOn()) return; MSYNC.dirty = true; clearTimeout(MSYNC.t); MSYNC.t = setTimeout(() => montSync(true), 1200); }
+  function montPull() { if (!montSyncOn() || MSYNC.job || (MSYNC.at && Date.now() - MSYNC.at < 15000)) return; setTimeout(() => montSync(false), 0); }
+  window.addEventListener('online', () => { if (MSYNC.dirty && me) montSync(true); });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && me && view === 'mont') montPull(); });
+  // A lista mudou por fora (outro aparelho ou outra aba): redesenha sem perder o que está aberto
+  function montRefreshView() {
+    if (view !== 'mont') return;
+    const cur = MONT.edit;
+    if (!cur) { renderMontList(); return; }
+    const now = montById(cur.id);
+    if (!now) { MONT.edit = null; MONT.pick = null; redirect('#/montar'); toast('Este catálogo foi apagado em outro aparelho.'); return; }
+    if (now === cur) return;
+    MONT.edit = now;
+    if (MONT.pick && MONT.pick.mid === now.id && /\/paginas$/.test(location.hash)) { paintPickGrid(now); paintPickTray(now); } else montRerender();
+  }
+  const montWhere = () => (MSYNC.state === 'ok' ? 'Fica salvo no seu login: abre igual no celular e no computador.' : 'Fica salvo neste aparelho.');
+  function paintMontWhere() { const w = view === 'mont' && !MONT.edit && $('#montWhere'); if (w) w.textContent = montWhere(); }
   const montById = (id) => montAll().find((m) => m.id === id) || null;
   // Outra aba mudou os catálogos montados: relê na próxima consulta
   window.addEventListener('storage', (e) => { if (e.key && e.key.startsWith('dm.montados.')) { MONT.list = null; if (view === 'mont') route(); } });
@@ -10876,7 +11032,7 @@
     const list = montAll();
     if (list.length >= MONT_MAX) { toast(`São no máximo ${MONT_MAX} catálogos. Apague um antes de criar outro.`, 'err'); return null; }
     const now = new Date().toISOString();
-    const m = { id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nome: String(nome || 'Novo catálogo').slice(0, 60), capa: 0, itens: [], criadoEm: now, atualizadoEm: now };
+    const m = { id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nome: String(nome || 'Novo catálogo').slice(0, 60), capa: 1, itens: [], criadoEm: now, atualizadoEm: now };
     list.unshift(m); MONT.atual = m.id; montSave();
     return m;
   }
@@ -10923,7 +11079,7 @@
     $$('[data-mont-count]').forEach((b) => { b.textContent = n ? fmtN(n) : ''; });
   }
 
-  /* ----- capas: capas/capa-N.jpg publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
+  /* ----- capas: capas/capa-1 e capa-2 (.jpg ou .png) publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
   // Cada modelo pode estar em JPG (preferido: mais leve) ou PNG. MONT.capas = [{ n, src }] dos que existem no site.
   function montCapas() {
     if (MONT.capas) return Promise.resolve(MONT.capas);
@@ -10935,7 +11091,6 @@
     })).then((list) => { MONT.capas = list.filter(Boolean); MONT.capasJob = null; return MONT.capas; });
     return MONT.capasJob;
   }
-  const capaSrc = (n) => { const c = (MONT.capas || []).find((x) => x.n === n); return c ? c.src : `capas/capa-${n}.jpg`; };
   // Capa padrão (sem as capas do marketing): azul-marinho, marca e as linhas, desenhada em A4 (1240 × 1754)
   async function logoBitmap() {
     const raw = getComputedStyle(document.documentElement).getPropertyValue('--logo');
@@ -11023,7 +11178,7 @@
       const pages = [];
       // Capa
       let capa = null;
-      if (m.capa) { try { await montCapas(); const r = await fetch(capaSrc(m.capa), { cache: 'no-store' }); if (r.ok) capa = await pdfJpeg(new Uint8Array(await r.arrayBuffer())); } catch (e) { capa = null; } }
+      try { await montCapas(); const on = montCapaOn(m); if (on) { const r = await fetch(on.src, { cache: 'no-store' }); if (r.ok) capa = await pdfJpeg(new Uint8Array(await r.arrayBuffer())); } } catch (e) { capa = null; }
       if (!capa) capa = await pdfJpeg(await canvasJpeg(await drawDefaultCover(m.nome)));
       pages.push(capa);
       pdfJobSet(1 / total, `1 de ${plural(total, 'página', 'páginas')}`);
@@ -11049,7 +11204,7 @@
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 120000);
       pdfJobUI(false);
-      trackCatalogEvent('custom_catalog_pdf', { pages: itens.length, cover: m.capa || 0 });
+      trackCatalogEvent('custom_catalog_pdf', { pages: itens.length, cover: (montCapaOn(m) || { n: 0 }).n });
       const mb = (blob.size / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
       const file = new File([blob], name, { type: 'application/pdf' });
       const canShare = coarse && navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
@@ -11065,32 +11220,37 @@
   /* ----- telas ----- */
   const montUpd = (m) => { const d = new Date(m.atualizadoEm); return isFinite(d.getTime()) ? `atualizado ${ago(m.atualizadoEm)}` : ''; };
   const montThumb = (it) => `<img ${hasThumb(cat(it.catalogId), it.page) ? 'data-th' : 'data-pg'}="${esc(it.catalogId)}:${it.page}" alt="">`;
+  const pickKey = (cid, p) => cid + ':' + p;
+  // Capa que vai no PDF: a escolhida, ou a outra publicada; null = nenhuma publicada (sai a capa Dellamed desenhada aqui)
+  const montCapaOn = (m) => { const ns = MONT.capas || []; return ns.find((x) => x.n === m.capa) || ns[0] || null; };
   function renderMontList() {
     const box = $('#montBody'), list = montAll();
     setHTML(box, `<div class="mont-top">
         <div><h1 id="montH" tabindex="-1"><b>Meus catálogos.</b> Do jeito do seu cliente.</h1>
-        <p class="mont-sub">Junte páginas oficiais, escolha a capa e gere o PDF com o seu cartão no fim. Fica salvo neste aparelho.</p></div>
+        <p class="mont-sub">Junte páginas oficiais, escolha a capa e gere o PDF com o seu cartão no fim. <span id="montWhere">${montWhere()}</span></p></div>
         <button class="btn primary" type="button" data-mont-act="novo">${I.plus}Novo catálogo</button>
       </div>
       ${list.length ? `<ul class="mont-list">${list.map((m) => {
-        const first = m.itens[0];
+        const first = m.itens[0], cp = montCapaOn(m);
         return `<li class="mont-card">
           <button class="mont-open" type="button" data-mont-open="${esc(m.id)}" aria-label="Abrir ${esc(m.nome)}">
-            <span class="mont-cover">${m.capa ? `<img src="${esc(capaSrc(m.capa))}" alt="" loading="lazy" decoding="async">` : first ? montThumb(first) : `<span class="ico" aria-hidden="true">${I.layers}</span>`}</span>
+            <span class="mont-cover">${cp ? `<img src="${esc(cp.src)}" alt="" loading="lazy" decoding="async">` : first ? montThumb(first) : `<span class="ico" aria-hidden="true">${I.layers}</span>`}</span>
             <span class="mont-card-t"><b>${esc(m.nome)}</b><span>${plural(m.itens.length, 'página', 'páginas')}${montUpd(m) ? ' · ' + esc(montUpd(m)) : ''}</span></span>
           </button>
           <button class="btn ghost sm" type="button" data-mont-pdf="${esc(m.id)}" ${m.itens.length ? '' : 'disabled'}>${I.download}PDF</button>
         </li>`;
       }).join('')}</ul>` : `<div class="empty mont-empty"><span class="ico" aria-hidden="true">${I.layers}</span><h3>Nenhum catálogo montado ainda</h3>
-        <p>Dentro de um catálogo, toque em <b>Adicionar ao meu catálogo</b> na barra de controles. Ou, no carrinho, use <b>Montar catálogo</b> para levar as páginas dos produtos escolhidos.</p></div>`}`);
+        <p>Toque em <b>Novo catálogo</b> e escolha as páginas pelas miniaturas. Dentro de um catálogo, <b>Adicionar ao meu catálogo</b> na barra de controles leva as páginas abertas.</p></div>`}`);
     hydrate(box);
     // Capa que saiu do site (o marketing apagou o arquivo): volta para o ícone, sem imagem quebrada
     $$('.mont-cover img[src^="capas/"]', box).forEach((im) => im.addEventListener('error', () => { im.replaceWith(Object.assign(document.createElement('span'), { className: 'ico', innerHTML: I.layers })); }, { once: true }));
   }
+  // O editor é a prévia do PDF: capa → páginas na ordem → contracapa, com o "+" para escolher mais páginas antes da contracapa
   function renderMontEdit(m) {
     const box = $('#montBody');
     montHeal(m);
-    const conf = m.itens.filter((it) => it.conferir).length;
+    const conf = m.itens.filter((it) => it.conferir).length, flash = MONT.flash || new Set();
+    MONT.flash = null;
     setHTML(box, `<div class="mont-ed">
       <div class="mont-ed-main">
         <a class="mont-back" href="#/montar">${I.back}Meus catálogos</a>
@@ -11102,27 +11262,35 @@
         </section>
         <section class="mont-sec" aria-labelledby="montPagH">
           <div class="mont-sec-h"><h2 id="montPagH">Páginas <span class="int-n">${fmtN(m.itens.length)}</span></h2>
-            <span class="mont-add"><button class="btn ghost sm" type="button" data-mont-act="addprod">${I.search}Adicionar produto</button><button class="btn ghost sm" type="button" data-mont-act="addpag">${I.plus}Adicionar páginas</button></span></div>
+            <span class="mont-add"><button class="btn ghost sm" type="button" data-mont-act="addpag">${I.plus}Adicionar páginas</button></span></div>
+          <p class="mont-order-note">É assim que o PDF sai: capa, as páginas nesta ordem e a contracapa. ${coarse ? 'Use as setas para mudar a ordem.' : 'Arraste uma página (ou use as setas) para mudar a ordem.'}</p>
           ${conf ? `<p class="warn-note">${WARN}<span>${plural(conf, 'página veio', 'páginas vieram')} de catálogo atualizado depois que você montou. Confira ${conf === 1 ? 'a marcada' : 'as marcadas'} e toque em "Está certa".</span></p>` : ''}
-          ${m.itens.length ? `<ol class="mont-pages" id="montPages">${m.itens.map((it, i) => {
-            const c = cat(it.catalogId), nomes = it.skus.map((s) => { const p = prodBySku(s); return p ? p.name : s; }).slice(0, 2);
-            return `<li class="mont-pg${it.conferir ? ' is-warn' : ''}" draggable="true" data-i="${i}">
-              <span class="mont-pg-img">${c ? montThumb(it) : ''}<span class="mont-pg-n" aria-hidden="true">${i + 1}</span></span>
-              <span class="mont-pg-t"><b>${c ? esc(c.title) : 'Catálogo indisponível'}</b><span>pág. ${it.page}${nomes.length ? ' · ' + esc(nomes.join(', ')) : ''}</span></span>
-              <span class="mont-pg-acts">
-                ${it.conferir ? `<button type="button" class="btn sky sm" data-mont-ok="${i}">Está certa</button>` : ''}
-                <button type="button" class="icon-btn" data-mont-mv="${i}:-1" aria-label="Mover para antes" ${i ? '' : 'disabled'}>${I.back}</button>
-                <button type="button" class="icon-btn" data-mont-mv="${i}:1" aria-label="Mover para depois" ${i < m.itens.length - 1 ? '' : 'disabled'}>${I.next}</button>
-                <button type="button" class="icon-btn" data-mont-rm="${i}" aria-label="Tirar página ${it.page}">${I.close}</button>
-              </span>
-            </li>`;
-          }).join('')}</ol>` : `<div class="empty mont-empty"><h3>Nenhuma página ainda</h3><p>Use os botões acima, ou abra um catálogo e toque em <b>Adicionar ao meu catálogo</b>.</p></div>`}
+          <ol class="mont-pages" id="montPages">
+            <li class="mont-fx" aria-label="Capa"><span class="mont-pg-img" id="montFxCapa"><span class="mont-fx-def" aria-hidden="true"><b>Catálogo</b><b>Dellamed</b></span><span class="mont-fx-tag">Capa</span></span>
+              <span class="mont-pg-t"><b>Capa</b><span id="montFxCapaT">${MONT.capas && montCapaOn(m) ? `Modelo ${montCapaOn(m).n}` : 'Dellamed'}</span></span></li>
+            ${m.itens.map((it, i) => {
+              const c = cat(it.catalogId), nomes = it.skus.map((s) => { const p = prodBySku(s); return p ? p.name : s; }).slice(0, 2);
+              return `<li class="mont-pg${it.conferir ? ' is-warn' : ''}${flash.has(pickKey(it.catalogId, it.page)) ? ' is-new' : ''}" draggable="true" data-i="${i}">
+                <span class="mont-pg-img">${c ? montThumb(it) : ''}<span class="mont-pg-n" aria-hidden="true">${i + 1}</span></span>
+                <span class="mont-pg-t"><b>${c ? esc(c.title) : 'Catálogo indisponível'}</b><span>pág. ${it.page}${nomes.length ? ' · ' + esc(nomes.join(', ')) : ''}</span></span>
+                <span class="mont-pg-acts">
+                  ${it.conferir ? `<button type="button" class="btn sky sm" data-mont-ok="${i}">Está certa</button>` : ''}
+                  <button type="button" class="icon-btn" data-mont-mv="${i}:-1" aria-label="Mover para antes" ${i ? '' : 'disabled'}>${I.back}</button>
+                  <button type="button" class="icon-btn" data-mont-mv="${i}:1" aria-label="Mover para depois" ${i < m.itens.length - 1 ? '' : 'disabled'}>${I.next}</button>
+                  <button type="button" class="icon-btn" data-mont-rm="${i}" aria-label="Tirar página ${it.page}">${I.close}</button>
+                </span>
+              </li>`;
+            }).join('')}
+            <li class="mont-fx mont-fx-add"><button type="button" class="mont-add-pg" data-mont-act="addpag"><span class="ico" aria-hidden="true">${I.plus}</span><b>${m.itens.length ? 'Adicionar páginas' : 'Escolher as páginas'}</b><span>pelas miniaturas dos catálogos</span></button></li>
+            <li class="mont-fx" aria-label="Contracapa"><span class="mont-pg-img"><span class="mont-fx-def" aria-hidden="true"><b>Saúde e bem-estar</b><b>para todos.</b></span><img id="montFxBack" alt="" hidden><span class="mont-fx-tag">Contracapa</span></span>
+              <span class="mont-pg-t"><b>Contracapa</b><span>${cardAllowed() ? 'Com o seu cartão' : 'Assinatura Dellamed'}</span></span></li>
+          </ol>
         </section>
       </div>
       <aside class="mont-sum" aria-label="Resumo">
         <p class="cs-eyebrow">Resumo</p>
         <p class="mont-sum-n"><b>${fmtN(m.itens.length + 2)}</b> páginas no PDF</p>
-        <ul class="mont-sum-l"><li>Capa ${m.capa ? `modelo ${m.capa}` : 'padrão Dellamed'}</li><li>${plural(m.itens.length, 'página oficial', 'páginas oficiais')}</li><li>Contracapa com ${cardAllowed() ? 'o seu cartão' : 'a assinatura Dellamed'}</li></ul>
+        <ul class="mont-sum-l"><li id="montSumCapa">${MONT.capas && montCapaOn(m) ? `Capa modelo ${montCapaOn(m).n}` : 'Capa Dellamed'}</li><li>${plural(m.itens.length, 'página oficial', 'páginas oficiais')}</li><li>Contracapa com ${cardAllowed() ? 'o seu cartão' : 'a assinatura Dellamed'}</li></ul>
         <button class="btn primary block" type="button" data-mont-act="pdf" ${m.itens.length ? '' : 'disabled'}>${I.download}Gerar PDF</button>
         ${cardAllowed() && cardModel(cardData()).hint ? `<p class="mont-sum-warn">Seu cartão está sem WhatsApp: a contracapa sai sem o QR Code.</p>` : ''}
         ${cardAllowed() ? `<button class="link" type="button" data-mont-act="cartao">Conferir meu cartão</button>` : ''}
@@ -11131,90 +11299,152 @@
     </div>`);
     hydrate(box);
     paintMontCapas(m);
+    paintMontBack();
   }
+  // As duas capas do marketing (capas/capa-1 e capa-2). Uma só publicada: aparece só ela. Nenhuma: aviso, e o PDF sai com a capa Dellamed.
   function paintMontCapas(m) {
     montCapas().then((ns) => {
       const el = $('#montCapas');
       if (!el || !MONT.edit || MONT.edit.id !== m.id) return;
-      const nums = ns.map((x) => x.n);
-      if (m.capa && !nums.includes(m.capa)) { m.capa = 0; montSave(); }
-      const opt = (n, inner, lbl) => `<button type="button" class="mont-capa" role="radio" aria-checked="${m.capa === n}" data-mont-capa="${n}">${inner}<span>${lbl}</span></button>`;
-      el.innerHTML = opt(0, `<span class="mont-capa-def" aria-hidden="true"><i></i><b>Catálogo</b><b>Dellamed</b></span>`, 'Padrão')
-        + ns.map((c) => opt(c.n, `<img src="${esc(c.src)}" alt="" loading="lazy" decoding="async">`, `Modelo ${c.n}`)).join('')
-        + (ns.length ? '' : '<p class="mont-note">As capas do marketing aparecem aqui assim que forem publicadas.</p>');
+      const on = montCapaOn(m);
+      if (on && on.n !== m.capa) { m.capa = on.n; montSave(); }
+      el.innerHTML = ns.length ? ns.map((c) => `<button type="button" class="mont-capa" role="radio" aria-checked="${!!on && on.n === c.n}" data-mont-capa="${c.n}"><img src="${esc(c.src)}" alt="" loading="lazy" decoding="async"><span>Modelo ${c.n}</span></button>`).join('')
+        : '<p class="mont-note">As duas capas aparecem aqui assim que o marketing publicar. Até lá, o PDF sai com a capa Dellamed.</p>';
+      paintMontCapaFx(m);
     });
   }
-  function openMont(id) {
+  function paintMontCapaFx(m) {
+    const on = montCapaOn(m), fx = $('#montFxCapa'), t = $('#montFxCapaT'), s = $('#montSumCapa');
+    if (t) t.textContent = on ? `Modelo ${on.n}` : 'Dellamed';
+    if (s) s.textContent = on ? `Capa modelo ${on.n}` : 'Capa Dellamed';
+    if (!fx) return;
+    let im = $('img', fx);
+    if (!on) { if (im) im.remove(); return; }
+    if (!im) { im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; fx.insertBefore(im, $('.mont-fx-tag', fx)); im.addEventListener('error', () => im.remove(), { once: true }); }
+    if (im.getAttribute('src') !== on.src) im.src = on.src;
+  }
+  // Contracapa de verdade (o mesmo desenho do PDF), em tamanho de miniatura; refeita só quando o cartão muda
+  function paintMontBack() {
+    const sig = JSON.stringify(cardAllowed() ? cardData() : null);
+    const put = (url) => { const im = $('#montFxBack'); if (im && url) { im.src = url; im.hidden = false; } };
+    if (MONT.back && MONT.back.sig === sig) { put(MONT.back.url); return; }
+    drawBackCover().then((cv) => {
+      const sm = document.createElement('canvas'); sm.width = 310; sm.height = 438;
+      sm.getContext('2d').drawImage(cv, 0, 0, sm.width, sm.height);
+      sm.toBlob((b) => {
+        if (!b) return;
+        if (MONT.back) URL.revokeObjectURL(MONT.back.url);
+        MONT.back = { sig, url: URL.createObjectURL(b) };
+        put(MONT.back.url);
+      }, 'image/jpeg', 0.85);
+    }).catch(() => { /* fica o desenho simples da contracapa */ });
+  }
+  function openMont(id, pick) {
     if (!cardAllowed()) { redirect('#/prateleira'); return; }
     closeReader();
     showOnly('mont');
     const m = id ? montById(id) : null;
     MONT.edit = m;
     if (id && !m) { redirect('#/montar'); return; }
-    if (m) { MONT.atual = m.id; renderMontEdit(m); }
+    montPull();
+    if (m && pick) { MONT.atual = m.id; renderMontPick(m); }
+    else if (m) { MONT.atual = m.id; if (MONT.pick && MONT.pick.mid !== m.id) MONT.pick = null; renderMontEdit(m); }
     else if (MONT.capas) renderMontList();
     else montCapas().then(() => { if (view === 'mont' && !MONT.edit) renderMontList(); }); // as capas podem estar em JPG ou PNG: descobre antes de desenhar
     window.scrollTo(0, 0);
-    const h = $('#montH') || $('#montNome'); if (h && !m) h.focus({ preventScroll: true });
+    const h = $('#montH') || $('#montNome'); if (h && (!m || pick)) h.focus({ preventScroll: true });
   }
-  const montRerender = () => { if (view === 'mont' && MONT.edit) { const y = window.scrollY; renderMontEdit(MONT.edit); window.scrollTo(0, y); } };
+  const montRerender = () => { if (view === 'mont' && MONT.edit && !/\/paginas$/.test(location.hash)) { const y = window.scrollY; renderMontEdit(MONT.edit); window.scrollTo(0, y); } };
 
-  // Diálogos: adicionar páginas de um catálogo / adicionar um produto (o app acha a página)
-  function askMontPages(m) {
-    const cs = visibleCatalogs();
-    openDialog({
-      title: 'Adicionar páginas',
-      body: `<div class="field"><label class="field-label" for="montCat">Catálogo</label><div class="select"><select id="montCat">${cs.map((c) => `<option value="${esc(c.id)}">${esc(c.title)} (${plural(c.pages, 'página', 'páginas')})</option>`).join('')}</select><span class="ico" aria-hidden="true">${I.more}</span></div></div>
-        <div class="field" id="fMontPg"><label class="field-label" for="montPg">Páginas</label><input id="montPg" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex.: 3, 8-12, 20"><em class="err" id="errMontPg" hidden></em></div>`,
-      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Adicionar', kind: 'primary', onClick: () => {
-        const c = cat($('#montCat').value), r = parsePages($('#montPg').value, c ? c.pages : 0);
-        setErr($('#fMontPg'), r.err || '');
-        if (r.err || !c) { $('#montPg').focus(); return false; }
-        const n = montAdd(m, r.nums.map((p) => ({ catalogId: c.id, page: p })));
-        toast(n ? `${plural(n, 'página adicionada', 'páginas adicionadas')}.` : 'Essas páginas já estavam no catálogo.');
-        montRerender();
-      } }]
-    });
-    $('#montPg').focus();
+  /* ----- escolher páginas pelas miniaturas (#/montar/<id>/paginas) -----
+     MONT.pick = { mid, cid (catálogo na tela), sel: ['catálogo:página' na ordem em que foram marcadas], last (para Shift + clique) } */
+  function renderMontPick(m) {
+    const box = $('#montBody'), cs = visibleCatalogs();
+    if (!MONT.pick || MONT.pick.mid !== m.id) {
+      const lastIt = m.itens[m.itens.length - 1];
+      MONT.pick = { mid: m.id, cid: lastIt && cat(lastIt.catalogId) ? lastIt.catalogId : (cs[0] ? cs[0].id : ''), sel: [], last: null };
+    }
+    const pk = MONT.pick;
+    if (!cat(pk.cid) && cs[0]) pk.cid = cs[0].id;
+    setHTML(box, `<div class="mpk">
+      <a class="mont-back" href="#/montar/${esc(m.id)}">${I.back}${esc(m.nome)}</a>
+      <div class="mont-top mpk-top"><div><h1 id="montH" tabindex="-1"><b>Escolha as páginas.</b> Toque para marcar.</h1>
+        <p class="mont-sub">Marque em quantos catálogos quiser: elas entram na ordem em que você marcou.${coarse ? '' : ' Shift + clique marca um intervalo.'}</p></div></div>
+      <div class="mpk-cats" id="mpkCats" role="group" aria-label="Catálogos">${cs.map((c) => `<button type="button" class="mpk-cat" data-mpk-cat="${esc(c.id)}" aria-pressed="${c.id === pk.cid}">
+          <span class="mpk-cat-img"><img data-cover="${esc(c.id)}" alt=""></span><span class="mpk-cat-t"><b>${esc(c.title)}</b><span data-mpk-catn="${esc(c.id)}"></span></span></button>`).join('')}</div>
+      <div id="mpkGrid"></div>
+      <div class="mpk-tray" id="mpkTray" role="region" aria-label="Páginas marcadas"></div>
+    </div>`);
+    hydrate($('#mpkCats'));
+    paintPickGrid(m); paintPickTray(m);
   }
-  function askMontProduct(m) {
-    openDialog({
-      title: 'Adicionar produto',
-      body: `<div class="field"><label class="field-label" for="montQ">Produto</label><input id="montQ" type="search" autocomplete="off" placeholder="Nome ou código, ex.: D100"></div>
-        <ul class="mont-res" id="montRes" aria-live="polite"></ul>`,
-      actions: [{ label: 'Fechar', kind: 'ghost' }]
+  const pickIn = (m, cid) => new Set(m.itens.filter((it) => it.catalogId === cid).map((it) => it.page));
+  function paintPickGrid(m) {
+    const pk = MONT.pick, el = $('#mpkGrid'); if (!pk || !el) return;
+    const c = cat(pk.cid);
+    $$('[data-mpk-cat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mpkCat === pk.cid)));
+    if (!c) { setHTML(el, '<p class="mont-note">Nenhum catálogo disponível para você agora.</p>'); return; }
+    const has = pickIn(m, c.id);
+    setHTML(el, `<h2 class="mpk-h">${esc(c.title)} <span class="int-n">${fmtN(c.pages)}</span></h2>
+      <ol class="mpk-grid" style="--r:${Number(c.ratio) || 0.707}" aria-label="Páginas de ${esc(c.title)}">${Array.from({ length: c.pages }, (_, i) => {
+        const p = i + 1, at = pk.sel.indexOf(pickKey(c.id, p)), dentro = has.has(p);
+        return `<li><button type="button" class="mpk-pg" data-mpk-pg="${p}" aria-pressed="${at >= 0}"${dentro ? ' disabled' : ''} aria-label="Página ${p}${dentro ? ', já está no catálogo' : ''}">
+          <span class="mpk-img"><img ${hasThumb(c, p) ? 'data-th' : 'data-pg'}="${esc(c.id)}:${p}" alt="">${dentro ? '<span class="mpk-in">No catálogo</span>' : ''}<span class="mpk-ck" aria-hidden="true">${at >= 0 ? at + 1 : ''}</span></span>
+          <span class="mpk-n">pág. ${p}</span></button></li>`;
+      }).join('')}</ol>`);
+    hydrate(el);
+  }
+  function paintPickMarks() {
+    const pk = MONT.pick; if (!pk) return;
+    $$('#mpkGrid [data-mpk-pg]').forEach((b) => {
+      const i = pk.sel.indexOf(pickKey(pk.cid, +b.dataset.mpkPg)), ck = $('.mpk-ck', b);
+      b.setAttribute('aria-pressed', String(i >= 0)); if (ck) ck.textContent = i >= 0 ? String(i + 1) : '';
     });
-    const q = $('#montQ'), res = $('#montRes');
-    const all = PROD ? [...PROD.bySku.values()] : [];
-    const paint = () => {
-      const t = norm(q.value).trim();
-      if (!t) { res.innerHTML = '<li class="mont-note">Digite para buscar entre os produtos dos catálogos.</li>'; return; }
-      const hits = all.filter((p) => norm(`${p.name} ${p.sku}`).includes(t)).slice(0, 20);
-      res.innerHTML = hits.length ? hits.map((p) => {
-        const pl = prodPlaces(p.sku, R.cat && R.cat.id);
-        return `<li><button type="button" class="sh-opt" data-mont-sku="${esc(p.sku)}" ${pl.length ? '' : 'disabled'}><span class="ico" aria-hidden="true">${I.tag}</span><span class="card-act-t"><b>${esc(p.name)}</b><span>Cód. ${esc(shownCode(p))} · ${pl.length ? plural(pl.length, 'página', 'páginas') : 'sem página marcada nos catálogos'}</span></span></button></li>`;
-      }).join('') : '<li class="mont-note">Nenhum produto com esse nome ou código.</li>';
-    };
-    q.addEventListener('input', paint); paint(); q.focus();
-    res.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-mont-sku]'); if (!b) return;
-      const sku = b.dataset.montSku, pl = prodPlaces(sku, R.cat && R.cat.id), p = prodBySku(sku);
-      if (pl.length === 1) { closeDialog(); const n = montAdd(m, [{ ...pl[0], skus: [sku] }]); toast(n ? `${p ? p.name : sku}: página ${pl[0].page} adicionada.` : 'Essa página já estava no catálogo.'); montRerender(); return; }
-      // Mais de uma página: o vendedor escolhe qual entra
-      res.innerHTML = `<li class="mont-note">${esc(p ? p.name : sku)} aparece em ${pl.length} páginas. Qual entra?</li>` + pl.map((h) => {
-        const c = cat(h.catalogId);
-        return `<li><button type="button" class="sh-opt mont-place" data-mont-place="${esc(h.catalogId)}:${h.page}" data-sku="${esc(sku)}"><span class="mont-place-img">${montThumb(h)}</span><span class="card-act-t"><b>${esc(c.title)}</b><span>página ${h.page}</span></span></button></li>`;
-      }).join('');
-      hydrate(res);
+  }
+  function paintPickTray(m, popKey) {
+    const pk = MONT.pick, el = $('#mpkTray'); if (!pk || !el) return;
+    const n = pk.sel.length, last = pk.sel.slice(-3);
+    setHTML(el, `<span class="mpk-stack" aria-hidden="true">${last.length ? last.map((k, i) => { const [cid, p] = splitRef(k), c = cat(cid); return `<img ${hasThumb(c, p) ? 'data-th' : 'data-pg'}="${esc(cid)}:${p}" alt="" style="--i:${i - last.length + 1}"${k === popKey ? ' class="pop"' : ''}>`; }).join('') : `<span class="mpk-empty">${I.layers}</span>`}</span>
+      <p class="mpk-count" aria-live="polite">${n ? `<b>${fmtN(n)}</b>${n === 1 ? 'página marcada' : 'páginas marcadas'}` : 'Nenhuma página marcada ainda'}</p>
+      <span class="mpk-acts">${n ? '<button type="button" class="btn ghost" data-mpk-act="limpar">Limpar</button>' : ''}<button type="button" class="btn primary" data-mpk-act="add"${n ? '' : ' disabled'}>${n ? (n === 1 ? 'Adicionar a página' : `Adicionar ${fmtN(n)} páginas`) : 'Adicionar ao catálogo'}</button></span>`);
+    hydrate(el);
+    $$('[data-mpk-catn]').forEach((s) => {
+      const c = cat(s.dataset.mpkCatn), k = pk.sel.filter((x) => splitRef(x)[0] === s.dataset.mpkCatn).length;
+      s.textContent = k ? plural(k, 'marcada', 'marcadas') : c ? plural(c.pages, 'página', 'páginas') : '';
+      s.classList.toggle('on', !!k);
     });
-    res.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-mont-place]'); if (!b) return;
-      const [cid, pg] = splitRef(b.dataset.montPlace), sku = b.dataset.sku;
-      closeDialog();
-      const n = montAdd(m, [{ catalogId: cid, page: pg, skus: [sku] }]);
-      toast(n ? `Página ${pg} adicionada.` : 'Essa página já estava no catálogo.');
-      montRerender();
+  }
+  // Toque marca ou desmarca; Shift + clique marca o intervalo desde a última página tocada (no mesmo catálogo)
+  function pickToggle(m, p, shift) {
+    const pk = MONT.pick, c = pk && cat(pk.cid); if (!c) return;
+    const has = pickIn(m, c.id), k = pickKey(c.id, p), at = pk.sel.indexOf(k);
+    let pop = null;
+    if (!shift && at >= 0) pk.sel.splice(at, 1);
+    else {
+      const from = shift && pk.last && pk.last.cid === c.id ? pk.last.p : p, a = Math.min(from, p), b = Math.max(from, p);
+      const seq = from <= p ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : Array.from({ length: b - a + 1 }, (_, i) => b - i);
+      for (const q of seq) {
+        const kk = pickKey(c.id, q);
+        if (has.has(q) || pk.sel.includes(kk)) continue;
+        if (m.itens.length + pk.sel.length >= MONT_PAGES) { toast(`Um catálogo tem no máximo ${MONT_PAGES} páginas.`, 'err'); break; }
+        pk.sel.push(kk); pop = kk;
+      }
+    }
+    pk.last = { cid: c.id, p };
+    paintPickMarks(); paintPickTray(m, pop);
+  }
+  function pickAdd(m) {
+    const pk = MONT.pick; if (!pk || !pk.sel.length) return;
+    const before = new Set(m.itens.map((it) => pickKey(it.catalogId, it.page)));
+    const entries = pk.sel.map((k) => {
+      const [cid, p] = splitRef(k);
+      return { catalogId: cid, page: p, skus: [...new Set([...hotspotsOn(cid, p).map((h) => h.product), ...linksOn(cid, p).map((x) => x.sku)])] }; // produtos da página: reencontram a página se o catálogo for republicado
     });
+    const n = montAdd(m, entries);
+    MONT.flash = new Set(pk.sel.filter((k) => !before.has(k)));
+    MONT.pick = null;
+    navigate('#/montar/' + m.id);
+    setTimeout(() => toast(n ? `${plural(n, 'página entrou', 'páginas entraram')} no catálogo "${m.nome}".` : 'Essas páginas já estavam no catálogo.'), 150);
   }
   function askMontName(title, val, onOk) {
     openDialog({
@@ -11247,14 +11477,13 @@
       const m = montNew(nome); if (!m) return;
       const entries = [];
       for (const x of list) {
-        let w = x.catalogId && cat(x.catalogId) ? { catalogId: x.catalogId, page: x.page } : null;
-        if (!w) w = prodPlaces(x.sku)[0] || null;
+        const w = x.catalogId && cat(x.catalogId) && x.page >= 1 ? { catalogId: x.catalogId, page: x.page } : null; // só a página de onde o produto veio
         if (w) entries.push({ ...w, skus: [x.sku] });
       }
       montAdd(m, entries);
       navigate('#/montar/' + m.id);
       const fora = list.length - entries.length;
-      setTimeout(() => toast(`${plural(m.itens.length, 'página entrou', 'páginas entraram')} no catálogo.${fora ? ` ${plural(fora, 'produto não tem', 'produtos não têm')} página marcada e ficou de fora.` : ''}`), 200);
+      setTimeout(() => toast(`${plural(m.itens.length, 'página entrou', 'páginas entraram')} no catálogo.${fora ? ` ${plural(fora, 'produto ficou', 'produtos ficaram')} de fora: o carrinho não guardou a página de onde ${fora === 1 ? 'ele veio' : 'eles vieram'}.` : ''}`), 200);
     });
   }
 
@@ -11264,7 +11493,14 @@
     const pd = t.closest('[data-mont-pdf]'); if (pd) { downloadMontPdf(montById(pd.dataset.montPdf)); return; }
     const m = MONT.edit;
     const cp = t.closest('[data-mont-capa]');
-    if (cp && m) { m.capa = +cp.dataset.montCapa; montTouch(m); montSave(); $$('[data-mont-capa]').forEach((b) => b.setAttribute('aria-checked', String(b === cp))); const s = $('.mont-sum-l li'); if (s) s.textContent = `Capa ${m.capa ? `modelo ${m.capa}` : 'padrão Dellamed'}`; return; }
+    if (cp && m) { m.capa = montCapaOk(+cp.dataset.montCapa); montTouch(m); montSave(); $$('[data-mont-capa]').forEach((b) => b.setAttribute('aria-checked', String(b === cp))); paintMontCapaFx(m); return; }
+    // Escolher páginas: catálogo, página, limpar e adicionar
+    const pc = t.closest('[data-mpk-cat]');
+    if (pc && m && MONT.pick) { MONT.pick.cid = pc.dataset.mpkCat; paintPickGrid(m); const g = $('#mpkGrid'); if (g && g.getBoundingClientRect().top < 0) g.scrollIntoView({ block: 'start' }); return; }
+    const pp = t.closest('[data-mpk-pg]');
+    if (pp && m && !pp.disabled) { pickToggle(m, +pp.dataset.mpkPg, e.shiftKey); return; }
+    const pa = t.closest('[data-mpk-act]');
+    if (pa && m && MONT.pick) { if (pa.dataset.mpkAct === 'add') pickAdd(m); else { MONT.pick.sel = []; MONT.pick.last = null; paintPickMarks(); paintPickTray(m); } return; }
     const mv = t.closest('[data-mont-mv]');
     if (mv && m) { const [i, d] = mv.dataset.montMv.split(':').map(Number), j = i + d; if (j >= 0 && j < m.itens.length) { [m.itens[i], m.itens[j]] = [m.itens[j], m.itens[i]]; montTouch(m); montSave(); montRerender(); const b = $(`[data-mont-mv="${j}:${d}"]`) || $(`[data-mont-mv="${j}:${-d}"]`); if (b) b.focus(); } return; }
     const rm = t.closest('[data-mont-rm]');
@@ -11276,12 +11512,11 @@
     if (act === 'novo') { askMontName('Novo catálogo', '', (nome) => { const n = montNew(nome); if (n) navigate('#/montar/' + n.id); }); return; }
     if (!m) return;
     if (act === 'pdf') downloadMontPdf(m);
-    else if (act === 'addpag') askMontPages(m);
-    else if (act === 'addprod') askMontProduct(m);
+    else if (act === 'addpag') { MONT.pick = null; navigate('#/montar/' + m.id + '/paginas'); }
     else if (act === 'cartao') navigate('#/cartao');
     else if (act === 'apagar') {
-      openDialog({ title: 'Apagar este catálogo?', body: `<p>"${esc(m.nome)}" sai deste aparelho. Os catálogos oficiais não mudam.</p>`,
-        actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Apagar', kind: 'primary', onClick: () => { MONT.list = montAll().filter((x) => x.id !== m.id); if (MONT.atual === m.id) MONT.atual = ''; montSave(); navigate('#/montar'); toast('Catálogo apagado.'); } }] });
+      openDialog({ title: 'Apagar este catálogo?', body: `<p>"${esc(m.nome)}" sai ${MSYNC.state === 'ok' ? 'da sua conta, em todos os aparelhos' : 'deste aparelho'}. Os catálogos oficiais não mudam.</p>`,
+        actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Apagar', kind: 'primary', onClick: () => { MONT.list = montAll().filter((x) => x.id !== m.id); MONT.apagados[m.id] = new Date().toISOString(); if (MONT.atual === m.id) MONT.atual = ''; MONT.edit = null; montSave(); navigate('#/montar'); toast('Catálogo apagado.'); } }] });
     }
   });
   $('#viewMont').addEventListener('input', (e) => {
