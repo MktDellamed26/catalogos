@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-GaW0eNJv0hVzUj51vlfR8vnuMVmTlSXheg46rMZzpiA=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-Rw+W+hSsc00xL5XE/wn8oAjx3EgYP1G6BJEYpXsddSI=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -2300,6 +2300,87 @@
   .pdf-pick .field { margin: 0; }
   .pdf-pick .btn { height: 46px; }
   @media (max-width: 480px) { .pdf-pick { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- catálogo personalizado (#/montar) ---------- */
+  .menu .menu-mont { display: flex; align-items: center; gap: 10px; }
+  .menu .menu-mont .ico { color: var(--navy); }
+  @media (min-width: 768px) { .menu .menu-mont { display: none; } }
+  #viewMont .wrap { padding-top: 24px; }
+  .mont-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 24px; }
+  .mont-top h1 { font-size: clamp(26px, 3vw, 38px); font-weight: 300; line-height: 1.1; letter-spacing: -.02em; color: var(--navy); }
+  .mont-top h1 b { font-weight: 700; }
+  .mont-sub { margin-top: 8px; max-width: 60ch; color: var(--ink-2); font-size: 14px; }
+  .mont-top .btn svg, .mont-card .btn svg, .mont-add .btn svg, .mont-sum .btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .mont-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+  .mont-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 12px; border-radius: var(--ds-r-card); background: var(--white); box-shadow: var(--ds-soft); }
+  .mont-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 0; border: 0; background: none; text-align: left; color: inherit; font: inherit; cursor: pointer; }
+  .mont-open:focus-visible { outline: 2px solid var(--navy); outline-offset: 4px; border-radius: 8px; }
+  .mont-cover { width: 56px; flex: none; aspect-ratio: 210 / 297; display: grid; place-items: center; overflow: hidden; border-radius: 2px 4px 4px 2px; background: var(--navy); color: var(--sky); box-shadow: 0 8px 14px -8px rgba(20, 32, 60, .6); }
+  .mont-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .mont-cover .ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+  .mont-card-t { display: grid; gap: 2px; min-width: 0; }
+  .mont-card-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; color: var(--navy); }
+  .mont-card-t span { font-size: 12px; color: var(--ink-2); }
+  .mont-empty { display: grid; justify-items: center; gap: 8px; }
+  .mont-empty .ico svg { width: 40px; height: 40px; fill: none; stroke: var(--sky); stroke-width: 1.4; stroke-linejoin: round; }
+  .mont-empty p { max-width: 52ch; }
+  .mont-ed { display: grid; gap: 24px; align-items: start; }
+  @media (min-width: 1100px) { .mont-ed { grid-template-columns: minmax(0, 1fr) 300px; } .mont-sum { position: sticky; top: 24px; } }
+  .mont-ed-main { display: grid; gap: 22px; min-width: 0; }
+  .mont-back { display: inline-flex; align-items: center; gap: 6px; justify-self: start; color: var(--navy); font-size: 13px; font-weight: 600; text-decoration: none; }
+  .mont-back svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .mont-name input { font-family: var(--font-title); font-size: 22px; font-weight: 700; color: var(--navy); height: 54px; }
+  .mont-sec { display: grid; gap: 12px; }
+  .mont-sec h2 { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; color: var(--navy); }
+  .mont-sec-h { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .mont-add { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mont-note { font-size: 13px; color: var(--ink-2); }
+  .mont-capas { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 8px; scrollbar-width: thin; }
+  .mont-capa { flex: none; width: 112px; display: grid; gap: 6px; padding: 6px; border: 2px solid transparent; border-radius: 12px; background: var(--white); color: var(--ink-2); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: var(--ds-soft); transition: border-color .15s; }
+  .mont-capa img, .mont-capa-def { display: block; width: 100%; aspect-ratio: 210 / 297; object-fit: cover; border-radius: 2px 4px 4px 2px; }
+  .mont-capa-def { position: relative; overflow: hidden; display: grid; align-content: center; padding: 0 10px; background: linear-gradient(160deg, var(--ds-navy-3), var(--navy) 55%, var(--ds-navy-2)); color: var(--white); text-align: left; font-family: var(--font-title); font-size: 11px; line-height: 1.15; }
+  .mont-capa-def b:first-of-type { font-weight: 300; }
+  .mont-capa-def i { position: absolute; right: -26px; bottom: -22px; width: 70px; height: 70px; border-radius: 50%; border: 6px solid rgba(139, 184, 232, .55); }
+  .mont-capa[aria-checked="true"] { border-color: var(--navy); color: var(--navy); }
+  .mont-capa:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+  .mont-pages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 156px), 1fr)); gap: 14px; }
+  .mont-pg { display: grid; gap: 8px; padding: 8px; border-radius: 14px; background: var(--white); box-shadow: var(--ds-soft); cursor: grab; transition: box-shadow .15s, opacity .15s; }
+  .mont-pg.is-drag { opacity: .45; }
+  .mont-pg.is-over { box-shadow: 0 0 0 2px var(--sky), var(--ds-soft); }
+  .mont-pg.is-warn { box-shadow: 0 0 0 2px #d9a400, var(--ds-soft); }
+  .mont-pg-img { position: relative; display: block; aspect-ratio: 210 / 297; overflow: hidden; border-radius: 4px; background: var(--light); }
+  .mont-pg-img img { width: 100%; height: 100%; object-fit: contain; background: var(--white); }
+  .mont-pg-n { position: absolute; left: 6px; top: 6px; min-width: 24px; height: 24px; padding: 0 6px; display: grid; place-items: center; border-radius: 999px; background: var(--navy); color: var(--white); font: 700 12px/1 var(--font-title); }
+  .mont-pg-t { display: grid; gap: 2px; min-width: 0; line-height: 1.3; }
+  .mont-pg-t b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--navy); }
+  .mont-pg-t span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--ink-2); }
+  .mont-pg-acts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 2px; }
+  .mont-pg-acts .btn { margin-right: auto; height: 30px; padding: 0 10px; font-size: 12px; }
+  .mont-pg-acts .icon-btn { width: 34px; height: 34px; }
+  .mont-pg-acts .icon-btn:disabled { opacity: .35; cursor: default; }
+  .mont-sum { display: grid; gap: 12px; padding: 22px; border-radius: var(--ds-r-hero); background: radial-gradient(ellipse 80% 60% at 100% 0%, rgba(139, 184, 232, .25), transparent 70%), linear-gradient(160deg, var(--ds-navy-2), var(--navy) 50%, var(--ds-navy-3)); color: var(--white); box-shadow: var(--ds-lift); }
+  .mont-sum .cs-eyebrow { display: block; font-family: var(--font-title); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sky); }
+  .mont-sum-n { font-family: var(--font-title); font-size: 18px; font-weight: 300; }
+  .mont-sum-n b { font-size: 40px; font-weight: 300; letter-spacing: -.02em; margin-right: 4px; }
+  .mont-sum-l { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; color: rgba(255, 255, 255, .8); }
+  .mont-sum .btn.primary { height: 52px; border-radius: 14px; background: var(--sky); border-color: var(--sky); color: var(--navy); font-size: 15px; }
+  .mont-sum .btn.primary:hover { background: var(--white); border-color: var(--white); }
+  .mont-sum .link { justify-self: center; color: rgba(255, 255, 255, .8); }
+  .mont-sum :focus-visible { outline-color: var(--sky); }
+  .mont-res { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; max-height: min(52vh, 460px); overflow-y: auto; }
+  .mont-res .sh-opt:disabled { opacity: .5; cursor: default; }
+  .mont-place-img { width: 44px; flex: none; aspect-ratio: 210 / 297; overflow: hidden; border-radius: 3px; background: var(--light); }
+  .mont-place-img img { width: 100%; height: 100%; object-fit: contain; }
+  .cart-acts .btn.primary { order: 0; } .cart-acts [data-cart-act="copy"] { order: 1; } .cart-acts [data-cart-act="email"] { order: 2; } .cart-acts .cart-mont { order: 3; } .cart-acts .cart-clear { order: 4; }
+  @media (min-width: 1200px) { .cart-foot .cart-acts .cart-mont { grid-column: 1 / -1; } }
+  @media (max-width: 767px) {
+    #viewMont .wrap { padding-top: 16px; }
+    .mont-pages { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .mont-pg-acts .icon-btn { width: 40px; height: 40px; }
+    .mont-capa { width: 96px; }
+  }
+  .mont-sum-warn { padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, .1); font-size: 12.5px; line-height: 1.45; color: var(--white); }
+  @media (max-width: 480px) { #rDock .btn-sound { display: none; } } /* celular: o som de virar a página dá lugar aos botões de montar e baixar */
 </style>
 
 <!-- Navegadores antigos: mensagem estática (o script abaixo a mostra) -->
@@ -2504,6 +2585,8 @@
       <button class="nav-i" type="button" data-nav="catalogos"><span class="ico" data-ico="book"></span><span class="nav-t">Catálogos</span></button>
       <button class="nav-i" type="button" data-nav="favoritos"><span class="ico" data-ico="star"></span><span class="nav-t">Favoritos</span><span class="nav-c" id="navFavN"></span></button>
       <button class="nav-i" type="button" data-nav="carrinho" data-cart-btn="Carrinho"><span class="ico" data-ico="cart"></span><span class="nav-t">Carrinho</span><span class="int-n" data-cart-count data-hide0 hidden>0</span></button>
+      <!-- Catálogo personalizado (representante e equipe): montar páginas oficiais com capa e cartão -->
+      <button class="nav-i" type="button" data-nav="montar" data-card-entry hidden><span class="ico" data-ico="layers"></span><span class="nav-t">Meus catálogos</span><span class="nav-c" data-mont-count></span></button>
       <div class="nav-row" data-card-entry hidden>
         <button class="nav-i" type="button" data-nav="cartao"><span class="ico" data-ico="idcard" aria-hidden="true"></span><span class="nav-thumb" id="navCardAv" aria-hidden="true" hidden></span><span class="nav-t">Meu cartão</span></button>
         <button class="nav-edit" type="button" data-card-edit aria-label="Editar cartão" title="Editar cartão"><span class="ico" data-ico="pencil"></span></button>
@@ -2536,6 +2619,7 @@
     </div>
     <!-- Instalar app (celular): mesmo item do menu lateral, aqui no menu da conta -->
     <button type="button" class="menu-app" id="installMenu" data-install hidden><span class="ico" data-ico="install"></span>Instalar app</button>
+    <button type="button" class="menu-mont" data-nav-mont data-card-entry hidden><span class="ico" data-ico="layers"></span>Meus catálogos</button>
     <button type="button" id="pwChangeBtn" hidden>Trocar senha</button>
     <button type="button" id="logoutBtn">Sair</button>
   </div>
@@ -2742,6 +2826,8 @@
       </div>
     </main>
     <!-- Carrinho (#/carrinho): produtos escolhidos com quantidade; volume e peso saem da ficha técnica e a lista vai ao cliente -->
+    <!-- Catálogo personalizado (#/montar, #/montar/<id>): lista e editor -->
+    <main id="viewMont" hidden><div class="wrap" id="montBody"></div></main>
     <main id="viewCart" hidden>
       <div class="wrap">
         <div class="cart-head"><h1 id="cartH" tabindex="-1">Carrinho</h1><p id="cartSub"></p></div>
@@ -2827,6 +2913,7 @@
         <button class="icon-btn" id="btnZoomIn" type="button" aria-label="Ampliar" title="Ampliar (+)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3M11 8v6M8 11h6"/></svg></button>
         <span class="divider" aria-hidden="true"></span>
         <button class="icon-btn btn-sound" id="btnSound" type="button" aria-pressed="false" aria-label="Som ao virar a página" title="Som ao virar a página"><svg viewBox="0 0 24 24" id="icoSound"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
+        <button class="icon-btn btn-mont" id="btnMont" type="button" data-card-entry hidden aria-label="Adicionar ao meu catálogo" title="Adicionar ao meu catálogo (catálogo personalizado)"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h7.5l4 4v13h-11.5z"/><path d="M12.25 10.5v6M9.25 13.5h6"/></svg></button>
         <button class="icon-btn btn-pdf" id="btnPdf" type="button" aria-label="Baixar o catálogo em PDF" title="Baixar o catálogo em PDF"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
         <button class="icon-btn" id="btnFs" type="button" aria-label="Tela cheia" title="Tela cheia"><svg viewBox="0 0 24 24" id="icoFs"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
       </div>
@@ -3480,6 +3567,7 @@
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     next: '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
     home: '<svg viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5V20H4z"/><path d="M10 20v-5h4v5"/></svg>',
+    layers: '<svg viewBox="0 0 24 24"><path d="M12 3.5 3.5 8 12 12.5 20.5 8z"/><path d="M3.5 12 12 16.5 20.5 12"/><path d="M3.5 16 12 20.5 20.5 16"/></svg>',
     book: '<svg viewBox="0 0 24 24"><path d="M5 17V6.5A2.5 2.5 0 0 1 7.5 4H19v13H7.5A2.5 2.5 0 0 0 5 19.5 2.5 2.5 0 0 0 7.5 22H19v-5"/></svg>',
     menu: '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
     more: '<svg viewBox="0 0 24 24"><path d="M8 10l4-4 4 4M8 14l4 4 4-4"/></svg>',
@@ -4275,15 +4363,17 @@
   try { bc = new BroadcastChannel('dm'); bc.onmessage = (e) => { if (e.data && e.data.t === 'sair' && me) logout({ broadcast: false }); }; } catch (e) { bc = null; }
 
   /* ================= vistas e rotas ================= */
-  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader'), card: $('#viewCard'), cart: $('#viewCart'), ger: $('#viewGer') };
+  const V = { login: $('#viewLogin'), shell: $('#shell'), shelf: $('#viewShelf'), reader: $('#viewReader'), card: $('#viewCard'), cart: $('#viewCart'), ger: $('#viewGer'), mont: $('#viewMont') };
   let view = '';
   function showOnly(name) {
     if (name !== 'shelf') { drawer.close(false); setMenu(false); }
     if (name !== 'card') leaveCard(name);
     if (name !== 'cart') leaveCartView();
     V.login.hidden = name !== 'login';
-    V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card' || name === 'cart' || name === 'ger');
-    V.shelf.hidden = name === 'card' || name === 'cart' || name === 'ger';
+    V.shell.hidden = !(name === 'shelf' || name === 'reader' || name === 'card' || name === 'cart' || name === 'ger' || name === 'mont');
+    V.shelf.hidden = name === 'card' || name === 'cart' || name === 'ger' || name === 'mont';
+    V.mont.hidden = name !== 'mont';
+    if (name !== 'mont') MONT.edit = null;
     V.card.hidden = name !== 'card';
     V.cart.hidden = name !== 'cart';
     V.ger.hidden = name !== 'ger';
@@ -4359,6 +4449,8 @@
       openReader(id, parseInt(parts[2], 10) || 1, sku);
       return;
     }
+    // Catálogo personalizado: #/montar (lista) e #/montar/<id> (editor), só representante e equipe
+    if (parts[0] === 'montar') { let id = parts[1] || ''; try { id = decodeURIComponent(id); } catch (e) { /* mantém */ } openMont(id); return; }
     // Cartão de visita digital: só representante e equipe interna. #/cartao = visualização; #/cartao/editar = edição
     if (parts[0] === 'cartao') {
       if (!cardAllowed()) { navigate('#/prateleira'); return; }
@@ -4399,7 +4491,7 @@
   // Devolve false quando a edição do cartão tem alterações não concluídas (o diálogo pergunta e o clique para aqui).
   // Gestão com alterações não publicadas: sai sem perguntar (elas ficam na barra enquanto a página estiver aberta)
   function toShelf() {
-    if (view !== 'card' && view !== 'cart' && view !== 'ger') return true;
+    if (view !== 'card' && view !== 'cart' && view !== 'ger' && view !== 'mont') return true;
     if (cardLeaveBlocked('#/prateleira')) return false;
     lastRoute = '#/prateleira';
     try { history.pushState(null, '', '#/prateleira'); } catch (e) { /* noop */ }
@@ -5149,6 +5241,7 @@
     document.body.classList.toggle('card-tab', cardOn);
     if (cardOn) { loadCard(); adoptSignupPhoto().catch(() => { /* a foto do cadastro é um extra: nunca atrapalha a entrada */ }); }
     updateCartUI();
+    paintMontCount();
     setTimeout(warnProdFail, 600);
     const h = location.hash;
     if (!h || h === '#/' || h === '#') {
@@ -5192,6 +5285,7 @@
   $('#pwChangeBtn').addEventListener('click', () => { const from = menuFrom; setMenu(false); openPwChange(from); });
   // Itens "Gerenciar" do menu da conta (celular)
   $('#userMenu').addEventListener('click', (e) => {
+    if (e.target.closest('[data-nav-mont]')) { setMenu(false); navigate('#/montar'); return; }
     const g = e.target.closest('[data-ger]'); if (!g) return;
     setMenu(false);
     navigate('#/gerenciar/' + g.dataset.ger);
@@ -5671,7 +5765,7 @@
     syncNav();
   }
   function syncNav() {
-    const cur = view === 'card' ? 'cartao' : view === 'cart' ? 'carrinho' : view === 'ger' ? '' : filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
+    const cur = view === 'card' ? 'cartao' : view === 'cart' ? 'carrinho' : view === 'mont' ? 'montar' : view === 'ger' ? '' : filter === 'favoritos' ? 'favoritos' : filter === 'todos' ? navSel : '';
     $$('#side [data-nav]').forEach((b) => { if (b.dataset.nav === cur) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
     // Gerenciar (menu lateral/gaveta e menu da conta): seção aberta da gestão
     const ger = view === 'ger' ? GER.section : '';
@@ -5695,6 +5789,7 @@
     const nav = b.dataset.nav, inDrawer = drawer.isOpen();
     if (nav === 'cartao') { drawer.close(false); navigate('#/cartao'); return; }
     if (nav === 'carrinho') { drawer.close(false); navigate('#/carrinho'); return; }
+    if (nav === 'montar') { drawer.close(false); navigate('#/montar'); return; }
     if (!toShelf()) { drawer.close(false); return; } // no cartão, Início, Catálogos e Favoritos voltam à prateleira antes de agir
     if (nav === 'favoritos') setFilter('favoritos');
     else { navSel = nav; setFilter('todos'); }
@@ -7377,6 +7472,7 @@
       <p class="cart-tot">${t.parcial ? '<span class="cart-parcial">Parcial</span>' : ''}<span>${esc(cartTotalLine(t))}</span></p>
       <p class="cart-note">Estimativa a partir da ficha técnica.${t.parcial ? ` ${esc(cartFaltaTxt(t))}` : ''}</p>
       <div class="cart-acts">
+        ${cardAllowed() ? '<button type="button" class="btn ghost cart-mont" data-cart-act="montar">Montar catálogo</button>' : ''}
         <button type="button" class="btn primary cart-wa" data-cart-act="whatsapp">${I.chat}Enviar pelo WhatsApp</button>
         <button type="button" class="btn ghost" data-cart-act="copy">Copiar lista</button>
         <button type="button" class="btn ghost" data-cart-act="email">Enviar por e-mail</button>
@@ -7439,6 +7535,7 @@
     if (a === 'catalogos') { navigate('#/prateleira'); return; }
     if (a === 'clear') { cartClearAsk(false); return; }
     if (a === 'copy') { cartCopy(); return; }
+    if (a === 'montar') { montFromCart(); return; }
     if (a === 'nova') {
       if ((prefs.carts || []).length >= CART_LISTAS_MAX) { toast(`São no máximo ${plural(CART_LISTAS_MAX, 'lista', 'listas')}. Apague uma antes de criar outra.`, 'err'); return; }
       askCartName('Nova lista', '', (n) => { if (cartListNew(n)) toast(`${n} é a lista em uso.`); });
@@ -10738,6 +10835,468 @@
     } finally { PDFJOB.on = false; }
   }
   $('#btnPdf').addEventListener('click', () => askPdf(R.cat, 'leitor', R.cat ? visibleIdx().map((i) => i + 1) : []));
+
+  /* ================= catálogo personalizado (#/montar e #/montar/<id>) — fase 1: fica neste aparelho =================
+     O vendedor junta páginas oficiais (escolhidas por página ou por produto), escolhe uma das capas do marketing
+     (capas/capa-1.jpg … capa-5.jpg no site; sem elas, a capa padrão Dellamed) e gera um PDF com a contracapa do cartão.
+     Nada é copiado: cada item guarda { catalogId, page, v (versão do catálogo), skus }. Catálogo republicado (v mudou):
+     com produto, o app reencontra a página; sem produto, a página fica marcada para conferir.
+     Gravação: localStorage "dm.montados.<uid>" (fase 2: tabela no Supabase, mesmo formato). */
+  const MONT_MAX = 30, MONT_PAGES = 80, MONT_CAPAS = 5;
+  const MONT = { list: null, uid: '', atual: '', capas: null, capasJob: null, drag: null };
+  const montKey = () => 'dm.montados.' + me.uid;
+  function montAll() {
+    if (!me) return [];
+    if (MONT.list && MONT.uid === me.uid) return MONT.list;
+    MONT.uid = me.uid; MONT.list = []; MONT.atual = '';
+    try {
+      const o = JSON.parse(localStorage.getItem(montKey()) || 'null');
+      if (o && Array.isArray(o.list)) {
+        MONT.list = o.list.filter((m) => m && typeof m.id === 'string' && Array.isArray(m.itens)).slice(0, MONT_MAX).map((m) => ({
+          id: m.id.slice(0, 40), nome: String(m.nome || 'Catálogo').slice(0, 60), capa: Math.max(0, Math.min(MONT_CAPAS, m.capa | 0)),
+          itens: m.itens.filter((x) => x && typeof x.catalogId === 'string' && Number.isInteger(x.page)).slice(0, MONT_PAGES)
+            .map((x) => ({ catalogId: x.catalogId, page: x.page, v: x.v || 0, skus: Array.isArray(x.skus) ? x.skus.filter((s) => typeof s === 'string').slice(0, 12) : [], conferir: !!x.conferir })),
+          criadoEm: String(m.criadoEm || ''), atualizadoEm: String(m.atualizadoEm || '')
+        }));
+        MONT.atual = typeof o.atual === 'string' ? o.atual : '';
+      }
+    } catch (e) { MONT.list = []; }
+    return MONT.list;
+  }
+  function montSave() {
+    try { localStorage.setItem(montKey(), JSON.stringify({ v: 1, atual: MONT.atual, list: MONT.list })); }
+    catch (e) { toast('Não foi possível salvar neste aparelho (armazenamento cheio ou bloqueado).', 'err'); }
+    paintMontCount();
+  }
+  const montById = (id) => montAll().find((m) => m.id === id) || null;
+  // Outra aba mudou os catálogos montados: relê na próxima consulta
+  window.addEventListener('storage', (e) => { if (e.key && e.key.startsWith('dm.montados.')) { MONT.list = null; if (view === 'mont') route(); } });
+  const montTouch = (m) => { m.atualizadoEm = new Date().toISOString(); MONT.atual = m.id; };
+  function montNew(nome) {
+    const list = montAll();
+    if (list.length >= MONT_MAX) { toast(`São no máximo ${MONT_MAX} catálogos. Apague um antes de criar outro.`, 'err'); return null; }
+    const now = new Date().toISOString();
+    const m = { id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), nome: String(nome || 'Novo catálogo').slice(0, 60), capa: 0, itens: [], criadoEm: now, atualizadoEm: now };
+    list.unshift(m); MONT.atual = m.id; montSave();
+    return m;
+  }
+  // Onde o produto aparece: áreas desenhadas (hotspots) e páginas ligadas (pageLinks); o catálogo aberto vem primeiro
+  function prodPlaces(sku, preferCid) {
+    const key = P.skuKey(sku), seen = new Set(), out = [];
+    const all = [...((PROD && PROD.spots.get(key)) || []), ...((PROD && PROD.linkSpots.get(key)) || [])];
+    for (const h of all) { const k = h.catalogId + ':' + h.page; if (!seen.has(k) && cat(h.catalogId)) { seen.add(k); out.push({ catalogId: h.catalogId, page: h.page }); } }
+    const ord = (h) => (h.catalogId === preferCid ? -1 : CATALOGS.findIndex((c) => c.id === h.catalogId));
+    return out.sort((a, b) => ord(a) - ord(b) || a.page - b.page);
+  }
+  // Acrescenta páginas sem repetir (a mesma página com outro produto só soma o produto). → quantas entraram
+  function montAdd(m, entries) {
+    let n = 0;
+    for (const e of entries) {
+      const c = cat(e.catalogId);
+      if (!c || e.page < 1 || e.page > c.pages) continue;
+      const it = m.itens.find((x) => x.catalogId === e.catalogId && x.page === e.page);
+      if (it) { for (const s of e.skus || []) if (!it.skus.includes(s)) it.skus.push(s); continue; }
+      if (m.itens.length >= MONT_PAGES) { toast(`Um catálogo tem no máximo ${MONT_PAGES} páginas.`, 'err'); break; }
+      m.itens.push({ catalogId: e.catalogId, page: e.page, v: c.v || 0, skus: (e.skus || []).slice(0, 12), conferir: false });
+      n++;
+    }
+    montTouch(m); montSave();
+    return n;
+  }
+  // Catálogo republicado: reencontra a página pelo produto; sem produto, marca para conferir. → houve mudança
+  function montHeal(m) {
+    let changed = false;
+    for (const it of m.itens) {
+      const c = cat(it.catalogId);
+      if (!c || (c.v || 0) === it.v) continue;
+      let moved = null;
+      for (const s of it.skus) { moved = prodPlaces(s, it.catalogId).find((h) => h.catalogId === it.catalogId); if (moved) break; }
+      if (moved) { it.page = moved.page; it.conferir = false; }
+      else it.conferir = true;
+      it.v = c.v || 0; changed = true;
+    }
+    if (changed) montSave();
+    return changed;
+  }
+  function paintMontCount() {
+    const n = me ? montAll().length : 0;
+    $$('[data-mont-count]').forEach((b) => { b.textContent = n ? fmtN(n) : ''; });
+  }
+
+  /* ----- capas: capas/capa-N.jpg publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
+  function montCapas() {
+    if (MONT.capas) return Promise.resolve(MONT.capas);
+    if (MONT.capasJob) return MONT.capasJob;
+    MONT.capasJob = Promise.all(Array.from({ length: MONT_CAPAS }, (_, i) => i + 1).map(async (n) => {
+      try { const r = await fetch(`capas/capa-${n}.jpg`, { method: 'HEAD', cache: 'no-store' }); return r.ok ? n : 0; } catch (e) { return 0; }
+    })).then((ns) => { MONT.capas = ns.filter(Boolean); MONT.capasJob = null; return MONT.capas; });
+    return MONT.capasJob;
+  }
+  const capaSrc = (n) => `capas/capa-${n}.jpg`;
+  // Capa padrão (sem as capas do marketing): azul-marinho, marca e as linhas, desenhada em A4 (1240 × 1754)
+  async function logoBitmap() {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--logo');
+    const m = /url\(["']?(data:[^"')]+)["']?\)/.exec(raw);
+    if (!m) return null;
+    const img = new Image(); img.src = m[1];
+    try { await img.decode(); } catch (e) { return null; }
+    return img;
+  }
+  function whiteLogo(img, w) {
+    const h = Math.round(w * img.naturalHeight / img.naturalWidth), cv = document.createElement('canvas');
+    cv.width = w; cv.height = h;
+    const x = cv.getContext('2d');
+    x.drawImage(img, 0, 0, w, h); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+    return cv;
+  }
+  async function montFonts() {
+    if (!document.fonts || !document.fonts.load) return;
+    await Promise.allSettled(['300 90px Montserrat', '700 90px Montserrat', '600 30px "Open Sans"', '400 30px "Open Sans"'].map((f) => document.fonts.load(f)));
+  }
+  function navyBg(x, W, H) {
+    const g = x.createLinearGradient(0, 0, W * 0.4, H);
+    g.addColorStop(0, '#17223e'); g.addColorStop(0.55, '#1e2c4f'); g.addColorStop(1, '#26375f');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+  }
+  async function drawDefaultCover(title) {
+    await montFonts();
+    const W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const x = cv.getContext('2d');
+    navyBg(x, W, H);
+    x.strokeStyle = 'rgba(139,184,232,.55)'; x.lineWidth = 34;
+    x.beginPath(); x.arc(W * 0.92, H * 0.86, 360, 0, Math.PI * 2); x.stroke();
+    x.strokeStyle = 'rgba(139,184,232,.14)'; x.lineWidth = 60;
+    x.beginPath(); x.arc(W * 0.92, H * 0.86, 470, 0, Math.PI * 2); x.stroke();
+    const logo = await logoBitmap();
+    if (logo) x.drawImage(whiteLogo(logo, 420), 110, 130);
+    x.fillStyle = '#ffffff'; x.textBaseline = 'alphabetic';
+    x.font = '300 96px Montserrat'; x.fillText('Catálogo', 110, 760);
+    x.font = '700 96px Montserrat'; x.fillText('Dellamed', 110, 870);
+    const t = String(title || '').trim();
+    if (t) {
+      x.fillStyle = '#8bb8e8'; x.font = '600 40px "Open Sans"';
+      wrapText(x, t, W - 220).slice(0, 3).forEach((ln, i) => x.fillText(ln, 110, 960 + i * 54));
+    }
+    x.fillStyle = '#8bb8e8'; x.font = '700 22px Montserrat';
+    x.fillText('HOME CARE  ·  HEALTH CARE  ·  WELLNESS  ·  ORTHO CARE', 110, H - 130);
+    return cv;
+  }
+  // Contracapa: o cartão do vendedor (o mesmo desenho do "Baixar imagem") sobre o azul-marinho, com a assinatura da marca
+  async function drawBackCover() {
+    await montFonts();
+    const W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const x = cv.getContext('2d');
+    navyBg(x, W, H);
+    let card = null, md = null;
+    if (cardAllowed()) { try { md = cardModel(cardData()); card = await drawCard(md); } catch (e) { card = null; } }
+    if (card) {
+      const cw = 820, ch = Math.round(cw * card.height / card.width), cx = (W - cw) / 2, cy = 250;
+      x.save(); x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 60; x.shadowOffsetY = 30;
+      x.fillStyle = '#1e2c4f'; x.fillRect(cx + 10, cy + 10, cw - 20, ch - 20); x.restore();
+      x.drawImage(card, cx, cy, cw, ch);
+      x.fillStyle = 'rgba(255,255,255,.82)'; x.font = '400 30px "Open Sans"'; x.textAlign = 'center';
+      if (md && !md.hint) x.fillText('Escaneie o QR Code para falar comigo.', W / 2, cy + ch + 80);
+    }
+    x.textAlign = 'left'; x.fillStyle = '#ffffff';
+    x.font = '700 56px Montserrat'; x.fillText('Saúde e bem-estar', 110, H - 230);
+    x.font = '300 56px Montserrat'; x.fillText('para todos.', 110, H - 160);
+    const logo = await logoBitmap();
+    if (logo) { const lg = whiteLogo(logo, 260); x.drawImage(lg, W - 110 - lg.width, H - 160 - lg.height + 10); }
+    return cv;
+  }
+  const canvasJpeg = async (cv) => new Uint8Array(await (await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.9))).arrayBuffer());
+
+  /* ----- PDF do catálogo montado: capa + páginas na ordem + contracapa ----- */
+  async function downloadMontPdf(m) {
+    if (!m || !m.itens.length) { toast('Adicione páginas antes de gerar o PDF.'); return; }
+    if (PDFJOB.on) { toast('Já tem um PDF sendo preparado. Aguarde terminar.'); return; }
+    montHeal(m);
+    const itens = m.itens.filter((it) => { const c = cat(it.catalogId); return c && it.page >= 1 && it.page <= c.pages; });
+    if (!itens.length) { toast('As páginas deste catálogo não estão mais disponíveis.', 'err'); return; }
+    PDFJOB.on = true; PDFJOB.cancel = false;
+    const gen = DATA_GEN, cancel = new Error('cancelado'), total = itens.length + 2;
+    pdfJobUI(true, { title: m.nome });
+    try {
+      const pages = [];
+      // Capa
+      let capa = null;
+      if (m.capa) { try { const r = await fetch(capaSrc(m.capa), { cache: 'no-store' }); if (r.ok) capa = await pdfJpeg(new Uint8Array(await r.arrayBuffer())); } catch (e) { capa = null; } }
+      if (!capa) capa = await pdfJpeg(await canvasJpeg(await drawDefaultCover(m.nome)));
+      pages.push(capa);
+      pdfJobSet(1 / total, `1 de ${plural(total, 'página', 'páginas')}`);
+      // Páginas: cada arquivo (4 páginas) é aberto uma vez só
+      const blocks = new Map();
+      for (const it of itens) {
+        if (PDFJOB.cancel) throw cancel;
+        if (gen !== DATA_GEN) throw new Error('catálogo atualizado');
+        const c = cat(it.catalogId), ci = Math.floor((it.page - 1) / P.CHUNK), k = c.id + ':' + ci;
+        if (!blocks.has(k)) blocks.set(k, P.unpackImages(await fetchOpen(c, P.path.chunk(c.id, ci))));
+        const part = blocks.get(k)[(it.page - 1) % P.CHUNK];
+        if (part) pages.push(await pdfJpeg(part));
+        pdfJobSet(pages.length / total * 0.96, `${pages.length} de ${plural(total, 'página', 'páginas')}`);
+      }
+      blocks.clear();
+      if (PDFJOB.cancel) throw cancel;
+      pages.push(await pdfJpeg(await canvasJpeg(await drawBackCover())));
+      pdfJobSet(0.98, 'Montando o arquivo…');
+      await new Promise((r) => setTimeout(r, 30));
+      const blob = PDFW.build(pages, `${m.nome} · Dellamed`), name = `Catalogo-Dellamed-${slugPdf(m.nome) || 'personalizado'}.pdf`;
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = name; a.hidden = true;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 120000);
+      pdfJobUI(false);
+      trackCatalogEvent('custom_catalog_pdf', { pages: itens.length, cover: m.capa || 0 });
+      const mb = (blob.size / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+      const file = new File([blob], name, { type: 'application/pdf' });
+      const canShare = coarse && navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
+      toast(`PDF pronto: ${name} (${mb} MB).`, '', canShare ? { label: 'Enviar', onClick: () => navigator.share({ files: [file], title: m.nome }).catch(() => {}) } : null);
+    } catch (e) {
+      pdfJobUI(false);
+      if (e === cancel) toast('PDF cancelado.');
+      else if (offlineErr(e)) toast(`${MSG_OFFLINE} O PDF precisa baixar as páginas: tente com internet.`, 'err');
+      else { console.warn('[catálogo personalizado]', e); toast('Não foi possível montar o PDF agora. Tente de novo.', 'err'); }
+    } finally { PDFJOB.on = false; }
+  }
+
+  /* ----- telas ----- */
+  const montUpd = (m) => { const d = new Date(m.atualizadoEm); return isFinite(d.getTime()) ? `atualizado ${ago(m.atualizadoEm)}` : ''; };
+  const montThumb = (it) => `<img ${hasThumb(cat(it.catalogId), it.page) ? 'data-th' : 'data-pg'}="${esc(it.catalogId)}:${it.page}" alt="">`;
+  function renderMontList() {
+    const box = $('#montBody'), list = montAll();
+    setHTML(box, `<div class="mont-top">
+        <div><h1 id="montH" tabindex="-1"><b>Meus catálogos.</b> Do jeito do seu cliente.</h1>
+        <p class="mont-sub">Junte páginas oficiais, escolha a capa e gere o PDF com o seu cartão no fim. Fica salvo neste aparelho.</p></div>
+        <button class="btn primary" type="button" data-mont-act="novo">${I.plus}Novo catálogo</button>
+      </div>
+      ${list.length ? `<ul class="mont-list">${list.map((m) => {
+        const first = m.itens[0];
+        return `<li class="mont-card">
+          <button class="mont-open" type="button" data-mont-open="${esc(m.id)}" aria-label="Abrir ${esc(m.nome)}">
+            <span class="mont-cover">${m.capa ? `<img src="${capaSrc(m.capa)}" alt="">` : first ? montThumb(first) : `<span class="ico" aria-hidden="true">${I.layers}</span>`}</span>
+            <span class="mont-card-t"><b>${esc(m.nome)}</b><span>${plural(m.itens.length, 'página', 'páginas')}${montUpd(m) ? ' · ' + esc(montUpd(m)) : ''}</span></span>
+          </button>
+          <button class="btn ghost sm" type="button" data-mont-pdf="${esc(m.id)}" ${m.itens.length ? '' : 'disabled'}>${I.download}PDF</button>
+        </li>`;
+      }).join('')}</ul>` : `<div class="empty mont-empty"><span class="ico" aria-hidden="true">${I.layers}</span><h3>Nenhum catálogo montado ainda</h3>
+        <p>Dentro de um catálogo, toque em <b>Adicionar ao meu catálogo</b> na barra de controles. Ou, no carrinho, use <b>Montar catálogo</b> para levar as páginas dos produtos escolhidos.</p></div>`}`);
+    hydrate(box);
+    // Capa que saiu do site (o marketing apagou o arquivo): volta para o ícone, sem imagem quebrada
+    $$('.mont-cover img[src^="capas/"]', box).forEach((im) => im.addEventListener('error', () => { im.replaceWith(Object.assign(document.createElement('span'), { className: 'ico', innerHTML: I.layers })); }, { once: true }));
+  }
+  function renderMontEdit(m) {
+    const box = $('#montBody');
+    montHeal(m);
+    const conf = m.itens.filter((it) => it.conferir).length;
+    setHTML(box, `<div class="mont-ed">
+      <div class="mont-ed-main">
+        <a class="mont-back" href="#/montar">${I.back}Meus catálogos</a>
+        <div class="field mont-name"><label class="field-label" for="montNome">Nome do catálogo</label>
+          <input id="montNome" type="text" maxlength="60" value="${esc(m.nome)}" placeholder="Ex.: Farmácia Central · Home Care" autocomplete="off"></div>
+        <section class="mont-sec" aria-labelledby="montCapaH">
+          <h2 id="montCapaH">Capa</h2>
+          <div class="mont-capas" id="montCapas" role="radiogroup" aria-labelledby="montCapaH"><p class="mont-note">Carregando as capas…</p></div>
+        </section>
+        <section class="mont-sec" aria-labelledby="montPagH">
+          <div class="mont-sec-h"><h2 id="montPagH">Páginas <span class="int-n">${fmtN(m.itens.length)}</span></h2>
+            <span class="mont-add"><button class="btn ghost sm" type="button" data-mont-act="addprod">${I.search}Adicionar produto</button><button class="btn ghost sm" type="button" data-mont-act="addpag">${I.plus}Adicionar páginas</button></span></div>
+          ${conf ? `<p class="warn-note">${WARN}<span>${plural(conf, 'página veio', 'páginas vieram')} de catálogo atualizado depois que você montou. Confira ${conf === 1 ? 'a marcada' : 'as marcadas'} e toque em "Está certa".</span></p>` : ''}
+          ${m.itens.length ? `<ol class="mont-pages" id="montPages">${m.itens.map((it, i) => {
+            const c = cat(it.catalogId), nomes = it.skus.map((s) => { const p = prodBySku(s); return p ? p.name : s; }).slice(0, 2);
+            return `<li class="mont-pg${it.conferir ? ' is-warn' : ''}" draggable="true" data-i="${i}">
+              <span class="mont-pg-img">${c ? montThumb(it) : ''}<span class="mont-pg-n" aria-hidden="true">${i + 1}</span></span>
+              <span class="mont-pg-t"><b>${c ? esc(c.title) : 'Catálogo indisponível'}</b><span>pág. ${it.page}${nomes.length ? ' · ' + esc(nomes.join(', ')) : ''}</span></span>
+              <span class="mont-pg-acts">
+                ${it.conferir ? `<button type="button" class="btn sky sm" data-mont-ok="${i}">Está certa</button>` : ''}
+                <button type="button" class="icon-btn" data-mont-mv="${i}:-1" aria-label="Mover para antes" ${i ? '' : 'disabled'}>${I.back}</button>
+                <button type="button" class="icon-btn" data-mont-mv="${i}:1" aria-label="Mover para depois" ${i < m.itens.length - 1 ? '' : 'disabled'}>${I.next}</button>
+                <button type="button" class="icon-btn" data-mont-rm="${i}" aria-label="Tirar página ${it.page}">${I.close}</button>
+              </span>
+            </li>`;
+          }).join('')}</ol>` : `<div class="empty mont-empty"><h3>Nenhuma página ainda</h3><p>Use os botões acima, ou abra um catálogo e toque em <b>Adicionar ao meu catálogo</b>.</p></div>`}
+        </section>
+      </div>
+      <aside class="mont-sum" aria-label="Resumo">
+        <p class="cs-eyebrow">Resumo</p>
+        <p class="mont-sum-n"><b>${fmtN(m.itens.length + 2)}</b> páginas no PDF</p>
+        <ul class="mont-sum-l"><li>Capa ${m.capa ? `modelo ${m.capa}` : 'padrão Dellamed'}</li><li>${plural(m.itens.length, 'página oficial', 'páginas oficiais')}</li><li>Contracapa com ${cardAllowed() ? 'o seu cartão' : 'a assinatura Dellamed'}</li></ul>
+        <button class="btn primary block" type="button" data-mont-act="pdf" ${m.itens.length ? '' : 'disabled'}>${I.download}Gerar PDF</button>
+        ${cardAllowed() && cardModel(cardData()).hint ? `<p class="mont-sum-warn">Seu cartão está sem WhatsApp: a contracapa sai sem o QR Code.</p>` : ''}
+        ${cardAllowed() ? `<button class="link" type="button" data-mont-act="cartao">Conferir meu cartão</button>` : ''}
+        <button class="link mont-del" type="button" data-mont-act="apagar">Apagar este catálogo</button>
+      </aside>
+    </div>`);
+    hydrate(box);
+    paintMontCapas(m);
+  }
+  function paintMontCapas(m) {
+    montCapas().then((ns) => {
+      const el = $('#montCapas');
+      if (!el || !MONT.edit || MONT.edit.id !== m.id) return;
+      if (m.capa && !ns.includes(m.capa)) { m.capa = 0; montSave(); }
+      const opt = (n, inner, lbl) => `<button type="button" class="mont-capa" role="radio" aria-checked="${m.capa === n}" data-mont-capa="${n}">${inner}<span>${lbl}</span></button>`;
+      el.innerHTML = opt(0, `<span class="mont-capa-def" aria-hidden="true"><i></i><b>Catálogo</b><b>Dellamed</b></span>`, 'Padrão')
+        + ns.map((n) => opt(n, `<img src="${capaSrc(n)}" alt="">`, `Modelo ${n}`)).join('')
+        + (ns.length ? '' : '<p class="mont-note">As capas do marketing aparecem aqui assim que forem publicadas.</p>');
+    });
+  }
+  function openMont(id) {
+    if (!cardAllowed()) { redirect('#/prateleira'); return; }
+    closeReader();
+    showOnly('mont');
+    const m = id ? montById(id) : null;
+    MONT.edit = m;
+    if (id && !m) { redirect('#/montar'); return; }
+    if (m) { MONT.atual = m.id; renderMontEdit(m); } else renderMontList();
+    window.scrollTo(0, 0);
+    const h = $('#montH') || $('#montNome'); if (h && !m) h.focus({ preventScroll: true });
+  }
+  const montRerender = () => { if (view === 'mont' && MONT.edit) { const y = window.scrollY; renderMontEdit(MONT.edit); window.scrollTo(0, y); } };
+
+  // Diálogos: adicionar páginas de um catálogo / adicionar um produto (o app acha a página)
+  function askMontPages(m) {
+    const cs = visibleCatalogs();
+    openDialog({
+      title: 'Adicionar páginas',
+      body: `<div class="field"><label class="field-label" for="montCat">Catálogo</label><div class="select"><select id="montCat">${cs.map((c) => `<option value="${esc(c.id)}">${esc(c.title)} (${plural(c.pages, 'página', 'páginas')})</option>`).join('')}</select><span class="ico" aria-hidden="true">${I.more}</span></div></div>
+        <div class="field" id="fMontPg"><label class="field-label" for="montPg">Páginas</label><input id="montPg" type="text" inputmode="numeric" autocomplete="off" placeholder="Ex.: 3, 8-12, 20"><em class="err" id="errMontPg" hidden></em></div>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Adicionar', kind: 'primary', onClick: () => {
+        const c = cat($('#montCat').value), r = parsePages($('#montPg').value, c ? c.pages : 0);
+        setErr($('#fMontPg'), r.err || '');
+        if (r.err || !c) { $('#montPg').focus(); return false; }
+        const n = montAdd(m, r.nums.map((p) => ({ catalogId: c.id, page: p })));
+        toast(n ? `${plural(n, 'página adicionada', 'páginas adicionadas')}.` : 'Essas páginas já estavam no catálogo.');
+        montRerender();
+      } }]
+    });
+    $('#montPg').focus();
+  }
+  function askMontProduct(m) {
+    openDialog({
+      title: 'Adicionar produto',
+      body: `<div class="field"><label class="field-label" for="montQ">Produto</label><input id="montQ" type="search" autocomplete="off" placeholder="Nome ou código, ex.: D100"></div>
+        <ul class="mont-res" id="montRes" aria-live="polite"></ul>`,
+      actions: [{ label: 'Fechar', kind: 'ghost' }]
+    });
+    const q = $('#montQ'), res = $('#montRes');
+    const all = PROD ? [...PROD.bySku.values()] : [];
+    const paint = () => {
+      const t = norm(q.value).trim();
+      if (!t) { res.innerHTML = '<li class="mont-note">Digite para buscar entre os produtos dos catálogos.</li>'; return; }
+      const hits = all.filter((p) => norm(`${p.name} ${p.sku}`).includes(t)).slice(0, 20);
+      res.innerHTML = hits.length ? hits.map((p) => {
+        const pl = prodPlaces(p.sku, R.cat && R.cat.id);
+        return `<li><button type="button" class="sh-opt" data-mont-sku="${esc(p.sku)}" ${pl.length ? '' : 'disabled'}><span class="ico" aria-hidden="true">${I.tag}</span><span class="card-act-t"><b>${esc(p.name)}</b><span>Cód. ${esc(shownCode(p))} · ${pl.length ? plural(pl.length, 'página', 'páginas') : 'sem página marcada nos catálogos'}</span></span></button></li>`;
+      }).join('') : '<li class="mont-note">Nenhum produto com esse nome ou código.</li>';
+    };
+    q.addEventListener('input', paint); paint(); q.focus();
+    res.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mont-sku]'); if (!b) return;
+      const sku = b.dataset.montSku, pl = prodPlaces(sku, R.cat && R.cat.id), p = prodBySku(sku);
+      if (pl.length === 1) { closeDialog(); const n = montAdd(m, [{ ...pl[0], skus: [sku] }]); toast(n ? `${p ? p.name : sku}: página ${pl[0].page} adicionada.` : 'Essa página já estava no catálogo.'); montRerender(); return; }
+      // Mais de uma página: o vendedor escolhe qual entra
+      res.innerHTML = `<li class="mont-note">${esc(p ? p.name : sku)} aparece em ${pl.length} páginas. Qual entra?</li>` + pl.map((h) => {
+        const c = cat(h.catalogId);
+        return `<li><button type="button" class="sh-opt mont-place" data-mont-place="${esc(h.catalogId)}:${h.page}" data-sku="${esc(sku)}"><span class="mont-place-img">${montThumb(h)}</span><span class="card-act-t"><b>${esc(c.title)}</b><span>página ${h.page}</span></span></button></li>`;
+      }).join('');
+      hydrate(res);
+    });
+    res.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mont-place]'); if (!b) return;
+      const [cid, pg] = splitRef(b.dataset.montPlace), sku = b.dataset.sku;
+      closeDialog();
+      const n = montAdd(m, [{ catalogId: cid, page: pg, skus: [sku] }]);
+      toast(n ? `Página ${pg} adicionada.` : 'Essa página já estava no catálogo.');
+      montRerender();
+    });
+  }
+  function askMontName(title, val, onOk) {
+    openDialog({
+      title,
+      body: `<div class="field"><label class="field-label" for="montNomeD">Nome do catálogo</label><input id="montNomeD" type="text" maxlength="60" autocomplete="off" placeholder="Ex.: Farmácia Central · Home Care"><span class="dlg-note">Aparece na lista e no nome do arquivo. Use o nome do cliente para se achar depois.</span></div>`,
+      actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Criar', kind: 'primary', onClick: () => { const n = $('#montNomeD').value.trim().replace(/\s+/g, ' '); if (!n) { $('#montNomeD').focus(); return false; } onOk(n); } }]
+    });
+    const i = $('#montNomeD'); i.value = val || ''; i.focus(); i.select();
+    i.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('.dlg-actions .btn.primary', dlg).click(); } });
+  }
+  // Do leitor: as páginas abertas entram no catálogo em uso (ou num novo, na primeira vez)
+  function montFromReader() {
+    if (!R.cat || !cardAllowed()) return;
+    const c = R.cat, pages = visibleIdx().map((i) => i + 1);
+    const go = (m) => {
+      const skus = (p) => [...hotspotsOn(c.id, p).map((h) => h.product), ...linksOn(c.id, p).map((x) => x.sku)];
+      const n = montAdd(m, pages.map((p) => ({ catalogId: c.id, page: p, skus: [...new Set(skus(p))] })));
+      const what = pages.length > 1 ? `Páginas ${pages.join(' e ')}` : `Página ${pages[0]}`;
+      toast(n ? `${what} no catálogo "${m.nome}" (${plural(m.itens.length, 'página', 'páginas')}).` : `${what} já estava em "${m.nome}".`, '', { label: 'Abrir', onClick: () => navigate('#/montar/' + m.id) });
+    };
+    const cur = montById(MONT.atual) || montAll()[0];
+    if (cur) { go(cur); return; }
+    askMontName('Novo catálogo', '', (nome) => { const m = montNew(nome); if (m) go(m); });
+  }
+  // Do carrinho: as páginas dos produtos da lista em uso, na ordem do carrinho
+  function montFromCart() {
+    const list = cartList();
+    if (!list.length) return;
+    askMontName('Montar catálogo com o carrinho', cartListName(), (nome) => {
+      const m = montNew(nome); if (!m) return;
+      const entries = [];
+      for (const x of list) {
+        let w = x.catalogId && cat(x.catalogId) ? { catalogId: x.catalogId, page: x.page } : null;
+        if (!w) w = prodPlaces(x.sku)[0] || null;
+        if (w) entries.push({ ...w, skus: [x.sku] });
+      }
+      montAdd(m, entries);
+      navigate('#/montar/' + m.id);
+      const fora = list.length - entries.length;
+      setTimeout(() => toast(`${plural(m.itens.length, 'página entrou', 'páginas entraram')} no catálogo.${fora ? ` ${plural(fora, 'produto não tem', 'produtos não têm')} página marcada e ficou de fora.` : ''}`), 200);
+    });
+  }
+
+  $('#viewMont').addEventListener('click', (e) => {
+    const t = e.target;
+    const op = t.closest('[data-mont-open]'); if (op) { navigate('#/montar/' + op.dataset.montOpen); return; }
+    const pd = t.closest('[data-mont-pdf]'); if (pd) { downloadMontPdf(montById(pd.dataset.montPdf)); return; }
+    const m = MONT.edit;
+    const cp = t.closest('[data-mont-capa]');
+    if (cp && m) { m.capa = +cp.dataset.montCapa; montTouch(m); montSave(); $$('[data-mont-capa]').forEach((b) => b.setAttribute('aria-checked', String(b === cp))); const s = $('.mont-sum-l li'); if (s) s.textContent = `Capa ${m.capa ? `modelo ${m.capa}` : 'padrão Dellamed'}`; return; }
+    const mv = t.closest('[data-mont-mv]');
+    if (mv && m) { const [i, d] = mv.dataset.montMv.split(':').map(Number), j = i + d; if (j >= 0 && j < m.itens.length) { [m.itens[i], m.itens[j]] = [m.itens[j], m.itens[i]]; montTouch(m); montSave(); montRerender(); const b = $(`[data-mont-mv="${j}:${d}"]`) || $(`[data-mont-mv="${j}:${-d}"]`); if (b) b.focus(); } return; }
+    const rm = t.closest('[data-mont-rm]');
+    if (rm && m) { const i = +rm.dataset.montRm, it = m.itens.splice(i, 1)[0]; montTouch(m); montSave(); montRerender(); toast(`Página ${it.page} saiu do catálogo.`, '', { label: 'Desfazer', onClick: () => { m.itens.splice(i, 0, it); montSave(); montRerender(); } }); return; }
+    const ok = t.closest('[data-mont-ok]');
+    if (ok && m) { m.itens[+ok.dataset.montOk].conferir = false; montSave(); montRerender(); return; }
+    const a = t.closest('[data-mont-act]'); if (!a) return;
+    const act = a.dataset.montAct;
+    if (act === 'novo') { askMontName('Novo catálogo', '', (nome) => { const n = montNew(nome); if (n) navigate('#/montar/' + n.id); }); return; }
+    if (!m) return;
+    if (act === 'pdf') downloadMontPdf(m);
+    else if (act === 'addpag') askMontPages(m);
+    else if (act === 'addprod') askMontProduct(m);
+    else if (act === 'cartao') navigate('#/cartao');
+    else if (act === 'apagar') {
+      openDialog({ title: 'Apagar este catálogo?', body: `<p>"${esc(m.nome)}" sai deste aparelho. Os catálogos oficiais não mudam.</p>`,
+        actions: [{ label: 'Cancelar', kind: 'ghost' }, { label: 'Apagar', kind: 'primary', onClick: () => { MONT.list = montAll().filter((x) => x.id !== m.id); if (MONT.atual === m.id) MONT.atual = ''; montSave(); navigate('#/montar'); toast('Catálogo apagado.'); } }] });
+    }
+  });
+  $('#viewMont').addEventListener('input', (e) => {
+    if (e.target.id !== 'montNome' || !MONT.edit) return;
+    MONT.edit.nome = e.target.value.replace(/\s+/g, ' ').slice(0, 60) || 'Catálogo';
+    montTouch(MONT.edit); clearTimeout(MONT.nameT); MONT.nameT = setTimeout(montSave, 400);
+  });
+  // Arrastar para reordenar (computador); os botões ‹ › fazem o mesmo no toque e no teclado
+  $('#viewMont').addEventListener('dragstart', (e) => { const li = e.target.closest && e.target.closest('.mont-pg'); if (!li) return; MONT.drag = +li.dataset.i; li.classList.add('is-drag'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', li.dataset.i); } catch (_) { /* noop */ } });
+  $('#viewMont').addEventListener('dragover', (e) => { const li = e.target.closest && e.target.closest('.mont-pg'); if (!li || MONT.drag == null) return; e.preventDefault(); $$('.mont-pg.is-over').forEach((x) => x.classList.remove('is-over')); li.classList.add('is-over'); });
+  $('#viewMont').addEventListener('drop', (e) => {
+    const li = e.target.closest && e.target.closest('.mont-pg'), m = MONT.edit;
+    if (!li || MONT.drag == null || !m) return;
+    e.preventDefault();
+    const from = MONT.drag, to = +li.dataset.i; MONT.drag = null;
+    if (from !== to) { const [it] = m.itens.splice(from, 1); m.itens.splice(to, 0, it); montTouch(m); montSave(); }
+    montRerender();
+  });
+  $('#viewMont').addEventListener('dragend', () => { MONT.drag = null; $$('.mont-pg.is-drag, .mont-pg.is-over').forEach((x) => x.classList.remove('is-drag', 'is-over')); });
+  $('#btnMont').addEventListener('click', montFromReader);
+
 
   /* ================= a marca Dellamed é o botão "Início" =================
      Área logada: barra do celular/tablet e topo do leitor levam ao Início (do leitor, fecha o catálogo; da gestão e do carrinho,
