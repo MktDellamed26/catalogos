@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-+bcYdYaNyGzlUV2bJtS6s/4BXi9142MCqwabQw0yigE=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-jyH9C5rXh/03GueFad/UQERw+sDQPg+dMMoZbVYpTg8=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -11079,15 +11079,19 @@
     $$('[data-mont-count]').forEach((b) => { b.textContent = n ? fmtN(n) : ''; });
   }
 
-  /* ----- capas: capas/capa-1 e capa-2 (.jpg ou .png) publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
+  /* ----- capas: capas/capa-1 e capa-2 (.jpg, .jpeg ou .png; o nome também em maiúsculas) publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
   // Cada modelo pode estar em JPG (preferido: mais leve) ou PNG. MONT.capas = [{ n, src }] dos que existem no site.
   function montCapas() {
     if (MONT.capas) return Promise.resolve(MONT.capas);
     if (MONT.capasJob) return MONT.capasJob;
     const probe = async (src) => { try { const r = await fetch(src, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch (e) { return false; } };
     MONT.capasJob = Promise.all(Array.from({ length: MONT_CAPAS }, (_, i) => i + 1).map(async (n) => {
-      for (const ext of ['jpg', 'png']) { const src = `capas/capa-${n}.${ext}`; if (await probe(src)) return { n, src }; }
-      return null;
+      // O site diferencia maiúsculas: aceita capa-1, CAPA-1 ou Capa-1, em .jpg, .jpeg ou .png (também em maiúsculas). Vale o primeiro que existir, nesta ordem.
+      const names = [`capa-${n}`, `CAPA-${n}`, `Capa-${n}`], exts = ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG'];
+      const srcs = names.flatMap((nm) => exts.map((ext) => `capas/${nm}.${ext}`));
+      const ok = await Promise.all(srcs.map(probe));
+      const i = ok.indexOf(true);
+      return i >= 0 ? { n, src: srcs[i] } : null;
     })).then((list) => { MONT.capas = list.filter(Boolean); MONT.capasJob = null; return MONT.capas; });
     return MONT.capasJob;
   }
