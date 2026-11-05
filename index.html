@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-Rw+W+hSsc00xL5XE/wn8oAjx3EgYP1G6BJEYpXsddSI=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-bVFc2Ub3f7V+NthvKsbu7AtPG5J7WQmtpOOgUFwVwYc=' 'sha256-RT7E+4pk0bhMxbIZHJsBgbb6oDgkOIfx0xac4VSKDo4=' 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.github.com https://cdnjs.cloudflare.com https://xrsivxdtfliejbosprns.supabase.co; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -10924,15 +10924,18 @@
   }
 
   /* ----- capas: capas/capa-N.jpg publicadas pelo marketing (a primeira consulta descobre quais existem) ----- */
+  // Cada modelo pode estar em JPG (preferido: mais leve) ou PNG. MONT.capas = [{ n, src }] dos que existem no site.
   function montCapas() {
     if (MONT.capas) return Promise.resolve(MONT.capas);
     if (MONT.capasJob) return MONT.capasJob;
+    const probe = async (src) => { try { const r = await fetch(src, { method: 'HEAD', cache: 'no-store' }); return r.ok; } catch (e) { return false; } };
     MONT.capasJob = Promise.all(Array.from({ length: MONT_CAPAS }, (_, i) => i + 1).map(async (n) => {
-      try { const r = await fetch(`capas/capa-${n}.jpg`, { method: 'HEAD', cache: 'no-store' }); return r.ok ? n : 0; } catch (e) { return 0; }
-    })).then((ns) => { MONT.capas = ns.filter(Boolean); MONT.capasJob = null; return MONT.capas; });
+      for (const ext of ['jpg', 'png']) { const src = `capas/capa-${n}.${ext}`; if (await probe(src)) return { n, src }; }
+      return null;
+    })).then((list) => { MONT.capas = list.filter(Boolean); MONT.capasJob = null; return MONT.capas; });
     return MONT.capasJob;
   }
-  const capaSrc = (n) => `capas/capa-${n}.jpg`;
+  const capaSrc = (n) => { const c = (MONT.capas || []).find((x) => x.n === n); return c ? c.src : `capas/capa-${n}.jpg`; };
   // Capa padrão (sem as capas do marketing): azul-marinho, marca e as linhas, desenhada em A4 (1240 × 1754)
   async function logoBitmap() {
     const raw = getComputedStyle(document.documentElement).getPropertyValue('--logo');
@@ -11020,7 +11023,7 @@
       const pages = [];
       // Capa
       let capa = null;
-      if (m.capa) { try { const r = await fetch(capaSrc(m.capa), { cache: 'no-store' }); if (r.ok) capa = await pdfJpeg(new Uint8Array(await r.arrayBuffer())); } catch (e) { capa = null; } }
+      if (m.capa) { try { await montCapas(); const r = await fetch(capaSrc(m.capa), { cache: 'no-store' }); if (r.ok) capa = await pdfJpeg(new Uint8Array(await r.arrayBuffer())); } catch (e) { capa = null; } }
       if (!capa) capa = await pdfJpeg(await canvasJpeg(await drawDefaultCover(m.nome)));
       pages.push(capa);
       pdfJobSet(1 / total, `1 de ${plural(total, 'página', 'páginas')}`);
@@ -11073,7 +11076,7 @@
         const first = m.itens[0];
         return `<li class="mont-card">
           <button class="mont-open" type="button" data-mont-open="${esc(m.id)}" aria-label="Abrir ${esc(m.nome)}">
-            <span class="mont-cover">${m.capa ? `<img src="${capaSrc(m.capa)}" alt="">` : first ? montThumb(first) : `<span class="ico" aria-hidden="true">${I.layers}</span>`}</span>
+            <span class="mont-cover">${m.capa ? `<img src="${esc(capaSrc(m.capa))}" alt="" loading="lazy" decoding="async">` : first ? montThumb(first) : `<span class="ico" aria-hidden="true">${I.layers}</span>`}</span>
             <span class="mont-card-t"><b>${esc(m.nome)}</b><span>${plural(m.itens.length, 'página', 'páginas')}${montUpd(m) ? ' · ' + esc(montUpd(m)) : ''}</span></span>
           </button>
           <button class="btn ghost sm" type="button" data-mont-pdf="${esc(m.id)}" ${m.itens.length ? '' : 'disabled'}>${I.download}PDF</button>
@@ -11133,10 +11136,11 @@
     montCapas().then((ns) => {
       const el = $('#montCapas');
       if (!el || !MONT.edit || MONT.edit.id !== m.id) return;
-      if (m.capa && !ns.includes(m.capa)) { m.capa = 0; montSave(); }
+      const nums = ns.map((x) => x.n);
+      if (m.capa && !nums.includes(m.capa)) { m.capa = 0; montSave(); }
       const opt = (n, inner, lbl) => `<button type="button" class="mont-capa" role="radio" aria-checked="${m.capa === n}" data-mont-capa="${n}">${inner}<span>${lbl}</span></button>`;
       el.innerHTML = opt(0, `<span class="mont-capa-def" aria-hidden="true"><i></i><b>Catálogo</b><b>Dellamed</b></span>`, 'Padrão')
-        + ns.map((n) => opt(n, `<img src="${capaSrc(n)}" alt="">`, `Modelo ${n}`)).join('')
+        + ns.map((c) => opt(c.n, `<img src="${esc(c.src)}" alt="" loading="lazy" decoding="async">`, `Modelo ${c.n}`)).join('')
         + (ns.length ? '' : '<p class="mont-note">As capas do marketing aparecem aqui assim que forem publicadas.</p>');
     });
   }
@@ -11147,7 +11151,9 @@
     const m = id ? montById(id) : null;
     MONT.edit = m;
     if (id && !m) { redirect('#/montar'); return; }
-    if (m) { MONT.atual = m.id; renderMontEdit(m); } else renderMontList();
+    if (m) { MONT.atual = m.id; renderMontEdit(m); }
+    else if (MONT.capas) renderMontList();
+    else montCapas().then(() => { if (view === 'mont' && !MONT.edit) renderMontList(); }); // as capas podem estar em JPG ou PNG: descobre antes de desenhar
     window.scrollTo(0, 0);
     const h = $('#montH') || $('#montNome'); if (h && !m) h.focus({ preventScroll: true });
   }
